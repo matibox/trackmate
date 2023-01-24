@@ -75,7 +75,7 @@ model VerificationToken {
 
 model Role {
   id   String @id @default(cuid())
-  name String //RoleName
+  name String @unique //RoleName
 
   users User[]
 }

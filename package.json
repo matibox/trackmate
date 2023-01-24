@@ -17,6 +17,7 @@
     "@trpc/next": "^10.8.1",
     "@trpc/react-query": "^10.8.1",
     "@trpc/server": "^10.8.1",
+    "dayjs": "^1.11.7",
     "next": "13.1.2",
     "next-auth": "^4.18.7",
     "react": "18.2.0",
