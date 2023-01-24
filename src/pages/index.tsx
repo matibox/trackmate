@@ -2,10 +2,11 @@ import { type GetServerSideProps, type NextPage } from 'next';
 import { signOut } from 'next-auth/react';
 import Head from 'next/head';
 import { getServerAuthSession } from '../server/auth';
-import { getCalendarPage } from '../lib/dates';
+import { useCalendarStore } from '../store/useCalendarStore';
 
 const Home: NextPage = () => {
-  console.log(getCalendarPage());
+  const { setPage } = useCalendarStore();
+  useCalendarStore.subscribe(state => state.monthIndex, setPage);
 
   return (
     <>
