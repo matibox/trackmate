@@ -4,9 +4,19 @@ import Button from '../components/ui/Button';
 import TileButton from '../components/ui/TileButton';
 import { getServerAuthSession } from '../server/auth';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
+import { useError } from '../hooks/useError';
 
 const Welcome: NextPage = () => {
   const [checkedRoles, setCheckedRoles] = useState<string[]>([]);
+  const { setError, Error } = useError();
+
+  function proceed() {
+    if (checkedRoles.length === 0) {
+      setError('Please select at least one role.');
+      return;
+    }
+    console.log('proceed');
+  }
 
   return (
     <main className='flex min-h-screen w-screen flex-col items-center justify-center bg-slate-900 text-slate-50'>
@@ -29,7 +39,12 @@ const Welcome: NextPage = () => {
             setRoles={setCheckedRoles}
           />
         </div>
-        <Button intent='primary' className='ml-auto overflow-hidden'>
+        <Error className='ml-auto' />
+        <Button
+          intent='primary'
+          className='ml-auto overflow-hidden'
+          onClick={proceed}
+        >
           <span>Proceed</span>
           <ArrowRightIcon className='h-6 w-6 text-slate-50' />
         </Button>
