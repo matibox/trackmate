@@ -9,6 +9,8 @@ import { api } from '../utils/api';
 import type { roles } from '../constants/constants';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
+import cn from '../lib/classes';
+import Loading from '../components/ui/Loading';
 
 type Role = (typeof roles)[number];
 
@@ -21,8 +23,8 @@ const Welcome: NextPage = () => {
     onError(err) {
       setError(err.message);
     },
-    onSuccess() {
-      void router.push('/');
+    async onSuccess() {
+      await router.push('/');
     },
   });
 
@@ -65,11 +67,21 @@ const Welcome: NextPage = () => {
           <Error className='ml-auto' />
           <Button
             intent='primary'
+            gap={isLoading ? 'normal' : 'small'}
             className='ml-auto overflow-hidden'
             onClick={() => proceed()}
+            disabled={isLoading}
           >
             <span>Proceed</span>
-            <ArrowRightIcon className='h-6 w-6 text-slate-50' />
+            {isLoading ? (
+              <Loading />
+            ) : (
+              <ArrowRightIcon
+                className={cn('h-6 w-6 text-slate-50', {
+                  'text-slate-400': isLoading,
+                })}
+              />
+            )}
           </Button>
         </div>
       </main>

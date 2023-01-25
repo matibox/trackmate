@@ -3,7 +3,7 @@ import { type ButtonHTMLAttributes, type ReactNode, type FC } from 'react';
 import cn from '../../lib/classes';
 
 const buttonStyles = cva(
-  'group px-6 py-2 rounded flex justify-center gap-1.5 items-center transition',
+  'group px-6 py-2 rounded flex justify-center items-center transition',
   {
     variants: {
       intent: {
@@ -13,6 +13,13 @@ const buttonStyles = cva(
       fullWidth: {
         true: 'w-full',
       },
+      gap: {
+        small: 'gap-1',
+        normal: 'gap-2',
+      },
+    },
+    defaultVariants: {
+      gap: 'normal',
     },
   }
 );
@@ -27,12 +34,16 @@ const Button: FC<ButtonProps> = ({
   children,
   intent,
   fullWidth,
+  gap,
   className,
   ...props
 }) => {
   return (
     <button
-      className={cn(buttonStyles({ intent, fullWidth }), className)}
+      className={cn(buttonStyles({ intent, fullWidth, gap }), className, {
+        'cursor-not-allowed bg-sky-900 text-slate-400 ring-sky-800 hover:bg-sky-900 hover:text-slate-400 hover:ring-sky-800':
+          props.disabled,
+      })}
       {...props}
     >
       {children}
