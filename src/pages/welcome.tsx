@@ -5,59 +5,83 @@ import TileButton from '../components/ui/TileButton';
 import { getServerAuthSession } from '../server/auth';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useError } from '../hooks/useError';
+import { api } from '../utils/api';
+import type { roles } from '../constants/constants';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
+
+type Role = (typeof roles)[number];
 
 const Welcome: NextPage = () => {
-  const [checkedRoles, setCheckedRoles] = useState<string[]>([]);
+  const [checkedRoles, setCheckedRoles] = useState<Role[]>([]);
   const { setError, Error } = useError();
+  const router = useRouter();
+
+  const { mutate: assignRoles, isLoading } = api.roles.assignRoles.useMutation({
+    onError(err) {
+      setError(err.message);
+    },
+    onSuccess() {
+      void router.push('/');
+    },
+  });
 
   function proceed() {
     if (checkedRoles.length === 0) {
       setError('Please select at least one role.');
       return;
     }
-    console.log('proceed');
+
+    assignRoles(checkedRoles);
   }
 
   return (
-    <main className='flex min-h-screen w-screen flex-col items-center justify-center bg-slate-900 text-slate-50'>
-      <div className='flex flex-col items-center gap-2'>
-        <h1 className='text-4xl sm:text-5xl'>Welcome!</h1>
-        <p className='text-lg text-slate-300'>Pick your roles to start</p>
-      </div>
-      <div className='mt-12 flex w-11/12 max-w-2xl flex-col gap-6'>
-        <div className='flex w-full flex-wrap gap-4'>
-          <RoleButton
-            title='driver'
-            description='Attend and schedule races, post results'
-            roles={checkedRoles}
-            setRoles={setCheckedRoles}
-          />
-          <RoleButton
-            title='manager'
-            description='create teams, schedule endurance events, see drivers results'
-            roles={checkedRoles}
-            setRoles={setCheckedRoles}
-          />
+    <>
+      <Head>
+        <title>Welcome - Race Results</title>
+      </Head>
+      <main className='flex min-h-screen w-screen flex-col items-center justify-center bg-slate-900 text-slate-50'>
+        <div className='flex flex-col items-center gap-2 sm:gap-4'>
+          <h1 className='text-4xl sm:text-5xl'>Welcome!</h1>
+          <p className='text-base text-slate-300'>
+            Pick your roles to start, you can&apos;t change them later
+          </p>
         </div>
-        <Error className='ml-auto' />
-        <Button
-          intent='primary'
-          className='ml-auto overflow-hidden'
-          onClick={proceed}
-        >
-          <span>Proceed</span>
-          <ArrowRightIcon className='h-6 w-6 text-slate-50' />
-        </Button>
-      </div>
-    </main>
+        <div className='mt-12 flex w-11/12 max-w-2xl flex-col gap-6'>
+          <div className='flex w-full flex-wrap gap-4'>
+            <RoleButton
+              title='driver'
+              description='Attend and schedule races, post results'
+              roles={checkedRoles}
+              setRoles={setCheckedRoles}
+            />
+            <RoleButton
+              title='manager'
+              description='create teams, schedule endurance events, see drivers results'
+              roles={checkedRoles}
+              setRoles={setCheckedRoles}
+            />
+          </div>
+          <Error className='ml-auto' />
+          <Button
+            intent='primary'
+            className='ml-auto overflow-hidden'
+            onClick={() => proceed()}
+          >
+            <span>Proceed</span>
+            <ArrowRightIcon className='h-6 w-6 text-slate-50' />
+          </Button>
+        </div>
+      </main>
+    </>
   );
 };
 
 const RoleButton: FC<{
-  title: string;
+  title: Role;
   description: string;
-  roles: string[];
-  setRoles: Dispatch<SetStateAction<string[]>>;
+  roles: Role[];
+  setRoles: Dispatch<SetStateAction<Role[]>>;
 }> = ({ title, description, roles, setRoles }) => {
   return (
     <TileButton
@@ -72,7 +96,7 @@ const RoleButton: FC<{
         )
       }
     >
-      <span className='text-xl font-semibold capitalize tracking-wide sm:text-2xl'>
+      <span className='text-2xl font-semibold capitalize tracking-wide'>
         {title}
       </span>
       <span className='text-base'>{description}</span>
@@ -83,9 +107,18 @@ const RoleButton: FC<{
 export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx);
 
-  console.log('roles', session?.user?.roles);
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
 
-  if (session?.user?.roles) {
+  console.log('roles', session.user?.roles);
+
+  if (session.user?.roles && session?.user?.roles?.length !== 0) {
     return {
       redirect: {
         destination: '/',

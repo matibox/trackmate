@@ -6,7 +6,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db';
 import type { AdapterSession, AdapterUser } from 'next-auth/adapters.js';
-import type { Role } from '@prisma/client';
+import type { Role, User } from '@prisma/client';
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
@@ -14,6 +14,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        session.user.roles = (user as User & { roles: Role[] }).roles;
       }
       return session;
     },
