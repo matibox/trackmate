@@ -5,6 +5,8 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 
 import { env } from '../../../env/server.mjs';
 import { prisma } from '../../../server/db';
+import type { AdapterSession, AdapterUser } from 'next-auth/adapters.js';
+import type { Role } from '@prisma/client';
 
 export const authOptions: NextAuthOptions = {
   // Include user.id on session
@@ -17,7 +19,26 @@ export const authOptions: NextAuthOptions = {
     },
   },
   // Configure one or more authentication providers
-  adapter: PrismaAdapter(prisma),
+  adapter: {
+    ...PrismaAdapter(prisma),
+    async getSessionAndUser(sessionToken) {
+      const userAndSession = await prisma.session.findUnique({
+        where: { sessionToken },
+        include: {
+          user: {
+            include: { roles: true },
+          },
+        },
+      });
+      if (!userAndSession) return null;
+      const { user, ...session } = userAndSession;
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+      return { user, session } as unknown as {
+        user: AdapterUser & { roles: Role[] };
+        session: AdapterSession;
+      };
+    },
+  },
   providers: [
     DiscordProvider({
       clientId: env.DISCORD_CLIENT_ID,

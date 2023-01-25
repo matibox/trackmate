@@ -62,7 +62,7 @@ model User {
   sessions       Session[]
   roles          Role[]
   events         Event[]   @relation(name: "drivers")
-  managingEvents Event?    @relation(name: "manager")
+  managingEvents Event[]   @relation(name: "manager")
 }
 
 model VerificationToken {
