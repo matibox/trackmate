@@ -5,7 +5,7 @@ import { CheckCircleIcon } from '@heroicons/react/20/solid';
 import { AnimatePresence, motion } from 'framer-motion';
 
 const tileButtonStyles = cva(
-  'group flex flex-col items-center rounded p-4 transition-all gap-2 relative bg-slate-700 text-slate-50 hover:bg-slate-600 ring-1 ring-slate-500 hover:ring-slate-400',
+  'group flex flex-col items-center rounded p-4 transition gap-2 relative bg-slate-700 text-slate-50 hover:bg-slate-600 ring-1 ring-slate-500 hover:ring-slate-400',
   {
     variants: {
       size: {
@@ -43,7 +43,7 @@ const TileButton: FC<TileButtonProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.1 }}
+            transition={{ duration: 0.15 }}
             className='absolute top-2 right-2 h-6 w-6'
           >
             <CheckCircleIcon
