@@ -1,14 +1,10 @@
-import Calendar from '@calendar/Calendar';
+import Calendar from '@dashboard/calendar/Calendar';
 import { type GetServerSideProps, type NextPage } from 'next';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
 import { getServerAuthSession } from '../server/auth';
-import { useCalendarStore } from '../store/useCalendarStore';
 
 const Home: NextPage = () => {
-  const { setPage } = useCalendarStore();
-  useCalendarStore.subscribe(state => state.monthIndex, setPage);
-
   return (
     <>
       <Head>
@@ -17,8 +13,10 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Navbar />
-      <main className='grid min-h-[calc(100vh_-_var(--navbar-height))] w-screen grid-cols-1 bg-slate-900 md:grid-cols-[250px_1fr] xl:grid-cols-[250px_1fr_350px]'>
+      <main className='grid min-h-[calc(100vh_-_var(--navbar-height))] w-screen grid-cols-1 bg-slate-900 p-4 md:grid-cols-[250px_1fr] xl:grid-cols-[250px_1fr_350px]'>
+        <div>sidebar</div>
         <Calendar />
+        <div>something else</div>
       </main>
     </>
   );

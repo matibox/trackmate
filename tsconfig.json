@@ -5,7 +5,7 @@
     "baseUrl": "./src",
     "paths": {
       "@ui/*": ["components/ui/*"],
-      "@calendar/*": ["components/dashboard/calendar/*"]
+      "@dashboard/*": ["components/dashboard/*"]
     },
     "allowJs": true,
     "skipLibCheck": true,
