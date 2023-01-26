@@ -1,7 +1,5 @@
 import { type FC, useEffect, useState } from 'react';
-import ErrorMessage, {
-  type ErrorMessageProps,
-} from '../components/ui/ErrorMessage';
+import ErrorMessage, { type ErrorMessageProps } from '@ui/ErrorMessage';
 
 export function useError(visibleFor = 5000) {
   const [error, setError] = useState<string>();

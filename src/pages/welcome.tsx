@@ -1,7 +1,7 @@
 import { type GetServerSideProps, type NextPage } from 'next';
 import { type Dispatch, type SetStateAction, useState, type FC } from 'react';
-import Button from '../components/ui/Button';
-import TileButton from '../components/ui/TileButton';
+import Button from '@ui/Button';
+import TileButton from '@ui/TileButton';
 import { getServerAuthSession } from '../server/auth';
 import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useError } from '../hooks/useError';
@@ -10,7 +10,7 @@ import type { roles } from '../constants/constants';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import cn from '../lib/classes';
-import Loading from '../components/ui/Loading';
+import Loading from '@ui/Loading';
 
 type Role = (typeof roles)[number];
 

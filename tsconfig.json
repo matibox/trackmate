@@ -2,6 +2,11 @@
   "compilerOptions": {
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
+    "baseUrl": "./src",
+    "paths": {
+      "@ui/*": ["components/ui/*"],
+      "@calendar/*": ["components/dashboard/calendar/*"]
+    },
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,

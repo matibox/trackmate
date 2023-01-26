@@ -1,7 +1,7 @@
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import { type FC } from 'react';
-import Button from './ui/Button';
+import Button from '@ui/Button';
 
 const Navbar: FC = () => {
   return (
