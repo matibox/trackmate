@@ -2,10 +2,9 @@
   "compilerOptions": {
     "target": "es2017",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "baseUrl": "./src",
     "paths": {
-      "@ui/*": ["components/ui/*"],
-      "@dashboard/*": ["components/dashboard/*"]
+      "@ui/*": ["./src/components/ui/*"],
+      "@dashboard/*": ["./src/components/dashboard/*"]
     },
     "allowJs": true,
     "skipLibCheck": true,

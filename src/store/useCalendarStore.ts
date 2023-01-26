@@ -9,6 +9,9 @@ type CalendarStore = {
   monthIndex: number;
   incrementMonth: () => void;
   decrementMonth: () => void;
+  today: Dayjs;
+  selectedDay: Dayjs;
+  selectDay: (day: Dayjs) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()(
@@ -18,5 +21,8 @@ export const useCalendarStore = create<CalendarStore>()(
     monthIndex: dayjs().month(),
     incrementMonth: () => set(state => ({ monthIndex: state.monthIndex + 1 })),
     decrementMonth: () => set(state => ({ monthIndex: state.monthIndex - 1 })),
+    today: dayjs(),
+    selectedDay: dayjs(),
+    selectDay: day => set(() => ({ selectedDay: day })),
   }))
 );

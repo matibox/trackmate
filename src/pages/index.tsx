@@ -13,10 +13,11 @@ const Home: NextPage = () => {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <Navbar />
-      <main className='grid min-h-[calc(100vh_-_var(--navbar-height))] w-screen grid-cols-1 bg-slate-900 p-4 md:grid-cols-[250px_1fr] xl:grid-cols-[250px_1fr_350px]'>
-        <div>sidebar</div>
-        <Calendar />
-        <div>something else</div>
+      <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-screen bg-slate-900'>
+        <div className='grid grid-flow-dense grid-cols-1 grid-rows-[auto_1fr] gap-4 p-4 md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr]'>
+          <Calendar />
+          <div className='flex-1'>something else</div>
+        </div>
       </main>
     </>
   );
