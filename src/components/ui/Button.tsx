@@ -20,6 +20,7 @@ const buttonStyles = cva(
         normal: 'gap-2',
       },
       size: {
+        xs: 'py-0.5 text-sm',
         small: 'px-4 py-1 text-sm',
         normal: 'px-6 py-2',
       },
