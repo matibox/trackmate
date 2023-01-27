@@ -52,17 +52,29 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Team {
+  id      String @id @default(cuid())
+  name    String
+  userId  String @unique
+  manager User   @relation(fields: [userId], references: [id], name: "manager-team")
+  drivers User[]
+}
+
 model User {
-  id             String    @id @default(cuid())
+  id             String         @id @default(cuid())
   name           String?
-  email          String?   @unique
+  email          String?        @unique
   emailVerified  DateTime?
   image          String?
   accounts       Account[]
   sessions       Session[]
   roles          Role[]
-  events         Event[]   @relation(name: "drivers")
-  managingEvents Event[]   @relation(name: "manager")
+  championships  Championship[]
+  events         Event[]        @relation(name: "drivers")
+  managingEvents Event[]        @relation(name: "manager")
+  managingTeam   Team?          @relation(name: "manager-team")
+  Team           Team?          @relation(fields: [teamId], references: [id])
+  teamId         String?
 }
 
 model VerificationToken {
@@ -85,6 +97,7 @@ model Championship {
   organizer String
   link      String
   events    Event[]
+  drivers   User[]
 }
 
 model Event {
