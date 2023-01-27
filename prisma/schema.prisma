@@ -53,11 +53,11 @@ model Session {
 }
 
 model Team {
-  id      String @id @default(cuid())
-  name    String
-  userId  String @unique
-  manager User   @relation(fields: [userId], references: [id], name: "manager-team")
-  drivers User[]
+  id        String @id @default(cuid())
+  name      String
+  managerId String @unique
+  manager   User   @relation(fields: [managerId], references: [id], name: "manager-team")
+  drivers   User[]
 }
 
 model User {

@@ -1,11 +1,10 @@
+import { z } from 'zod';
 import { createTRPCRouter, driverProcedure, managerProcedure } from '../trpc';
 
 export const teamRouter = createTRPCRouter({
   getDriveFor: driverProcedure.query(async ({ ctx }) => {
-    const team = await ctx.prisma.team.findUnique({
-      where: {
-        userId: ctx.session.user.id,
-      },
+    const team = await ctx.prisma.team.findFirst({
+      where: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
     });
 
     if (!team) {
@@ -17,7 +16,7 @@ export const teamRouter = createTRPCRouter({
   getManagingFor: managerProcedure.query(async ({ ctx }) => {
     const team = await ctx.prisma.team.findUnique({
       where: {
-        userId: ctx.session.user.id,
+        managerId: ctx.session.user.id,
       },
     });
 
@@ -27,4 +26,24 @@ export const teamRouter = createTRPCRouter({
 
     return { notFound: false, team };
   }),
+  create: managerProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        drivers: z.array(z.object({ id: z.string(), name: z.string() })),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { name, drivers } = input;
+
+      return await ctx.prisma.team.create({
+        data: {
+          name,
+          drivers: {
+            connect: drivers.map(driver => ({ id: driver.id })),
+          },
+          manager: { connect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
 });

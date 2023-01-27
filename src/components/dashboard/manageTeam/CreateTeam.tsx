@@ -1,6 +1,8 @@
 import { Combobox } from '@headlessui/react';
 import { CheckIcon } from '@heroicons/react/20/solid';
+import Button from '@ui/Button';
 import Form from '@ui/Form';
+import Input from '@ui/Input';
 import Label from '@ui/Label';
 import Loading from '@ui/Loading';
 import Popup from '@ui/Popup';
@@ -32,9 +34,10 @@ const CreateTeam: FC = () => {
   const debouncedQuery = useDebounce(query, 500);
 
   const { errors, handleSubmit } = useForm(formSchema, values => {
-    console.log(values);
+    createTeam(values);
   });
 
+  const utils = api.useContext();
   const { data: drivers, isLoading } = api.user.getDrivers.useQuery(
     {
       q: debouncedQuery,
@@ -43,6 +46,14 @@ const CreateTeam: FC = () => {
       enabled: Boolean(debouncedQuery),
     }
   );
+  const { mutate: createTeam, isLoading: submitLoading } =
+    api.team.create.useMutation({
+      onSuccess: async () => {
+        await utils.team.getDriveFor.invalidate();
+        await utils.team.getManagingFor.invalidate();
+        close();
+      },
+    });
 
   return (
     <Popup
@@ -51,6 +62,16 @@ const CreateTeam: FC = () => {
       header={<PopupHeader close={close} title='create team' />}
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
+        <Label label='name'>
+          <Input
+            type='text'
+            value={formState.name}
+            onChange={e =>
+              setFormState(prev => ({ ...prev, name: e.target.value }))
+            }
+            error={errors?.name}
+          />
+        </Label>
         <Label
           label={`drivers: ${formState.drivers
             .map(driver => driver.name)
@@ -129,6 +150,14 @@ const CreateTeam: FC = () => {
             </Combobox>
           </ErrorWrapper>
         </Label>
+        <Button
+          intent='primary'
+          className='ml-auto mt-2 h-8 self-end'
+          disabled={submitLoading}
+        >
+          <span>Submit</span>
+          {submitLoading && <Loading />}
+        </Button>
       </Form>
     </Popup>
   );

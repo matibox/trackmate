@@ -44,6 +44,8 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     };
   }
 
+  console.log('gSSP session', session.user?.roles);
+
   return {
     props: {
       session,

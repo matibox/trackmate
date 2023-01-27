@@ -10,13 +10,14 @@ const Team: FC = () => {
   const { data: session } = useSession();
   const { Error, setError } = useError();
 
-  if (!hasRole(session, 'driver')) return null;
-
   const { data, isLoading } = api.team.getDriveFor.useQuery(undefined, {
     onError(err) {
       setError(err.message);
     },
+    enabled: Boolean(hasRole(session, 'driver')),
   });
+
+  if (!hasRole(session, 'driver')) return null;
 
   return (
     <Tile header={<TeamHeader />} isLoading={isLoading}>

@@ -7,7 +7,6 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useError } from '../hooks/useError';
 import { api } from '../utils/api';
 import type { roles } from '../constants/constants';
-import { useRouter } from 'next/router';
 import Head from 'next/head';
 import cn from '../lib/classes';
 import Loading from '@ui/Loading';
@@ -17,14 +16,13 @@ type Role = (typeof roles)[number];
 const Welcome: NextPage = () => {
   const [checkedRoles, setCheckedRoles] = useState<Role[]>([]);
   const { setError, Error } = useError();
-  const router = useRouter();
 
   const { mutate: assignRoles, isLoading } = api.user.assignRoles.useMutation({
     onError(err) {
       setError(err.message);
     },
-    async onSuccess() {
-      await router.push('/');
+    onSuccess() {
+      window.location.reload();
     },
   });
 

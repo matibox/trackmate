@@ -14,13 +14,14 @@ const ManageTeam: FC = () => {
   const { Error, setError } = useError();
   const { open } = useCreateTeamStore();
 
-  if (!hasRole(session, 'manager')) return null;
-
   const { data, isLoading } = api.team.getManagingFor.useQuery(undefined, {
     onError(err) {
       setError(err.message);
     },
+    enabled: Boolean(hasRole(session, 'manager')),
   });
+
+  if (!hasRole(session, 'manager')) return null;
 
   return (
     <Tile header={<ManageTeamHeader />} isLoading={isLoading}>
@@ -28,7 +29,9 @@ const ManageTeam: FC = () => {
         <>
           {data.notFound ? (
             <div className='flex flex-col items-center gap-4'>
-              <span>You are not managing any teams</span>
+              <span className='text-slate-300'>
+                You are not managing any teams
+              </span>
               <Button intent='primary' size='small' gap='small' onClick={open}>
                 <span>Create team</span>
                 <PlusIcon className='h-5' />
