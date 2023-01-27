@@ -1,4 +1,3 @@
-import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, driverProcedure, managerProcedure } from '../trpc';
 
 export const teamRouter = createTRPCRouter({
@@ -23,12 +22,9 @@ export const teamRouter = createTRPCRouter({
     });
 
     if (!team) {
-      throw new TRPCError({
-        code: 'NOT_FOUND',
-        message: "You don't manage any team",
-      });
+      return { notFound: true, team };
     }
 
-    return team;
+    return { notFound: false, team };
   }),
 });

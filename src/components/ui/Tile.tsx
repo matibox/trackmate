@@ -3,7 +3,7 @@ import { type ReactNode, type FC } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Loading from './Loading';
 
-type TileProps = {
+export type TileProps = {
   children: ReactNode;
   header?: ReactNode;
   className?: string;

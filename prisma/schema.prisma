@@ -107,7 +107,7 @@ model Event {
   type           String //EventType
   car            String
   track          String
-  length         Int
+  duration       Int
   championshipId String?
   managerId      String?       @unique
   championship   Championship? @relation(fields: [championshipId], references: [id])
