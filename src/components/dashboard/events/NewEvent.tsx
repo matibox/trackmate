@@ -22,6 +22,7 @@ const formSchema = z
     }),
     car: z.string().min(1, 'Car is required'),
     track: z.string().min(1, 'Track is required'),
+    duration: z.number({ invalid_type_error: 'Duration is required' }),
     championshipId: z.string().optional(),
     managerId: z.string().optional(),
     teammates: z
@@ -52,6 +53,7 @@ const NewEvent: FC = () => {
     car: '',
     title: '',
     track: '',
+    duration: 0,
     type: 'sprint',
     teammates: [],
   });
@@ -96,6 +98,19 @@ const NewEvent: FC = () => {
               setFormState(prev => ({ ...prev, track: e.target.value }))
             }
             error={errors?.track}
+          />
+        </Label>
+        <Label label='duration in minutes'>
+          <Input
+            type='number'
+            value={formState.duration.toString()}
+            onChange={e =>
+              setFormState(prev => ({
+                ...prev,
+                duration: e.target.valueAsNumber,
+              }))
+            }
+            error={errors?.duration}
           />
         </Label>
         <Label label='race type' className='grid-rows-[1.5rem,2rem]'>
