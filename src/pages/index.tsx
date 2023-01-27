@@ -1,6 +1,7 @@
 import Calendar from '@dashboard/calendar/Calendar';
 import Events from '@dashboard/events/Events';
 import NewEvent from '@dashboard/events/NewEvent';
+import ManageTeam from '@dashboard/manageTeam/ManageTeam';
 import Team from '@dashboard/team/Team';
 import { AnimatePresence } from 'framer-motion';
 import { type GetServerSideProps, type NextPage } from 'next';
@@ -22,10 +23,11 @@ const Home: NextPage = () => {
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-screen bg-slate-900'>
         <AnimatePresence>{isOpened && <NewEvent />}</AnimatePresence>
-        <div className='grid grid-flow-dense grid-cols-1 grid-rows-[auto_1fr] gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
+        <div className='grid grid-flow-dense grid-cols-1 gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
           <Calendar />
           <Events />
           <Team />
+          <ManageTeam />
         </div>
       </main>
     </>

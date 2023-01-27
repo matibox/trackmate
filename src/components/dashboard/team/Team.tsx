@@ -10,9 +10,7 @@ const Team: FC = () => {
   const { data: session } = useSession();
   const { Error, setError } = useError();
 
-  if (!hasRole(session, 'driver')) {
-    return null;
-  }
+  if (!hasRole(session, 'driver')) return null;
 
   const { data, isLoading } = api.team.getDriveFor.useQuery(undefined, {
     onError(err) {
@@ -26,7 +24,7 @@ const Team: FC = () => {
       {data && (
         <>
           {data.notFound ? (
-            <span className='block text-center text-lg text-slate-300'>
+            <span className='block text-center text-base text-slate-300 sm:text-lg'>
               You don&apos;t drive for any team, contact your manager.
             </span>
           ) : (
