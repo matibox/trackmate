@@ -1,4 +1,5 @@
 import Calendar from '@dashboard/calendar/Calendar';
+import Events from '@dashboard/events/Events';
 import { type GetServerSideProps, type NextPage } from 'next';
 import Head from 'next/head';
 import Navbar from '../components/Navbar';
@@ -14,9 +15,9 @@ const Home: NextPage = () => {
       </Head>
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-screen bg-slate-900'>
-        <div className='grid grid-flow-dense grid-cols-1 grid-rows-[auto_1fr] gap-4 p-4 md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr]'>
+        <div className='grid h-[calc(100vh_-_var(--navbar-height))] grid-flow-dense grid-cols-1 grid-rows-[auto_1fr] gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
           <Calendar />
-          <div className='flex-1'>something else</div>
+          <Events />
         </div>
       </main>
     </>
