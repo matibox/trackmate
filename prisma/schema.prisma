@@ -95,8 +95,8 @@ model Event {
   car            String
   track          String
   championshipId String?
-  managerId      String        @unique
+  managerId      String?       @unique
   championship   Championship? @relation(fields: [championshipId], references: [id])
   drivers        User[]        @relation(name: "drivers")
-  manager        User          @relation(fields: [managerId], references: [id], name: "manager")
+  manager        User?         @relation(fields: [managerId], references: [id], name: "manager")
 }
