@@ -19,7 +19,7 @@ const Welcome: NextPage = () => {
   const { setError, Error } = useError();
   const router = useRouter();
 
-  const { mutate: assignRoles, isLoading } = api.roles.assignRoles.useMutation({
+  const { mutate: assignRoles, isLoading } = api.user.assignRoles.useMutation({
     onError(err) {
       setError(err.message);
     },

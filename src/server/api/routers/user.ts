@@ -3,7 +3,7 @@ import { roles } from '../../../constants/constants';
 
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 
-export const roleRouter = createTRPCRouter({
+export const userRouter = createTRPCRouter({
   assignRoles: protectedProcedure
     .input(z.array(z.enum(roles)))
     .mutation(async ({ input, ctx }) => {
