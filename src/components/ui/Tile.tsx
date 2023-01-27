@@ -19,7 +19,7 @@ const Tile: FC<TileProps> = ({ header, children, className }) => {
       )}
     >
       {header && (
-        <div className='w-full bg-slate-700 p-4 ring-1 ring-slate-600'>
+        <div className='w-full rounded-t bg-slate-700 p-4 ring-1 ring-slate-600'>
           {header}
         </div>
       )}

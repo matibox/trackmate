@@ -3,9 +3,11 @@ import { CalendarDaysIcon } from '@heroicons/react/24/solid';
 import Button from '@ui/Button';
 import { type FC } from 'react';
 import { useCalendarStore } from '../../../store/useCalendarStore';
+import { useNewEventStore } from '../../../store/useNewEventStore';
 
 const EventsHeader: FC = () => {
   const { selectedDay } = useCalendarStore();
+  const { open } = useNewEventStore();
 
   return (
     <div className='flex items-center justify-between gap-4'>
@@ -16,7 +18,7 @@ const EventsHeader: FC = () => {
       <span className='text-lg sm:ml-auto'>
         {selectedDay.format('DD MMM YYYY')}
       </span>
-      <Button intent='primary' size='small' gap='small'>
+      <Button intent='primary' size='small' gap='small' onClick={open}>
         <span>New event</span>
         <PlusIcon className='h-5' />
       </Button>
