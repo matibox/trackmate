@@ -112,6 +112,29 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
   });
 });
 
+import type { roles } from '../../constants/constants';
+
+const enforceUserRole = (enforcedRole: (typeof roles)[number]) => {
+  return t.middleware(({ ctx, next }) => {
+    if (!ctx.session || !ctx.session.user || !ctx.session.user.roles) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+    const isDriver = ctx.session.user.roles.find(
+      role => role.name === enforcedRole
+    );
+
+    if (!isDriver) {
+      throw new TRPCError({ code: 'UNAUTHORIZED' });
+    }
+
+    return next({
+      ctx: {
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  });
+};
+
 /**
  * Protected (authed) procedure
  *
@@ -122,3 +145,7 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  * @see https://trpc.io/docs/procedures
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+
+export const driverProcedure = t.procedure.use(enforceUserRole('driver'));
+
+export const managerProcedure = t.procedure.use(enforceUserRole('manager'));

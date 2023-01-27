@@ -65,17 +65,19 @@ const NewEvent: FC = () => {
   return (
     <>
       <motion.div
-        className='fixed top-[var(--navbar-height)] left-0 h-full w-full bg-black/40 backdrop-blur-sm'
+        className='fixed top-[var(--navbar-height)] left-0 z-10 h-full w-full bg-black/40 backdrop-blur-sm'
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
+        onClick={close}
       />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.15 }}
+        className='relative z-20'
       >
         <Tile
           className='fixed top-1/2 left-1/2 w-[calc(100%_-_2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-visible'
