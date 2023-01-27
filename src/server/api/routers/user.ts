@@ -1,7 +1,12 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { roles } from '../../../constants/constants';
 
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import {
+  createTRPCRouter,
+  managerProcedure,
+  protectedProcedure,
+} from '../trpc';
 
 export const userRouter = createTRPCRouter({
   assignRoles: protectedProcedure
@@ -24,5 +29,23 @@ export const userRouter = createTRPCRouter({
           },
         },
       });
+    }),
+  getDrivers: managerProcedure
+    .input(z.object({ q: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { q } = input;
+      const drivers = await ctx.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: { name: { contains: q } },
+      });
+
+      if (!drivers) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'No drivers found' });
+      }
+
+      return drivers;
     }),
 });
