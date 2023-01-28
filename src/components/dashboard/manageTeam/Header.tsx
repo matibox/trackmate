@@ -22,7 +22,7 @@ const ManageTeamHeader: FC<ManageTeamHeaderProps> = ({ team }) => {
       {team && (
         <Button intent='danger' size='small' gap='small' onClick={open}>
           <span>Delete team</span>
-          <TrashIcon className='h-5' />
+          <TrashIcon className='h-4' />
         </Button>
       )}
     </div>

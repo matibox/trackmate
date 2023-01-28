@@ -11,7 +11,7 @@ const Input: FC<InputProps> = ({ className, error, ...props }) => {
     <ErrorWrapper error={error}>
       <input
         className={cn(
-          'w-full appearance-none rounded px-2 py-1 tracking-tight text-slate-900 selection:bg-sky-500 selection:text-slate-50 focus:outline-none focus:ring focus:ring-sky-600',
+          'h-8 w-full appearance-none rounded px-2 py-1 tracking-tight text-slate-900 selection:bg-sky-500 selection:text-slate-50 focus:outline-none focus:ring focus:ring-sky-600',
           className
         )}
         {...props}

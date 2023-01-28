@@ -1,4 +1,4 @@
-import { PlusIcon } from '@heroicons/react/20/solid';
+import { PencilSquareIcon, PlusIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import { useSession } from 'next-auth/react';
@@ -14,7 +14,8 @@ const ManageTeam: FC = () => {
   const { data: session } = useSession();
   const { Error, setError } = useError();
   const {
-    createTeamPopup: { open },
+    createTeamPopup: { open: createOpen },
+    editTeamPopup: { open: editOpen },
     setTeam,
   } = useManagingTeamStore();
 
@@ -33,9 +34,6 @@ const ManageTeam: FC = () => {
 
   if (!hasRole(session, 'manager')) return null;
 
-  //TODO edit/delete team
-  //TODO add/delete drivers
-
   return (
     <>
       <Tile header={<ManageTeamHeader team={team} />} isLoading={isLoading}>
@@ -53,13 +51,28 @@ const ManageTeam: FC = () => {
                 <Driver key={driver.id} driver={driver} />
               ))}
             </ul>
+            <Button
+              intent='primary'
+              gap='small'
+              size='small'
+              className='self-end'
+              onClick={editOpen}
+            >
+              <span>Edit team</span>
+              <PencilSquareIcon className='h-4' />
+            </Button>
           </div>
         ) : (
           <div className='flex flex-col items-center gap-4'>
             <span className='text-slate-300'>
               You are not managing any teams
             </span>
-            <Button intent='primary' size='small' gap='small' onClick={open}>
+            <Button
+              intent='primary'
+              size='small'
+              gap='small'
+              onClick={createOpen}
+            >
               <span>Create team</span>
               <PlusIcon className='h-5' />
             </Button>

@@ -4,6 +4,7 @@ import NewEvent from '@dashboard/events/NewEvent';
 import CreateTeam from '@dashboard/manageTeam/CreateTeam';
 import DeleteDriver from '@dashboard/manageTeam/DeleteDriver';
 import DeleteTeam from '@dashboard/manageTeam/DeleteTeam';
+import EditTeam from '@dashboard/manageTeam/EditTeam';
 import ManageTeam from '@dashboard/manageTeam/ManageTeam';
 import Team from '@dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
@@ -24,6 +25,7 @@ const Home: NextPage = () => {
         <DeleteDriver />
         <DeleteTeam />
         <NewEvent />
+        <EditTeam />
         <CreateTeam />
         <div className='grid grid-flow-dense grid-cols-1 gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
           <Calendar />

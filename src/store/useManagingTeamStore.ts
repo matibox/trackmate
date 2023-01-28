@@ -14,6 +14,11 @@ type ManagingTeamStore = {
     open: () => void;
     close: () => void;
   };
+  editTeamPopup: {
+    isOpened: boolean;
+    open: () => void;
+    close: () => void;
+  };
   deleteDriverPopup: {
     isOpened: boolean;
     driverId: string | undefined;
@@ -46,6 +51,17 @@ export const useManagingTeamStore = create<ManagingTeamStore>()(set => ({
     close: () =>
       set(state => ({
         createTeamPopup: { ...state.createTeamPopup, isOpened: false },
+      })),
+  },
+  editTeamPopup: {
+    isOpened: false,
+    open: () =>
+      set(state => ({
+        editTeamPopup: { ...state.editTeamPopup, isOpened: true },
+      })),
+    close: () =>
+      set(state => ({
+        editTeamPopup: { ...state.editTeamPopup, isOpened: false },
       })),
   },
   deleteDriverPopup: {
