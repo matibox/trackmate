@@ -14,17 +14,20 @@ export const teamRouter = createTRPCRouter({
     return { notFound: false, team };
   }),
   getManagingFor: managerProcedure.query(async ({ ctx }) => {
-    const team = await ctx.prisma.team.findUnique({
+    return await ctx.prisma.team.findUnique({
       where: {
         managerId: ctx.session.user.id,
       },
+      include: {
+        drivers: {
+          select: {
+            _count: true,
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
-
-    if (!team) {
-      return { notFound: true, team };
-    }
-
-    return { notFound: false, team };
   }),
   create: managerProcedure
     .input(

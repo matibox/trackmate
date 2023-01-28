@@ -11,6 +11,8 @@ const buttonStyles = cva(
           'ring-1 ring-sky-400 bg-sky-500 text-slate-50 font-semibold hover:bg-sky-400',
         secondary:
           'ring-1 ring-slate-600 text-slate-50 bg-slate-700 hover:bg-slate-600 hover:ring-slate-500',
+        danger:
+          'ring-1 ring-red-400 bg-red-500 text-slate-50 font-semibold hover:bg-red-400',
       },
       fullWidth: {
         true: 'w-full',

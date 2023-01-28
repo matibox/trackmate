@@ -1,4 +1,6 @@
+import { TrashIcon } from '@heroicons/react/20/solid';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
+import Button from '@ui/Button';
 import { type FC } from 'react';
 
 const ManageTeamHeader: FC = () => {
@@ -8,10 +10,10 @@ const ManageTeamHeader: FC = () => {
         <UserGroupIcon className='h-6' />
         <span>Manage team</span>
       </h1>
-      {/* <Button intent='primary' size='small' gap='small' onClick={open}>
-        <span>New event</span>
-        <PlusIcon className='h-5' />
-      </Button> */}
+      <Button intent='danger' size='small' gap='small'>
+        <span>Delete team</span>
+        <TrashIcon className='h-5' />
+      </Button>
     </div>
   );
 };
