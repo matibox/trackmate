@@ -54,6 +54,10 @@ const CreateTeam: FC = () => {
         await utils.team.getDriveFor.invalidate();
         await utils.team.getManagingFor.invalidate();
         close();
+        setFormState({
+          name: '',
+          drivers: [],
+        });
       },
     });
 
