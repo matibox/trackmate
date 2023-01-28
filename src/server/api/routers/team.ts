@@ -21,7 +21,6 @@ export const teamRouter = createTRPCRouter({
       include: {
         drivers: {
           select: {
-            _count: true,
             id: true,
             name: true,
           },

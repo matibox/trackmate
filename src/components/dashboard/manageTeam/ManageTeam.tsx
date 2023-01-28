@@ -7,6 +7,7 @@ import { useError } from '../../../hooks/useError';
 import { useCreateTeamStore } from '../../../store/useCreateTeamStore';
 import { api } from '../../../utils/api';
 import { hasRole } from '../../../utils/helpers';
+import Driver from './Driver';
 import ManageTeamHeader from './Header';
 
 const ManageTeam: FC = () => {
@@ -30,10 +31,21 @@ const ManageTeam: FC = () => {
   //TODO add/delete drivers
 
   return (
-    <Tile header={<ManageTeamHeader />} isLoading={isLoading}>
+    <Tile header={<ManageTeamHeader team={team} />} isLoading={isLoading}>
       {team ? (
-        <div className='flex flex-col'>
-          <span className='text-lg font-semibold'>{team.name}</span>
+        <div className='flex flex-col gap-2'>
+          <div className='flex items-center justify-between font-semibold'>
+            <span className='text-lg'>{team.name}</span>
+            <span>
+              {team.drivers.length}
+              {team.drivers.length === 1 ? ' driver' : ' drivers'}
+            </span>
+          </div>
+          <ul>
+            {team.drivers.map(driver => (
+              <Driver key={driver.id} driver={driver} />
+            ))}
+          </ul>
         </div>
       ) : (
         <div className='flex flex-col items-center gap-4'>
