@@ -6,35 +6,47 @@ import { useError } from '../../../hooks/useError';
 import { useManagingTeamStore } from '../../../store/useManagingTeamStore';
 import { api } from '../../../utils/api';
 
-const DeleteTeam: FC = () => {
+const DeleteDriver: FC = () => {
   const {
+    deleteDriverPopup: { close, driverName, driverId, isOpened },
     team,
-    deleteTeamPopup: { close, isOpened },
   } = useManagingTeamStore();
   const { Error, setError } = useError();
 
   const utils = api.useContext();
-  const { mutate: deleteTeam, isLoading } = api.team.delete.useMutation({
-    async onSuccess() {
-      close();
-      await utils.team.getManagingFor.invalidate();
-      await utils.team.getDriveFor.invalidate();
-    },
-    onError(err) {
-      setError(err.message);
-    },
-  });
+  const { mutate: removeDriver, isLoading } = api.team.removeDriver.useMutation(
+    {
+      onError(err) {
+        setError(err.message);
+      },
+      async onSuccess() {
+        close();
+        await utils.team.getDriveFor.invalidate();
+        await utils.team.getManagingFor.invalidate();
+      },
+    }
+  );
 
   return (
     <Confirmation
       close={close}
+      headerMessage={`Remove ${driverName ?? 'driver'} from ${
+        team?.name ?? 'team'
+      }`}
       isOpened={isOpened}
-      headerMessage={`Delete ${team?.name ?? 'team'}`}
       message='Are you sure?'
       isLoading={isLoading}
       error={<Error />}
     >
-      <Button intent='danger' onClick={() => deleteTeam({ teamId: team?.id })}>
+      <Button
+        intent='danger'
+        onClick={() =>
+          removeDriver({
+            driverId: driverId,
+            teamId: team?.id,
+          })
+        }
+      >
         <span>Delete</span>
         <TrashIcon className='h-5' />
       </Button>
@@ -42,4 +54,4 @@ const DeleteTeam: FC = () => {
   );
 };
 
-export default DeleteTeam;
+export default DeleteDriver;

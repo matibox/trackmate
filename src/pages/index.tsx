@@ -2,6 +2,7 @@ import Calendar from '@dashboard/calendar/Calendar';
 import Events from '@dashboard/events/Events';
 import NewEvent from '@dashboard/events/NewEvent';
 import CreateTeam from '@dashboard/manageTeam/CreateTeam';
+import DeleteDriver from '@dashboard/manageTeam/DeleteDriver';
 import DeleteTeam from '@dashboard/manageTeam/DeleteTeam';
 import ManageTeam from '@dashboard/manageTeam/ManageTeam';
 import Team from '@dashboard/team/Team';
@@ -20,6 +21,7 @@ const Home: NextPage = () => {
       </Head>
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-screen bg-slate-900'>
+        <DeleteDriver />
         <DeleteTeam />
         <NewEvent />
         <CreateTeam />

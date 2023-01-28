@@ -53,4 +53,21 @@ export const teamRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.team.delete({ where: { id: input.teamId } });
     }),
+  removeDriver: managerProcedure
+    .input(
+      z.object({
+        teamId: z.string().optional(),
+        driverId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.team.update({
+        where: { id: input.teamId },
+        data: {
+          drivers: {
+            disconnect: { id: input.driverId },
+          },
+        },
+      });
+    }),
 });

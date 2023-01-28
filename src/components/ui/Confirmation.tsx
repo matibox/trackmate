@@ -11,6 +11,7 @@ type ConfirmationProps = {
   isOpened: boolean;
   isLoading?: boolean;
   children: ReactNode;
+  error?: ReactNode;
 };
 
 const Confirmation: FC<ConfirmationProps> = ({
@@ -20,13 +21,16 @@ const Confirmation: FC<ConfirmationProps> = ({
   isOpened,
   isLoading,
   children,
+  error,
 }) => {
   return (
     <Popup
       condition={isOpened}
-      header={<PopupHeader close={close} title={headerMessage} />}
+      header={
+        <PopupHeader close={close} title={headerMessage} smallHeading={true} />
+      }
       close={close}
-      className='max-w-sm'
+      className='max-w-md'
       isLoading={isLoading}
     >
       <div className='flex h-full w-full flex-col items-center gap-4'>
@@ -43,6 +47,7 @@ const Confirmation: FC<ConfirmationProps> = ({
           </Button>
           {children}
         </div>
+        {error}
       </div>
     </Popup>
   );
