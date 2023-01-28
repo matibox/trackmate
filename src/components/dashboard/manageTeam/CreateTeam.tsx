@@ -12,7 +12,7 @@ import { z } from 'zod';
 import useDebounce from '../../../hooks/useDebounce';
 import useForm from '../../../hooks/useForm';
 import cn from '../../../lib/classes';
-import { useCreateTeamStore } from '../../../store/useCreateTeamStore';
+import { useManagingTeamStore } from '../../../store/useManagingTeamStore';
 import { api } from '../../../utils/api';
 import ErrorWrapper from '../../ErrorWrapper';
 
@@ -24,7 +24,9 @@ const formSchema = z.object({
 });
 
 const CreateTeam: FC = () => {
-  const { close, isOpened } = useCreateTeamStore();
+  const {
+    createTeamPopup: { close, isOpened },
+  } = useManagingTeamStore();
   const [formState, setFormState] = useState<z.infer<typeof formSchema>>({
     name: '',
     drivers: [],

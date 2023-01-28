@@ -1,6 +1,7 @@
 import { type ReactNode, type FC } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import Tile, { type TileProps } from './Tile';
+import cn from '../../lib/classes';
 
 interface PopupProps extends Omit<TileProps, 'children'> {
   children: ReactNode;
@@ -12,6 +13,7 @@ const Popup: FC<PopupProps> = ({
   condition,
   children,
   close,
+  className,
   ...tileProps
 }) => {
   return (
@@ -34,7 +36,10 @@ const Popup: FC<PopupProps> = ({
             className='relative z-20'
           >
             <Tile
-              className='fixed top-1/2 left-1/2 w-[calc(100%_-_2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-visible'
+              className={cn(
+                'fixed top-1/2 left-1/2 w-[calc(100%_-_2rem)] max-w-xl -translate-x-1/2 -translate-y-1/2 overflow-visible',
+                className
+              )}
               {...tileProps}
             >
               {children}
