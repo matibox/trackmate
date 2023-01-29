@@ -1,23 +1,21 @@
-import { Listbox, RadioGroup } from '@headlessui/react';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import Form from '@ui/Form';
 import Input from '@ui/Input';
 import Label from '@ui/Label';
-import { Fragment, useState, type FC } from 'react';
+import { useState, type FC } from 'react';
 import { z } from 'zod';
-import { placeholderTeammates, raceTypes } from '../../../constants/constants';
+import { eventTypes } from '../../../constants/constants';
 import useForm from '../../../hooks/useForm';
-import cn from '../../../lib/classes';
-import ErrorWrapper from '../../ErrorWrapper';
 import { useNewEventStore } from '../../../store/useNewEventStore';
 import Popup from '@ui/Popup';
 import PopupHeader from '@ui/PopupHeader';
+import EventTypePicker from '@ui/EventTypePicker';
+import DriversPicker from '@ui/DriversPicker';
 
 const formSchema = z
   .object({
     title: z.string().min(1, 'Title is required'),
-    type: z.union([z.literal('sprint'), z.literal('endurance')], {
+    type: z.enum(eventTypes, {
       required_error: 'Type is required',
     }),
     car: z.string().min(1, 'Car is required'),
@@ -103,6 +101,7 @@ const NewEvent: FC = () => {
         <Label label='duration in minutes'>
           <Input
             type='number'
+            min={0}
             value={formState.duration.toString()}
             onChange={e =>
               setFormState(prev => ({
@@ -113,95 +112,25 @@ const NewEvent: FC = () => {
             error={errors?.duration}
           />
         </Label>
-        <Label label='race type' className='grid-rows-[1.5rem,2rem]'>
-          <RadioGroup
-            value={formState.type}
-            onChange={type => setFormState(prev => ({ ...prev, type }))}
-            className='flex gap-3'
-          >
-            {raceTypes.map(type => (
-              //TODO disabled if not in a team
-              <RadioGroup.Option key={type} value={type} as={Fragment}>
-                {({ checked, disabled }) => (
-                  <span
-                    className={cn(
-                      'h-8 rounded px-3 py-1 ring-1 ring-slate-700',
-                      {
-                        'ring-sky-500': checked,
-                        'text-slate-700': disabled,
-                      }
-                    )}
-                  >
-                    {type}
-                  </span>
-                )}
-              </RadioGroup.Option>
-            ))}
-          </RadioGroup>
-        </Label>
-        {formState.type === 'endurance' && (
-          <Label label='teammates' className='relative'>
-            <ErrorWrapper error={errors?.teammates}>
-              <Listbox
-                value={formState.teammates}
-                onChange={teammates =>
-                  setFormState(prev => ({ ...prev, teammates }))
-                }
-                multiple
-              >
-                <Listbox.Button className='relative h-8 cursor-default rounded bg-slate-50 pl-2 text-left text-slate-900 focus:outline-none focus-visible:ring focus-visible:ring-sky-600 sm:text-sm'>
-                  <span>
-                    {formState.teammates
-                      ?.map(teammate => teammate.name)
-                      .join(', ')}
-                  </span>
-                  <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
-                    <ChevronUpDownIcon
-                      className='h-5 w-5 text-slate-900'
-                      aria-hidden='true'
-                    />
-                  </span>
-                </Listbox.Button>
-                <Listbox.Options className='absolute top-16 mt-1 max-h-60 w-full overflow-auto rounded bg-slate-50 py-1 text-base focus:outline-none sm:text-sm'>
-                  {placeholderTeammates.map(teammate => (
-                    <Listbox.Option
-                      key={teammate.id}
-                      value={teammate}
-                      className={({ active }) =>
-                        cn(
-                          'relative cursor-default select-none py-2 pl-10 pr-4 text-slate-900',
-                          {
-                            'bg-sky-500 text-slate-50': active,
-                          }
-                        )
-                      }
-                    >
-                      {({ selected }) => (
-                        <>
-                          <span
-                            className={`block truncate ${
-                              selected ? 'font-medium' : 'font-normal'
-                            }`}
-                          >
-                            {teammate.name}
-                          </span>
-                          {selected && (
-                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-slate-900'>
-                              <CheckIcon
-                                className='h-5 w-5'
-                                aria-hidden='true'
-                              />
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Listbox>
-            </ErrorWrapper>
-          </Label>
-        )}
+        <EventTypePicker
+          formState={formState}
+          setType={type => setFormState(prev => ({ ...prev, type }))}
+        />
+        <DriversPicker
+          formState={formState}
+          setTeammates={teammates =>
+            setFormState(prev => ({
+              ...prev,
+              teammates: teammates as
+                | {
+                    id: string;
+                    name: string;
+                  }[]
+                | undefined,
+            }))
+          }
+          errors={errors}
+        />
         <Button intent='primary' className='ml-auto mt-2 h-8 self-end'>
           Submit
         </Button>

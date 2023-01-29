@@ -99,9 +99,11 @@ model Role {
 }
 
 model Championship {
-  id        String  @id @default(cuid())
+  id        String    @id @default(cuid())
   organizer String
   link      String
+  car       String?
+  type      EventType
   events    Event[]
   drivers   User[]
 }

@@ -111,4 +111,13 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+  getTeammates: driverProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.user.findMany({
+      where: { team: { drivers: { some: { id: ctx.session.user.id } } } },
+      select: {
+        id: true,
+        name: true,
+      },
+    });
+  }),
 });
