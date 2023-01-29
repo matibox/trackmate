@@ -3,15 +3,36 @@ import { createTRPCRouter, driverProcedure, managerProcedure } from '../trpc';
 
 export const teamRouter = createTRPCRouter({
   getDriveFor: driverProcedure.query(async ({ ctx }) => {
-    const team = await ctx.prisma.team.findFirst({
+    return await ctx.prisma.team.findFirst({
       where: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
+      include: {
+        drivers: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        manager: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        events: {
+          where: { type: 'endurance' },
+          include: {
+            drivers: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: { date: 'desc' },
+          take: 1,
+        },
+      },
     });
-
-    if (!team) {
-      return { notFound: true, team };
-    }
-
-    return { notFound: false, team };
   }),
   getManagingFor: managerProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.team.findUnique({

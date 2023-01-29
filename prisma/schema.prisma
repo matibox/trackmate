@@ -15,16 +15,15 @@ datasource db {
   relationMode = "prisma"
 }
 
-//! Uncomment after switch to mysql/postgresql
-// enum RoleName {
-//   driver
-//   manager
-// }
+enum RoleName {
+  driver
+  manager
+}
 
-// enum EventType {
-//   sprint
-//   endurance
-// }
+enum EventType {
+  sprint
+  endurance
+}
 
 // Necessary for Next auth
 model Account {
@@ -33,12 +32,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String? // @db.Text
-  access_token      String? // @db.Text
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String? // @db.Text
+  id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -57,11 +56,12 @@ model Session {
 }
 
 model Team {
-  id        String @id @default(cuid())
+  id        String  @id @default(cuid())
   name      String
-  managerId String @unique
-  manager   User   @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
+  managerId String  @unique
+  manager   User    @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
   drivers   User[]
+  events    Event[]
 }
 
 model User {
@@ -92,8 +92,8 @@ model VerificationToken {
 }
 
 model Role {
-  id   String @id @default(cuid())
-  name String @unique //RoleName
+  id   String   @id @default(cuid())
+  name RoleName @unique
 
   users User[]
 }
@@ -110,7 +110,7 @@ model Event {
   id             String        @id @default(cuid())
   title          String
   date           DateTime
-  type           String //EventType
+  type           EventType
   car            String
   track          String
   duration       Int
@@ -119,6 +119,9 @@ model Event {
   championship   Championship? @relation(fields: [championshipId], references: [id])
   drivers        User[]        @relation(name: "drivers")
   manager        User?         @relation(fields: [managerId], references: [id], name: "manager")
+  team           Team?         @relation(fields: [teamId], references: [id])
+  teamId         String?
 
   @@index([championshipId])
+  @@index([teamId])
 }

@@ -126,8 +126,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     };
   }
 
-  console.log('roles', session.user?.roles);
-
   if (session.user?.roles && session?.user?.roles?.length !== 0) {
     return {
       redirect: {
