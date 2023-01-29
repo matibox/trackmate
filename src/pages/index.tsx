@@ -30,7 +30,7 @@ const Home: NextPage = () => {
         <NewEvent />
         <EditTeam />
         <CreateTeam />
-        <div className='grid grid-flow-dense grid-cols-1 grid-rows-[auto_auto_minmax(0,_1fr)] gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
+        <div className='grid grid-flow-dense grid-cols-1 gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
           <Calendar />
           <Events />
           <Team />
