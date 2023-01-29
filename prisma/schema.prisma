@@ -102,6 +102,7 @@ model Championship {
   id        String    @id @default(cuid())
   organizer String
   link      String
+  name      String
   car       String?
   type      EventType
   events    Event[]
@@ -110,7 +111,7 @@ model Championship {
 
 model Event {
   id             String        @id @default(cuid())
-  title          String
+  title          String?
   date           DateTime
   type           EventType
   car            String

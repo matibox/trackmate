@@ -23,7 +23,8 @@ const NewChampionship: FC = () => {
     .object({
       organizer: z.string().min(1, 'Organizer is required'),
       link: z.string().min(1, 'URL is required').url('Not a valid URL'),
-      car: z.string().optional(),
+      name: z.string().min(1, 'Name is required'),
+      car: z.string().nullable(),
       type: z.union([z.literal('sprint'), z.literal('endurance')]),
       teammates: z
         .array(
@@ -35,18 +36,21 @@ const NewChampionship: FC = () => {
         .optional(),
     })
     .superRefine(({ type, teammates }, ctx) => {
-      if ((type === 'endurance' && teammates?.length === 0) || !teammates) {
+      if (
+        (type === 'endurance' && teammates && teammates?.length < 2) ||
+        !teammates
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.too_small,
-          minimum: 1,
+          minimum: 2,
           inclusive: true,
           type: 'array',
-          message: 'Drivers are required',
+          message: 'Minimum of 2 drivers are required',
           path: ['teammates'],
         });
       }
       const me = teammates?.find(driver => driver.id === session?.user?.id);
-      if (!me) {
+      if (!me && type === 'endurance') {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['teammates'],
@@ -55,25 +59,40 @@ const NewChampionship: FC = () => {
       }
     });
 
+  const initialFormState: z.infer<typeof formSchema> = {
+    organizer: '',
+    link: '',
+    name: '',
+    car: '',
+    type: 'sprint',
+    teammates: [],
+  };
+
   const utils = api.useContext();
   const { mutate: createChampionship, isLoading } =
     api.championship.create.useMutation({
       onSuccess: async () => {
-        //TODO invalidate specific query
-        await utils.championship.invalidate();
+        await utils.championship.get.invalidate();
+        setFormState(initialFormState);
         close();
       },
     });
 
-  const [formState, setFormState] = useState<z.infer<typeof formSchema>>({
-    organizer: '',
-    link: '',
-    car: '',
-    type: 'sprint',
-    teammates: [],
-  });
+  const [formState, setFormState] =
+    useState<typeof initialFormState>(initialFormState);
   const { handleSubmit, errors } = useForm(formSchema, values => {
-    createChampionship(values);
+    createChampionship({
+      ...values,
+      teammates:
+        values.teammates?.length === 0 && values.type === 'sprint'
+          ? [
+              {
+                id: session?.user?.id as string,
+                name: session?.user?.name as string,
+              },
+            ]
+          : values.teammates,
+    });
   });
 
   return (
@@ -84,6 +103,16 @@ const NewChampionship: FC = () => {
       isLoading={isLoading}
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
+        <Label label='name'>
+          <Input
+            type='text'
+            value={formState.name}
+            onChange={e =>
+              setFormState(prev => ({ ...prev, name: e.target.value }))
+            }
+            error={errors?.name}
+          />
+        </Label>
         <Label label='organizer'>
           <Input
             type='text'
@@ -107,7 +136,7 @@ const NewChampionship: FC = () => {
         <Label label='championship car' optional>
           <Input
             type='text'
-            value={formState.car}
+            value={formState.car ?? ''}
             onChange={e =>
               setFormState(prev => ({ ...prev, car: e.target.value }))
             }
