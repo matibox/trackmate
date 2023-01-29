@@ -39,7 +39,7 @@ export const userRouter = createTRPCRouter({
           id: true,
           name: true,
         },
-        where: { name: { contains: q.toLowerCase(), mode: 'insensitive' } },
+        where: { name: { contains: q } },
       });
 
       if (!drivers) {
