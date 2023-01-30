@@ -99,11 +99,17 @@ const AllChampionships: NextPage = () => {
                       </div>
                       <div className='border-t border-slate-800 pt-4'>
                         <h2 className='text-lg font-semibold'>Events</h2>
-                        <div className='grid grid-cols-[repeat(auto-fill,_250px)]'>
-                          {championship.events.map(event => (
-                            <Event key={event.id} event={event} />
-                          ))}
-                        </div>
+                        {championship.events.length > 0 ? (
+                          <div className='grid grid-cols-[repeat(auto-fit,_250px)]'>
+                            {championship.events.map(event => (
+                              <Event key={event.id} event={event} />
+                            ))}
+                          </div>
+                        ) : (
+                          <span className='text-slate-300'>
+                            There are no events for this championship
+                          </span>
+                        )}
                       </div>
                     </div>
                   </Disclosure.Panel>
