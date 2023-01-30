@@ -1,13 +1,28 @@
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
-import { createTRPCRouter, driverProcedure } from '../trpc';
+import { hasRole } from '../../../utils/helpers';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 
 export const championshipRouter = createTRPCRouter({
-  get: driverProcedure
+  get: protectedProcedure
     .input(z.object({ max: z.number().min(0).optional().default(2) }))
     .query(async ({ ctx, input }) => {
+      const driverWhereClause = {
+        drivers: { some: { id: ctx.session.user.id } },
+      };
+
+      const managerWhereClause = {
+        manager: { id: ctx.session.user.id },
+      };
+
       return await ctx.prisma.championship.findMany({
-        where: { drivers: { some: { id: ctx.session.user.id } } },
+        where: hasRole(ctx.session, ['driver', 'manager'])
+          ? {
+              OR: [driverWhereClause, managerWhereClause],
+            }
+          : hasRole(ctx.session, 'driver')
+          ? driverWhereClause
+          : managerWhereClause,
         include: {
           events: {
             orderBy: { date: 'desc' },
@@ -30,7 +45,7 @@ export const championshipRouter = createTRPCRouter({
         // ?^ maybe order by these dates
       });
     }),
-  create: driverProcedure
+  create: protectedProcedure
     .input(
       z.object({
         name: z.string(),
@@ -46,10 +61,11 @@ export const championshipRouter = createTRPCRouter({
             })
           )
           .optional(),
+        managerId: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, organizer, link, car, type, teammates } = input;
+      const { name, organizer, link, car, type, teammates, managerId } = input;
       return await ctx.prisma.championship.create({
         data: {
           name,
@@ -59,6 +75,9 @@ export const championshipRouter = createTRPCRouter({
           car,
           drivers: {
             connect: teammates?.map(teammate => ({ id: teammate.id })),
+          },
+          manager: {
+            connect: managerId ? { id: managerId } : undefined,
           },
         },
       });

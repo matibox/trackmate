@@ -65,20 +65,21 @@ model Team {
 }
 
 model User {
-  id             String         @id @default(cuid())
-  name           String?
-  email          String?        @unique
-  emailVerified  DateTime?
-  image          String?
-  accounts       Account[]
-  sessions       Session[]
-  roles          Role[]
-  championships  Championship[]
-  events         Event[]        @relation(name: "drivers")
-  managingEvents Event[]        @relation(name: "manager")
-  managingTeam   Team?          @relation(name: "manager-team")
-  team           Team?          @relation(fields: [teamId], references: [id])
-  teamId         String?
+  id                    String         @id @default(cuid())
+  name                  String?
+  email                 String?        @unique
+  emailVerified         DateTime?
+  image                 String?
+  accounts              Account[]
+  sessions              Session[]
+  roles                 Role[]
+  championships         Championship[] @relation(name: "drivers-championship")
+  events                Event[]        @relation(name: "drivers")
+  managingEvents        Event[]        @relation(name: "manager")
+  managingTeam          Team?          @relation(name: "manager-team")
+  team                  Team?          @relation(fields: [teamId], references: [id])
+  teamId                String?
+  managingChampionships Championship[]
 
   @@index([teamId])
 }
@@ -106,7 +107,11 @@ model Championship {
   car       String?
   type      EventType
   events    Event[]
-  drivers   User[]
+  drivers   User[]    @relation(name: "drivers-championship")
+  manager   User?     @relation(fields: [managerId], references: [id])
+  managerId String?
+
+  @@index([managerId])
 }
 
 model Event {

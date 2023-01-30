@@ -1,27 +1,21 @@
 import { ArrowSmallRightIcon } from '@heroicons/react/20/solid';
 import Tile from '@ui/Tile';
-import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { type FC } from 'react';
 import { useError } from '../../../hooks/useError';
 import { api } from '../../../utils/api';
-import { hasRole } from '../../../utils/helpers';
 import Championship from './Championship';
 import ChampionshipsHeader from './Header';
 
 const Championships: FC = () => {
-  const { data: session } = useSession();
   const { Error, setError } = useError();
 
   const { data: championships, isLoading } = api.championship.get.useQuery(
     {},
     {
-      enabled: Boolean(hasRole(session, 'driver')),
       onError: err => setError(err.message),
     }
   );
-
-  if (!hasRole(session, 'driver')) return null;
 
   return (
     <Tile

@@ -12,6 +12,7 @@ import { z } from 'zod';
 import useForm from '../../../hooks/useForm';
 import { useChampionshipStore } from '../../../store/useChampionshipStore';
 import { api } from '../../../utils/api';
+import { hasRole } from '../../../utils/helpers';
 
 const NewChampionship: FC = () => {
   const {
@@ -49,14 +50,6 @@ const NewChampionship: FC = () => {
           path: ['teammates'],
         });
       }
-      const me = teammates?.find(driver => driver.id === session?.user?.id);
-      if (!me && type === 'endurance') {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['teammates'],
-          message: 'You need to be in the roster',
-        });
-      }
     });
 
   const initialFormState: z.infer<typeof formSchema> = {
@@ -92,6 +85,10 @@ const NewChampionship: FC = () => {
               },
             ]
           : values.teammates,
+      managerId:
+        hasRole(session, 'manager') && values.type === 'endurance'
+          ? session?.user?.id
+          : undefined,
     });
   });
 

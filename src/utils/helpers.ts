@@ -1,5 +1,5 @@
+import { type RoleName } from '@prisma/client';
 import type { Session } from 'next-auth';
-import type { roles } from '../constants/constants';
 
 export const formatErrors = (errors: string[] | undefined) =>
   errors?.reduce((a, b) => `${a}. ${b}`);
@@ -9,5 +9,11 @@ export const capitilize = (string: string) =>
 
 export const hasRole = (
   session: Session | null,
-  roleName: (typeof roles)[number]
-) => session?.user?.roles?.find(role => role.name === roleName);
+  roleName: RoleName | RoleName[]
+) => {
+  if (typeof roleName === 'string') {
+    return session?.user?.roles?.find(role => role.name === roleName);
+  }
+
+  return session?.user?.roles?.every(role => roleName.includes(role.name));
+};
