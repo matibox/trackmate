@@ -1,8 +1,14 @@
-import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
+import {
+  ArrowTopRightOnSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/20/solid';
+import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
-import { type FC } from 'react';
+import { useSession } from 'next-auth/react';
+import { useMemo, type FC } from 'react';
 import cn from '../../../lib/classes';
+import { useChampionshipStore } from '../../../store/useChampionshipStore';
 import { type RouterOutputs } from '../../../utils/api';
 import { capitilize } from '../../../utils/helpers';
 
@@ -11,21 +17,47 @@ type ChampionshipProps = {
 };
 
 const Championship: FC<ChampionshipProps> = ({ championship }) => {
+  const {
+    deleteChampionshipPopup: { open },
+  } = useChampionshipStore();
+
+  const { data: session } = useSession();
+
+  const showDelete = useMemo(() => {
+    const type = championship.type;
+    if (type === 'sprint') return true;
+    if (championship.managerId === session?.user?.id) return true;
+    return false;
+  }, [championship.type, championship.managerId, session?.user?.id]);
+
   return (
     <Tile
       className='flex w-full'
       header={
-        <a
-          href={championship.link}
-          target='_blank'
-          className='group flex items-center gap-2 font-semibold'
-          rel='noreferrer'
-        >
-          <span className='transition-colors group-hover:text-sky-400'>
-            {championship.organizer} - {championship.name}
-          </span>
-          <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
-        </a>
+        <div className='flex justify-between'>
+          <a
+            href={championship.link}
+            target='_blank'
+            className='group flex items-center gap-2 font-semibold'
+            rel='noreferrer'
+          >
+            <span className='transition-colors group-hover:text-sky-400'>
+              {championship.organizer} - {championship.name}
+            </span>
+            <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
+          </a>
+          {showDelete && (
+            <Button
+              intent='danger'
+              size='small'
+              gap='small'
+              onClick={() => open(championship.id, championship.name)}
+            >
+              <span>Delete</span>
+              <TrashIcon className='h-4' />
+            </Button>
+          )}
+        </div>
       }
     >
       <div className='flex flex-col gap-4'>

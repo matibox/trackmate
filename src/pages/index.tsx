@@ -1,5 +1,6 @@
 import Calendar from '@dashboard/calendar/Calendar';
 import Championships from '@dashboard/championships/Championships';
+import DeleteChampionship from '@dashboard/championships/DeleteChampionship';
 import NewChampionship from '@dashboard/championships/NewChampionship';
 import Events from '@dashboard/events/Events';
 import NewEvent from '@dashboard/events/NewEvent';
@@ -24,6 +25,7 @@ const Home: NextPage = () => {
       </Head>
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900'>
+        <DeleteChampionship />
         <NewChampionship />
         <DeleteDriver />
         <DeleteTeam />

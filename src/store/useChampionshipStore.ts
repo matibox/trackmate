@@ -6,6 +6,13 @@ type ChampionshipStore = {
     open: () => void;
     close: () => void;
   };
+  deleteChampionshipPopup: {
+    isOpened: boolean;
+    open: (championshipId: string, championshipName: string) => void;
+    close: () => void;
+    championshipId: string | undefined;
+    championshipName: string | undefined;
+  };
 };
 
 export const useChampionshipStore = create<ChampionshipStore>()(set => ({
@@ -23,6 +30,29 @@ export const useChampionshipStore = create<ChampionshipStore>()(set => ({
         createChampionshipPopup: {
           ...state.createChampionshipPopup,
           isOpened: false,
+        },
+      })),
+  },
+  deleteChampionshipPopup: {
+    isOpened: false,
+    championshipId: undefined,
+    championshipName: undefined,
+    open: (championshipId, championshipName) =>
+      set(state => ({
+        deleteChampionshipPopup: {
+          ...state.deleteChampionshipPopup,
+          isOpened: true,
+          championshipId,
+          championshipName,
+        },
+      })),
+    close: () =>
+      set(state => ({
+        deleteChampionshipPopup: {
+          ...state.deleteChampionshipPopup,
+          isOpened: false,
+          championshipId: undefined,
+          championshipName: undefined,
         },
       })),
   },

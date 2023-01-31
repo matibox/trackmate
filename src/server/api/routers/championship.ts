@@ -80,4 +80,12 @@ export const championshipRouter = createTRPCRouter({
         },
       });
     }),
+  delete: protectedProcedure
+    .input(z.object({ championshipId: z.string().optional() }))
+    .mutation(async ({ ctx, input }) => {
+      const { championshipId } = input;
+      return await ctx.prisma.championship.delete({
+        where: { id: championshipId },
+      });
+    }),
 });

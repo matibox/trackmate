@@ -124,7 +124,7 @@ model Event {
   duration       Int
   championshipId String?
   managerId      String?       @unique
-  championship   Championship? @relation(fields: [championshipId], references: [id])
+  championship   Championship? @relation(fields: [championshipId], references: [id], onDelete: Cascade)
   drivers        User[]        @relation(name: "drivers")
   manager        User?         @relation(fields: [managerId], references: [id], name: "manager")
   team           Team?         @relation(fields: [teamId], references: [id])
