@@ -39,7 +39,12 @@ export const userRouter = createTRPCRouter({
           id: true,
           name: true,
         },
-        where: { name: { contains: q } },
+        where: {
+          AND: [
+            { name: { contains: q } },
+            { roles: { some: { name: 'driver' } } },
+          ],
+        },
       });
 
       if (!drivers) {

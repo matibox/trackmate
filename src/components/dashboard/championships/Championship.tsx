@@ -1,7 +1,6 @@
 import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
-import { useSession } from 'next-auth/react';
 import { type FC } from 'react';
 import cn from '../../../lib/classes';
 import { type RouterOutputs } from '../../../utils/api';
@@ -12,8 +11,6 @@ type ChampionshipProps = {
 };
 
 const Championship: FC<ChampionshipProps> = ({ championship }) => {
-  const { data: session } = useSession();
-
   return (
     <Tile
       className='flex w-full'
@@ -77,12 +74,9 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
                       championship.type === 'sprint' && event.type === 'sprint',
                   })}
                 >
-                  <span className='text-slate-300'>Teammates</span>
+                  <span className='text-slate-300'>Drivers</span>
                   <span>
-                    {event.drivers
-                      .filter(driver => driver.id !== session?.user?.id)
-                      .map(driver => driver.name)
-                      .join(', ')}
+                    {event.drivers.map(driver => driver.name).join(', ')}
                   </span>
                 </div>
               </div>

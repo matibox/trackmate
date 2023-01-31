@@ -143,6 +143,7 @@ const NewChampionship: FC = () => {
         <EventTypePicker
           formState={formState}
           setType={type => setFormState(prev => ({ ...prev, type }))}
+          enduranceNeedsManager
         />
         <DriversPicker
           formState={formState}

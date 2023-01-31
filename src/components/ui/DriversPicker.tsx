@@ -30,7 +30,8 @@ const DriversPicker: FC<DriversPickerProps> = ({
   setTeammates,
   errors,
 }) => {
-  const { data: teammates, isLoading } = api.team.getTeammates.useQuery();
+  const { data: teammates, isLoading } =
+    api.team.getTeammatesOrDrivers.useQuery();
 
   return (
     <>

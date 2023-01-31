@@ -76,9 +76,7 @@ export const championshipRouter = createTRPCRouter({
           drivers: {
             connect: teammates?.map(teammate => ({ id: teammate.id })),
           },
-          manager: {
-            connect: managerId ? { id: managerId } : undefined,
-          },
+          manager: managerId ? { connect: { id: managerId } } : undefined,
         },
       });
     }),

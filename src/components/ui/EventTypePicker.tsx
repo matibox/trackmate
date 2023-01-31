@@ -22,7 +22,7 @@ const EventTypePicker: FC<EventTypePickerProps> = ({
   enduranceNeedsManager = false,
 }) => {
   const { data: session } = useSession();
-  const { data: team, isLoading } = api.team.getDriveFor.useQuery();
+  const { data: team, isLoading } = api.team.getHasTeam.useQuery();
 
   const titleMessage = useCallback(
     (type: EventType) => {

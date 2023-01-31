@@ -1,7 +1,26 @@
 import { z } from 'zod';
-import { createTRPCRouter, driverProcedure, managerProcedure } from '../trpc';
+import { hasRole } from '../../../utils/helpers';
+import {
+  createTRPCRouter,
+  driverProcedure,
+  managerProcedure,
+  protectedProcedure,
+} from '../trpc';
 
 export const teamRouter = createTRPCRouter({
+  getHasTeam: protectedProcedure.query(async ({ ctx }) => {
+    const driverWhereClause = {
+      drivers: { some: { id: { equals: ctx.session.user.id } } },
+    };
+    const managerWhereClause = { managerId: ctx.session.user.id };
+    return await ctx.prisma.team.findFirst({
+      where: hasRole(ctx.session, ['driver', 'manager'])
+        ? { OR: [driverWhereClause, managerWhereClause] }
+        : hasRole(ctx.session, 'driver')
+        ? driverWhereClause
+        : managerWhereClause,
+    });
+  }),
   getDriveFor: driverProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.team.findFirst({
       where: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
@@ -111,9 +130,21 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
-  getTeammates: driverProcedure.query(async ({ ctx }) => {
+  getTeammatesOrDrivers: protectedProcedure.query(async ({ ctx }) => {
+    const driverWhereClause = {
+      team: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
+    };
+    const managerWhereClause = {
+      team: {
+        managerId: ctx.session.user.id,
+      },
+    };
     return await ctx.prisma.user.findMany({
-      where: { team: { drivers: { some: { id: ctx.session.user.id } } } },
+      where: hasRole(ctx.session, ['driver', 'manager'])
+        ? { OR: [driverWhereClause, managerWhereClause] }
+        : hasRole(ctx.session, 'driver')
+        ? driverWhereClause
+        : managerWhereClause,
       select: {
         id: true,
         name: true,
