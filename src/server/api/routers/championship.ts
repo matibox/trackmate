@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
 import { hasRole } from '../../../utils/helpers';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, driverProcedure, protectedProcedure } from '../trpc';
 
 export const championshipRouter = createTRPCRouter({
   get: protectedProcedure
@@ -45,6 +45,17 @@ export const championshipRouter = createTRPCRouter({
         // ?^ maybe order by these dates
       });
     }),
+  list: driverProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.championship.findMany({
+      where: { drivers: { some: { id: ctx.session.user.id } } },
+      select: {
+        id: true,
+        name: true,
+        car: true,
+        type: true,
+      },
+    });
+  }),
   create: protectedProcedure
     .input(
       z.object({
