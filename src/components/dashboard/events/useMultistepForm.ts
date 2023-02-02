@@ -28,6 +28,7 @@ export function useMultistepForm<T>(
 
   return {
     step: steps[stepIndex],
+    stepIndex,
     next,
     prev,
     handleSubmit,

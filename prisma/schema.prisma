@@ -56,12 +56,13 @@ model Session {
 }
 
 model Team {
-  id        String  @id @default(cuid())
-  name      String
-  managerId String  @unique
-  manager   User    @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
-  drivers   User[]
-  events    Event[]
+  id            String         @id @default(cuid())
+  name          String
+  managerId     String         @unique
+  manager       User           @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
+  drivers       User[]
+  events        Event[]
+  championships Championship[]
 }
 
 model User {
@@ -110,8 +111,11 @@ model Championship {
   drivers   User[]    @relation(name: "drivers-championship")
   manager   User?     @relation(fields: [managerId], references: [id])
   managerId String?
+  team      Team?     @relation(fields: [teamId], references: [id])
+  teamId    String?
 
   @@index([managerId])
+  @@index([teamId])
 }
 
 model Event {
