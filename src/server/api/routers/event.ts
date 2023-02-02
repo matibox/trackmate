@@ -26,11 +26,12 @@ export const eventRouter = createTRPCRouter({
         data: {
           ...data,
           drivers: {
-            connect: drivers
-              ? drivers.map(driver => ({ id: driver.id }))
-              : {
-                  id: ctx.session.user.id,
-                },
+            connect:
+              drivers && drivers.length > 0
+                ? drivers.map(driver => ({ id: driver.id }))
+                : {
+                    id: ctx.session.user.id,
+                  },
           },
         },
       });

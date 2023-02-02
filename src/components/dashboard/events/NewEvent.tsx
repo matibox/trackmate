@@ -32,7 +32,7 @@ export const formSchema = z
         managerId: z.string().nullable(),
         organizer: z.string(),
         type: z.enum(eventTypes),
-        team: z.object({ id: z.string() }),
+        team: z.object({ id: z.string() }).nullable(),
       })
       .nullable(),
     newEventType: z.enum(['oneOff', 'championship']),
@@ -91,18 +91,27 @@ const NewEvent: FC = () => {
       if (values.newEventType === 'championship') {
         createChampEvent({
           car: values.car,
-          date: selectedDay.toDate(),
+          date: new Date(
+            selectedDay.year(),
+            selectedDay.month(),
+            selectedDay.day()
+          ),
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           championshipId: values.championship!.id,
           drivers: values.drivers,
           duration: values.duration,
-          teamId: values.championship?.team.id ?? null,
+          teamId: values.championship?.team?.id ?? null,
           title: values.title,
           track: values.track,
-          type: values.type as (typeof eventTypes)[number],
-          managerId: hasRole(session, 'manager')
-            ? session?.user?.id
-            : undefined,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          type: values.type ?? values.championship!.type,
+          managerId:
+            hasRole(session, 'manager') &&
+            (values.type === 'endurance' ||
+              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              values.championship!.type === 'endurance')
+              ? session?.user?.id
+              : undefined,
         });
       } else {
         console.log(values);
@@ -174,14 +183,8 @@ const NewEvent: FC = () => {
             type='submit'
             disabled={champLoading}
           >
-            {champLoading ? (
-              <Loading />
-            ) : (
-              <>
-                <span>{isLast ? 'Submit' : 'Next'}</span>
-                <ArrowRightIcon className='h-5' />
-              </>
-            )}
+            <span>{isLast ? 'Submit' : 'Next'}</span>
+            {champLoading ? <Loading /> : <ArrowRightIcon className='h-5' />}
           </Button>
         </div>
       </Form>

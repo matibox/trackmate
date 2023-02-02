@@ -127,7 +127,7 @@ model Event {
   track          String
   duration       Int
   championshipId String?
-  managerId      String?       @unique
+  managerId      String?
   championship   Championship? @relation(fields: [championshipId], references: [id], onDelete: Cascade)
   drivers        User[]        @relation(name: "drivers")
   manager        User?         @relation(fields: [managerId], references: [id], name: "manager")
@@ -136,4 +136,5 @@ model Event {
 
   @@index([championshipId])
   @@index([teamId])
+  @@index([managerId])
 }
