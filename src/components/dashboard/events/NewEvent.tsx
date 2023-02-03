@@ -40,7 +40,7 @@ export const formSchema = z
     car: z.string().min(1, 'Car is required'),
     track: z.string().min(1, 'Track is required'),
     drivers: z.array(driverSchema).nullable(),
-    type: z.enum(eventTypes).nullable(),
+    type: z.enum(eventTypes).nullable().default('sprint'),
     duration: z
       .number({ invalid_type_error: 'Duration is required' })
       .min(0, 'Duration needs to be a valid number'),
@@ -88,9 +88,10 @@ const NewEvent: FC = () => {
 
   const { errors, handleSubmit, prev, next, step, stepIndex, isFirst, isLast } =
     useMultistepForm(steps, formSchema, values => {
+      const { car, drivers, duration, title, track, type } = values;
       if (values.newEventType === 'championship') {
         createChampEvent({
-          car: values.car,
+          car,
           date: new Date(
             selectedDay.year(),
             selectedDay.month(),
@@ -98,13 +99,13 @@ const NewEvent: FC = () => {
           ),
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           championshipId: values.championship!.id,
-          drivers: values.drivers,
-          duration: values.duration,
+          drivers,
+          duration,
           teamId: values.championship?.team?.id ?? null,
-          title: values.title,
-          track: values.track,
+          title,
+          track,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          type: values.type ?? values.championship!.type,
+          type: type ?? values.championship!.type,
           managerId:
             hasRole(session, 'manager') &&
             (values.type === 'endurance' ||
@@ -114,13 +115,40 @@ const NewEvent: FC = () => {
               : undefined,
         });
       } else {
-        console.log(values);
+        createOneOffEvent({
+          car,
+          date: new Date(
+            selectedDay.year(),
+            selectedDay.month(),
+            selectedDay.day()
+          ),
+          drivers,
+          duration,
+          title,
+          track,
+          type: type ?? 'sprint',
+          managerId:
+            hasRole(session, 'manager') && values.type === 'endurance'
+              ? session?.user?.id
+              : undefined,
+        });
       }
     });
 
   const utils = api.useContext();
   const { mutate: createChampEvent, isLoading: champLoading } =
     api.event.createChampionshipEvent.useMutation({
+      onError(err) {
+        setError(err.message);
+      },
+      async onSuccess() {
+        closeAndReset();
+        // TODO invalidate specific query
+        await utils.event.invalidate();
+      },
+    });
+  const { mutate: createOneOffEvent, isLoading: oneOffLoading } =
+    api.event.createOneOffEvent.useMutation({
       onError(err) {
         setError(err.message);
       },
@@ -181,10 +209,14 @@ const NewEvent: FC = () => {
             gap='small'
             className='self-end'
             type='submit'
-            disabled={champLoading}
+            disabled={champLoading || oneOffLoading}
           >
             <span>{isLast ? 'Submit' : 'Next'}</span>
-            {champLoading ? <Loading /> : <ArrowRightIcon className='h-5' />}
+            {champLoading || oneOffLoading ? (
+              <Loading />
+            ) : (
+              <ArrowRightIcon className='h-5' />
+            )}
           </Button>
         </div>
       </Form>

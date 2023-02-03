@@ -10,10 +10,11 @@ import Loading from './Loading';
 
 type DriversPickerProps = {
   formState: {
-    type: EventType;
+    type: EventType | null;
     teammates?:
       | NonNullable<RouterOutputs['team']['getDriveFor']>['drivers']
-      | undefined;
+      | undefined
+      | null;
   };
   setTeammates: (
     teammates: DriversPickerProps['formState']['teammates']

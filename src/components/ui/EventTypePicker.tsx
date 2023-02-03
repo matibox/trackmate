@@ -10,9 +10,9 @@ import Label from './Label';
 
 type EventTypePickerProps = {
   formState: {
-    type: EventType;
+    type: EventType | null;
   };
-  setType: (type: EventType) => void;
+  setType: (type: EventType | null) => void;
   enduranceNeedsManager?: boolean;
 };
 

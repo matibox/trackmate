@@ -1,6 +1,9 @@
 import TileButton from '@ui/TileButton';
 import { type FC } from 'react';
-import { useNewEventStore } from '../../../store/useNewEventStore';
+import {
+  defaultFormState,
+  useNewEventStore,
+} from '../../../store/useNewEventStore';
 
 const NewEventType: FC = () => {
   const {
@@ -11,7 +14,9 @@ const NewEventType: FC = () => {
   return (
     <div className='flex justify-center gap-4'>
       <TileButton
-        onClick={() => setFormState({ newEventType: 'oneOff' })}
+        onClick={() =>
+          setFormState({ ...defaultFormState, newEventType: 'oneOff' })
+        }
         checked={newEventType === 'oneOff'}
         className='w-1/2'
         type='button'
@@ -24,7 +29,9 @@ const NewEventType: FC = () => {
         </span>
       </TileButton>
       <TileButton
-        onClick={() => setFormState({ newEventType: 'championship' })}
+        onClick={() =>
+          setFormState({ ...defaultFormState, newEventType: 'championship' })
+        }
         checked={newEventType === 'championship'}
         className='w-1/2'
         type='button'

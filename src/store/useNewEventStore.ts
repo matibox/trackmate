@@ -17,7 +17,7 @@ type NewEventStore = {
   setErrors: (errors: NewEventStore['errors']) => void;
 };
 
-const defaultFormState: NewEventStore['formState'] = {
+export const defaultFormState: NewEventStore['formState'] = {
   newEventType: 'oneOff',
   championship: null,
   title: '',
