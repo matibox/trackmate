@@ -9,6 +9,7 @@ import PopupHeader from '@ui/PopupHeader';
 import { useSession } from 'next-auth/react';
 import { useState, type FC } from 'react';
 import { z } from 'zod';
+import { eventTypes } from '../../../constants/constants';
 import useForm from '../../../hooks/useForm';
 import { useChampionshipStore } from '../../../store/useChampionshipStore';
 import { api } from '../../../utils/api';
@@ -26,7 +27,7 @@ const NewChampionship: FC = () => {
       link: z.string().min(1, 'URL is required').url('Not a valid URL'),
       name: z.string().min(1, 'Name is required'),
       car: z.string().nullable(),
-      type: z.union([z.literal('sprint'), z.literal('endurance')]),
+      type: z.enum(eventTypes),
       teammates: z
         .array(
           z.object({
@@ -142,7 +143,9 @@ const NewChampionship: FC = () => {
         </Label>
         <EventTypePicker
           formState={formState}
-          setType={type => setFormState(prev => ({ ...prev, type }))}
+          setType={type =>
+            setFormState(prev => ({ ...prev, type: type ?? 'sprint' }))
+          }
           enduranceNeedsManager
         />
         <DriversPicker

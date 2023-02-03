@@ -1,16 +1,45 @@
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import React, { type FC } from 'react';
+import { useError } from '../../../hooks/useError';
 import { useCalendarStore } from '../../../store/useCalendarStore';
+import { api } from '../../../utils/api';
 import { Day } from './Day';
 import CalendarHeader from './Header';
 
 const Calendar: FC = () => {
-  const { setPage, page } = useCalendarStore();
+  const { setPage, page, monthIndex, setDrivingEvents, setManagingEvents } =
+    useCalendarStore();
   useCalendarStore.subscribe(state => state.monthIndex, setPage);
 
+  const { Error, setError } = useError();
+
+  const { isLoading: drivingEventsLoading } =
+    api.event.getDrivingEvents.useQuery(
+      {
+        monthIndex,
+      },
+      {
+        onSuccess: setDrivingEvents,
+        onError: err => setError(err.message),
+      }
+    );
+  const { isLoading: managingEventsLoading } =
+    api.event.getManagingEvents.useQuery(
+      {
+        monthIndex,
+      },
+      {
+        onSuccess: setManagingEvents,
+        onError: err => setError(err.message),
+      }
+    );
+
   return (
-    <Tile header={<CalendarHeader />}>
+    <Tile
+      header={<CalendarHeader />}
+      isLoading={drivingEventsLoading || managingEventsLoading}
+    >
       <div className='grid grid-cols-7 grid-rows-[20px,_repeat(6,_minmax(0,_1fr))] place-items-center gap-2 text-slate-50 sm:gap-4'>
         {page?.[0]?.map((day, i) => (
           <div
@@ -28,6 +57,7 @@ const Calendar: FC = () => {
           </React.Fragment>
         ))}
       </div>
+      <Error />
     </Tile>
   );
 };

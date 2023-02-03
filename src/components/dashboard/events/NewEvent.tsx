@@ -89,14 +89,12 @@ const NewEvent: FC = () => {
   const { errors, handleSubmit, prev, next, step, stepIndex, isFirst, isLast } =
     useMultistepForm(steps, formSchema, values => {
       const { car, drivers, duration, title, track, type } = values;
+      const date = new Date(selectedDay.format('YYYY-MM-DD'));
+
       if (values.newEventType === 'championship') {
         createChampEvent({
           car,
-          date: new Date(
-            selectedDay.year(),
-            selectedDay.month(),
-            selectedDay.day()
-          ),
+          date,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           championshipId: values.championship!.id,
           drivers,
@@ -117,11 +115,7 @@ const NewEvent: FC = () => {
       } else {
         createOneOffEvent({
           car,
-          date: new Date(
-            selectedDay.year(),
-            selectedDay.month(),
-            selectedDay.day()
-          ),
+          date,
           drivers,
           duration,
           title,
@@ -143,8 +137,10 @@ const NewEvent: FC = () => {
       },
       async onSuccess() {
         closeAndReset();
-        // TODO invalidate specific query
-        await utils.event.invalidate();
+        await utils.event.getDrivingEvents.invalidate();
+        await utils.event.getManagingEvents.invalidate();
+        await utils.team.getDriveFor.invalidate();
+        await utils.championship.get.invalidate();
       },
     });
   const { mutate: createOneOffEvent, isLoading: oneOffLoading } =
@@ -154,8 +150,10 @@ const NewEvent: FC = () => {
       },
       async onSuccess() {
         closeAndReset();
-        // TODO invalidate specific query
-        await utils.event.invalidate();
+        await utils.event.getDrivingEvents.invalidate();
+        await utils.event.getManagingEvents.invalidate();
+        await utils.team.getDriveFor.invalidate();
+        await utils.championship.get.invalidate();
       },
     });
 

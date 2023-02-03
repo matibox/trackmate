@@ -1,6 +1,12 @@
+import dayjs from 'dayjs';
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import {
+  createTRPCRouter,
+  driverProcedure,
+  managerProcedure,
+  protectedProcedure,
+} from '../trpc';
 
 const createChampionshipSchema = z.object({
   title: z.string().nullable(),
@@ -57,6 +63,52 @@ export const eventRouter = createTRPCRouter({
                     id: ctx.session.user.id,
                   },
           },
+        },
+      });
+    }),
+  getDrivingEvents: driverProcedure
+    .input(z.object({ monthIndex: z.number() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.event.findMany({
+        where: {
+          AND: [
+            { drivers: { some: { id: ctx.session.user.id } } },
+            {
+              date: {
+                gte: new Date(dayjs().year(), input.monthIndex, 1),
+                lte: new Date(
+                  dayjs().year(),
+                  input.monthIndex,
+                  dayjs(
+                    new Date(dayjs().year(), input.monthIndex)
+                  ).daysInMonth()
+                ),
+              },
+            },
+          ],
+        },
+      });
+    }),
+  getManagingEvents: managerProcedure
+    .input(z.object({ monthIndex: z.number() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.event.findMany({
+        where: {
+          AND: [
+            { managerId: ctx.session.user.id },
+            {
+              date: {
+                gte: new Date(dayjs().year(), input.monthIndex, 1),
+                lte: new Date(
+                  dayjs().year(),
+                  input.monthIndex,
+                  dayjs(
+                    new Date(dayjs().year(), input.monthIndex)
+                  ).daysInMonth()
+                ),
+              },
+            },
+          ],
         },
       });
     }),

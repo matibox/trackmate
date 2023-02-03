@@ -2,6 +2,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
 import { getCalendarPage } from '../lib/dates';
+import { type RouterOutputs } from '../utils/api';
 
 type CalendarStore = {
   page: Dayjs[][];
@@ -12,6 +13,10 @@ type CalendarStore = {
   today: Dayjs;
   selectedDay: Dayjs;
   selectDay: (day: Dayjs) => void;
+  drivingEvents: RouterOutputs['event']['getDrivingEvents'] | undefined;
+  setDrivingEvents: (events: CalendarStore['drivingEvents']) => void;
+  managingEvents: RouterOutputs['event']['getManagingEvents'] | undefined;
+  setManagingEvents: (events: CalendarStore['managingEvents']) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()(
@@ -24,5 +29,9 @@ export const useCalendarStore = create<CalendarStore>()(
     today: dayjs(),
     selectedDay: dayjs(),
     selectDay: day => set(() => ({ selectedDay: day })),
+    drivingEvents: undefined,
+    setDrivingEvents: events => set(() => ({ drivingEvents: events })),
+    managingEvents: undefined,
+    setManagingEvents: events => set(() => ({ managingEvents: events })),
   }))
 );

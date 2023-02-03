@@ -92,18 +92,16 @@ export const championshipRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, organizer, link, car, type, teammates, managerId } = input;
+      const { type, teammates, managerId, ...data } = input;
       return await ctx.prisma.championship.create({
         data: {
-          name,
-          organizer,
-          link,
+          ...data,
           type,
-          car,
           drivers: {
             connect: teammates?.map(teammate => ({ id: teammate.id })),
           },
           manager: managerId ? { connect: { id: managerId } } : undefined,
+          team: type === 'endurance' ? { connect: { managerId } } : undefined,
         },
       });
     }),
