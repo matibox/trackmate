@@ -44,6 +44,7 @@ export const formSchema = z
     duration: z
       .number({ invalid_type_error: 'Duration is required' })
       .min(0, 'Duration needs to be a valid number'),
+    time: z.string(),
   })
   .superRefine(({ type, drivers, newEventType, championship }, ctx) => {
     if ((type === 'endurance' && drivers && drivers.length < 2) || !drivers) {
@@ -88,38 +89,32 @@ const NewEvent: FC = () => {
 
   const { errors, handleSubmit, prev, next, step, stepIndex, isFirst, isLast } =
     useMultistepForm(steps, formSchema, values => {
-      const { car, drivers, duration, title, track, type } = values;
-      const date = new Date(selectedDay.format('YYYY-MM-DD'));
+      const { type, championship, time, ...data } = values;
+      const date = new Date(
+        `${selectedDay.format('YYYY-MM-DD')} ${time ?? '00:00'}`
+      );
 
       if (values.newEventType === 'championship') {
         createChampEvent({
-          car,
+          ...data,
           date,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          championshipId: values.championship!.id,
-          drivers,
-          duration,
-          teamId: values.championship?.team?.id ?? null,
-          title,
-          track,
+          championshipId: championship!.id,
+          teamId: championship?.team?.id ?? null,
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          type: type ?? values.championship!.type,
+          type: type ?? championship!.type,
           managerId:
             hasRole(session, 'manager') &&
-            (values.type === 'endurance' ||
+            (type === 'endurance' ||
               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              values.championship!.type === 'endurance')
+              championship!.type === 'endurance')
               ? session?.user?.id
               : undefined,
         });
       } else {
         createOneOffEvent({
-          car,
+          ...data,
           date,
-          drivers,
-          duration,
-          title,
-          track,
           type: type ?? 'sprint',
           managerId:
             hasRole(session, 'manager') && values.type === 'endurance'

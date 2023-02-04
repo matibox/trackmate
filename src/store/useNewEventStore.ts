@@ -26,6 +26,7 @@ export const defaultFormState: NewEventStore['formState'] = {
   drivers: [],
   type: null,
   duration: 0,
+  time: '00:00',
 };
 
 export const useNewEventStore = create<NewEventStore>()(set => ({

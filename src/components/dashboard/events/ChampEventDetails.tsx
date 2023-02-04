@@ -138,6 +138,14 @@ const ChampEventDetails: FC = () => {
               onChange={e => setFormState({ duration: e.target.valueAsNumber })}
             />
           </Label>
+          <Label label='starting time'>
+            <Input
+              type='time'
+              value={formState.time ?? '00:00'}
+              onChange={e => setFormState({ time: e.target.value })}
+              error={errors?.time}
+            />
+          </Label>
 
           {formState.type === 'endurance' && (
             <Label label='drivers' className='relative'>

@@ -44,6 +44,14 @@ const OneOffEventDetails: FC = () => {
           error={errors?.duration}
         />
       </Label>
+      <Label label='starting time'>
+        <Input
+          type='time'
+          value={formState.time ?? '00:00'}
+          onChange={e => setFormState({ time: e.target.value })}
+          error={errors?.time}
+        />
+      </Label>
       <EventTypePicker
         formState={formState}
         setType={type => setFormState({ type })}
