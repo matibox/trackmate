@@ -5,3 +5,7 @@
 :root {
   --navbar-height: 3rem;
 }
+
+body {
+  @apply scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400;
+}

@@ -87,6 +87,10 @@ export const eventRouter = createTRPCRouter({
             },
           ],
         },
+        include: {
+          drivers: { select: { id: true, name: true } },
+          championship: { select: { organizer: true, name: true } },
+        },
       });
     }),
   getManagingEvents: managerProcedure
@@ -110,6 +114,17 @@ export const eventRouter = createTRPCRouter({
             },
           ],
         },
+        include: {
+          drivers: { select: { id: true, name: true } },
+          championship: { select: { organizer: true, name: true } },
+        },
+      });
+    }),
+  delete: protectedProcedure
+    .input(z.object({ eventId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.event.delete({
+        where: { id: input.eventId },
       });
     }),
 });
