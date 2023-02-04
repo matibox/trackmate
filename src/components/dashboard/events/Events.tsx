@@ -30,7 +30,7 @@ const Events: FC = () => {
   return (
     <Tile
       header={<EventsHeader />}
-      className='scrollbar-slate-900 relative h-full max-h-[28rem] overflow-y-auto rounded-r-none scrollbar-thin scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'
+      className='scrollbar-slate-900 relative h-full max-h-[28rem] overflow-y-auto scrollbar-thin scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'
     >
       <div className='flex flex-col gap-4'>
         {hasRole(session, 'driver') &&
