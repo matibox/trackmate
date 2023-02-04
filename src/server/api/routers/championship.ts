@@ -30,7 +30,7 @@ export const championshipRouter = createTRPCRouter({
           : managerWhereClause,
         include: {
           events: {
-            orderBy: { date: 'desc' },
+            orderBy: { date: 'asc' },
             take: 1,
             include: {
               drivers: {

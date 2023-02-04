@@ -1,13 +1,17 @@
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
+import { useSession } from 'next-auth/react';
 import React, { type FC } from 'react';
 import { useError } from '../../../hooks/useError';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import { api } from '../../../utils/api';
+import { hasRole } from '../../../utils/helpers';
 import { Day } from './Day';
 import CalendarHeader from './Header';
 
 const Calendar: FC = () => {
+  const { data: session } = useSession();
+
   const { setPage, page, monthIndex, setDrivingEvents, setManagingEvents } =
     useCalendarStore();
   useCalendarStore.subscribe(state => state.monthIndex, setPage);
@@ -22,6 +26,7 @@ const Calendar: FC = () => {
       {
         onSuccess: setDrivingEvents,
         onError: err => setError(err.message),
+        enabled: Boolean(hasRole(session, 'driver')),
       }
     );
   const { isLoading: managingEventsLoading } =
@@ -32,6 +37,7 @@ const Calendar: FC = () => {
       {
         onSuccess: setManagingEvents,
         onError: err => setError(err.message),
+        enabled: Boolean(hasRole(session, 'manager')),
       }
     );
 
