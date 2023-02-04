@@ -115,6 +115,7 @@ export const eventRouter = createTRPCRouter({
           drivers: { select: { id: true, name: true } },
           championship: { select: { organizer: true, name: true } },
         },
+        orderBy: { date: 'asc' },
       });
     }),
   getManagingEvents: managerProcedure

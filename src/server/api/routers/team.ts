@@ -38,7 +38,16 @@ export const teamRouter = createTRPCRouter({
           },
         },
         events: {
-          where: { type: 'endurance' },
+          where: {
+            AND: [
+              { type: 'endurance' },
+              {
+                date: {
+                  gte: new Date(),
+                },
+              },
+            ],
+          },
           include: {
             drivers: {
               select: {
@@ -47,7 +56,7 @@ export const teamRouter = createTRPCRouter({
               },
             },
           },
-          orderBy: { date: 'desc' },
+          orderBy: { date: 'asc' },
           take: 1,
         },
       },
