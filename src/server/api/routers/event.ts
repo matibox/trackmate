@@ -56,7 +56,17 @@ export const eventRouter = createTRPCRouter({
   createOneOffEvent: protectedProcedure
     .input(createChampionshipSchema)
     .mutation(async ({ ctx, input }) => {
-      const { drivers, type, ...data } = input;
+      const { drivers, type, managerId, ...data } = input;
+      let teamId: string | undefined;
+
+      if (type === 'endurance') {
+        teamId = (
+          await ctx.prisma.team.findUnique({
+            where: { managerId: ctx.session.user.id },
+            select: { id: true },
+          })
+        )?.id;
+      }
 
       return await ctx.prisma.event.create({
         data: {
@@ -70,7 +80,13 @@ export const eventRouter = createTRPCRouter({
                     id: ctx.session.user.id,
                   },
           },
-          teamId: ctx.session.user.teamId ?? undefined,
+          manager:
+            type === 'endurance' && managerId
+              ? {
+                  connect: { id: managerId },
+                }
+              : undefined,
+          team: teamId ? { connect: { id: teamId } } : undefined,
         },
       });
     }),
