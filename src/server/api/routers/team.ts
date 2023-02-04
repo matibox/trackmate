@@ -23,7 +23,7 @@ export const teamRouter = createTRPCRouter({
   }),
   getDriveFor: driverProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.team.findFirst({
-      where: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
+      where: { id: ctx.session.user.teamId ?? undefined },
       include: {
         drivers: {
           select: {

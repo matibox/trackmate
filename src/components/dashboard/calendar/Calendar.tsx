@@ -18,7 +18,7 @@ const Calendar: FC = () => {
 
   const { Error, setError } = useError();
 
-  const { isLoading: drivingEventsLoading } =
+  const { isInitialLoading: drivingEventsLoading } =
     api.event.getDrivingEvents.useQuery(
       {
         monthIndex,
@@ -29,7 +29,7 @@ const Calendar: FC = () => {
         enabled: Boolean(hasRole(session, 'driver')),
       }
     );
-  const { isLoading: managingEventsLoading } =
+  const { isInitialLoading: managingEventsLoading } =
     api.event.getManagingEvents.useQuery(
       {
         monthIndex,

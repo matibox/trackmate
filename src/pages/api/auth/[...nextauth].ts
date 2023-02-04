@@ -35,7 +35,7 @@ export const authOptions: NextAuthOptions = {
       const { user, ...session } = userAndSession;
       // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       return { user, session } as unknown as {
-        user: AdapterUser & { roles: Role[] };
+        user: AdapterUser & { roles: Role[]; teamId: string | null };
         session: AdapterSession;
       };
     },

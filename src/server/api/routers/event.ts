@@ -17,7 +17,12 @@ const createChampionshipSchema = z.object({
   duration: z.number(),
   managerId: z.string().optional(),
   drivers: z
-    .array(z.object({ id: z.string(), name: z.string().nullable() }))
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string().nullable(),
+      })
+    )
     .nullable(),
 });
 
@@ -51,10 +56,12 @@ export const eventRouter = createTRPCRouter({
   createOneOffEvent: protectedProcedure
     .input(createChampionshipSchema)
     .mutation(async ({ ctx, input }) => {
-      const { drivers, ...data } = input;
+      const { drivers, type, ...data } = input;
+
       return await ctx.prisma.event.create({
         data: {
           ...data,
+          type,
           drivers: {
             connect:
               drivers && drivers.length > 0
@@ -63,6 +70,7 @@ export const eventRouter = createTRPCRouter({
                     id: ctx.session.user.id,
                   },
           },
+          teamId: ctx.session.user.teamId ?? undefined,
         },
       });
     }),

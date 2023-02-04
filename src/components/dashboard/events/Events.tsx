@@ -53,8 +53,8 @@ const Events: FC = () => {
               ))}
             </div>
           )}
-        {todayManagingEvents?.length === 0 &&
-          todayDrivingEvents?.length === 0 && (
+        {(!todayManagingEvents || todayManagingEvents?.length === 0) &&
+          (!todayDrivingEvents || todayDrivingEvents?.length === 0) && (
             <span className='text-slate-300'>No events for this day</span>
           )}
       </div>
