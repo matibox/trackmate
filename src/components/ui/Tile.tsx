@@ -8,12 +8,14 @@ export type TileProps = {
   header?: ReactNode;
   className?: string;
   isLoading?: boolean;
+  fixedHeader?: boolean;
 };
 
 const Tile: FC<TileProps> = ({
   header,
   children,
   isLoading = false,
+  fixedHeader = false,
   className,
 }) => {
   return (
@@ -40,7 +42,14 @@ const Tile: FC<TileProps> = ({
         )}
       </AnimatePresence>
       {header && (
-        <div className='w-full rounded-t bg-slate-700 p-4 ring-1 ring-slate-600'>
+        <div
+          className={cn(
+            'w-full rounded-t bg-slate-700 p-4 ring-1 ring-slate-600',
+            {
+              'sticky top-0 left-0 z-10': fixedHeader,
+            }
+          )}
+        >
           {header}
         </div>
       )}

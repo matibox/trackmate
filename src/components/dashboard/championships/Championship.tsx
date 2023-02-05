@@ -34,17 +34,20 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
     <Tile
       className='flex w-full'
       header={
-        <div className='flex justify-between'>
+        <div className='flex items-center justify-between'>
           <a
             href={championship.link}
             target='_blank'
             className='group flex items-center gap-2 font-semibold'
             rel='noreferrer'
           >
-            <span className='transition-colors group-hover:text-sky-400'>
+            <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
+            <span
+              className='transition-colors line-clamp-1 group-hover:text-sky-400'
+              title={`${championship.organizer} - ${championship.name}`}
+            >
               {championship.organizer} - {championship.name}
             </span>
-            <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
           </a>
           {showDelete && (
             <Button
@@ -52,6 +55,7 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
               size='small'
               gap='small'
               onClick={() => open(championship.id, championship.name)}
+              className='h-7'
             >
               <span>Delete</span>
               <TrashIcon className='h-4' />

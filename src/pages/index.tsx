@@ -10,6 +10,8 @@ import DeleteDriver from '@dashboard/manageTeam/DeleteDriver';
 import DeleteTeam from '@dashboard/manageTeam/DeleteTeam';
 import EditTeam from '@dashboard/manageTeam/EditTeam';
 import ManageTeam from '@dashboard/manageTeam/ManageTeam';
+import PostResult from '@dashboard/results/PostResult';
+import Results from '@dashboard/results/Results';
 import Team from '@dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
 import Head from 'next/head';
@@ -26,6 +28,7 @@ const Home: NextPage = () => {
       </Head>
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900'>
+        <PostResult />
         <DeleteEvent />
         <DeleteChampionship />
         <NewChampionship />
@@ -39,6 +42,7 @@ const Home: NextPage = () => {
           <Events />
           <Team />
           <Championships />
+          <Results />
           <ManageTeam />
         </div>
       </main>

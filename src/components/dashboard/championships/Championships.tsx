@@ -21,7 +21,8 @@ const Championships: FC = () => {
     <Tile
       header={<ChampionshipsHeader />}
       isLoading={isLoading}
-      className='col-start-1 col-end-1 row-span-2'
+      className='col-start-1 col-end-1 row-span-2 overflow-auto scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 md:max-h-[1100px]'
+      fixedHeader
     >
       {championships && championships.length > 0 ? (
         <div className='flex flex-col gap-4'>

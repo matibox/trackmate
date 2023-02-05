@@ -41,6 +41,7 @@ export const championshipRouter = createTRPCRouter({
               drivers: {
                 select: { id: true, name: true },
               },
+              result: true,
             },
           },
           drivers: {
