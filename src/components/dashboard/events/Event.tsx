@@ -1,4 +1,5 @@
-import { TrashIcon } from '@heroicons/react/20/solid';
+import { TrashIcon, DocumentArrowUpIcon } from '@heroicons/react/20/solid';
+
 import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
@@ -38,7 +39,7 @@ const Event: FC<EventProps> = ({ event }) => {
         </div>
       }
     >
-      <div className='grid grid-cols-2 gap-y-4 sm:grid-cols-3'>
+      <div className='mb-4 grid grid-cols-2 gap-y-4 sm:grid-cols-3'>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Car</span>
           <span>{event.car}</span>
@@ -64,6 +65,13 @@ const Event: FC<EventProps> = ({ event }) => {
           <span>{event.drivers.map(driver => driver.name).join(', ')}</span>
         </div>
       </div>
+      {/*//TODO show result if there is one */}
+      {dayjs().isAfter(dayjs(event.date)) && (
+        <Button intent='secondary' size='small' className='font-semibold'>
+          <span>Post result</span>
+          <DocumentArrowUpIcon className='h-5' />
+        </Button>
+      )}
     </Tile>
   );
 };

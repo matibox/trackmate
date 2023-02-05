@@ -2,8 +2,10 @@ import { Disclosure } from '@headlessui/react';
 import {
   ArrowTopRightOnSquareIcon,
   ChevronUpIcon,
+  DocumentArrowUpIcon,
 } from '@heroicons/react/20/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
+import Button from '@ui/Button';
 import Loading from '@ui/Loading';
 import dayjs from 'dayjs';
 import { type GetServerSideProps, type NextPage } from 'next';
@@ -153,6 +155,17 @@ const Event: FC<{
         <span className='text-slate-300'>Drivers</span>
         <span>{event.drivers.map(driver => driver.name).join(', ')}</span>
       </div>
+      {dayjs().isAfter(dayjs(event.date)) && (
+        <Button
+          intent='primary'
+          size='small'
+          fullWidth
+          className='mt-2 font-semibold'
+        >
+          <span>Post result</span>
+          <DocumentArrowUpIcon className='h-5' />
+        </Button>
+      )}
     </div>
   );
 };
