@@ -18,11 +18,11 @@ const ChampEventDetails: FC = () => {
   const { formState, setFormState, errors } = useNewEventStore();
   const { selectedDay } = useCalendarStore();
 
-  const { data: driverChamps, isLoading: driverChampsLoading } =
+  const { data: driverChamps, isInitialLoading: driverChampsLoading } =
     api.championship.listDriverChamps.useQuery(undefined, {
       enabled: Boolean(hasRole(session, 'driver')),
     });
-  const { data: managingChamps, isLoading: managingChampsLoading } =
+  const { data: managingChamps, isInitialLoading: managingChampsLoading } =
     api.championship.listManagingChamps.useQuery(undefined, {
       enabled: Boolean(hasRole(session, 'manager')),
     });
@@ -37,6 +37,7 @@ const ChampEventDetails: FC = () => {
               setFormState({
                 championship,
                 car: championship?.car ?? '',
+                type: championship?.type,
               })
             }
           >

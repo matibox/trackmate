@@ -27,6 +27,8 @@ const DeleteChampionship: FC = () => {
       async onSuccess() {
         close();
         await utils.championship.get.invalidate();
+        await utils.event.getDrivingEvents.invalidate();
+        await utils.event.getManagingEvents.invalidate();
       },
     });
 

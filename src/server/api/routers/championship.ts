@@ -10,7 +10,12 @@ import {
 
 export const championshipRouter = createTRPCRouter({
   get: protectedProcedure
-    .input(z.object({ max: z.number().min(0).optional().default(2) }))
+    .input(
+      z.object({
+        max: z.number().min(0).optional().default(2),
+        upcoming: z.boolean().optional().default(true),
+      })
+    )
     .query(async ({ ctx, input }) => {
       const driverWhereClause = {
         drivers: { some: { id: ctx.session.user.id } },
@@ -31,7 +36,7 @@ export const championshipRouter = createTRPCRouter({
         include: {
           events: {
             orderBy: { date: 'asc' },
-            take: 1,
+            take: input.upcoming ? 1 : undefined,
             include: {
               drivers: {
                 select: { id: true, name: true },

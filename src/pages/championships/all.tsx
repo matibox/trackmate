@@ -5,6 +5,7 @@ import {
 } from '@heroicons/react/20/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import Loading from '@ui/Loading';
+import dayjs from 'dayjs';
 import { type GetServerSideProps, type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
@@ -19,7 +20,7 @@ import { capitilize, hasRole } from '../../utils/helpers';
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
   const { data: championships, isLoading } = api.championship.get.useQuery(
-    { max: 0 },
+    { max: 0, upcoming: false },
     {
       onError(err) {
         setError(err.message);
@@ -57,7 +58,7 @@ const AllChampionships: NextPage = () => {
             <Disclosure key={championship.id}>
               {({ open }) => (
                 <>
-                  <Disclosure.Button className='flex w-full items-center gap-2 rounded bg-slate-800 px-4 py-2 text-left text-lg font-semibold text-slate-50 ring-1 ring-slate-700 transition-colors hover:bg-slate-700 focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-75'>
+                  <Disclosure.Button className='flex w-full items-center gap-2 rounded bg-slate-800 px-4 py-2 text-left text-lg font-semibold text-slate-50 ring-1 ring-slate-700 transition-colors focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-75 hover:bg-slate-700'>
                     <ChevronUpIcon
                       className={cn(
                         'h-5 w-5 text-sky-400 transition-transform',
@@ -75,6 +76,8 @@ const AllChampionships: NextPage = () => {
                       <a
                         href={championship.link}
                         className='group flex items-center gap-2 font-semibold transition-colors hover:text-sky-400'
+                        target='_blank'
+                        rel='noreferrer'
                       >
                         <span>Championship website</span>
                         <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
@@ -98,9 +101,9 @@ const AllChampionships: NextPage = () => {
                         </div>
                       </div>
                       <div className='border-t border-slate-800 pt-4'>
-                        <h2 className='text-lg font-semibold'>Events</h2>
+                        <h2 className='mb-4 text-xl font-semibold'>Events</h2>
                         {championship.events.length > 0 ? (
-                          <div className='grid grid-cols-[repeat(auto-fit,_250px)]'>
+                          <div className='flex w-full flex-wrap gap-4'>
                             {championship.events.map(event => (
                               <Event key={event.id} event={event} />
                             ))}
@@ -127,7 +130,31 @@ const Event: FC<{
   event: RouterOutputs['championship']['get'][number]['events'][number];
 }> = ({ event }) => {
   //TODO event content
-  return <div>{event.title}</div>;
+  return (
+    <div className='flex w-full max-w-xs flex-col gap-2 rounded bg-slate-800 p-4 ring-1 ring-slate-700'>
+      <span className='self-center text-xl font-semibold'>{event.title}</span>
+      <div className='flex flex-col'>
+        <span className='text-slate-300'>Date</span>
+        <span>{dayjs(event.date).format('DD MMM YYYY HH:mm')}</span>
+      </div>
+      <div className='flex flex-col'>
+        <span className='text-slate-300'>Car</span>
+        <span>{event.car}</span>
+      </div>
+      <div className='flex flex-col'>
+        <span className='text-slate-300'>Track</span>
+        <span>{event.track}</span>
+      </div>
+      <div className='flex flex-col'>
+        <span className='text-slate-300'>Duration</span>
+        <span>{event.duration} minutes</span>
+      </div>
+      <div className='flex flex-col'>
+        <span className='text-slate-300'>Drivers</span>
+        <span>{event.drivers.map(driver => driver.name).join(', ')}</span>
+      </div>
+    </div>
+  );
 };
 
 export const getServerSideProps: GetServerSideProps = async ctx => {
@@ -142,7 +169,7 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
     };
   }
 
-  if (!hasRole(session, 'driver')) {
+  if (!hasRole(session, 'driver') && !hasRole(session, 'manager')) {
     return {
       redirect: {
         destination: '/',
