@@ -114,6 +114,7 @@ export const eventRouter = createTRPCRouter({
         include: {
           drivers: { select: { id: true, name: true } },
           championship: { select: { organizer: true, name: true } },
+          result: true,
         },
         orderBy: { date: 'asc' },
       });
@@ -142,7 +143,9 @@ export const eventRouter = createTRPCRouter({
         include: {
           drivers: { select: { id: true, name: true } },
           championship: { select: { organizer: true, name: true } },
+          result: true,
         },
+        orderBy: { date: 'asc' },
       });
     }),
   delete: protectedProcedure

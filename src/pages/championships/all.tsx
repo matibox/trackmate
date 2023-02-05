@@ -1,21 +1,26 @@
+import PostResult from '@dashboard/results/PostResult';
 import { Disclosure } from '@headlessui/react';
 import {
+  ArrowLeftIcon,
   ArrowTopRightOnSquareIcon,
   ChevronUpIcon,
   DocumentArrowUpIcon,
+  DocumentChartBarIcon,
 } from '@heroicons/react/20/solid';
 import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import Button from '@ui/Button';
 import Loading from '@ui/Loading';
 import dayjs from 'dayjs';
+import { AnimatePresence, motion } from 'framer-motion';
 import { type GetServerSideProps, type NextPage } from 'next';
 import Head from 'next/head';
 import Link from 'next/link';
-import { type FC } from 'react';
+import { useState, type FC } from 'react';
 import Navbar from '../../components/Navbar';
 import { useError } from '../../hooks/useError';
 import cn from '../../lib/classes';
 import { getServerAuthSession } from '../../server/auth';
+import { useResultStore } from '../../store/useResultStore';
 import { api, type RouterOutputs } from '../../utils/api';
 import { capitilize, hasRole } from '../../utils/helpers';
 
@@ -39,6 +44,7 @@ const AllChampionships: NextPage = () => {
       </Head>
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900 text-slate-50'>
+        <PostResult />
         <Link
           href='/'
           className='flex items-center gap-2 pl-4 pt-4 text-slate-300 transition-colors hover:text-sky-400'
@@ -131,9 +137,57 @@ const AllChampionships: NextPage = () => {
 const Event: FC<{
   event: RouterOutputs['championship']['get'][number]['events'][number];
 }> = ({ event }) => {
-  //TODO event content
+  const { open } = useResultStore();
+  const [resultsOpened, setResultsOpened] = useState(false);
+
   return (
-    <div className='flex w-full max-w-xs flex-col gap-2 rounded bg-slate-800 p-4 ring-1 ring-slate-700'>
+    <div className='relative flex w-full max-w-xs flex-col gap-2 rounded bg-slate-800 p-4 ring-1 ring-slate-700'>
+      <AnimatePresence>
+        {resultsOpened && (
+          <>
+            <motion.div
+              className='absolute top-0 left-0 z-10 h-full w-full rounded bg-black/50 backdrop-blur-sm'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            />
+            <motion.button
+              className='absolute top-4 left-4 z-10 flex items-center gap-1 transition-colors hover:text-sky-400'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setResultsOpened(false)}
+            >
+              <ArrowLeftIcon className='h-5' />
+              <span>back</span>
+            </motion.button>
+            <motion.div
+              className='absolute top-12 z-10 flex h-full w-[calc(100%_-_1.5rem)] flex-col gap-4 text-slate-100'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              <div className='flex flex-col'>
+                <span className='text-slate-300'>Qualifying position</span>
+                <span>P{event.result?.qualiPosition}</span>
+              </div>
+              <div className='flex flex-col'>
+                <span className='text-slate-300'>Race position</span>
+                <span>P{event.result?.racePosition}</span>
+              </div>
+              {event.result?.notes && (
+                <div className='flex flex-col'>
+                  <span className='text-slate-300'>Notes</span>
+                  <span className='line-clamp-[7]'>{event.result.notes}</span>
+                </div>
+              )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
       <span className='self-center text-xl font-semibold'>{event.title}</span>
       <div className='flex flex-col'>
         <span className='text-slate-300'>Date</span>
@@ -157,13 +211,28 @@ const Event: FC<{
       </div>
       {dayjs().isAfter(dayjs(event.date)) && (
         <Button
-          intent='primary'
+          intent={!event.result ? 'primary' : 'secondary'}
           size='small'
           fullWidth
           className='mt-2 font-semibold'
+          onClick={() => {
+            if (!event.result) {
+              return open({ id: event.id, title: event.title ?? 'event' });
+            }
+            setResultsOpened(true);
+          }}
         >
-          <span>Post result</span>
-          <DocumentArrowUpIcon className='h-5' />
+          {!event.result ? (
+            <>
+              <span>Post result</span>
+              <DocumentArrowUpIcon className='h-5' />
+            </>
+          ) : (
+            <>
+              <span>Show result</span>
+              <DocumentChartBarIcon className='h-5' />
+            </>
+          )}
         </Button>
       )}
     </div>

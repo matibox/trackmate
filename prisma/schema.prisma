@@ -142,14 +142,14 @@ model Event {
 }
 
 model Result {
-  id            String @id @default(cuid())
-  qualiPosition Int    @db.UnsignedTinyInt
-  racePosition  Int    @db.UnsignedTinyInt
-  notes         String @db.Text
-  eventId       String @unique
-  event         Event  @relation(fields: [eventId], references: [id])
+  id            String  @id @default(cuid())
+  qualiPosition Int     @db.UnsignedTinyInt
+  racePosition  Int     @db.UnsignedTinyInt
+  notes         String? @db.Text
+  eventId       String  @unique
+  event         Event   @relation(fields: [eventId], references: [id])
   teamId        String
-  team          Team   @relation(fields: [teamId], references: [id])
+  team          Team    @relation(fields: [teamId], references: [id])
 
   @@index([teamId])
 }
