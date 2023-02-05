@@ -42,7 +42,6 @@ const PostResult: FC = () => {
     });
   });
 
-  //TODO invalidate get results manager query
   const utils = api.useContext();
   const { mutate: postResult, isLoading } = api.result.post.useMutation({
     async onSuccess() {
@@ -51,6 +50,7 @@ const PostResult: FC = () => {
       await utils.event.getDrivingEvents.invalidate();
       await utils.event.getManagingEvents.invalidate();
       await utils.championship.get.invalidate();
+      await utils.result.getResultPage.invalidate();
     },
     onError: err => setError(err.message),
   });
