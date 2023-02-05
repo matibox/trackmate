@@ -21,7 +21,7 @@ const Championships: FC = () => {
     <Tile
       header={<ChampionshipsHeader />}
       isLoading={isLoading}
-      className='row-span-2'
+      className='col-start-1 col-end-1 row-span-2'
     >
       {championships && championships.length > 0 ? (
         <div className='flex flex-col gap-4'>
