@@ -82,6 +82,7 @@ model User {
   team                  Team?          @relation(fields: [teamId], references: [id])
   teamId                String?
   managingChampionships Championship[]
+  results               Result[]
 
   @@index([teamId])
 }
@@ -142,14 +143,18 @@ model Event {
 }
 
 model Result {
-  id            String  @id @default(cuid())
-  qualiPosition Int     @db.UnsignedTinyInt
-  racePosition  Int     @db.UnsignedTinyInt
-  notes         String? @db.Text
-  eventId       String  @unique
-  event         Event   @relation(fields: [eventId], references: [id])
+  id            String   @id @default(cuid())
+  qualiPosition Int      @db.UnsignedTinyInt
+  racePosition  Int      @db.UnsignedTinyInt
+  notes         String?  @db.Text
+  eventId       String   @unique
+  event         Event    @relation(fields: [eventId], references: [id])
   teamId        String
-  team          Team    @relation(fields: [teamId], references: [id])
+  team          Team     @relation(fields: [teamId], references: [id])
+  author        User     @relation(fields: [authorId], references: [id])
+  authorId      String
+  createdAt     DateTime @default(now())
 
   @@index([teamId])
+  @@index([authorId])
 }

@@ -1,6 +1,11 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { hasRole } from '../../../utils/helpers';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import {
+  createTRPCRouter,
+  managerProcedure,
+  protectedProcedure,
+} from '../trpc';
 
 export const resultRouter = createTRPCRouter({
   post: protectedProcedure
@@ -21,6 +26,55 @@ export const resultRouter = createTRPCRouter({
           team: hasRole(ctx.session, 'manager')
             ? { connect: { managerId: ctx.session.user.id } }
             : { connect: { id: ctx.session.user.teamId ?? undefined } },
+          author: { connect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
+  getResultPage: managerProcedure
+    .input(
+      z.object({
+        firstDay: z.date(),
+        lastDay: z.date(),
+        teamId: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { firstDay, lastDay, teamId } = input;
+
+      if (!teamId) {
+        throw new TRPCError({
+          code: 'PRECONDITION_FAILED',
+        });
+      }
+
+      return await ctx.prisma.result.findMany({
+        where: {
+          teamId,
+          event: {
+            date: {
+              gte: firstDay,
+              lte: lastDay,
+            },
+          },
+        },
+        include: {
+          event: {
+            include: {
+              championship: { select: { name: true } },
+              drivers: { select: { id: true, name: true } },
+            },
+          },
+          author: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: {
+          event: {
+            date: 'asc',
+          },
         },
       });
     }),

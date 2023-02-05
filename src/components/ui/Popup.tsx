@@ -21,7 +21,7 @@ const Popup: FC<PopupProps> = ({
       {condition && (
         <>
           <motion.div
-            className='fixed top-0 left-0 z-10 h-full w-full bg-black/40 backdrop-blur-sm'
+            className='fixed top-0 left-0 z-20 h-full w-full bg-black/40 backdrop-blur-sm'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -33,7 +33,7 @@ const Popup: FC<PopupProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className='relative z-20'
+            className='relative z-30'
           >
             <Tile
               className={cn(

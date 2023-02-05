@@ -11,6 +11,7 @@ import DeleteTeam from '@dashboard/manageTeam/DeleteTeam';
 import EditTeam from '@dashboard/manageTeam/EditTeam';
 import ManageTeam from '@dashboard/manageTeam/ManageTeam';
 import PostResult from '@dashboard/results/PostResult';
+import Results from '@dashboard/results/Results';
 import Team from '@dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
 import Head from 'next/head';
@@ -41,6 +42,7 @@ const Home: NextPage = () => {
           <Events />
           <Team />
           <Championships />
+          <Results />
           <ManageTeam />
         </div>
       </main>
