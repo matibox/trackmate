@@ -19,19 +19,25 @@ const MyApp: AppType<{ session: Session | null }> = ({
         openGraph={{
           type: 'website',
           title: 'Race Results App',
-          images: [
-            {
-              url: '/Logo.png',
-              width: 1000,
-              height: 1000,
-              alt: 'Logo',
-            },
-          ],
         }}
         additionalLinkTags={[
           {
             rel: 'icon',
             href: '/favicon.ico',
+          },
+          {
+            rel: 'manifest',
+            href: '/manifest.json',
+          },
+          {
+            rel: 'apple-touch-icon',
+            href: '/icon.png',
+          },
+        ]}
+        additionalMetaTags={[
+          {
+            name: 'theme-color',
+            content: '#38bdf8',
           },
         ]}
       />
