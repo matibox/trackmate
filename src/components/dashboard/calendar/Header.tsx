@@ -27,6 +27,7 @@ const CalendarHeader: FC = () => {
           intent='secondary'
           size='xs'
           onClick={() => void handleChangeMonth(decrementMonth)}
+          aria-label='Previous month'
         >
           <ChevronLeftIcon className='h-6' />
         </Button>
@@ -37,6 +38,7 @@ const CalendarHeader: FC = () => {
           intent='secondary'
           size='xs'
           onClick={() => void handleChangeMonth(incrementMonth)}
+          aria-label='Next month'
         >
           <ChevronRightIcon className='h-6' />
         </Button>

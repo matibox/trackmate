@@ -14,18 +14,14 @@ import PostResult from '@dashboard/results/PostResult';
 import Results from '@dashboard/results/Results';
 import Team from '@dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
-import Head from 'next/head';
+import { NextSeo } from 'next-seo';
 import Navbar from '../components/Navbar';
 import { getServerAuthSession } from '../server/auth';
 
 const Home: NextPage = () => {
   return (
     <>
-      <Head>
-        <title>Dashboard | Race Results App</title>
-        <meta name='description' content='Race results app' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
+      <NextSeo title='Dashboard' />
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900'>
         <PostResult />

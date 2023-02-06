@@ -14,13 +14,23 @@ const ResultsHeader: FC = () => {
         <span>Team results</span>
       </h1>
       <div className='flex w-[10.5rem] items-center gap-4 sm:ml-auto'>
-        <Button intent='secondary' size='xs' onClick={decrementMonth}>
+        <Button
+          intent='secondary'
+          size='xs'
+          onClick={decrementMonth}
+          aria-label='Previous month'
+        >
           <ChevronLeftIcon className='h-6' />
         </Button>
         <h2 className='flex-1 text-center text-lg font-semibold'>
           {current.format('MMM YYYY')}
         </h2>
-        <Button intent='secondary' size='xs' onClick={incrementMonth}>
+        <Button
+          intent='secondary'
+          size='xs'
+          onClick={incrementMonth}
+          aria-label='Next month'
+        >
           <ChevronRightIcon className='h-6' />
         </Button>
       </div>
