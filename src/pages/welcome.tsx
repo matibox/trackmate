@@ -7,9 +7,9 @@ import { ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useError } from '../hooks/useError';
 import { api } from '../utils/api';
 import type { roles } from '../constants/constants';
-import Head from 'next/head';
 import cn from '../lib/classes';
 import Loading from '@ui/Loading';
+import { NextSeo } from 'next-seo';
 
 type Role = (typeof roles)[number];
 
@@ -37,9 +37,7 @@ const Welcome: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>Welcome - Race Results</title>
-      </Head>
+      <NextSeo title='Welcome' />
       <main className='flex min-h-screen w-screen flex-col items-center justify-center bg-slate-900 text-slate-50'>
         <div className='flex flex-col items-center gap-2 sm:gap-4'>
           <h1 className='text-4xl sm:text-5xl'>Welcome!</h1>

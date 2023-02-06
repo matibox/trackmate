@@ -13,7 +13,7 @@ import Loading from '@ui/Loading';
 import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type GetServerSideProps, type NextPage } from 'next';
-import Head from 'next/head';
+import { NextSeo } from 'next-seo';
 import Link from 'next/link';
 import { useState, type FC } from 'react';
 import Navbar from '../../components/Navbar';
@@ -37,11 +37,7 @@ const AllChampionships: NextPage = () => {
 
   return (
     <>
-      <Head>
-        <title>All championships | Race Results App</title>
-        <meta name='description' content='Race results app' />
-        <link rel='icon' href='/favicon.ico' />
-      </Head>
+      <NextSeo title='All championships' />
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900 text-slate-50'>
         <PostResult />
