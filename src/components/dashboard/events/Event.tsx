@@ -105,7 +105,7 @@ const Event: FC<EventProps> = ({ event }) => {
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Start at</span>
-          <span>{dayjs(event.date).format('HH:MM')}</span>
+          <span>{dayjs(event.date).format('HH:mm')}</span>
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Drivers</span>

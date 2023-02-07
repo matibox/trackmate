@@ -16,7 +16,7 @@ const Event: FC<EventProps> = ({ event }) => {
             {event.title}
           </span>
           <span className='ml-auto text-sm sm:text-base'>
-            {dayjs(event.date).format('HH:MM DD MMM YYYY')}
+            {dayjs(event.date).format('HH:mm DD MMM YYYY')}
           </span>
         </div>
       }

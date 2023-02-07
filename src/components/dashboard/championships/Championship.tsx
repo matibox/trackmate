@@ -98,7 +98,7 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
                 </div>
                 <div className='flex flex-col'>
                   <span className='text-slate-300'>Date</span>
-                  <span>{dayjs(event.date).format('HH:MM DD MMM')}</span>
+                  <span>{dayjs(event.date).format('HH:mm DD MMM')}</span>
                 </div>
                 <div className='flex flex-col'>
                   <span className='text-slate-300'>Duration</span>
