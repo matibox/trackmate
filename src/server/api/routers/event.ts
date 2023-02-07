@@ -105,7 +105,7 @@ export const eventRouter = createTRPCRouter({
                   input.monthIndex,
                   dayjs(
                     new Date(dayjs().year(), input.monthIndex)
-                  ).daysInMonth()
+                  ).daysInMonth() + 1
                 ),
               },
             },
@@ -134,7 +134,7 @@ export const eventRouter = createTRPCRouter({
                   input.monthIndex,
                   dayjs(
                     new Date(dayjs().year(), input.monthIndex)
-                  ).daysInMonth()
+                  ).daysInMonth() + 1
                 ),
               },
             },
