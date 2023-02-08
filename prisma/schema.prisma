@@ -18,6 +18,7 @@ datasource db {
 enum RoleName {
   driver
   manager
+  socialMedia
 }
 
 enum EventType {

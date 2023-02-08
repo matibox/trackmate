@@ -17,3 +17,9 @@ export const hasRole = (
 
   return session?.user?.roles?.every(role => roleName.includes(role.name));
 };
+
+export const splitOnUppercase = (string: string) =>
+  string.split(/(?=[A-Z])/).join(' ');
+
+export const splitAndCapitilize = (string: string) =>
+  capitilize(splitOnUppercase(string).toLowerCase());

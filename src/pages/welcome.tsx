@@ -10,6 +10,7 @@ import type { roles } from '../constants/constants';
 import cn from '../lib/classes';
 import Loading from '@ui/Loading';
 import { NextSeo } from 'next-seo';
+import { splitAndCapitilize } from '../utils/helpers';
 
 type Role = (typeof roles)[number];
 
@@ -59,6 +60,12 @@ const Welcome: NextPage = () => {
               roles={checkedRoles}
               setRoles={setCheckedRoles}
             />
+            <RoleButton
+              title='socialMedia'
+              description='see all events from teams and their results'
+              roles={checkedRoles}
+              setRoles={setCheckedRoles}
+            />
           </div>
           <Error className='ml-auto' />
           <Button
@@ -104,8 +111,8 @@ const RoleButton: FC<{
         )
       }
     >
-      <span className='text-2xl font-semibold capitalize tracking-wide'>
-        {title}
+      <span className='text-2xl font-semibold tracking-wide'>
+        {splitAndCapitilize(title)}
       </span>
       <span className='text-base'>{description}</span>
     </TileButton>
