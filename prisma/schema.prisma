@@ -60,7 +60,9 @@ model Team {
   id            String         @id @default(cuid())
   name          String
   managerId     String         @unique
+  socialMediaId String?        @unique
   manager       User           @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
+  socialMedia   User?          @relation(fields: [socialMediaId], references: [id], name: "social-media-team", onUpdate: NoAction, onDelete: NoAction)
   drivers       User[]
   events        Event[]
   championships Championship[]
@@ -80,6 +82,7 @@ model User {
   events                Event[]        @relation(name: "drivers")
   managingEvents        Event[]        @relation(name: "manager")
   managingTeam          Team?          @relation(name: "manager-team")
+  socialManagingTeam    Team?          @relation(name: "social-media-team")
   team                  Team?          @relation(fields: [teamId], references: [id])
   teamId                String?
   managingChampionships Championship[]
