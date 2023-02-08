@@ -37,7 +37,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         additionalMetaTags={[
           {
             name: 'theme-color',
-            content: '#1e293b',
+            content: '#38bdf8',
           },
         ]}
       />

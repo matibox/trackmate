@@ -93,19 +93,18 @@ export const eventRouter = createTRPCRouter({
   getDrivingEvents: driverProcedure
     .input(z.object({ monthIndex: z.number() }))
     .query(async ({ ctx, input }) => {
+      const { monthIndex } = input;
       return await ctx.prisma.event.findMany({
         where: {
           AND: [
             { drivers: { some: { id: ctx.session.user.id } } },
             {
               date: {
-                gte: new Date(dayjs().year(), input.monthIndex, 1),
-                lte: new Date(
+                gte: new Date(dayjs().year(), monthIndex, 1),
+                lt: new Date(
                   dayjs().year(),
-                  input.monthIndex,
-                  dayjs(
-                    new Date(dayjs().year(), input.monthIndex)
-                  ).daysInMonth() + 1
+                  monthIndex,
+                  dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
                 ),
               },
             },
@@ -122,19 +121,18 @@ export const eventRouter = createTRPCRouter({
   getManagingEvents: managerProcedure
     .input(z.object({ monthIndex: z.number() }))
     .query(async ({ ctx, input }) => {
+      const { monthIndex } = input;
       return await ctx.prisma.event.findMany({
         where: {
           AND: [
             { managerId: ctx.session.user.id },
             {
               date: {
-                gte: new Date(dayjs().year(), input.monthIndex, 1),
-                lte: new Date(
+                gte: new Date(dayjs().year(), monthIndex, 1),
+                lt: new Date(
                   dayjs().year(),
-                  input.monthIndex,
-                  dayjs(
-                    new Date(dayjs().year(), input.monthIndex)
-                  ).daysInMonth() + 1
+                  monthIndex,
+                  dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
                 ),
               },
             },
