@@ -31,7 +31,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           },
           {
             rel: 'apple-touch-icon',
-            href: '/icon.png',
+            href: '/icon-192x192.png',
           },
         ]}
         additionalMetaTags={[
