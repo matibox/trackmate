@@ -74,6 +74,12 @@ export const teamRouter = createTRPCRouter({
             name: true,
           },
         },
+        socialMedia: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
   }),
@@ -82,10 +88,11 @@ export const teamRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         drivers: z.array(z.object({ id: z.string(), name: z.string() })),
+        socialMedia: z.object({ id: z.string(), name: z.string() }).nullish(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, drivers } = input;
+      const { name, drivers, socialMedia } = input;
 
       return await ctx.prisma.team.create({
         data: {
@@ -94,6 +101,13 @@ export const teamRouter = createTRPCRouter({
             connect: drivers.map(driver => ({ id: driver.id })),
           },
           manager: { connect: { id: ctx.session.user.id } },
+          socialMedia: socialMedia
+            ? {
+                connect: {
+                  id: socialMedia.id,
+                },
+              }
+            : undefined,
         },
       });
     }),
@@ -110,15 +124,20 @@ export const teamRouter = createTRPCRouter({
         drivers: z
           .array(z.object({ id: z.string(), name: z.string() }))
           .optional(),
+        socialMedia: z.object({ id: z.string(), name: z.string() }).nullish(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { teamId, name, drivers } = input;
+      const { teamId, name, drivers, socialMedia } = input;
       return await ctx.prisma.team.update({
         where: { id: teamId },
         data: {
           name,
           drivers: { set: drivers?.map(driver => ({ id: driver.id })) },
+          socialMedia: {
+            disconnect: true,
+            connect: socialMedia ? { id: socialMedia.id } : undefined,
+          },
         },
       });
     }),

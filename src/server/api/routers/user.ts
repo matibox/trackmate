@@ -54,4 +54,30 @@ export const userRouter = createTRPCRouter({
 
       return drivers;
     }),
+  getSocialMedia: managerProcedure
+    .input(z.object({ q: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { q } = input;
+      const socialMediaManagers = await ctx.prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        where: {
+          AND: [
+            { name: { contains: q } },
+            { roles: { some: { name: 'socialMedia' } } },
+          ],
+        },
+      });
+
+      if (!socialMediaManagers) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'No social media managers found',
+        });
+      }
+
+      return socialMediaManagers;
+    }),
 });

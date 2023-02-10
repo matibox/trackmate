@@ -40,6 +40,7 @@ const EditTeam: FC = () => {
           {
             drivers: team?.drivers,
             name: team?.name,
+            socialMedia: team?.socialMedia,
           } as z.infer<typeof formSchema>
         }
       />
