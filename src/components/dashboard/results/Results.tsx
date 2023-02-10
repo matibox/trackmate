@@ -15,7 +15,7 @@ const Results: FC = () => {
   const { Error, setError } = useError();
 
   const { data: team, isInitialLoading: hasTeamLoading } =
-    api.team.getHasTeam.useQuery(undefined, {
+    api.team.getManagingFor.useQuery(undefined, {
       enabled: Boolean(hasRole(session, 'manager')),
       onError: err => setError(err.message),
     });
@@ -46,7 +46,7 @@ const Results: FC = () => {
     >
       {!team && (
         <span className='text-lg text-slate-300'>
-          Join a team to see team results
+          Manage a team to see team results
         </span>
       )}
       {!results ||

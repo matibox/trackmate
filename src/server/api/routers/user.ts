@@ -43,6 +43,7 @@ export const userRouter = createTRPCRouter({
           AND: [
             { name: { contains: q } },
             { roles: { some: { name: 'driver' } } },
+            { team: null },
           ],
         },
       });
