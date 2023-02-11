@@ -16,6 +16,7 @@ import Team from '@dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Navbar from '../components/Navbar';
+import Settings from '../components/Settings';
 import { getServerAuthSession } from '../server/auth';
 
 const Home: NextPage = () => {
@@ -24,6 +25,7 @@ const Home: NextPage = () => {
       <NextSeo title='Dashboard' />
       <Navbar />
       <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900'>
+        <Settings />
         <PostResult />
         <DeleteEvent />
         <DeleteChampionship />

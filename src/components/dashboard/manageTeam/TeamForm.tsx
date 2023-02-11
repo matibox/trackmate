@@ -164,6 +164,7 @@ const TeamForm: FC<TeamFormProps> = ({
       </Label>
       <Label
         label={`Social media manager: ${formState.socialMedia?.name ?? ''}`}
+        optional
         className='relative'
       >
         <ErrorWrapper error={errors?.drivers}>
