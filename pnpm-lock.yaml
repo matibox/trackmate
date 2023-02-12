@@ -7,6 +7,7 @@ specifiers:
   '@prisma/client': ^4.8.0
   '@tailwindcss/line-clamp': ^0.4.2
   '@tanstack/react-query': ^4.20.0
+  '@tanstack/react-query-devtools': ^4.24.6
   '@trpc/client': ^10.8.1
   '@trpc/next': ^10.8.1
   '@trpc/react-query': ^10.8.1
@@ -51,6 +52,7 @@ dependencies:
   '@prisma/client': 4.9.0_prisma@4.9.0
   '@tailwindcss/line-clamp': 0.4.2_tailwindcss@3.2.4
   '@tanstack/react-query': 4.23.0_biqbaboplfbrettd7655fr4n2y
+  '@tanstack/react-query-devtools': 4.24.6_74ln4l2hialvxelty6zunzkpjm
   '@trpc/client': 10.9.0_@trpc+server@10.9.0
   '@trpc/next': 10.9.0_agcdofckp5bsojf5gpkxjg6zzq
   '@trpc/react-query': 10.9.0_22wgxldzdfxutowffn2dykkd3i
@@ -1559,8 +1561,30 @@ packages:
       tailwindcss: 3.2.4_postcss@8.4.21
     dev: false
 
+  /@tanstack/match-sorter-utils/8.7.6:
+    resolution: {integrity: sha512-2AMpRiA6QivHOUiBpQAVxjiHAA68Ei23ZUMNaRJrN6omWiSFLoYrxGcT6BXtuzp0Jw4h6HZCmGGIM/gbwebO2A==}
+    engines: {node: '>=12'}
+    dependencies:
+      remove-accents: 0.4.2
+    dev: false
+
   /@tanstack/query-core/4.22.4:
     resolution: {integrity: sha512-t79CMwlbBnj+yL82tEcmRN93bL4U3pae2ota4t5NN2z3cIeWw74pzdWrKRwOfTvLcd+b30tC+ciDlfYOKFPGUw==}
+    dev: false
+
+  /@tanstack/react-query-devtools/4.24.6_74ln4l2hialvxelty6zunzkpjm:
+    resolution: {integrity: sha512-d8CN4ZTtLkdCNi9x4Hogma0fdhlv7ckknv/RLuV4nbUciUoZEvhg1cI0+vp/1aY4W3jq9vH0BD/eUQKecgY15Q==}
+    peerDependencies:
+      '@tanstack/react-query': 4.24.6
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      '@tanstack/match-sorter-utils': 8.7.6
+      '@tanstack/react-query': 4.23.0_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+      superjson: 1.12.2
+      use-sync-external-store: 1.2.0_react@18.2.0
     dev: false
 
   /@tanstack/react-query/4.23.0_biqbaboplfbrettd7655fr4n2y:
@@ -4299,6 +4323,10 @@ packages:
     dependencies:
       jsesc: 0.5.0
 
+  /remove-accents/0.4.2:
+    resolution: {integrity: sha512-7pXIJqJOq5tFgG1A2Zxti3Ht8jJF337m4sowbuHsW30ZnkQFnDzy9qBNhgzX8ZLW4+UBcXiiR7SwR6pokHsxiA==}
+    dev: false
+
   /require-from-string/2.0.2:
     resolution: {integrity: sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==}
     engines: {node: '>=0.10.0'}
@@ -4599,6 +4627,13 @@ packages:
     dependencies:
       client-only: 0.0.1
       react: 18.2.0
+
+  /superjson/1.12.2:
+    resolution: {integrity: sha512-ugvUo9/WmvWOjstornQhsN/sR9mnGtWGYeTxFuqLb4AiT4QdUavjGFRALCPKWWnAiUJ4HTpytj5e0t5HoMRkXg==}
+    engines: {node: '>=10'}
+    dependencies:
+      copy-anything: 3.0.3
+    dev: false
 
   /superjson/1.9.1:
     resolution: {integrity: sha512-oT3HA2nPKlU1+5taFgz/HDy+GEaY+CWEbLzaRJVD4gZ7zMVVC4GDNFdgvAZt6/VuIk6D2R7RtPAiCHwmdzlMmg==}

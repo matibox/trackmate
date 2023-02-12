@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
+import { hasRole } from '../../../utils/helpers';
 import {
   createTRPCRouter,
   driverProcedure,
@@ -111,7 +112,7 @@ export const eventRouter = createTRPCRouter({
           ],
         },
         include: {
-          drivers: { select: { id: true, name: true } },
+          drivers: { select: { id: true, name: true, teamId: true } },
           championship: { select: { organizer: true, name: true } },
           result: true,
         },
@@ -139,7 +140,72 @@ export const eventRouter = createTRPCRouter({
           ],
         },
         include: {
-          drivers: { select: { id: true, name: true } },
+          drivers: { select: { id: true, name: true, teamId: true } },
+          championship: { select: { organizer: true, name: true } },
+          result: true,
+        },
+        orderBy: { date: 'asc' },
+      });
+    }),
+  getTeamEvents: protectedProcedure
+    .input(z.object({ monthIndex: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { monthIndex } = input;
+
+      const driverWhereClause = {
+        drivers: { some: { id: { equals: ctx.session.user.id } } },
+      };
+      const managerWhereClause = { managerId: ctx.session.user.id };
+      const socialWhereClause = { socialMediaId: ctx.session.user.id };
+      const team = await ctx.prisma.team.findFirst({
+        where: hasRole(ctx.session, ['driver', 'manager'])
+          ? { OR: [driverWhereClause, managerWhereClause] }
+          : hasRole(ctx.session, 'driver')
+          ? driverWhereClause
+          : hasRole(ctx.session, 'manager')
+          ? managerWhereClause
+          : socialWhereClause,
+      });
+
+      if (!team) return [];
+
+      return await ctx.prisma.event.findMany({
+        where: {
+          AND: {
+            drivers: {
+              some: {
+                AND: {
+                  team: hasRole(ctx.session, 'driver')
+                    ? {
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        id: ctx.session.user.teamId!,
+                      }
+                    : hasRole(ctx.session, 'manager')
+                    ? {
+                        managerId: ctx.session.user.id,
+                      }
+                    : {
+                        socialMediaId: ctx.session.user.id,
+                      },
+                  NOT: {
+                    id: ctx.session.user.id,
+                  },
+                },
+              },
+              //? if not manager
+            },
+            date: {
+              gte: new Date(dayjs().year(), monthIndex, 1),
+              lt: new Date(
+                dayjs().year(),
+                monthIndex,
+                dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
+              ),
+            },
+          },
+        },
+        include: {
+          drivers: { select: { id: true, name: true, teamId: true } },
           championship: { select: { organizer: true, name: true } },
           result: true,
         },

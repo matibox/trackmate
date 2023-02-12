@@ -8,7 +8,8 @@ type SettingsStore = {
   settings: {
     showTeamEvents: boolean;
   };
-  toggleTeamEvents: () => void;
+  hideTeamEventsFn: () => void;
+  showTeamEventsFn: () => void;
 };
 
 export const useSettingsStore = create<SettingsStore>()(
@@ -20,11 +21,18 @@ export const useSettingsStore = create<SettingsStore>()(
       settings: {
         showTeamEvents: false,
       },
-      toggleTeamEvents: () =>
+      hideTeamEventsFn: () =>
         set(state => ({
           settings: {
             ...state.settings,
-            showTeamEvents: !state.settings.showTeamEvents,
+            showTeamEvents: false,
+          },
+        })),
+      showTeamEventsFn: () =>
+        set(state => ({
+          settings: {
+            ...state.settings,
+            showTeamEvents: true,
           },
         })),
     }),

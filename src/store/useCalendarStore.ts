@@ -17,6 +17,8 @@ type CalendarStore = {
   setDrivingEvents: (events: CalendarStore['drivingEvents']) => void;
   managingEvents: RouterOutputs['event']['getManagingEvents'] | undefined;
   setManagingEvents: (events: CalendarStore['managingEvents']) => void;
+  teamEvents: RouterOutputs['event']['getTeamEvents'] | undefined;
+  setTeamEvents: (events: CalendarStore['teamEvents']) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()(
@@ -33,5 +35,7 @@ export const useCalendarStore = create<CalendarStore>()(
     setDrivingEvents: events => set(() => ({ drivingEvents: events })),
     managingEvents: undefined,
     setManagingEvents: events => set(() => ({ managingEvents: events })),
+    teamEvents: undefined,
+    setTeamEvents: events => set(() => ({ teamEvents: events })),
   }))
 );

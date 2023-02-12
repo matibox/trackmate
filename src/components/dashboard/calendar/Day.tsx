@@ -19,6 +19,7 @@ export function Day({ day }: DayProps) {
     selectDay,
     drivingEvents,
     managingEvents,
+    teamEvents,
   } = useCalendarStore();
 
   const isToday = useMemo(() => {
@@ -48,6 +49,7 @@ export function Day({ day }: DayProps) {
 
   const dayDrivingEvents = getTodaysEvents(drivingEvents);
   const dayManagingEvents = getTodaysEvents(managingEvents);
+  const dayTeamEvents = getTodaysEvents(teamEvents);
 
   function handleSelect() {
     selectDay(day);
@@ -82,11 +84,13 @@ export function Day({ day }: DayProps) {
     >
       <span>{dayjs(day).format('DD')}</span>
       <div className='flex h-1.5 gap-0.5'>
-        {[...(dayDrivingEvents ?? []), ...(dayManagingEvents ?? [])]
-          .slice(0, 4)
-          .map(event => (
-            <EventDot key={event.id} event={event} isToday={isToday} />
-          ))}
+        {[
+          ...(dayDrivingEvents ?? []),
+          ...(dayManagingEvents ?? []),
+          ...(dayTeamEvents ?? []),
+        ].map(event => (
+          <EventDot key={event.id} event={event} isToday={isToday} />
+        ))}
       </div>
     </button>
   );
@@ -108,10 +112,18 @@ const EventDot: FC<{
     if (!session?.user) return false;
     return event.drivers.find(driver => driver.id === session.user?.id);
   }, [event.drivers, session?.user]);
+  const team = useMemo(() => {
+    if (!session?.user) return false;
+    return (
+      !driving &&
+      event.drivers.every(driver => driver.teamId === session.user?.teamId)
+    );
+  }, [driving, event.drivers, session?.user]);
 
   return (
     <div
       className={cn('h-1.5 w-1.5 rounded-full', {
+        'bg-emerald-500': isSprint && team,
         'bg-sky-500': isSprint && driving,
         'bg-sky-50': isSprint && driving && isToday,
         'bg-yellow-300': isEndurance && !driving && managing,

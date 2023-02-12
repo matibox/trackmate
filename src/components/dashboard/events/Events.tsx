@@ -11,7 +11,8 @@ import EventsHeader from './Header';
 const Events: FC = () => {
   const { data: session } = useSession();
 
-  const { drivingEvents, managingEvents, selectedDay } = useCalendarStore();
+  const { drivingEvents, managingEvents, teamEvents, selectedDay } =
+    useCalendarStore();
 
   const getTodayEvents = useCallback(
     (events: RouterOutputs['event']['getDrivingEvents'] | undefined) => {
@@ -26,6 +27,7 @@ const Events: FC = () => {
 
   const todayDrivingEvents = getTodayEvents(drivingEvents);
   const todayManagingEvents = getTodayEvents(managingEvents);
+  const todayTeamEvents = getTodayEvents(teamEvents);
 
   return (
     <Tile
@@ -54,8 +56,17 @@ const Events: FC = () => {
               ))}
             </div>
           )}
+        {todayTeamEvents && todayTeamEvents.length > 0 && (
+          <div className='flex flex-col gap-4'>
+            <h2 className='text-xl font-semibold'>Team events:</h2>
+            {todayTeamEvents.map(event => (
+              <Event key={event.id} event={event} />
+            ))}
+          </div>
+        )}
         {(!todayManagingEvents || todayManagingEvents?.length === 0) &&
-          (!todayDrivingEvents || todayDrivingEvents?.length === 0) && (
+          (!todayDrivingEvents || todayDrivingEvents?.length === 0) &&
+          (!todayTeamEvents || todayTeamEvents.length === 0) && (
             <span className='text-slate-300'>No events for this day</span>
           )}
       </div>
