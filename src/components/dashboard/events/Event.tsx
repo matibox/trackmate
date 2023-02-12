@@ -17,9 +17,10 @@ import cn from '../../../lib/classes';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
+  team?: boolean;
 };
 
-const Event: FC<EventProps> = ({ event }) => {
+const Event: FC<EventProps> = ({ event, team = false }) => {
   const { open: openNewEvent } = useEventStore();
   const { open: openPostResult } = useResultStore();
 
@@ -35,21 +36,23 @@ const Event: FC<EventProps> = ({ event }) => {
             )}
             {capitilize(event.title ?? '')}
           </span>
-          <Button
-            intent='danger'
-            size='small'
-            gap='small'
-            onClick={() =>
-              openNewEvent(
-                event.id,
-                event.championship?.name,
-                event.title ?? undefined
-              )
-            }
-          >
-            <span>Delete</span>
-            <TrashIcon className='h-4' />
-          </Button>
+          {!team && (
+            <Button
+              intent='danger'
+              size='small'
+              gap='small'
+              onClick={() =>
+                openNewEvent(
+                  event.id,
+                  event.championship?.name,
+                  event.title ?? undefined
+                )
+              }
+            >
+              <span>Delete</span>
+              <TrashIcon className='h-4' />
+            </Button>
+          )}
         </div>
       }
       className='relative'
@@ -137,7 +140,7 @@ const Event: FC<EventProps> = ({ event }) => {
           </>
         )}
       </div>
-      {dayjs().isAfter(dayjs(event.date)) && !event.result && (
+      {dayjs().isAfter(dayjs(event.date)) && !event.result && !team && (
         <Button
           intent='secondary'
           size='small'

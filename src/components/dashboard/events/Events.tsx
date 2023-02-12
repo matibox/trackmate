@@ -60,7 +60,7 @@ const Events: FC = () => {
           <div className='flex flex-col gap-4'>
             <h2 className='text-xl font-semibold'>Team events:</h2>
             {todayTeamEvents.map(event => (
-              <Event key={event.id} event={event} />
+              <Event key={event.id} event={event} team />
             ))}
           </div>
         )}

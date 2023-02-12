@@ -126,6 +126,7 @@ const EventDot: FC<{
         'bg-emerald-500': isSprint && team,
         'bg-sky-500': isSprint && driving,
         'bg-sky-50': isSprint && driving && isToday,
+        'bg-rose-500': isEndurance && team,
         'bg-yellow-300': isEndurance && !driving && managing,
         'bg-amber-500': isEndurance && driving,
       })}
