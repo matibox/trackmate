@@ -16,8 +16,7 @@ const DeleteEvent: FC = () => {
   const { mutate: deleteEvent, isLoading } = api.event.delete.useMutation({
     async onSuccess() {
       close();
-      await utils.event.getDrivingEvents.invalidate();
-      await utils.event.getManagingEvents.invalidate();
+      await utils.event.invalidate();
       await utils.team.getDriveFor.invalidate();
       await utils.championship.get.invalidate();
     },

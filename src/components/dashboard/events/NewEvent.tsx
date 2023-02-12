@@ -132,8 +132,7 @@ const NewEvent: FC = () => {
       },
       async onSuccess() {
         closeAndReset();
-        await utils.event.getDrivingEvents.invalidate();
-        await utils.event.getManagingEvents.invalidate();
+        await utils.event.invalidate();
         await utils.team.getDriveFor.invalidate();
         await utils.championship.get.invalidate();
       },
@@ -145,8 +144,7 @@ const NewEvent: FC = () => {
       },
       async onSuccess() {
         closeAndReset();
-        await utils.event.getDrivingEvents.invalidate();
-        await utils.event.getManagingEvents.invalidate();
+        await utils.event.invalidate();
         await utils.team.getDriveFor.invalidate();
         await utils.championship.get.invalidate();
       },

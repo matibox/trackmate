@@ -47,8 +47,7 @@ const PostResult: FC = () => {
     async onSuccess() {
       close();
       setFormState(defaultFormState);
-      await utils.event.getDrivingEvents.invalidate();
-      await utils.event.getManagingEvents.invalidate();
+      await utils.event.invalidate();
       await utils.championship.get.invalidate();
       await utils.result.getResultPage.invalidate();
     },

@@ -11,8 +11,7 @@ const CalendarHeader: FC = () => {
 
   const utils = api.useContext();
   const handleChangeMonth = async (changeMonthFn: () => void) => {
-    await utils.event.getDrivingEvents.invalidate();
-    await utils.event.getManagingEvents.invalidate();
+    await utils.event.invalidate();
     changeMonthFn();
   };
 
