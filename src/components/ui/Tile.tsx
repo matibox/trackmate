@@ -31,7 +31,12 @@ const Tile: FC<TileProps> = ({
       <AnimatePresence>
         {isLoading && (
           <motion.div
-            className='absolute top-0 left-0 grid h-full w-full place-items-center bg-black/50'
+            className={cn(
+              'absolute top-0 left-0 grid h-full w-full place-items-center bg-black/50',
+              {
+                'z-20': fixedHeader,
+              }
+            )}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
