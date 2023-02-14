@@ -114,16 +114,16 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
 
 import type { roles } from '../../constants/constants';
 
-const enforceUserRole = (enforcedRole: (typeof roles)[number]) => {
+const enforceUserRole = (enforcedRoles: (typeof roles)[number][]) => {
   return t.middleware(({ ctx, next }) => {
     if (!ctx.session || !ctx.session.user || !ctx.session.user.roles) {
       throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
-    const isDriver = ctx.session.user.roles.find(
-      role => role.name === enforcedRole
+    const hasRole = ctx.session.user.roles.some(role =>
+      enforcedRoles.includes(role.name)
     );
 
-    if (!isDriver) {
+    if (!hasRole) {
       throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
 
@@ -146,6 +146,16 @@ const enforceUserRole = (enforcedRole: (typeof roles)[number]) => {
  */
 export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
 
-export const driverProcedure = t.procedure.use(enforceUserRole('driver'));
+export const driverProcedure = t.procedure.use(enforceUserRole(['driver']));
 
-export const managerProcedure = t.procedure.use(enforceUserRole('manager'));
+export const managerProcedure = t.procedure.use(enforceUserRole(['manager']));
+
+export const socialMediaProcedure = t.procedure.use(
+  enforceUserRole(['socialMedia'])
+);
+
+export const multiRoleProcedure = (
+  rolesWithAccess: (typeof roles)[number][]
+) => {
+  return t.procedure.use(enforceUserRole(rolesWithAccess));
+};
