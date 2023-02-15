@@ -1,14 +1,10 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { hasRole } from '../../../utils/helpers';
-import {
-  createTRPCRouter,
-  managerProcedure,
-  protectedProcedure,
-} from '../trpc';
+import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 
 export const resultRouter = createTRPCRouter({
-  post: protectedProcedure
+  post: multiRoleProcedure(['driver', 'manager'])
     .input(
       z.object({
         qualiPosition: z.number(),
@@ -30,7 +26,7 @@ export const resultRouter = createTRPCRouter({
         },
       });
     }),
-  getResultPage: managerProcedure
+  getResultPage: multiRoleProcedure(['manager', 'socialMedia'])
     .input(
       z.object({
         firstDay: z.date(),

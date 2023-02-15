@@ -4,6 +4,7 @@ import {
   createTRPCRouter,
   driverProcedure,
   managerProcedure,
+  multiRoleProcedure,
   protectedProcedure,
 } from '../trpc';
 
@@ -158,25 +159,27 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
-  getTeammatesOrDrivers: protectedProcedure.query(async ({ ctx }) => {
-    const driverWhereClause = {
-      team: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
-    };
-    const managerWhereClause = {
-      team: {
-        managerId: ctx.session.user.id,
-      },
-    };
-    return await ctx.prisma.user.findMany({
-      where: hasRole(ctx.session, ['driver', 'manager'])
-        ? { OR: [driverWhereClause, managerWhereClause] }
-        : hasRole(ctx.session, 'driver')
-        ? driverWhereClause
-        : managerWhereClause,
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-  }),
+  getTeammatesOrDrivers: multiRoleProcedure(['driver', 'manager']).query(
+    async ({ ctx }) => {
+      const driverWhereClause = {
+        team: { drivers: { some: { id: { equals: ctx.session.user.id } } } },
+      };
+      const managerWhereClause = {
+        team: {
+          managerId: ctx.session.user.id,
+        },
+      };
+      return await ctx.prisma.user.findMany({
+        where: hasRole(ctx.session, ['driver', 'manager'])
+          ? { OR: [driverWhereClause, managerWhereClause] }
+          : hasRole(ctx.session, 'driver')
+          ? driverWhereClause
+          : managerWhereClause,
+        select: {
+          id: true,
+          name: true,
+        },
+      });
+    }
+  ),
 });

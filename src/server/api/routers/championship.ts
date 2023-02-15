@@ -5,11 +5,11 @@ import {
   createTRPCRouter,
   driverProcedure,
   managerProcedure,
-  protectedProcedure,
+  multiRoleProcedure,
 } from '../trpc';
 
 export const championshipRouter = createTRPCRouter({
-  get: protectedProcedure
+  get: multiRoleProcedure(['driver', 'manager'])
     .input(
       z.object({
         max: z.number().min(0).optional().default(2),
@@ -78,7 +78,7 @@ export const championshipRouter = createTRPCRouter({
       },
     });
   }),
-  create: protectedProcedure
+  create: multiRoleProcedure(['driver', 'manager'])
     .input(
       z.object({
         name: z.string(),
@@ -111,7 +111,7 @@ export const championshipRouter = createTRPCRouter({
         },
       });
     }),
-  delete: protectedProcedure
+  delete: multiRoleProcedure(['driver', 'manager'])
     .input(z.object({ championshipId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const { championshipId } = input;
