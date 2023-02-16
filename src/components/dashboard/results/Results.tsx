@@ -14,6 +14,7 @@ const Results: FC = () => {
 
   const { Error, setError } = useError();
 
+  //TODO social media manager team + results
   const { data: team, isInitialLoading: hasTeamLoading } =
     api.team.getManagingFor.useQuery(undefined, {
       enabled: Boolean(hasRole(session, 'manager')),
@@ -35,7 +36,9 @@ const Results: FC = () => {
       }
     );
 
-  if (!hasRole(session, 'manager')) return null;
+  if (!hasRole(session, 'manager') && !hasRole(session, 'socialMedia')) {
+    return null;
+  }
 
   return (
     <Tile
@@ -46,7 +49,7 @@ const Results: FC = () => {
     >
       {!team && (
         <span className='text-lg text-slate-300'>
-          Manage a team to see team results
+          Join a team to see team results
         </span>
       )}
       {!results ||

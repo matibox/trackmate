@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import { type FC, Fragment } from 'react';
 import { useError } from '../../../hooks/useError';
+import { usePersistHydration } from '../../../hooks/usePersistHydration';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import { useSettingsStore } from '../../../store/useSettingsStore';
 import { api } from '../../../utils/api';
@@ -23,9 +24,9 @@ const Calendar: FC = () => {
   } = useCalendarStore();
   useCalendarStore.subscribe(state => state.monthIndex, setPage);
 
-  const {
-    settings: { showTeamEvents },
-  } = useSettingsStore();
+  const showTeamEvents = usePersistHydration(
+    useSettingsStore().settings.showTeamEvents
+  );
 
   const { Error, setError } = useError();
 
