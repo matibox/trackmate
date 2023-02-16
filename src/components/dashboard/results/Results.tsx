@@ -51,10 +51,8 @@ const Results: FC = () => {
       className={cn(
         'overflow-auto scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 md:row-span-2 md:max-h-[800px] xl:col-span-2',
         {
-          'md:col-span-2 lg:col-span-2 xl:col-span-3': hasRole(
-            session,
-            'socialMedia'
-          ),
+          'md:col-span-2 lg:col-span-2 xl:col-span-3':
+            hasRole(session, 'socialMedia') && !hasRole(session, 'manager'),
         }
       )}
       isLoading={hasTeamLoading || resultsLoading}
