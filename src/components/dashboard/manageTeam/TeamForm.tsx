@@ -167,7 +167,7 @@ const TeamForm: FC<TeamFormProps> = ({
         optional
         className='relative'
       >
-        <ErrorWrapper error={errors?.drivers}>
+        <ErrorWrapper error={errors?.socialMedia}>
           <Combobox
             value={formState.socialMedia}
             onChange={socialMedia =>

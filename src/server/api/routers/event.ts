@@ -173,7 +173,7 @@ export const eventRouter = createTRPCRouter({
         where: {
           AND: {
             drivers: {
-              some: {
+              every: {
                 AND: {
                   team: hasRole(ctx.session, 'driver')
                     ? {
@@ -192,7 +192,6 @@ export const eventRouter = createTRPCRouter({
                   },
                 },
               },
-              //? if not manager
             },
             date: {
               gte: new Date(dayjs().year(), monthIndex, 1),
@@ -202,6 +201,11 @@ export const eventRouter = createTRPCRouter({
                 dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
               ),
             },
+            NOT: [
+              {
+                manager: { id: ctx.session.user.id },
+              },
+            ],
           },
         },
         include: {
