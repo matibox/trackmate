@@ -2,6 +2,7 @@ import Tile from '@ui/Tile';
 import { useSession } from 'next-auth/react';
 import { type FC } from 'react';
 import { useError } from '../../../hooks/useError';
+import cn from '../../../lib/classes';
 import { useTeamResultsStore } from '../../../store/useTeamResultsStore';
 import { api } from '../../../utils/api';
 import { hasRole } from '../../../utils/helpers';
@@ -14,10 +15,11 @@ const Results: FC = () => {
 
   const { Error, setError } = useError();
 
-  //TODO social media manager team + results
   const { data: team, isInitialLoading: hasTeamLoading } =
-    api.team.getManagingFor.useQuery(undefined, {
-      enabled: Boolean(hasRole(session, 'manager')),
+    api.team.getHasTeam.useQuery(undefined, {
+      enabled: Boolean(
+        hasRole(session, 'manager') || hasRole(session, 'socialMedia')
+      ),
       onError: err => setError(err.message),
     });
   const { data: results, isInitialLoading: resultsLoading } =
@@ -32,7 +34,10 @@ const Results: FC = () => {
         teamId: team?.id,
       },
       {
-        enabled: Boolean(hasRole(session, 'manager')) && Boolean(team?.id),
+        enabled:
+          Boolean(
+            hasRole(session, 'manager') || hasRole(session, 'socialMedia')
+          ) && Boolean(team?.id),
       }
     );
 
@@ -43,7 +48,15 @@ const Results: FC = () => {
   return (
     <Tile
       header={<ResultsHeader />}
-      className='overflow-auto scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 md:row-span-2 md:max-h-[1100px] xl:col-span-2'
+      className={cn(
+        'overflow-auto scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 md:row-span-2 md:max-h-[800px] xl:col-span-2',
+        {
+          'md:col-span-2 lg:col-span-2 xl:col-span-3': hasRole(
+            session,
+            'socialMedia'
+          ),
+        }
+      )}
       isLoading={hasTeamLoading || resultsLoading}
       fixedHeader
     >

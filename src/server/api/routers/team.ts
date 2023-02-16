@@ -14,12 +14,15 @@ export const teamRouter = createTRPCRouter({
       drivers: { some: { id: { equals: ctx.session.user.id } } },
     };
     const managerWhereClause = { managerId: ctx.session.user.id };
+    const socialWhereClause = { socialMediaId: ctx.session.user.id };
     return await ctx.prisma.team.findFirst({
       where: hasRole(ctx.session, ['driver', 'manager'])
         ? { OR: [driverWhereClause, managerWhereClause] }
         : hasRole(ctx.session, 'driver')
         ? driverWhereClause
-        : managerWhereClause,
+        : hasRole(ctx.session, 'manager')
+        ? managerWhereClause
+        : socialWhereClause,
     });
   }),
   getDriveFor: driverProcedure.query(async ({ ctx }) => {
