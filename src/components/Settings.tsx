@@ -19,8 +19,10 @@ const Settings: FC = () => {
   const utils = api.useContext();
 
   const handleTeamEventsChange = async (fn: () => void) => {
-    await new Promise(resolve => resolve(fn()));
-    await utils.event.invalidate();
+    fn();
+    await new Promise(resolve =>
+      setTimeout(() => resolve(utils.event.invalidate()), 100)
+    );
     setTeamEvents([]);
   };
 
@@ -31,7 +33,7 @@ const Settings: FC = () => {
       header={<PopupHeader close={close} title='Settings' />}
     >
       <div>
-        <h2 className='mb-2 text-lg font-semibold'>Calendar</h2>
+        <h2 className='mb-1 text-lg font-semibold'>Calendar</h2>
         <span className='mb-1 block'>Team events</span>
         <div className='flex w-min items-center justify-evenly gap-1 rounded bg-slate-800 ring-1 ring-slate-700'>
           <button

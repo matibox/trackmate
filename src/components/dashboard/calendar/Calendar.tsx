@@ -28,6 +28,8 @@ const Calendar: FC = () => {
     useSettingsStore().settings.showTeamEvents
   );
 
+  console.log(showTeamEvents);
+
   const { Error, setError } = useError();
 
   const { isInitialLoading: drivingEventsLoading } =
