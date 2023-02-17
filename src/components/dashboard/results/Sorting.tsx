@@ -34,7 +34,7 @@ const ResultsSorting: FC = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.15 }}
-      className='absolute top-20 right-4 flex w-32 flex-col items-start gap-1 rounded bg-slate-700 p-3 ring-1 ring-slate-600'
+      className='absolute top-20 right-4 flex w-32 flex-col items-start gap-1 rounded  bg-slate-700 p-3 ring-1 ring-sky-600'
     >
       <span className='mb-1 font-semibold'>Sort results</span>
       {resultsSortingOptions.map(option => {
