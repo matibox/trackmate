@@ -1,5 +1,6 @@
 import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
+import { resultsSortingOptions } from '../../../constants/constants';
 import { hasRole } from '../../../utils/helpers';
 import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 
@@ -32,16 +33,28 @@ export const resultRouter = createTRPCRouter({
         firstDay: z.date(),
         lastDay: z.date(),
         teamId: z.string().optional(),
+        orderBy: z.object({
+          by: z.enum(resultsSortingOptions),
+          order: z.enum(['asc', 'desc']),
+        }),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { firstDay, lastDay, teamId } = input;
+      const { firstDay, lastDay, teamId, orderBy } = input;
 
       if (!teamId) {
         throw new TRPCError({
           code: 'PRECONDITION_FAILED',
         });
       }
+
+      const { by, order } = orderBy;
+      const orderField =
+        by === 'createdAt'
+          ? { createdAt: order }
+          : by === 'eventDate'
+          ? { event: { date: order } }
+          : { racePosition: order };
 
       return await ctx.prisma.result.findMany({
         where: {
@@ -67,11 +80,7 @@ export const resultRouter = createTRPCRouter({
             },
           },
         },
-        orderBy: {
-          event: {
-            date: 'asc',
-          },
-        },
+        orderBy: orderField,
       });
     }),
 });

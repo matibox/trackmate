@@ -11,7 +11,10 @@ import Result from './Result';
 
 const Results: FC = () => {
   const { data: session } = useSession();
-  const { current } = useTeamResultsStore();
+  const {
+    current,
+    sorting: { activeSort },
+  } = useTeamResultsStore();
 
   const { Error, setError } = useError();
 
@@ -32,6 +35,7 @@ const Results: FC = () => {
           current.daysInMonth()
         ),
         teamId: team?.id,
+        orderBy: activeSort,
       },
       {
         enabled:
@@ -47,7 +51,7 @@ const Results: FC = () => {
 
   return (
     <Tile
-      header={<ResultsHeader />}
+      header={<ResultsHeader noResults={!results || results.length === 0} />}
       className={cn(
         'overflow-auto scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 md:row-span-2 md:max-h-[800px] xl:col-span-2',
         {
