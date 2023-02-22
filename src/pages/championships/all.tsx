@@ -39,7 +39,7 @@ const AllChampionships: NextPage = () => {
     <>
       <NextSeo title='All championships' />
       <Navbar />
-      <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900 text-slate-50'>
+      <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <PostResult />
         <Link
           href='/'
@@ -50,7 +50,7 @@ const AllChampionships: NextPage = () => {
         </Link>
         <Error />
         {isLoading && (
-          <div className='flex h-[calc(100vh_-_var(--navbar-height))] w-full items-center justify-center'>
+          <div className='flex h-screen w-full items-center justify-center'>
             <Loading />
           </div>
         )}

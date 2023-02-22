@@ -1,18 +1,24 @@
 import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
 import Image from 'next/image';
-import { type FC } from 'react';
+import { useRef, type FC } from 'react';
 import Button from '@ui/Button';
 import { signOut } from 'next-auth/react';
 import Link from 'next/link';
 import { BellIcon, Cog8ToothIcon } from '@heroicons/react/24/outline';
 import { useSettingsStore } from '../store/useSettingsStore';
 import cn from '../lib/classes';
+import { useNotificationStore } from '../store/useNotificationsStore';
+import Notifications from './Notifications';
 
 const Navbar: FC = () => {
   const { open: openSettings } = useSettingsStore();
+  const { toggle: toggleNotifications, isOpened: notificationsOpened } =
+    useNotificationStore();
+
+  const notificationsBtnRef = useRef<HTMLButtonElement>(null);
 
   return (
-    <nav className='flex h-[var(--navbar-height)] items-center gap-4 border-b border-slate-700 bg-slate-800 px-4'>
+    <nav className='fixed z-20 flex h-[var(--navbar-height)] w-full items-center gap-4 border-b border-slate-700 bg-slate-800 px-4'>
       <Link href='/' aria-label='dashboard'>
         <Image src='/Mono.png' alt='Logo' width={50} height={50} />
       </Link>
@@ -28,9 +34,15 @@ const Navbar: FC = () => {
       </Button>
       <div className='flex items-center gap-2'>
         <button
-          className='relative text-slate-300 transition-colors hover:text-slate-50'
+          className={cn(
+            'relative text-slate-300 transition-colors hover:text-slate-50',
+            {
+              'text-sky-400 hover:text-sky-300': notificationsOpened,
+            }
+          )}
           aria-label='Notifications'
-          // TODO: notifications
+          onClick={toggleNotifications}
+          ref={notificationsBtnRef}
         >
           <div
             className={cn(
@@ -51,6 +63,7 @@ const Navbar: FC = () => {
           <Cog8ToothIcon className='h-5' />
         </button>
       </div>
+      <Notifications buttonRef={notificationsBtnRef} />
     </nav>
   );
 };

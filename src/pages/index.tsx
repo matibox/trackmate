@@ -24,7 +24,7 @@ const Home: NextPage = () => {
     <>
       <NextSeo title='Dashboard' />
       <Navbar />
-      <main className='min-h-[calc(100vh_-_var(--navbar-height))] w-full bg-slate-900'>
+      <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)]'>
         <Settings />
         <PostResult />
         <DeleteEvent />
