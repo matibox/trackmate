@@ -57,34 +57,6 @@ const Event: FC<EventProps> = ({ event, team = false }) => {
       }
       className='relative'
     >
-      {notesOpened && (
-        <>
-          <motion.div
-            className='absolute top-0 left-0 z-10 h-full w-full bg-black/50 backdrop-blur-sm'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.15 }}
-          />
-          <motion.button
-            className='absolute top-4 left-4 z-10 flex items-center gap-1 transition-colors hover:text-sky-400'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.15 }}
-            onClick={() => setNotesOpened(false)}
-          >
-            <ArrowLeftIcon className='h-5' />
-            <span>back</span>
-          </motion.button>
-          <motion.div
-            className='relative z-10 h-full w-full text-slate-100'
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.15 }}
-          >
-            {event.result?.notes}
-          </motion.div>
-        </>
-      )}
       <div
         className={cn('mb-4 grid grid-cols-2 gap-y-4 sm:grid-cols-3', {
           hidden: notesOpened,
@@ -155,6 +127,34 @@ const Event: FC<EventProps> = ({ event, team = false }) => {
           <span>Post result</span>
           <DocumentArrowUpIcon className='h-5' />
         </Button>
+      )}
+      {notesOpened && (
+        <>
+          <motion.div
+            className='absolute top-0 left-0 h-full w-full bg-black/50 backdrop-blur-sm'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+          />
+          <motion.button
+            className='absolute top-4 left-4 flex items-center gap-1 transition-colors hover:text-sky-400'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+            onClick={() => setNotesOpened(false)}
+          >
+            <ArrowLeftIcon className='h-5' />
+            <span>back</span>
+          </motion.button>
+          <motion.div
+            className='relative h-full w-full text-slate-100'
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.15 }}
+          >
+            {event.result?.notes}
+          </motion.div>
+        </>
       )}
     </Tile>
   );
