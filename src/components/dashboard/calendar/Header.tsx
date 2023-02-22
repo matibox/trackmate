@@ -7,12 +7,46 @@ import { CalendarIcon } from '@heroicons/react/24/solid';
 import { api } from '../../../utils/api';
 
 const CalendarHeader: FC = () => {
-  const { monthIndex, incrementMonth, decrementMonth } = useCalendarStore();
+  const {
+    monthIndex,
+    incrementMonth,
+    decrementMonth,
+    selectedDay,
+    selectDay,
+    setLoading,
+  } = useCalendarStore();
 
   const utils = api.useContext();
-  const handleChangeMonth = async (changeMonthFn: () => void) => {
+
+  const handleChangeMonth = async (
+    changeMonthFn: () => void,
+    sameMonthDayToSelect: dayjs.Dayjs
+  ) => {
+    setLoading(true);
     await utils.event.invalidate();
     changeMonthFn();
+    if (monthIndex === selectedDay.month()) selectDay(sameMonthDayToSelect);
+    setLoading(false);
+  };
+
+  const handlePrevMonth = async () => {
+    await handleChangeMonth(
+      decrementMonth,
+      dayjs(
+        new Date(
+          dayjs().year(),
+          monthIndex - 1,
+          dayjs(new Date(dayjs().year(), monthIndex - 1)).daysInMonth()
+        )
+      )
+    );
+  };
+
+  const handleNextMonth = async () => {
+    await handleChangeMonth(
+      incrementMonth,
+      dayjs(new Date(dayjs().year(), monthIndex + 1, 1))
+    );
   };
 
   return (
@@ -25,7 +59,7 @@ const CalendarHeader: FC = () => {
         <Button
           intent='secondary'
           size='xs'
-          onClick={() => void handleChangeMonth(decrementMonth)}
+          onClick={() => void handlePrevMonth()}
           aria-label='Previous month'
         >
           <ChevronLeftIcon className='h-6' />
@@ -36,7 +70,7 @@ const CalendarHeader: FC = () => {
         <Button
           intent='secondary'
           size='xs'
-          onClick={() => void handleChangeMonth(incrementMonth)}
+          onClick={() => void handleNextMonth()}
           aria-label='Next month'
         >
           <ChevronRightIcon className='h-6' />
