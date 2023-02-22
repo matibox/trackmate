@@ -21,6 +21,7 @@ const Calendar: FC = () => {
     setDrivingEvents,
     setManagingEvents,
     setTeamEvents,
+    loading: settingsLoading,
   } = useCalendarStore();
   useCalendarStore.subscribe(state => state.monthIndex, setPage);
 
@@ -60,7 +61,7 @@ const Calendar: FC = () => {
       {
         onSuccess: setTeamEvents,
         onError: err => setError(err.message),
-        enabled: showTeamEvents,
+        enabled: showTeamEvents !== undefined && showTeamEvents,
       }
     );
 
@@ -68,7 +69,10 @@ const Calendar: FC = () => {
     <Tile
       header={<CalendarHeader />}
       isLoading={
-        drivingEventsLoading || managingEventsLoading || teamEventsLoading
+        drivingEventsLoading ||
+        managingEventsLoading ||
+        teamEventsLoading ||
+        settingsLoading
       }
     >
       <div className='grid grid-cols-7 grid-rows-[20px,_repeat(6,_minmax(0,_1fr))] place-items-center gap-2 text-slate-50 sm:gap-4'>

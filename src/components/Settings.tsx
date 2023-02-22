@@ -14,15 +14,16 @@ const Settings: FC = () => {
     showTeamEventsFn,
     settings: { showTeamEvents },
   } = useSettingsStore();
-  const { setTeamEvents } = useCalendarStore();
+  const { setTeamEvents, setLoading } = useCalendarStore();
 
   const utils = api.useContext();
 
   const handleTeamEventsChange = async (fn: () => void) => {
     fn();
+    setLoading(true);
     await new Promise(resolve =>
       setTimeout(() => resolve(utils.event.invalidate()), 100)
-    );
+    ).finally(() => setLoading(false));
     setTeamEvents([]);
   };
 

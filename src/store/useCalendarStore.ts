@@ -19,6 +19,8 @@ type CalendarStore = {
   setManagingEvents: (events: CalendarStore['managingEvents']) => void;
   teamEvents: RouterOutputs['event']['getTeamEvents'] | undefined;
   setTeamEvents: (events: CalendarStore['teamEvents']) => void;
+  loading: boolean;
+  setLoading: (loading: boolean) => void;
 };
 
 export const useCalendarStore = create<CalendarStore>()(
@@ -37,5 +39,7 @@ export const useCalendarStore = create<CalendarStore>()(
     setManagingEvents: events => set(() => ({ managingEvents: events })),
     teamEvents: undefined,
     setTeamEvents: events => set(() => ({ teamEvents: events })),
+    loading: false,
+    setLoading: loading => set(() => ({ loading })),
   }))
 );
