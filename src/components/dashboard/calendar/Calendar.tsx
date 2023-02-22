@@ -1,7 +1,7 @@
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
-import { type FC, Fragment } from 'react';
+import { type FC, Fragment, useState } from 'react';
 import { useError } from '../../../hooks/useError';
 import { usePersistHydration } from '../../../hooks/usePersistHydration';
 import { useCalendarStore } from '../../../store/useCalendarStore';
@@ -10,6 +10,7 @@ import { api } from '../../../utils/api';
 import { hasRole } from '../../../utils/helpers';
 import { Day } from './Day';
 import CalendarHeader from './Header';
+import { getCalendarPageBoundaries } from '../../../lib/dates';
 
 const Calendar: FC = () => {
   const { data: session } = useSession();
@@ -17,13 +18,22 @@ const Calendar: FC = () => {
   const {
     setPage,
     page,
-    monthIndex,
     setDrivingEvents,
     setManagingEvents,
     setTeamEvents,
     loading: settingsLoading,
   } = useCalendarStore();
   useCalendarStore.subscribe(state => state.monthIndex, setPage);
+
+  const [[firstDay, lastDay], setBoundaryDays] = useState(
+    getCalendarPageBoundaries(page)
+  );
+  useCalendarStore.subscribe(
+    state => state.page,
+    page => {
+      setBoundaryDays(getCalendarPageBoundaries(page));
+    }
+  );
 
   const showTeamEvents = usePersistHydration(
     useSettingsStore().settings.showTeamEvents
@@ -34,7 +44,8 @@ const Calendar: FC = () => {
   const { isInitialLoading: drivingEventsLoading } =
     api.event.getDrivingEvents.useQuery(
       {
-        monthIndex,
+        firstDay,
+        lastDay,
       },
       {
         onSuccess: setDrivingEvents,
@@ -45,7 +56,8 @@ const Calendar: FC = () => {
   const { isInitialLoading: managingEventsLoading } =
     api.event.getManagingEvents.useQuery(
       {
-        monthIndex,
+        firstDay,
+        lastDay,
       },
       {
         onSuccess: setManagingEvents,
@@ -56,7 +68,8 @@ const Calendar: FC = () => {
   const { isInitialLoading: teamEventsLoading } =
     api.event.getTeamEvents.useQuery(
       {
-        monthIndex,
+        firstDay,
+        lastDay,
       },
       {
         onSuccess: setTeamEvents,

@@ -92,21 +92,17 @@ export const eventRouter = createTRPCRouter({
       });
     }),
   getDrivingEvents: driverProcedure
-    .input(z.object({ monthIndex: z.number() }))
+    .input(z.object({ firstDay: z.date(), lastDay: z.date() }))
     .query(async ({ ctx, input }) => {
-      const { monthIndex } = input;
+      const { firstDay, lastDay } = input;
       return await ctx.prisma.event.findMany({
         where: {
           AND: [
             { drivers: { some: { id: ctx.session.user.id } } },
             {
               date: {
-                gte: new Date(dayjs().year(), monthIndex, 1),
-                lt: new Date(
-                  dayjs().year(),
-                  monthIndex,
-                  dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
-                ),
+                gte: firstDay,
+                lt: dayjs(lastDay).add(1, 'day').toDate(),
               },
             },
           ],
@@ -120,21 +116,17 @@ export const eventRouter = createTRPCRouter({
       });
     }),
   getManagingEvents: managerProcedure
-    .input(z.object({ monthIndex: z.number() }))
+    .input(z.object({ firstDay: z.date(), lastDay: z.date() }))
     .query(async ({ ctx, input }) => {
-      const { monthIndex } = input;
+      const { firstDay, lastDay } = input;
       return await ctx.prisma.event.findMany({
         where: {
           AND: [
             { managerId: ctx.session.user.id },
             {
               date: {
-                gte: new Date(dayjs().year(), monthIndex, 1),
-                lt: new Date(
-                  dayjs().year(),
-                  monthIndex,
-                  dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
-                ),
+                gte: firstDay,
+                lt: dayjs(lastDay).add(1, 'day').toDate(),
               },
             },
           ],
@@ -148,9 +140,9 @@ export const eventRouter = createTRPCRouter({
       });
     }),
   getTeamEvents: protectedProcedure
-    .input(z.object({ monthIndex: z.number() }))
+    .input(z.object({ firstDay: z.date(), lastDay: z.date() }))
     .query(async ({ ctx, input }) => {
-      const { monthIndex } = input;
+      const { firstDay, lastDay } = input;
 
       const driverWhereClause = {
         drivers: { some: { id: { equals: ctx.session.user.id } } },
@@ -194,12 +186,8 @@ export const eventRouter = createTRPCRouter({
               },
             },
             date: {
-              gte: new Date(dayjs().year(), monthIndex, 1),
-              lt: new Date(
-                dayjs().year(),
-                monthIndex,
-                dayjs(new Date(dayjs().year(), monthIndex)).daysInMonth() + 1
-              ),
+              gte: firstDay,
+              lt: dayjs(lastDay).add(1, 'day').toDate(),
             },
             NOT: [
               {

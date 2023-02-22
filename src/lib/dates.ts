@@ -29,3 +29,14 @@ export function getCalendarPage(
 
   return calendarPage;
 }
+
+export function getCalendarPageBoundaries(page: dayjs.Dayjs[][]) {
+  return (
+    [
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      page[0]![0],
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      page[page.length - 1]![page[page.length - 1]!.length - 1],
+    ] as [dayjs.Dayjs, dayjs.Dayjs]
+  ).map(day => new Date(day.format('YYYY MM DD'))) as [Date, Date];
+}
