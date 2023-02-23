@@ -3,6 +3,7 @@ import {
   DocumentArrowUpIcon,
   EllipsisHorizontalCircleIcon,
   ArrowLeftIcon,
+  PencilSquareIcon,
 } from '@heroicons/react/20/solid';
 import { motion } from 'framer-motion';
 import Button from '@ui/Button';
@@ -14,13 +15,16 @@ import { useResultStore } from '../../../store/useResultStore';
 import { type RouterOutputs } from '../../../utils/api';
 import { capitilize } from '../../../utils/helpers';
 import cn from '../../../lib/classes';
+import { useSession } from 'next-auth/react';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
-  team?: boolean;
+  isTeamEvent?: boolean;
 };
 
-const Event: FC<EventProps> = ({ event, team = false }) => {
+const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
+  const { data: session } = useSession();
+
   const { open: openNewEvent } = useEventStore();
   const { open: openPostResult } = useResultStore();
 
@@ -29,18 +33,20 @@ const Event: FC<EventProps> = ({ event, team = false }) => {
   return (
     <Tile
       header={
-        <div className='flex w-full items-center justify-between gap-4 rounded bg-slate-700'>
+        <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
           <span className='text-base font-semibold'>
             {event.championship && (
               <>{capitilize(event.championship.name)} - </>
             )}
             {capitilize(event.title ?? '')}
           </span>
-          {!team && (
+          {!isTeamEvent && (
             <Button
               intent='danger'
-              size='small'
+              size='xs'
               gap='small'
+              className='ml-auto p-1'
+              aria-label='delete event'
               onClick={() =>
                 openNewEvent(
                   event.id,
@@ -49,8 +55,18 @@ const Event: FC<EventProps> = ({ event, team = false }) => {
                 )
               }
             >
-              <span>Delete</span>
               <TrashIcon className='h-4' />
+            </Button>
+          )}
+          {event.drivers.find(driver => driver.id === session?.user?.id) && (
+            <Button
+              intent='secondary'
+              size='xs'
+              gap='small'
+              className='p-1'
+              aria-label='edit event'
+            >
+              <PencilSquareIcon className='h-4' />
             </Button>
           )}
         </div>
@@ -112,7 +128,7 @@ const Event: FC<EventProps> = ({ event, team = false }) => {
           </>
         )}
       </div>
-      {dayjs().isAfter(dayjs(event.date)) && !event.result && !team && (
+      {dayjs().isAfter(dayjs(event.date)) && !event.result && !isTeamEvent && (
         <Button
           intent='secondary'
           size='small'
