@@ -102,7 +102,11 @@ const NewEvent: FC = () => {
     <NewEventType key={0} formState={formState} setFormState={setFormState} />,
     <>
       {formState.newEventType === 'championship' ? (
-        <ChampEventDetails />
+        <ChampEventDetails
+          formState={formState}
+          setFormState={setFormState}
+          errors={storeErrors}
+        />
       ) : (
         <OneOffEventDetails
           formState={formState}

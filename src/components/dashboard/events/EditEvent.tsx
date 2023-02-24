@@ -17,6 +17,7 @@ import { eventTypes } from '../../../constants/constants';
 import type { allKeys } from '../../../types/utils';
 import dayjs from 'dayjs';
 import { useCalendarStore } from '../../../store/useCalendarStore';
+import type { NewEventFormState } from './NewEvent';
 
 export const formSchema = z
   .object({
@@ -86,7 +87,11 @@ const EditEvent: FC = () => {
     <NewEventType key={0} formState={formState} setFormState={setFormState} />,
     <>
       {formState.newEventType === 'championship' ? (
-        <ChampEventDetails />
+        <ChampEventDetails
+          formState={formState as NewEventFormState}
+          setFormState={setFormState}
+          errors={storeErrors}
+        />
       ) : (
         <OneOffEventDetails
           formState={formState}

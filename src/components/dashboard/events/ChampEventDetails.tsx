@@ -7,15 +7,24 @@ import { useSession } from 'next-auth/react';
 import { type FC } from 'react';
 import cn from '../../../lib/classes';
 import { useCalendarStore } from '../../../store/useCalendarStore';
-import { useNewEventStore } from '../../../store/useNewEventStore';
 import { api, type RouterOutputs } from '../../../utils/api';
 import { capitilize, hasRole } from '../../../utils/helpers';
 import ErrorWrapper from '../../ErrorWrapper';
+import type { EditEventErrors } from './EditEvent';
+import type { NewEventErrors, NewEventFormState } from './NewEvent';
 
-const ChampEventDetails: FC = () => {
+type ChampEventDetailsProps = {
+  formState: NewEventFormState;
+  setFormState: (formState: Partial<NewEventFormState>) => void;
+  errors: NewEventErrors | EditEventErrors;
+};
+
+const ChampEventDetails: FC<ChampEventDetailsProps> = ({
+  formState,
+  setFormState,
+  errors,
+}) => {
   const { data: session } = useSession();
-
-  const { formState, setFormState, errors } = useNewEventStore();
   const { selectedDay } = useCalendarStore();
 
   const { data: driverChamps, isInitialLoading: driverChampsLoading } =

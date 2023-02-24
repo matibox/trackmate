@@ -28,13 +28,7 @@ export const useEditEventStore = create<EditEventStore>()(set => ({
       formState: {
         ...state.formState,
         car: event.car,
-        championship: event.championshipId
-          ? {
-              id: event.championshipId,
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              ...event.championship!,
-            }
-          : null,
+        championship: null,
         drivers: event.drivers as { id: string; name: string | null }[],
         duration: event.duration,
         newEventType: event.championshipId ? 'championship' : 'oneOff',
