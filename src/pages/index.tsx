@@ -3,6 +3,7 @@ import Championships from '@dashboard/championships/Championships';
 import DeleteChampionship from '@dashboard/championships/DeleteChampionship';
 import NewChampionship from '@dashboard/championships/NewChampionship';
 import DeleteEvent from '@dashboard/events/DeleteEvent';
+import EditEvent from '@dashboard/events/EditEvent';
 import Events from '@dashboard/events/Events';
 import NewEvent from '@dashboard/events/NewEvent';
 import CreateTeam from '@dashboard/manageTeam/CreateTeam';
@@ -32,6 +33,7 @@ const Home: NextPage = () => {
         <NewChampionship />
         <DeleteDriver />
         <DeleteTeam />
+        <EditEvent />
         <NewEvent />
         <EditTeam />
         <CreateTeam />

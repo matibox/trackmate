@@ -16,6 +16,7 @@ import { type RouterOutputs } from '../../../utils/api';
 import { capitilize } from '../../../utils/helpers';
 import cn from '../../../lib/classes';
 import { useSession } from 'next-auth/react';
+import { useEditEventStore } from '../../../store/useEditEventStore';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
@@ -25,8 +26,9 @@ type EventProps = {
 const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
   const { data: session } = useSession();
 
-  const { open: openNewEvent } = useEventStore();
+  const { open: openDeleteEvent } = useEventStore();
   const { open: openPostResult } = useResultStore();
+  const { open: openEditEvent } = useEditEventStore();
 
   const [notesOpened, setNotesOpened] = useState(false);
 
@@ -40,7 +42,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
             )}
             {capitilize(event.title ?? '')}
           </span>
-          {!isTeamEvent && (
+          {!isTeamEvent && !event.result && (
             <Button
               intent='danger'
               size='xs'
@@ -48,7 +50,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
               className='ml-auto p-1'
               aria-label='delete event'
               onClick={() =>
-                openNewEvent(
+                openDeleteEvent(
                   event.id,
                   event.championship?.name,
                   event.title ?? undefined
@@ -58,17 +60,20 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
               <TrashIcon className='h-4' />
             </Button>
           )}
-          {event.drivers.find(driver => driver.id === session?.user?.id) && (
-            <Button
-              intent='secondary'
-              size='xs'
-              gap='small'
-              className='p-1'
-              aria-label='edit event'
-            >
-              <PencilSquareIcon className='h-4' />
-            </Button>
-          )}
+          {!isTeamEvent &&
+            event.drivers.find(driver => driver.id === session?.user?.id) &&
+            !event.result && (
+              <Button
+                intent='secondary'
+                size='xs'
+                gap='small'
+                className='p-1'
+                aria-label='edit event'
+                onClick={() => openEditEvent(event)}
+              >
+                <PencilSquareIcon className='h-4' />
+              </Button>
+            )}
         </div>
       }
       className='relative'

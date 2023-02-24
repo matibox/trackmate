@@ -4,11 +4,21 @@ import Input from '@ui/Input';
 import Label from '@ui/Label';
 import { type FC } from 'react';
 import { useCalendarStore } from '../../../store/useCalendarStore';
-import { useNewEventStore } from '../../../store/useNewEventStore';
+import type { EditEventErrors } from './EditEvent';
+import type { EventStepProps, NewEventErrors } from './NewEvent';
 
-const OneOffEventDetails: FC = () => {
-  const { formState, setFormState, errors } = useNewEventStore();
+type OneOffEventDetailsProps = EventStepProps & {
+  errors: NewEventErrors | EditEventErrors;
+};
+
+const OneOffEventDetails: FC<OneOffEventDetailsProps> = ({
+  formState,
+  setFormState,
+  errors,
+}) => {
   const { selectedDay } = useCalendarStore();
+
+  console.log(formState);
 
   return (
     <>

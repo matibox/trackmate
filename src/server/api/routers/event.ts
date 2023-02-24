@@ -9,7 +9,7 @@ import {
   protectedProcedure,
 } from '../trpc';
 
-const createChampionshipSchema = z.object({
+const eventSchema = z.object({
   title: z.string().nullable(),
   date: z.date(),
   type: z.enum(eventTypes),
@@ -27,10 +27,29 @@ const createChampionshipSchema = z.object({
     .nullable(),
 });
 
+const editEventSchema = z.object({
+  id: z.string(),
+  title: z.string().optional(),
+  date: z.date().optional(),
+  type: z.enum(eventTypes).nullish(),
+  car: z.string().optional(),
+  track: z.string().optional(),
+  duration: z.number().optional(),
+  managerId: z.string().optional(),
+  drivers: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string().nullable(),
+      })
+    )
+    .nullable(),
+});
+
 export const eventRouter = createTRPCRouter({
   createChampionshipEvent: protectedProcedure
     .input(
-      createChampionshipSchema.merge(
+      eventSchema.merge(
         z.object({
           championshipId: z.string(),
           managerId: z.string().optional(),
@@ -55,7 +74,7 @@ export const eventRouter = createTRPCRouter({
       });
     }),
   createOneOffEvent: protectedProcedure
-    .input(createChampionshipSchema)
+    .input(eventSchema)
     .mutation(async ({ ctx, input }) => {
       const { drivers, type, managerId, ...data } = input;
       let teamId: string | undefined;
@@ -209,6 +228,23 @@ export const eventRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.event.delete({
         where: { id: input.eventId },
+      });
+    }),
+  edit: protectedProcedure
+    .input(editEventSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { id, drivers, type, ...data } = input;
+      return await ctx.prisma.event.update({
+        where: { id },
+        data: {
+          ...data,
+          type: type ? type : 'sprint',
+          drivers: {
+            set: drivers?.map(driver => ({
+              id: driver.id,
+            })),
+          },
+        },
       });
     }),
 });

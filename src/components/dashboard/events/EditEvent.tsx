@@ -1,26 +1,22 @@
 import { type FormEvent, type FC, useEffect } from 'react';
-import { useNewEventStore } from '../../../store/useNewEventStore';
 import Popup from '@ui/Popup';
 import PopupHeader from '@ui/PopupHeader';
 import Button from '@ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useMultistepForm } from './useMultistepForm';
 import NewEventType from './NewEventType';
-import { z } from 'zod';
 import Form from '@ui/Form';
 import ChampEventDetails from './ChampEventDetails';
 import OneOffEventDetails from './OneOffEventDetails';
-import { eventTypes } from '../../../constants/constants';
 import { api } from '../../../utils/api';
 import { useError } from '../../../hooks/useError';
-import { useCalendarStore } from '../../../store/useCalendarStore';
-import { useSession } from 'next-auth/react';
-import { hasRole } from '../../../utils/helpers';
 import Loading from '@ui/Loading';
-import { type EditEventFormState } from './EditEvent';
+import { useEditEventStore } from '../../../store/useEditEventStore';
+import { z } from 'zod';
+import { eventTypes } from '../../../constants/constants';
 import type { allKeys } from '../../../types/utils';
-
-const driverSchema = z.object({ id: z.string(), name: z.string().nullable() });
+import dayjs from 'dayjs';
+import { useCalendarStore } from '../../../store/useCalendarStore';
 
 export const formSchema = z
   .object({
@@ -28,20 +24,16 @@ export const formSchema = z
       .object({
         id: z.string(),
         name: z.string(),
-        car: z.string().nullable(),
-        drivers: z.array(driverSchema),
-        link: z.string().url(),
-        managerId: z.string().nullable(),
         organizer: z.string(),
-        type: z.enum(eventTypes),
-        team: z.object({ id: z.string() }).nullable(),
       })
       .nullable(),
     newEventType: z.enum(['oneOff', 'championship']),
     title: z.string().min(1, 'Title is required'),
     car: z.string().min(1, 'Car is required'),
     track: z.string().min(1, 'Track is required'),
-    drivers: z.array(driverSchema).nullable(),
+    drivers: z
+      .array(z.object({ id: z.string(), name: z.string().nullable() }))
+      .nullable(),
     type: z.enum(eventTypes).nullable().default('sprint'),
     duration: z
       .number({ invalid_type_error: 'Duration is required' })
@@ -71,31 +63,23 @@ export const formSchema = z
     }
   });
 
-export type NewEventFormState = z.infer<typeof formSchema>;
-
-export type NewEventErrors =
+export type EditEventFormState = z.infer<typeof formSchema>;
+export type EditEventErrors =
   | {
-      [P in allKeys<NewEventFormState>]?: string[] | undefined;
+      [P in allKeys<EditEventFormState>]?: string[] | undefined;
     }
   | undefined;
 
-export type EventStepProps = {
-  formState: NewEventFormState | EditEventFormState;
-  setFormState: (
-    formState: Partial<NewEventFormState>
-  ) => void | ((formState: Partial<EditEventFormState>) => void);
-};
-
-const NewEvent: FC = () => {
-  const { data: session } = useSession();
+const EditEvent: FC = () => {
   const {
     close,
     isOpened,
     formState,
     setErrors,
-    setFormState,
     errors: storeErrors,
-  } = useNewEventStore();
+    event,
+    setFormState,
+  } = useEditEventStore();
   const { selectedDay } = useCalendarStore();
 
   const steps = [
@@ -117,66 +101,26 @@ const NewEvent: FC = () => {
 
   const { errors, handleSubmit, prev, next, step, stepIndex, isFirst, isLast } =
     useMultistepForm(steps, formSchema, values => {
-      const { type, championship, time, ...data } = values;
-      const date = new Date(
-        `${selectedDay.format('YYYY-MM-DD')} ${time ?? '00:00'}`
-      );
-
-      if (values.newEventType === 'championship') {
-        createChampEvent({
-          ...data,
-          date,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          championshipId: championship!.id,
-          teamId: championship?.team?.id ?? null,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          type: type ?? championship!.type,
-          managerId:
-            hasRole(session, 'manager') &&
-            (type === 'endurance' ||
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              championship!.type === 'endurance')
-              ? session?.user?.id
-              : undefined,
-        });
-      } else {
-        createOneOffEvent({
-          ...data,
-          date,
-          type: type ?? 'sprint',
-          managerId:
-            hasRole(session, 'manager') && values.type === 'endurance'
-              ? session?.user?.id
-              : undefined,
-        });
-      }
+      const { time, ...data } = values;
+      editEvent({
+        id: event?.id as string,
+        date: dayjs(`${selectedDay.format('YYYY-MM-DD')} ${time}`).toDate(),
+        ...data,
+      });
     });
 
   const utils = api.useContext();
-  const { mutate: createChampEvent, isLoading: champLoading } =
-    api.event.createChampionshipEvent.useMutation({
-      onError(err) {
-        setError(err.message);
-      },
-      async onSuccess() {
-        closeAndReset();
-        await utils.event.invalidate();
-        await utils.team.getDriveFor.invalidate();
-        await utils.championship.get.invalidate();
-      },
-    });
-  const { mutate: createOneOffEvent, isLoading: oneOffLoading } =
-    api.event.createOneOffEvent.useMutation({
-      onError(err) {
-        setError(err.message);
-      },
-      async onSuccess() {
-        closeAndReset();
-        await utils.event.invalidate();
-        await utils.team.getDriveFor.invalidate();
-        await utils.championship.get.invalidate();
-      },
-    });
+  const { mutate: editEvent, isLoading } = api.event.edit.useMutation({
+    onError(err) {
+      setError(err.message);
+    },
+    async onSuccess() {
+      closeAndReset();
+      await utils.event.invalidate();
+      await utils.team.getDriveFor.invalidate();
+      await utils.championship.get.invalidate();
+    },
+  });
 
   useEffect(() => {
     setErrors(errors);
@@ -203,7 +147,7 @@ const NewEvent: FC = () => {
     <Popup
       close={closeAndReset}
       condition={isOpened}
-      header={<PopupHeader title='new event' close={closeAndReset} />}
+      header={<PopupHeader title='edit event' close={closeAndReset} />}
       className='max-w-3xl'
     >
       <Form onSubmit={handleNextStep} className='items-start'>
@@ -228,14 +172,10 @@ const NewEvent: FC = () => {
             gap='small'
             className='self-end'
             type='submit'
-            disabled={champLoading || oneOffLoading}
+            disabled={isLoading}
           >
             <span>{isLast ? 'Submit' : 'Next'}</span>
-            {champLoading || oneOffLoading ? (
-              <Loading />
-            ) : (
-              <ArrowRightIcon className='h-5' />
-            )}
+            {isLoading ? <Loading /> : <ArrowRightIcon className='h-5' />}
           </Button>
         </div>
       </Form>
@@ -243,4 +183,4 @@ const NewEvent: FC = () => {
   );
 };
 
-export default NewEvent;
+export default EditEvent;

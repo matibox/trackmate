@@ -1,23 +1,20 @@
-import type { formSchema } from '@dashboard/events/NewEvent';
-import type { z } from 'zod';
+import type {
+  NewEventErrors,
+  NewEventFormState,
+} from '@dashboard/events/NewEvent';
 import { create } from 'zustand';
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-type allKeys<T> = T extends any ? keyof T : never;
 
 type NewEventStore = {
   isOpened: boolean;
   open: () => void;
   close: () => void;
-  formState: z.infer<typeof formSchema>;
-  setFormState: (formState: Partial<NewEventStore['formState']>) => void;
-  errors:
-    | { [P in allKeys<NewEventStore['formState']>]?: string[] | undefined }
-    | undefined;
-  setErrors: (errors: NewEventStore['errors']) => void;
+  formState: NewEventFormState;
+  setFormState: (formState: Partial<NewEventFormState>) => void;
+  errors: NewEventErrors;
+  setErrors: (errors: NewEventErrors) => void;
 };
 
-export const defaultFormState: NewEventStore['formState'] = {
+export const defaultEventFormState: NewEventFormState = {
   newEventType: 'oneOff',
   championship: null,
   title: '',
@@ -35,9 +32,9 @@ export const useNewEventStore = create<NewEventStore>()(set => ({
   close: () =>
     set(() => ({
       isOpened: false,
-      formState: defaultFormState,
+      formState: defaultEventFormState,
     })),
-  formState: defaultFormState,
+  formState: defaultEventFormState,
   setFormState: formState =>
     set(state => ({
       ...state,
