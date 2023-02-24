@@ -124,6 +124,7 @@ const EventDot: FC<{
     <div
       className={cn('h-1.5 w-1.5 rounded-full', {
         'bg-emerald-500': isSprint && team,
+        'bg-slate-600': isSprint && team && isToday,
         'bg-sky-500': isSprint && driving,
         'bg-sky-50': isSprint && driving && isToday,
         'bg-rose-500': isEndurance && team,
