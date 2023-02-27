@@ -15,8 +15,14 @@ const ChampionshipsHeader: FC = () => {
         <TrophyIcon className='h-6' />
         <span>Championships</span>
       </h1>
-      <Button intent='primary' size='small' gap='small' onClick={open}>
-        <span>Create</span>
+      <Button
+        intent='primary'
+        size='xs'
+        gap='small'
+        onClick={open}
+        className='p-1'
+        aria-label='create championship'
+      >
         <PlusIcon className='h-5' />
       </Button>
     </div>

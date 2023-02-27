@@ -52,12 +52,12 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
           {showDelete && (
             <Button
               intent='danger'
-              size='small'
+              size='xs'
               gap='small'
               onClick={() => open(championship.id, championship.name)}
-              className='h-7'
+              className='h-7 p-1'
+              aria-label='delete'
             >
-              <span>Delete</span>
               <TrashIcon className='h-4' />
             </Button>
           )}
