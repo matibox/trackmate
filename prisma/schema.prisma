@@ -70,23 +70,24 @@ model Team {
 }
 
 model User {
-  id                    String         @id @default(cuid())
-  name                  String?
-  email                 String?        @unique
-  emailVerified         DateTime?
-  image                 String?
-  accounts              Account[]
-  sessions              Session[]
-  roles                 Role[]
-  championships         Championship[] @relation(name: "drivers-championship")
-  events                Event[]        @relation(name: "drivers")
-  managingEvents        Event[]        @relation(name: "manager")
-  managingTeam          Team?          @relation(name: "manager-team")
-  socialManagingTeam    Team?          @relation(name: "social-media-team")
-  team                  Team?          @relation(fields: [teamId], references: [id])
-  teamId                String?
-  managingChampionships Championship[]
-  results               Result[]
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String?                 @unique
+  emailVerified          DateTime?
+  image                  String?
+  accounts               Account[]
+  sessions               Session[]
+  roles                  Role[]
+  championships          Championship[]          @relation(name: "drivers-championship")
+  events                 Event[]                 @relation(name: "drivers")
+  managingEvents         Event[]                 @relation(name: "manager")
+  managingTeam           Team?                   @relation(name: "manager-team")
+  socialManagingTeam     Team?                   @relation(name: "social-media-team")
+  team                   Team?                   @relation(fields: [teamId], references: [id])
+  teamId                 String?
+  managingChampionships  Championship[]
+  results                Result[]
+  newResultNotifications NewResultNotification[]
 
   @@index([teamId])
 }
@@ -147,18 +148,33 @@ model Event {
 }
 
 model Result {
-  id            String   @id @default(cuid())
-  qualiPosition Int      @db.UnsignedTinyInt
-  racePosition  Int      @db.UnsignedTinyInt
-  notes         String?  @db.Text
-  eventId       String   @unique
-  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  teamId        String
-  team          Team     @relation(fields: [teamId], references: [id])
-  author        User     @relation(fields: [authorId], references: [id])
-  authorId      String
-  createdAt     DateTime @default(now())
+  id                     String                  @id @default(cuid())
+  qualiPosition          Int                     @db.UnsignedTinyInt
+  racePosition           Int                     @db.UnsignedTinyInt
+  notes                  String?                 @db.Text
+  eventId                String                  @unique
+  event                  Event                   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  teamId                 String
+  team                   Team                    @relation(fields: [teamId], references: [id])
+  author                 User                    @relation(fields: [authorId], references: [id])
+  authorId               String
+  createdAt              DateTime                @default(now())
+  newResultNotifications NewResultNotification[]
 
   @@index([teamId])
   @@index([authorId])
+}
+
+model NewResultNotification {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  read       Boolean  @default(false)
+  result     Result   @relation(fields: [resultId], references: [id])
+  resultId   String
+  receiver   User     @relation(fields: [receiverId], references: [id])
+  receiverId String
+  message    String
+
+  @@index([resultId])
+  @@index([receiverId])
 }
