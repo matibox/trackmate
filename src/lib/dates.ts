@@ -1,10 +1,12 @@
 import dayjs from 'dayjs';
 import weekday from 'dayjs/plugin/weekday';
 import updateLocale from 'dayjs/plugin/updateLocale';
+import calendar from 'dayjs/plugin/calendar';
 import enLocale from 'dayjs/locale/en';
 
 dayjs.extend(updateLocale);
 dayjs.extend(weekday);
+dayjs.extend(calendar);
 
 dayjs.locale('calendar', {
   ...enLocale,
