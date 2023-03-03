@@ -67,7 +67,7 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
           {data && (
             <>
               {data.isEmpty ? (
-                <span className='pt-1 text-sm text-slate-300 sm:text-base'>
+                <span className='pt-1 pl-1 text-sm text-slate-300 sm:text-base'>
                   You don&apos;t have any notifications
                 </span>
               ) : (
