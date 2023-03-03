@@ -5,3 +5,5 @@ export const resultsSortingOptions = [
   'createdAt',
   'position',
 ] as const;
+
+export const notificationGroups = ['newResultNotification'] as const;

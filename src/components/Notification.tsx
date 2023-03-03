@@ -11,22 +11,31 @@ type NotificationProps = {
 };
 
 const Notification: FC<NotificationProps> = ({ type, notification }) => {
+  const handleAction = () => {
+    switch (type) {
+      case 'newResultNotification': {
+        // console.log('new result');
+        break;
+      }
+    }
+  };
+
   return (
     <div className='relative flex flex-col p-2 pl-3'>
       <div
         className={cn(
-          'none absolute bottom-4 left-0.5 h-1 w-1 rounded-full bg-sky-500',
+          'absolute bottom-4 left-0.5 hidden h-1 w-1 rounded-full bg-sky-500',
           {
             block: !notification.read,
           }
         )}
+        onClick={handleAction}
       />
       <span className='text-sm text-slate-300'>
-        {dayjs().calendar(dayjs(notification.createdAt))}
+        {dayjs(notification.createdAt).calendar(dayjs())}
       </span>
       <p>{notification.message}</p>
     </div>
-    // TODO: mark all as read
     // TODO: on click take the proper action
   );
 };

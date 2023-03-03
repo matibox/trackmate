@@ -1,4 +1,6 @@
+import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { notificationGroups } from '../../../constants/constants';
 
 export const notificationRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -10,13 +12,27 @@ export const notificationRouter = createTRPCRouter({
     ]);
 
     const isEmpty = data.every(notifGroup => notifGroup.length === 0);
-    const [newResultNotifs] = data;
+    const [newResultNotification] = data;
 
-    return {
+    const returnObj = {
       notifGroups: {
-        newResultNotifs,
+        newResultNotification,
       },
       isEmpty,
+    } satisfies {
+      notifGroups: Record<(typeof notificationGroups)[number], unknown>;
+      isEmpty: boolean;
     };
+
+    return returnObj;
   }),
+  markAsRead: protectedProcedure
+    .input(z.object({ id: z.string(), type: z.enum(notificationGroups) }))
+    .mutation(async ({ ctx, input }) => {
+      const { id, type } = input;
+      return await ctx.prisma[type].update({
+        where: { id },
+        data: { read: true },
+      });
+    }),
 });

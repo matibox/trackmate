@@ -169,9 +169,9 @@ model NewResultNotification {
   id         String   @id @default(cuid())
   createdAt  DateTime @default(now())
   read       Boolean  @default(false)
-  result     Result   @relation(fields: [resultId], references: [id])
+  result     Result   @relation(fields: [resultId], references: [id], onDelete: Cascade)
   resultId   String
-  receiver   User     @relation(fields: [receiverId], references: [id])
+  receiver   User     @relation(fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId String
   message    String
 

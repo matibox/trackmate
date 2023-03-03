@@ -1,5 +1,6 @@
 import { type RoleName } from '@prisma/client';
 import type { Session } from 'next-auth';
+import { type Entries } from '../types/utils';
 
 export const formatErrors = (errors: string[] | undefined) =>
   errors?.reduce((a, b) => `${a}. ${b}`);
@@ -23,3 +24,6 @@ export const splitOnUppercase = (string: string) =>
 
 export const splitAndCapitilize = (string: string) =>
   capitilize(splitOnUppercase(string).toLowerCase());
+
+export const objectEntries = <T extends object>(obj: T) =>
+  Object.entries(obj) as Entries<T>;
