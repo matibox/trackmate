@@ -13,7 +13,7 @@ type NotificationsProps = {
 };
 
 const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
-  const { isOpened, toggle } = useNotificationStore();
+  const { isOpened, toggle, setUnread } = useNotificationStore();
 
   const containerRef = useRef<HTMLDivElement>(null);
   useClickOutside(containerRef, toggle, [buttonRef]);
@@ -24,6 +24,13 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
   const { data, isLoading } = api.notification.getAll.useQuery(undefined, {
     onError: err => setError(err.message),
     refetchInterval: 1000 * 60 * 5,
+    onSuccess: data => {
+      if (data.isAllRead) {
+        setUnread(false);
+      } else {
+        setUnread(true);
+      }
+    },
   });
 
   const { mutate: markAsRead } = api.notification.markAsRead.useMutation({

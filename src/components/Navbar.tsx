@@ -12,8 +12,11 @@ import Notifications from './Notifications';
 
 const Navbar: FC = () => {
   const { open: openSettings } = useSettingsStore();
-  const { toggle: toggleNotifications, isOpened: notificationsOpened } =
-    useNotificationStore();
+  const {
+    toggle: toggleNotifications,
+    isOpened: notificationsOpened,
+    unread,
+  } = useNotificationStore();
 
   const notificationsBtnRef = useRef<HTMLButtonElement>(null);
 
@@ -48,8 +51,7 @@ const Navbar: FC = () => {
             className={cn(
               'absolute top-0 right-0 hidden h-2 w-2 items-center justify-center rounded-full bg-sky-400 text-xs text-white',
               {
-                // TODO: enable if user has unread notifications
-                flex: false,
+                flex: unread,
               }
             )}
           />

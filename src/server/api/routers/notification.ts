@@ -12,6 +12,9 @@ export const notificationRouter = createTRPCRouter({
     ]);
 
     const isEmpty = data.every(notifGroup => notifGroup.length === 0);
+    const isAllRead = data.every(notifGroup =>
+      notifGroup.every(notif => notif.read)
+    );
     const [newResultNotification] = data;
 
     const returnObj = {
@@ -19,9 +22,11 @@ export const notificationRouter = createTRPCRouter({
         newResultNotification,
       },
       isEmpty,
+      isAllRead,
     } satisfies {
       notifGroups: Record<(typeof notificationGroups)[number], unknown>;
       isEmpty: boolean;
+      isAllRead: boolean;
     };
 
     return returnObj;
