@@ -8,7 +8,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { api } from '../utils/api';
 
 import '../styles/globals.css';
-import NotificationContextProvider from '../context/NotificationContext';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -45,9 +44,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         ]}
       />
       <ReactQueryDevtools />
-      <NotificationContextProvider>
-        <Component {...pageProps} />
-      </NotificationContextProvider>
+      <Component {...pageProps} />
     </SessionProvider>
   );
 };
