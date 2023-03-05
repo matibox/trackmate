@@ -149,8 +149,11 @@ model Event {
 
 model Result {
   id                     String                  @id @default(cuid())
-  qualiPosition          Int                     @db.UnsignedTinyInt
-  racePosition           Int                     @db.UnsignedTinyInt
+  qualiPosition          Int?                    @db.UnsignedTinyInt
+  racePosition           Int?                    @db.UnsignedTinyInt
+  DNF                    Boolean                 @default(false)
+  DNS                    Boolean                 @default(false)
+  DSQ                    Boolean                 @default(false)
   notes                  String?                 @db.Text
   eventId                String                  @unique
   event                  Event                   @relation(fields: [eventId], references: [id], onDelete: Cascade)

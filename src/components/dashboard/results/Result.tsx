@@ -3,7 +3,7 @@ import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
-import { useState, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { type RouterOutputs } from '../../../utils/api';
 
 type ResultProps = {
@@ -12,6 +12,10 @@ type ResultProps = {
 
 const Result: FC<ResultProps> = ({ result }) => {
   const [notesOpened, setNotesOpened] = useState(false);
+
+  const Dxx = useMemo(() => {
+    return result.DNF || result.DNS || result.DSQ;
+  }, [result.DNF, result.DNS, result.DSQ]);
 
   return (
     <Tile
@@ -96,10 +100,17 @@ const Result: FC<ResultProps> = ({ result }) => {
         <h2 className='col-span-2 text-lg font-semibold'>Result</h2>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Qualifying</span>P
-          {result.qualiPosition}
+          {Dxx ? '-' : result.qualiPosition}
         </div>
         <div className='flex flex-col'>
-          <span className='text-slate-300'>Race</span>P{result.racePosition}
+          <span className='text-slate-300'>Race</span>
+          {result.DNF
+            ? 'DNF'
+            : result.DNS
+            ? 'DNS'
+            : result.DSQ
+            ? 'DSQ'
+            : `P${result.racePosition as number}`}
         </div>
       </div>
       {result.notes && (
