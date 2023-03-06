@@ -8,10 +8,13 @@ export const resultRouter = createTRPCRouter({
   post: multiRoleProcedure(['driver', 'manager'])
     .input(
       z.object({
-        qualiPosition: z.number(),
-        racePosition: z.number(),
+        qualiPosition: z.number().nullable(),
+        racePosition: z.number().nullable(),
         notes: z.string().optional(),
         eventId: z.string(),
+        DNF: z.boolean(),
+        DSQ: z.boolean(),
+        DNS: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {

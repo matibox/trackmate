@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
-import { useState, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import { useEventStore } from '../../../store/useEventStore';
 import { useResultStore } from '../../../store/useResultStore';
 import { type RouterOutputs } from '../../../utils/api';
@@ -31,6 +31,12 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
   const { open: openEditEvent } = useEditEventStore();
 
   const [notesOpened, setNotesOpened] = useState(false);
+
+  const Dxx = useMemo(() => {
+    const { result } = event;
+    if (!result) return false;
+    return result.DNF || result.DNS || result.DSQ;
+  }, [event]);
 
   return (
     <Tile
@@ -111,11 +117,21 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
           <>
             <div className='flex flex-col'>
               <span className='text-slate-300'>Quali Position</span>
-              <span>P{event.result.qualiPosition}</span>
+              <span>
+                {Dxx ? '-' : `P${event.result.qualiPosition as number}`}
+              </span>
             </div>
             <div className='flex flex-col'>
               <span className='text-slate-300'>Race Position</span>
-              <span>P{event.result.racePosition}</span>
+              <span>
+                {event.result.DNF
+                  ? 'DNF'
+                  : event.result.DNS
+                  ? 'DNS'
+                  : event.result.DSQ
+                  ? 'DSQ'
+                  : `P${event.result.racePosition as number}`}
+              </span>
             </div>
             {event.result.notes && (
               <div className='flex flex-col'>
