@@ -57,16 +57,17 @@ model Session {
 }
 
 model Team {
-  id            String         @id @default(cuid())
-  name          String
-  managerId     String         @unique
-  socialMediaId String?        @unique
-  manager       User           @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
-  socialMedia   User?          @relation(fields: [socialMediaId], references: [id], name: "social-media-team", onUpdate: NoAction, onDelete: NoAction)
-  drivers       User[]
-  events        Event[]
-  championships Championship[]
-  results       Result[]
+  id                 String               @id @default(cuid())
+  name               String
+  managerId          String               @unique
+  socialMediaId      String?              @unique
+  manager            User                 @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
+  socialMedia        User?                @relation(fields: [socialMediaId], references: [id], name: "social-media-team", onUpdate: NoAction, onDelete: NoAction)
+  drivers            User[]
+  events             Event[]
+  championships      Championship[]
+  results            Result[]
+  ChampionshipResult ChampionshipResult[]
 }
 
 model User {
@@ -87,6 +88,7 @@ model User {
   teamId                 String?
   managingChampionships  Championship[]
   results                Result[]
+  champResults           ChampionshipResult[]
   newResultNotifications NewResultNotification[]
 
   @@index([teamId])
@@ -108,18 +110,19 @@ model Role {
 }
 
 model Championship {
-  id        String    @id @default(cuid())
+  id        String              @id @default(cuid())
   organizer String
   link      String
   name      String
   car       String?
   type      EventType
   events    Event[]
-  drivers   User[]    @relation(name: "drivers-championship")
-  manager   User?     @relation(fields: [managerId], references: [id])
+  drivers   User[]              @relation(name: "drivers-championship")
+  manager   User?               @relation(fields: [managerId], references: [id])
   managerId String?
-  team      Team?     @relation(fields: [teamId], references: [id])
+  team      Team?               @relation(fields: [teamId], references: [id])
   teamId    String?
+  result    ChampionshipResult?
 
   @@index([managerId])
   @@index([teamId])
@@ -163,6 +166,22 @@ model Result {
   authorId               String
   createdAt              DateTime                @default(now())
   newResultNotifications NewResultNotification[]
+
+  @@index([teamId])
+  @@index([authorId])
+}
+
+model ChampionshipResult {
+  id             String       @id @default(cuid())
+  position       Int          @db.UnsignedTinyInt
+  notes          String?      @db.Text
+  championshipId String       @unique
+  championship   Championship @relation(fields: [championshipId], references: [id], onDelete: Cascade)
+  teamId         String
+  team           Team         @relation(fields: [teamId], references: [id])
+  author         User         @relation(fields: [authorId], references: [id])
+  authorId       String
+  createdAt      DateTime     @default(now())
 
   @@index([teamId])
   @@index([authorId])

@@ -100,4 +100,25 @@ export const resultRouter = createTRPCRouter({
         orderBy: orderField,
       });
     }),
+  postChampionship: multiRoleProcedure(['driver', 'manager'])
+    .input(
+      z.object({
+        position: z.number(),
+        notes: z.string().optional(),
+        championshipId: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { championshipId, ...fields } = input;
+      return await ctx.prisma.championshipResult.create({
+        data: {
+          ...fields,
+          championship: { connect: { id: championshipId } },
+          team: hasRole(ctx.session, 'manager')
+            ? { connect: { managerId: ctx.session.user.id } }
+            : { connect: { id: ctx.session.user.teamId ?? undefined } },
+          author: { connect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
 });

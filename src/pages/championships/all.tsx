@@ -26,14 +26,17 @@ import { capitilize, hasRole } from '../../utils/helpers';
 
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
-  const { data: championships, isLoading } = api.championship.get.useQuery(
-    { max: 0, upcoming: false },
-    {
-      onError(err) {
-        setError(err.message);
-      },
-    }
-  );
+
+  const { data: championships, isLoading: getChampsLoading } =
+    api.championship.get.useQuery(
+      { max: 0, upcoming: false },
+      { onError: err => setError(err.message) }
+    );
+
+  const { mutate: postResult, isLoading: postResultLoading } =
+    api.result.postChampionship.useMutation({
+      onError: err => setError(err.message),
+    });
 
   return (
     <>
@@ -49,7 +52,7 @@ const AllChampionships: NextPage = () => {
           <span className='text-base font-normal'>back</span>
         </Link>
         <Error />
-        {isLoading && (
+        {getChampsLoading && (
           <div className='flex h-screen w-full items-center justify-center'>
             <Loading />
           </div>
