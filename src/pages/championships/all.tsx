@@ -17,9 +17,11 @@ import { NextSeo } from 'next-seo';
 import Link from 'next/link';
 import { useState, type FC } from 'react';
 import Navbar from '../../components/Navbar';
+import PostChampResult from '../../components/PostChampResult';
 import { useError } from '../../hooks/useError';
 import cn from '../../lib/classes';
 import { getServerAuthSession } from '../../server/auth';
+import { useChampResultStore } from '../../store/useChampResultStore';
 import { useResultStore } from '../../store/useResultStore';
 import { api, type RouterOutputs } from '../../utils/api';
 import { capitilize, hasRole } from '../../utils/helpers';
@@ -27,16 +29,13 @@ import { capitilize, hasRole } from '../../utils/helpers';
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
 
+  const { open: openResult } = useChampResultStore();
+
   const { data: championships, isLoading: getChampsLoading } =
     api.championship.get.useQuery(
       { max: 0, upcoming: false },
       { onError: err => setError(err.message) }
     );
-
-  const { mutate: postResult, isLoading: postResultLoading } =
-    api.result.postChampionship.useMutation({
-      onError: err => setError(err.message),
-    });
 
   return (
     <>
@@ -44,6 +43,7 @@ const AllChampionships: NextPage = () => {
       <Navbar />
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <PostResult />
+        <PostChampResult />
         <Link
           href='/'
           className='flex items-center gap-2 pl-4 pt-4 text-slate-300 transition-colors hover:text-sky-400'
@@ -106,6 +106,46 @@ const AllChampionships: NextPage = () => {
                             {capitilize(championship.type)}
                           </span>
                         </div>
+                      </div>
+                      <div>
+                        {dayjs().isAfter(
+                          dayjs(
+                            championship.events[championship.events.length - 1]
+                              ?.date
+                          )
+                        ) && (
+                          <Button
+                            intent={
+                              !championship.result ? 'primary' : 'secondary'
+                            }
+                            size='small'
+                            className='mt-2 font-semibold'
+                            onClick={() => {
+                              const { result, id, organizer, name } =
+                                championship;
+                              if (!result) {
+                                return openResult({
+                                  id,
+                                  organizer,
+                                  title: name,
+                                });
+                              }
+                              // TODO: open show result
+                            }}
+                          >
+                            {!championship.result ? (
+                              <>
+                                <span>Post result</span>
+                                <DocumentArrowUpIcon className='h-5' />
+                              </>
+                            ) : (
+                              <>
+                                <span>Show result</span>
+                                <DocumentChartBarIcon className='h-5' />
+                              </>
+                            )}
+                          </Button>
+                        )}
                       </div>
                       <div className='border-t border-slate-800 pt-4'>
                         <h2 className='mb-4 text-xl font-semibold'>Events</h2>

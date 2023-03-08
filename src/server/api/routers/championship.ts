@@ -50,6 +50,7 @@ export const championshipRouter = createTRPCRouter({
               name: true,
             },
           },
+          result: true,
         },
         take: input.max === 0 ? undefined : input.max,
         // TODO add championship start and end
