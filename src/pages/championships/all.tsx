@@ -15,7 +15,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
-import { useState, type FC } from 'react';
+import { useMemo, useState, type FC } from 'react';
 import Navbar from '../../components/Navbar';
 import PostChampResult from '../../components/PostChampResult';
 import { useError } from '../../hooks/useError';
@@ -179,6 +179,12 @@ const Event: FC<{
   const { open } = useResultStore();
   const [resultsOpened, setResultsOpened] = useState(false);
 
+  const Dxx = useMemo(() => {
+    if (!event.result) return false;
+    const { DNF, DNS, DSQ } = event.result;
+    return DNF || DNS || DSQ;
+  }, [event.result]);
+
   return (
     <div className='relative flex w-full max-w-xs flex-col gap-2 rounded bg-slate-800 p-4 ring-1 ring-slate-700'>
       <AnimatePresence>
@@ -211,11 +217,21 @@ const Event: FC<{
             >
               <div className='flex flex-col'>
                 <span className='text-slate-300'>Qualifying position</span>
-                <span>P{event.result?.qualiPosition}</span>
+                <span>
+                  {Dxx ? '-' : `P${event.result?.qualiPosition as number}`}
+                </span>
               </div>
               <div className='flex flex-col'>
                 <span className='text-slate-300'>Race position</span>
-                <span>P{event.result?.racePosition}</span>
+                <span>
+                  {event.result?.DNF
+                    ? 'DNF'
+                    : event.result?.DNS
+                    ? 'DNS'
+                    : event.result?.DSQ
+                    ? 'DSQ'
+                    : `P${event.result?.racePosition as number}`}
+                </span>
               </div>
               {event.result?.notes && (
                 <div className='flex flex-col'>
