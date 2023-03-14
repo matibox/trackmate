@@ -1,4 +1,7 @@
+import Button from '@ui/Button';
 import Form from '@ui/Form';
+import Input from '@ui/Input';
+import Label from '@ui/Label';
 import Popup from '@ui/Popup';
 import PopupHeader from '@ui/PopupHeader';
 import { useState, type FC } from 'react';
@@ -16,7 +19,7 @@ const formSchema = z.object({
 type FormSchema = z.infer<typeof formSchema>;
 
 const defaultFormState: FormSchema = {
-  position: '0',
+  position: '1',
   notes: '',
 };
 
@@ -63,9 +66,35 @@ const PostChampResult: FC = () => {
       isLoading={isLoading}
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
-        <div className='flex w-full flex-wrap justify-start gap-1'>
-          {/*// TODO: form */}
-        </div>
+        <Label label='position'>
+          <Input
+            type='number'
+            min={1}
+            max={255}
+            value={formState.position}
+            onChange={e =>
+              setFormState(prev => ({ ...prev, position: e.target.value }))
+            }
+            error={errors?.position}
+          />
+        </Label>
+        <Label label='notes' optional className='sm:w-full'>
+          <textarea
+            className='h-24 w-full resize-none appearance-none rounded px-2 py-1 tracking-tight text-slate-900 scrollbar-thin scrollbar-track-slate-300 scrollbar-thumb-sky-500 selection:bg-sky-500 selection:text-slate-50 focus:outline-none focus:ring focus:ring-sky-600'
+            maxLength={65535}
+            value={formState.notes}
+            onChange={e =>
+              setFormState(prev => ({
+                ...prev,
+                notes: e.target.value,
+              }))
+            }
+          ></textarea>
+        </Label>
+        <Error />
+        <Button intent='primary' size='small' className='ml-auto'>
+          Submit
+        </Button>
       </Form>
     </Popup>
   );
