@@ -174,7 +174,6 @@ model Result {
 model ChampionshipResult {
   id             String       @id @default(cuid())
   position       Int          @db.UnsignedTinyInt
-  notes          String?      @db.Text
   championshipId String       @unique
   championship   Championship @relation(fields: [championshipId], references: [id], onDelete: Cascade)
   teamId         String

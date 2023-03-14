@@ -15,7 +15,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
-import { useMemo, useState, type FC } from 'react';
+import { useCallback, useMemo, useState, type FC } from 'react';
 import Navbar from '../../components/Navbar';
 import PostChampResult from '../../components/PostChampResult';
 import { useError } from '../../hooks/useError';
@@ -29,13 +29,20 @@ import { capitilize, hasRole } from '../../utils/helpers';
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
 
-  const { open: openResult } = useChampResultStore();
+  const { open: openPostResult } = useChampResultStore();
 
   const { data: championships, isLoading: getChampsLoading } =
     api.championship.get.useQuery(
       { max: 0, upcoming: false },
       { onError: err => setError(err.message) }
     );
+
+  const everyEventHasResult = useCallback(
+    (events: RouterOutputs['championship']['get'][number]['events']) => {
+      return events.every(event => event.result);
+    },
+    []
+  );
 
   return (
     <>
@@ -61,112 +68,129 @@ const AllChampionships: NextPage = () => {
           All Championships
         </h1>
         <div className='flex flex-col gap-4 p-4'>
-          {championships?.map(championship => (
-            <Disclosure key={championship.id}>
-              {({ open }) => (
-                <>
-                  <Disclosure.Button className='flex w-full items-center gap-2 rounded bg-slate-800 px-4 py-2 text-left text-lg font-semibold text-slate-50 ring-1 ring-slate-700 transition-colors focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-75 hover:bg-slate-700'>
-                    <ChevronUpIcon
-                      className={cn(
-                        'h-5 w-5 text-sky-400 transition-transform',
-                        {
-                          'rotate-180 transform': open,
-                        }
-                      )}
-                    />
-                    <span>
-                      {championship.organizer} - {championship.name}
-                    </span>
-                  </Disclosure.Button>
-                  <Disclosure.Panel className='px-4'>
-                    <div className='flex w-full flex-col gap-4'>
-                      <a
-                        href={championship.link}
-                        className='group flex items-center gap-2 font-semibold transition-colors hover:text-sky-400'
-                        target='_blank'
-                        rel='noreferrer'
-                      >
-                        <span>Championship website</span>
-                        <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
-                      </a>
-                      <div className='grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-                        <div className='flex flex-col'>
-                          <span className='text-slate-300'>Car</span>
-                          <span className='text-slate-50'>
-                            {capitilize(
-                              championship.car === '' || !championship.car
-                                ? '-'
-                                : championship.car
-                            )}
-                          </span>
-                        </div>
-                        <div className='flex flex-col'>
-                          <span className='text-slate-300'>Type</span>
-                          <span className='text-slate-50'>
-                            {capitilize(championship.type)}
-                          </span>
-                        </div>
-                      </div>
-                      <div>
-                        {dayjs().isAfter(
-                          dayjs(
-                            championship.events[championship.events.length - 1]
-                              ?.date
-                          )
-                        ) && (
-                          <Button
-                            intent={
-                              !championship.result ? 'primary' : 'secondary'
-                            }
-                            size='small'
-                            className='mt-2 font-semibold'
-                            onClick={() => {
-                              const { result, id, organizer, name } =
-                                championship;
-                              if (!result) {
-                                return openResult({
-                                  id,
-                                  organizer,
-                                  title: name,
-                                });
-                              }
-                              // TODO: open show result
-                            }}
-                          >
-                            {!championship.result ? (
-                              <>
-                                <span>Post result</span>
-                                <DocumentArrowUpIcon className='h-5' />
-                              </>
-                            ) : (
-                              <>
-                                <span>Show result</span>
-                                <DocumentChartBarIcon className='h-5' />
-                              </>
-                            )}
-                          </Button>
+          {championships?.map(championship => {
+            const everyChampEventHasResults = everyEventHasResult(
+              championship.events
+            );
+            return (
+              <Disclosure key={championship.id}>
+                {({ open }) => (
+                  <>
+                    <Disclosure.Button className='flex w-full items-center gap-2 rounded bg-slate-800 px-4 py-2 text-left text-lg font-semibold text-slate-50 ring-1 ring-slate-700 transition-colors focus:outline-none focus-visible:ring focus-visible:ring-sky-500 focus-visible:ring-opacity-75 hover:bg-slate-700'>
+                      <ChevronUpIcon
+                        className={cn(
+                          'h-5 w-5 text-sky-400 transition-transform',
+                          {
+                            'rotate-180 transform': open,
+                          }
                         )}
-                      </div>
-                      <div className='border-t border-slate-800 pt-4'>
-                        <h2 className='mb-4 text-xl font-semibold'>Events</h2>
-                        {championship.events.length > 0 ? (
-                          <div className='flex w-full flex-wrap gap-4'>
-                            {championship.events.map(event => (
-                              <Event key={event.id} event={event} />
-                            ))}
+                      />
+                      <span>
+                        {championship.organizer} - {championship.name}
+                      </span>
+                    </Disclosure.Button>
+                    <Disclosure.Panel className='px-4'>
+                      <div className='flex w-full flex-col gap-4'>
+                        <a
+                          href={championship.link}
+                          className='group flex items-center gap-2 font-semibold transition-colors hover:text-sky-400'
+                          target='_blank'
+                          rel='noreferrer'
+                        >
+                          <span>Championship website</span>
+                          <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
+                        </a>
+                        <div className='relative grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
+                          <div className='flex flex-col'>
+                            <span className='text-slate-300'>Car</span>
+                            <span className='text-slate-50'>
+                              {capitilize(
+                                championship.car === '' || !championship.car
+                                  ? '-'
+                                  : championship.car
+                              )}
+                            </span>
                           </div>
-                        ) : (
-                          <span className='text-slate-300'>
-                            There are no events for this championship
-                          </span>
-                        )}
+                          <div className='flex flex-col'>
+                            <span className='text-slate-300'>Type</span>
+                            <span className='text-slate-50'>
+                              {capitilize(championship.type)}
+                            </span>
+                          </div>
+                          {championship.result && (
+                            <div className='flex flex-col'>
+                              <span className='text-slate-300'>
+                                Championship position
+                              </span>
+                              <span className='text-slate-50'>
+                                P{championship.result.position}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <div>
+                          {dayjs().isAfter(
+                            dayjs(
+                              championship.events[
+                                championship.events.length - 1
+                              ]?.date
+                            )
+                          ) &&
+                            !championship.result && (
+                              <>
+                                <Button
+                                  intent={
+                                    !championship.result
+                                      ? 'primary'
+                                      : 'secondary'
+                                  }
+                                  size='small'
+                                  className='mt-2 font-semibold'
+                                  disabled={!everyChampEventHasResults}
+                                  onClick={() => {
+                                    const { id, organizer, name } =
+                                      championship;
+                                    openPostResult({
+                                      id,
+                                      organizer,
+                                      title: name,
+                                    });
+                                  }}
+                                >
+                                  <span>Post result</span>
+                                  <DocumentArrowUpIcon className='h-5' />
+                                </Button>
+                                {!everyChampEventHasResults && (
+                                  <span className='mt-3 block text-sm text-slate-400'>
+                                    Note: Post a result for every event in this
+                                    championship first in order to post a result
+                                    for the championship
+                                  </span>
+                                )}
+                              </>
+                            )}
+                        </div>
+                        <div className='border-t border-slate-800 pt-4'>
+                          <h2 className='mb-4 text-xl font-semibold'>Events</h2>
+                          {championship.events.length > 0 ? (
+                            <div className='flex w-full flex-wrap gap-4'>
+                              {championship.events.map(event => (
+                                <Event key={event.id} event={event} />
+                              ))}
+                            </div>
+                          ) : (
+                            <span className='text-slate-300'>
+                              There are no events for this championship
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  </Disclosure.Panel>
-                </>
-              )}
-            </Disclosure>
-          ))}
+                    </Disclosure.Panel>
+                  </>
+                )}
+              </Disclosure>
+            );
+          })}
         </div>
       </main>
     </>

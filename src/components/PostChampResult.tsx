@@ -13,14 +13,12 @@ import { api } from '../utils/api';
 
 const formSchema = z.object({
   position: z.string().min(1, 'Position is required'),
-  notes: z.string().optional(),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
 
 const defaultFormState: FormSchema = {
   position: '1',
-  notes: '',
 };
 
 const PostChampResult: FC = () => {
@@ -42,10 +40,8 @@ const PostChampResult: FC = () => {
     });
 
   const { handleSubmit, errors } = useForm(formSchema, values => {
-    const { position, notes } = values;
     postResult({
-      position: parseInt(position),
-      notes: notes,
+      position: parseInt(values.position),
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       championshipId: championship!.id,
     });
@@ -78,21 +74,12 @@ const PostChampResult: FC = () => {
             error={errors?.position}
           />
         </Label>
-        <Label label='notes' optional className='sm:w-full'>
-          <textarea
-            className='h-24 w-full resize-none appearance-none rounded px-2 py-1 tracking-tight text-slate-900 scrollbar-thin scrollbar-track-slate-300 scrollbar-thumb-sky-500 selection:bg-sky-500 selection:text-slate-50 focus:outline-none focus:ring focus:ring-sky-600'
-            maxLength={65535}
-            value={formState.notes}
-            onChange={e =>
-              setFormState(prev => ({
-                ...prev,
-                notes: e.target.value,
-              }))
-            }
-          ></textarea>
-        </Label>
         <Error />
-        <Button intent='primary' size='small' className='ml-auto'>
+        <Button
+          intent='primary'
+          size='small'
+          className='ml-auto h-min self-end'
+        >
           Submit
         </Button>
       </Form>
