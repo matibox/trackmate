@@ -31,6 +31,7 @@ export const resultRouter = createTRPCRouter({
           },
           include: { team: { select: { managerId: true } } },
         });
+        // ? what if there is no team connected
         return await tx.newResultNotification.create({
           data: {
             message: 'New result has been posted',
@@ -110,15 +111,30 @@ export const resultRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { championshipId, ...fields } = input;
-      return await ctx.prisma.championshipResult.create({
-        data: {
-          ...fields,
-          championship: { connect: { id: championshipId } },
-          team: hasRole(ctx.session, 'manager')
-            ? { connect: { managerId: ctx.session.user.id } }
-            : { connect: { id: ctx.session.user.teamId ?? undefined } },
-          author: { connect: { id: ctx.session.user.id } },
-        },
+      return await ctx.prisma.$transaction(async tx => {
+        const result = await tx.championshipResult.create({
+          data: {
+            ...fields,
+            championship: { connect: { id: championshipId } },
+            team: hasRole(ctx.session, 'manager')
+              ? { connect: { managerId: ctx.session.user.id } }
+              : { connect: { id: ctx.session.user.teamId ?? undefined } },
+            author: { connect: { id: ctx.session.user.id } },
+          },
+          include: { team: { select: { managerId: true } } },
+        });
+        // ? what if there is no team connected
+        return await tx.newChampResultNotification.create({
+          data: {
+            message: 'New championship result has been posted',
+            receiver: {
+              connect: { id: result.team.managerId },
+            },
+            result: {
+              connect: { id: result.id },
+            },
+          },
+        });
       });
     }),
 });
