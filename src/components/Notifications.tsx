@@ -79,13 +79,15 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
                 </span>
               ) : (
                 <>
-                  {data.notifGroups.newResultNotification.map(notification => (
-                    <Notification
-                      key={notification.id}
-                      type='newResultNotification'
-                      notification={notification}
-                    />
-                  ))}
+                  {objectEntries(data.notifGroups).forEach(([type, group]) => {
+                    group.map(notification => (
+                      <Notification
+                        key={notification.id}
+                        type={type}
+                        notification={notification}
+                      />
+                    ));
+                  })}
                 </>
               )}
             </>

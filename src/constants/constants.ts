@@ -6,4 +6,7 @@ export const resultsSortingOptions = [
   'position',
 ] as const;
 
-export const notificationGroups = ['newResultNotification'] as const;
+export const notificationGroups = [
+  'newResultNotification',
+  'newChampResultNotification',
+] as const;

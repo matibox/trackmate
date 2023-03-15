@@ -34,7 +34,7 @@ export const resultRouter = createTRPCRouter({
         // ? what if there is no team connected
         return await tx.newResultNotification.create({
           data: {
-            message: 'New result has been posted',
+            message: `${ctx.session.user.name ?? 'driver'} posted a result`,
             receiver: {
               connect: { id: result.team.managerId },
             },
@@ -105,7 +105,6 @@ export const resultRouter = createTRPCRouter({
     .input(
       z.object({
         position: z.number(),
-        notes: z.string().optional(),
         championshipId: z.string(),
       })
     )
@@ -126,7 +125,9 @@ export const resultRouter = createTRPCRouter({
         // ? what if there is no team connected
         return await tx.newChampResultNotification.create({
           data: {
-            message: 'New championship result has been posted',
+            message: `${
+              ctx.session.user.name ?? 'driver'
+            } posted a championship result`,
             receiver: {
               connect: { id: result.team.managerId },
             },

@@ -207,9 +207,9 @@ model NewChampResultNotification {
   createdAt  DateTime           @default(now())
   read       Boolean            @default(false)
   message    String
-  result     ChampionshipResult @relation(fields: [resultId], references: [id])
+  result     ChampionshipResult @relation(fields: [resultId], references: [id], onDelete: Cascade)
   resultId   String
-  receiver   User               @relation(fields: [receiverId], references: [id])
+  receiver   User               @relation(fields: [receiverId], references: [id], onDelete: Cascade)
   receiverId String
 
   @@index([resultId])

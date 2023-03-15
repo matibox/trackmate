@@ -4,22 +4,22 @@ import { notificationGroups } from '../../../constants/constants';
 
 export const notificationRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
+    const whereClause = { where: { receiver: { id: ctx.session.user.id } } };
     const data = await ctx.prisma.$transaction([
-      ctx.prisma.newResultNotification.findMany({
-        where: { receiver: { id: ctx.session.user.id } },
-        include: { result: { select: { author: { select: { name: true } } } } },
-      }),
+      ctx.prisma.newResultNotification.findMany(whereClause),
+      ctx.prisma.newChampResultNotification.findMany(whereClause),
     ]);
 
     const isEmpty = data.every(notifGroup => notifGroup.length === 0);
     const isAllRead = data.every(notifGroup =>
       notifGroup.every(notif => notif.read)
     );
-    const [newResultNotification] = data;
+    const [newResultNotification, newChampResultNotification] = data;
 
     const returnObj = {
       notifGroups: {
         newResultNotification,
+        newChampResultNotification,
       },
       isEmpty,
       isAllRead,
@@ -35,9 +35,19 @@ export const notificationRouter = createTRPCRouter({
     .input(z.object({ id: z.string(), type: z.enum(notificationGroups) }))
     .mutation(async ({ ctx, input }) => {
       const { id, type } = input;
-      return await ctx.prisma[type].update({
+
+      const updateClause = {
         where: { id },
         data: { read: true },
-      });
+      };
+
+      switch (type) {
+        case 'newResultNotification':
+          return await ctx.prisma.newResultNotification.update(updateClause);
+        case 'newChampResultNotification':
+          return await ctx.prisma.newChampResultNotification.update(
+            updateClause
+          );
+      }
     }),
 });
