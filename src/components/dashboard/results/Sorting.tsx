@@ -15,8 +15,8 @@ const ResultsSorting: FC = () => {
   const utils = api.useContext();
 
   const invalidate = useCallback(async () => {
-    await utils.result.getResultPage.invalidate();
-  }, [utils.result.getResultPage]);
+    await utils.result.invalidate();
+  }, [utils.result]);
 
   const toggleSortOrder = async (by: By) => {
     setSort(by, activeSort.order === 'asc' ? 'desc' : 'asc');

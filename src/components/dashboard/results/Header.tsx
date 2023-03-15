@@ -3,12 +3,13 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/20/solid';
-import { DocumentChartBarIcon } from '@heroicons/react/24/outline';
+import { DocumentChartBarIcon, TrophyIcon } from '@heroicons/react/24/outline';
 import Button from '@ui/Button';
 import { AnimatePresence } from 'framer-motion';
 import { type FC } from 'react';
 import cn from '../../../lib/classes';
 import { useTeamResultsStore } from '../../../store/useTeamResultsStore';
+import { api } from '../../../utils/api';
 import ResultsSorting from './Sorting';
 
 type ResultsHeaderProps = {
@@ -20,8 +21,20 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ noResults }) => {
     current,
     incrementMonth,
     decrementMonth,
+    resultsType,
+    toggleType,
     sorting: { toggle, isOpened },
   } = useTeamResultsStore();
+
+  const utils = api.useContext();
+
+  const handleTypeSwitch = async () => {
+    console.log('yes');
+    toggleType();
+    await new Promise(resolve =>
+      setTimeout(() => resolve(utils.result.invalidate()), 100)
+    );
+  };
 
   return (
     <>
@@ -49,6 +62,28 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ noResults }) => {
             aria-label='Next month'
           >
             <ChevronRightIcon className='h-6' />
+          </Button>
+        </div>
+        <div className='flex gap-2'>
+          <Button
+            intent='secondary'
+            size='xs'
+            className={cn('h-7 w-7', {
+              'bg-slate-600 ring-slate-500': resultsType === 'regular',
+            })}
+            onClick={() => void handleTypeSwitch()}
+          >
+            <DocumentChartBarIcon className='h-5' />
+          </Button>
+          <Button
+            intent='secondary'
+            size='xs'
+            className={cn('h-7 w-7', {
+              'bg-slate-600 ring-slate-500': resultsType === 'championship',
+            })}
+            onClick={() => void handleTypeSwitch()}
+          >
+            <TrophyIcon className='h-5' />
           </Button>
         </div>
         {!noResults && (

@@ -39,7 +39,7 @@ const Result: FC<ResultProps> = ({ result }) => {
           </span>
         </div>
       }
-      className='relative h-min w-96'
+      className='relative w-96'
     >
       <AnimatePresence>
         {notesOpened && (
@@ -91,7 +91,7 @@ const Result: FC<ResultProps> = ({ result }) => {
           <span className='text-slate-300'>Track</span>
           {result.event.track}
         </div>
-        <div className='flex flex-col'>
+        <div className='col-span-2 flex flex-col'>
           <span className='text-slate-300'>Drivers</span>
           {result.event.drivers.map(driver => driver.name).join(', ')}
         </div>
@@ -99,8 +99,8 @@ const Result: FC<ResultProps> = ({ result }) => {
       <div className='grid-cols-w grid gap-4 pt-4'>
         <h2 className='col-span-2 text-lg font-semibold'>Result</h2>
         <div className='flex flex-col'>
-          <span className='text-slate-300'>Qualifying</span>P
-          {Dxx ? '-' : result.qualiPosition}
+          <span className='text-slate-300'>Qualifying</span>
+          {Dxx ? '-' : `P${result.qualiPosition as number}`}
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Race</span>

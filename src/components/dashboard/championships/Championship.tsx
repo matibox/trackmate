@@ -81,6 +81,12 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
                 {championship.drivers.map(driver => driver.name).join(', ')}
               </span>
             </div>
+            {championship.result && (
+              <div className='flex flex-col'>
+                <span className='text-slate-300'>Championship position</span>
+                <span>{championship.result.position}</span>
+              </div>
+            )}
           </div>
         </div>
         <div className='flex flex-col gap-2 border-t border-slate-700 pt-4 pl-2'>

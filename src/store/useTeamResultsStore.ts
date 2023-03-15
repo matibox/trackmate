@@ -17,6 +17,8 @@ type TeamResultsStore = {
     };
     setSort: (by: (typeof resultsSortingOptions)[number], order: Order) => void;
   };
+  resultsType: 'regular' | 'championship';
+  toggleType: () => void;
 };
 
 export const useTeamResultsStore = create<TeamResultsStore>()(set => ({
@@ -42,4 +44,9 @@ export const useTeamResultsStore = create<TeamResultsStore>()(set => ({
         sorting: { ...state.sorting, activeSort: { by, order } },
       })),
   },
+  resultsType: 'regular',
+  toggleType: () =>
+    set(state => ({
+      resultsType: state.resultsType === 'regular' ? 'championship' : 'regular',
+    })),
 }));

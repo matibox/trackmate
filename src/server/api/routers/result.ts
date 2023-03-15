@@ -4,6 +4,16 @@ import { resultsSortingOptions } from '../../../constants/constants';
 import { hasRole } from '../../../utils/helpers';
 import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 
+const resultInput = z.object({
+  firstDay: z.date(),
+  lastDay: z.date(),
+  teamId: z.string().optional(),
+  orderBy: z.object({
+    by: z.enum(resultsSortingOptions),
+    order: z.enum(['asc', 'desc']),
+  }),
+});
+
 export const resultRouter = createTRPCRouter({
   post: multiRoleProcedure(['driver', 'manager'])
     .input(
@@ -46,19 +56,14 @@ export const resultRouter = createTRPCRouter({
       });
     }),
   getResultPage: multiRoleProcedure(['manager', 'socialMedia'])
-    .input(
-      z.object({
-        firstDay: z.date(),
-        lastDay: z.date(),
-        teamId: z.string().optional(),
-        orderBy: z.object({
-          by: z.enum(resultsSortingOptions),
-          order: z.enum(['asc', 'desc']),
-        }),
-      })
-    )
+    .input(resultInput)
     .query(async ({ ctx, input }) => {
-      const { firstDay, lastDay, teamId, orderBy } = input;
+      const {
+        firstDay,
+        lastDay,
+        teamId,
+        orderBy: { order, by },
+      } = input;
 
       if (!teamId) {
         throw new TRPCError({
@@ -66,8 +71,7 @@ export const resultRouter = createTRPCRouter({
         });
       }
 
-      const { by, order } = orderBy;
-      const orderField =
+      const orderClause =
         by === 'createdAt'
           ? { createdAt: order }
           : by === 'eventDate'
@@ -98,7 +102,62 @@ export const resultRouter = createTRPCRouter({
             },
           },
         },
-        orderBy: orderField,
+        orderBy: orderClause,
+      });
+    }),
+  getChampResultPage: multiRoleProcedure(['driver', 'manager'])
+    .input(resultInput)
+    .query(async ({ ctx, input }) => {
+      const {
+        firstDay,
+        lastDay,
+        teamId,
+        orderBy: { order, by },
+      } = input;
+
+      if (!teamId) {
+        throw new TRPCError({ code: 'PRECONDITION_FAILED' });
+      }
+
+      const orderClause =
+        by === 'createdAt'
+          ? { createdAt: order }
+          : by === 'eventDate'
+          ? undefined
+          : {
+              championship: { result: { position: order } },
+            };
+
+      return await ctx.prisma.championshipResult.findMany({
+        where: {
+          teamId,
+          championship: {
+            events: {
+              some: {
+                date: {
+                  gte: firstDay,
+                  lte: lastDay,
+                },
+              },
+            },
+          },
+        },
+        include: {
+          championship: {
+            select: {
+              name: true,
+              drivers: true,
+              organizer: true,
+              events: {
+                select: { date: true },
+              },
+            },
+          },
+          author: {
+            select: { id: true, name: true },
+          },
+        },
+        orderBy: orderClause,
       });
     }),
   postChampionship: multiRoleProcedure(['driver', 'manager'])
