@@ -1,3 +1,4 @@
+import { RadioGroup } from '@headlessui/react';
 import Popup from '@ui/Popup';
 import PopupHeader from '@ui/PopupHeader';
 import { type FC } from 'react';
@@ -10,9 +11,9 @@ const Settings: FC = () => {
   const {
     close,
     opened,
-    hideTeamEventsFn,
-    showTeamEventsFn,
-    settings: { showTeamEvents },
+    setShowTeamEvents,
+    setEventDurationType,
+    settings: { showTeamEvents, eventDurationType },
   } = useSettingsStore();
   const { setTeamEvents, setLoading } = useCalendarStore();
 
@@ -33,26 +34,82 @@ const Settings: FC = () => {
       condition={opened}
       header={<PopupHeader close={close} title='Settings' />}
     >
-      <div>
-        <h2 className='mb-1 text-lg font-semibold'>Calendar</h2>
-        <span className='mb-1 block'>Team events</span>
-        <div className='flex w-min items-center justify-evenly gap-1 rounded bg-slate-800 ring-1 ring-slate-700'>
-          <button
-            className={cn('px-2 py-0.5', {
-              'bg-slate-700': !showTeamEvents,
-            })}
-            onClick={() => void handleTeamEventsChange(hideTeamEventsFn)}
+      <div className='flex flex-wrap gap-16'>
+        <div className='flex flex-col gap-2'>
+          <h3 className='text-lg font-semibold'>Team events</h3>
+          <RadioGroup
+            value={showTeamEvents}
+            onChange={value =>
+              void handleTeamEventsChange(() => setShowTeamEvents(value))
+            }
+            className='flex gap-2'
           >
-            hide
-          </button>
-          <button
-            className={cn('px-2 py-0.5', {
-              'bg-slate-700': showTeamEvents,
-            })}
-            onClick={() => void handleTeamEventsChange(showTeamEventsFn)}
+            <RadioGroup.Option value={false}>
+              {({ checked }) => (
+                <span
+                  className={cn(
+                    'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
+                    {
+                      'bg-sky-500 ring-sky-400': checked,
+                    }
+                  )}
+                >
+                  Hide
+                </span>
+              )}
+            </RadioGroup.Option>
+            <RadioGroup.Option value={true}>
+              {({ checked }) => (
+                <span
+                  className={cn(
+                    'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
+                    {
+                      'bg-sky-500 ring-sky-400': checked,
+                    }
+                  )}
+                >
+                  Show
+                </span>
+              )}
+            </RadioGroup.Option>
+          </RadioGroup>
+        </div>
+        <div className='flex flex-col gap-2'>
+          <h3 className='text-lg font-semibold'>Event duration</h3>
+          <RadioGroup
+            value={eventDurationType}
+            onChange={setEventDurationType}
+            className='flex gap-2'
           >
-            show
-          </button>
+            <RadioGroup.Option value='minutes'>
+              {({ checked }) => (
+                <span
+                  className={cn(
+                    'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
+                    {
+                      'bg-sky-500 ring-sky-400': checked,
+                    }
+                  )}
+                >
+                  Minutes
+                </span>
+              )}
+            </RadioGroup.Option>
+            <RadioGroup.Option value='hours'>
+              {({ checked }) => (
+                <span
+                  className={cn(
+                    'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
+                    {
+                      'bg-sky-500 ring-sky-400': checked,
+                    }
+                  )}
+                >
+                  Hours
+                </span>
+              )}
+            </RadioGroup.Option>
+          </RadioGroup>
         </div>
       </div>
     </Popup>

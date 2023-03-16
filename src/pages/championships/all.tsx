@@ -17,7 +17,7 @@ import { NextSeo } from 'next-seo';
 import Link from 'next/link';
 import { useCallback, useMemo, useState, type FC } from 'react';
 import Navbar from '../../components/Navbar';
-import PostChampResult from '../../components/PostChampResult';
+import PostChampResult from '../../components/dashboard/results/PostChampResult';
 import { useError } from '../../hooks/useError';
 import cn from '../../lib/classes';
 import { getServerAuthSession } from '../../server/auth';
@@ -25,6 +25,7 @@ import { useChampResultStore } from '../../store/useChampResultStore';
 import { useResultStore } from '../../store/useResultStore';
 import { api, type RouterOutputs } from '../../utils/api';
 import { capitilize, hasRole } from '../../utils/helpers';
+import EventDuration from '../../components/EventDuration';
 
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
@@ -282,7 +283,7 @@ const Event: FC<{
       </div>
       <div className='flex flex-col'>
         <span className='text-slate-300'>Duration</span>
-        <span>{event.duration} minutes</span>
+        <EventDuration duration={event.duration} />
       </div>
       <div className='flex flex-col'>
         <span className='text-slate-300'>Drivers</span>

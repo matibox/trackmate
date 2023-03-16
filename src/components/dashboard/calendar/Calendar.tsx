@@ -74,7 +74,7 @@ const Calendar: FC = () => {
       {
         onSuccess: setTeamEvents,
         onError: err => setError(err.message),
-        enabled: showTeamEvents !== undefined && showTeamEvents,
+        enabled: showTeamEvents,
       }
     );
 

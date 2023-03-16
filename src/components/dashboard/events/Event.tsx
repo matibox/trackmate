@@ -17,6 +17,7 @@ import { capitilize } from '../../../utils/helpers';
 import cn from '../../../lib/classes';
 import { useSession } from 'next-auth/react';
 import { useEditEventStore } from '../../../store/useEditEventStore';
+import EventDuration from '../../EventDuration';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
@@ -103,7 +104,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Duration</span>
-          <span>{event.duration} minutes</span>
+          <EventDuration duration={event.duration} />
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Start at</span>

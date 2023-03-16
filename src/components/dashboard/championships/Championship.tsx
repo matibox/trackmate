@@ -11,6 +11,7 @@ import cn from '../../../lib/classes';
 import { useChampionshipStore } from '../../../store/useChampionshipStore';
 import { type RouterOutputs } from '../../../utils/api';
 import { capitilize } from '../../../utils/helpers';
+import EventDuration from '../../EventDuration';
 
 type ChampionshipProps = {
   championship: RouterOutputs['championship']['get'][number];
@@ -108,7 +109,7 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
                 </div>
                 <div className='flex flex-col'>
                   <span className='text-slate-300'>Duration</span>
-                  <span>{event.duration} minutes</span>
+                  <EventDuration duration={event.duration} />
                 </div>
                 <div
                   className={cn('col-span-2 hidden', {

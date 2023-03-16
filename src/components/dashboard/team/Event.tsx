@@ -2,6 +2,7 @@ import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { type FC } from 'react';
 import { type RouterOutputs } from '../../../utils/api';
+import EventDuration from '../../EventDuration';
 
 type EventProps = {
   event: NonNullable<RouterOutputs['team']['getDriveFor']>['events'][number];
@@ -32,7 +33,7 @@ const Event: FC<EventProps> = ({ event }) => {
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Duration</span>
-          <span>{event.duration} minutes</span>
+          <EventDuration duration={event.duration} />
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Drivers</span>
