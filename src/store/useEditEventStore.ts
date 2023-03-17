@@ -29,7 +29,10 @@ export const useEditEventStore = create<EditEventStore>()(set => ({
         ...state.formState,
         car: event.car,
         championship: null,
-        drivers: event.drivers as { id: string; name: string | null }[],
+        drivers: event.drivers.map(driver => ({
+          id: driver.id,
+          name: driver.name,
+        })),
         duration: event.duration,
         newEventType: event.championshipId ? 'championship' : 'oneOff',
         time: dayjs(event.date).format('HH:mm'),

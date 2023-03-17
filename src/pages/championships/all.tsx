@@ -26,6 +26,7 @@ import { useResultStore } from '../../store/useResultStore';
 import { api, type RouterOutputs } from '../../utils/api';
 import { capitilize, hasRole } from '../../utils/helpers';
 import EventDuration from '../../components/EventDuration';
+import Settings from '../../components/Settings';
 
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
@@ -52,6 +53,7 @@ const AllChampionships: NextPage = () => {
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <PostResult />
         <PostChampResult />
+        <Settings />
         <Link
           href='/'
           className='flex items-center gap-2 pl-4 pt-4 text-slate-300 transition-colors hover:text-sky-400'
@@ -86,7 +88,12 @@ const AllChampionships: NextPage = () => {
                           }
                         )}
                       />
-                      <span>
+                      <span
+                        className={cn({
+                          truncate: !open,
+                        })}
+                        title={`${championship.organizer} - ${championship.name}`}
+                      >
                         {championship.organizer} - {championship.name}
                       </span>
                     </Disclosure.Button>

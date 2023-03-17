@@ -162,7 +162,11 @@ const ChampEventDetails: FC<ChampEventDetailsProps> = ({
               <ErrorWrapper error={errors?.drivers}>
                 <Listbox
                   value={formState.drivers}
-                  onChange={drivers => setFormState({ drivers })}
+                  onChange={drivers => {
+                    console.log(drivers);
+                    setFormState({ drivers });
+                  }}
+                  by='id'
                   multiple
                 >
                   <Listbox.Button className='relative h-8 cursor-default rounded bg-slate-50 pl-2 text-left text-slate-900 focus:outline-none focus-visible:ring focus-visible:ring-sky-600 sm:text-sm'>

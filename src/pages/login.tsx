@@ -9,7 +9,13 @@ const Login: NextPage = () => {
     <>
       <NextSeo title='Login' />
       <main className='flex min-h-screen w-screen flex-col items-center justify-center gap-6 bg-slate-900'>
-        <Image src='/Full.png' alt='' width={100} height={100} />
+        <Image
+          src='/Full.png'
+          alt=''
+          width={100}
+          height={100}
+          priority={true}
+        />
         <div className='flex h-full w-11/12 max-w-lg flex-col gap-4 rounded-md bg-slate-800 p-4 shadow-lg ring-1 ring-slate-700 sm:gap-6 sm:p-6'>
           <div className='flex flex-col gap-2'>
             <h1 className='text-center text-3xl font-medium text-slate-50 sm:text-4xl'>
@@ -30,6 +36,7 @@ const Login: NextPage = () => {
               width={20}
               height={15}
               className='translate-y-[1px]'
+              priority={true}
             />
           </button>
         </div>

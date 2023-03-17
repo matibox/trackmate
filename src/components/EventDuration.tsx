@@ -7,24 +7,28 @@ interface EventDurationProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const EventDuration: FC<EventDurationProps> = ({ duration, ...props }) => {
+  const { setEventDurationType } = useSettingsStore();
   const eventDurationType = usePersistHydration(
     useSettingsStore().settings.eventDurationType
   );
 
   const processedDuration = useMemo(() => {
-    let durationString = '';
-    if (eventDurationType === 'minutes') {
-      durationString = `${duration} minutes`;
-    } else if (eventDurationType === 'hours') {
-      const hours = Math.floor(duration / 60);
-      const minutes = duration % 60;
-      if (duration === 60) durationString += `${hours} hour`;
-      if (duration > 60) durationString += `${hours} hours`;
-      if (minutes === 1) durationString += `${minutes} minute`;
-      if (minutes > 1) durationString += ` ${minutes} minutes`;
+    if (!eventDurationType) {
+      setEventDurationType('minutes');
+      return `${duration} minutes`;
     }
+    if (eventDurationType === 'minutes') return `${duration} minutes`;
+
+    let durationString = '';
+    const hours = Math.floor(duration / 60);
+    const minutes = duration % 60;
+    if (duration === 60) durationString += `${hours} hour`;
+    if (duration > 60) durationString += `${hours} hours`;
+    if (minutes === 1) durationString += `${minutes} minute`;
+    if (minutes > 1) durationString += ` ${minutes} minutes`;
+
     return durationString;
-  }, [duration, eventDurationType]);
+  }, [duration, eventDurationType, setEventDurationType]);
 
   return <span {...props}>{processedDuration}</span>;
 };

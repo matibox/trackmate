@@ -1,3 +1,4 @@
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import Loading from '@ui/Loading';
 import { AnimatePresence, motion } from 'framer-motion';
 import { type RefObject, useRef, type FC, useEffect, Fragment } from 'react';
@@ -66,9 +67,15 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
           className='absolute top-[calc(var(--navbar-height)_+_0.5rem)] right-4 z-20 flex max-h-72 w-[calc(100%_-_2rem)] flex-col overflow-y-auto rounded bg-slate-800 p-2 text-slate-50 ring-1 ring-slate-700 drop-shadow-xl scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:max-h-80 sm:w-72'
           ref={containerRef}
         >
-          <span className='border-b border-slate-700 pb-1 pl-1 text-left text-base font-semibold sm:text-lg'>
-            Notifications
-          </span>
+          <div className='flex items-center justify-between border-b border-slate-700 pb-1 pl-1 text-left text-base font-semibold sm:text-lg'>
+            <span>Notifications</span>
+            <button
+              className='transition-colors hover:text-sky-400'
+              onClick={toggle}
+            >
+              <XMarkIcon className='h-5' />
+            </button>
+          </div>
           <Error />
           {isLoading && <Loading />}
           {data && (

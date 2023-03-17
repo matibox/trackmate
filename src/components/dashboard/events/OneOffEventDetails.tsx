@@ -18,8 +18,6 @@ const OneOffEventDetails: FC<OneOffEventDetailsProps> = ({
 }) => {
   const { selectedDay } = useCalendarStore();
 
-  console.log(formState);
-
   return (
     <>
       <Label label='title'>

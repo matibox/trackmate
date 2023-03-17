@@ -23,7 +23,13 @@ const Navbar: FC = () => {
   return (
     <nav className='fixed z-20 flex h-[var(--navbar-height)] w-full items-center gap-4 border-b border-slate-700 bg-slate-800 px-4'>
       <Link href='/' aria-label='dashboard'>
-        <Image src='/Mono.png' alt='Logo' width={50} height={50} />
+        <Image
+          src='/Mono.png'
+          alt='Logo'
+          width={50}
+          height={50}
+          priority={true}
+        />
       </Link>
       <Button
         intent='secondary'
