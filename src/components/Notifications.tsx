@@ -72,6 +72,7 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
             <button
               className='transition-colors hover:text-sky-400'
               onClick={toggle}
+              aria-label='close notifications'
             >
               <XMarkIcon className='h-5' />
             </button>
