@@ -7,14 +7,12 @@ interface EventDurationProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const EventDuration: FC<EventDurationProps> = ({ duration, ...props }) => {
-  const { setEventDurationType } = useSettingsStore();
   const eventDurationType = usePersistHydration(
     useSettingsStore().settings.eventDurationType
   );
 
   const processedDuration = useMemo(() => {
     if (!eventDurationType) {
-      setEventDurationType('minutes');
       return `${duration} minutes`;
     }
     if (eventDurationType === 'minutes') return `${duration} minutes`;
@@ -28,7 +26,7 @@ const EventDuration: FC<EventDurationProps> = ({ duration, ...props }) => {
     if (minutes > 1) durationString += ` ${minutes} minutes`;
 
     return durationString;
-  }, [duration, eventDurationType, setEventDurationType]);
+  }, [duration, eventDurationType]);
 
   return <span {...props}>{processedDuration}</span>;
 };

@@ -17,6 +17,7 @@ export const championshipRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
+      const { max, upcoming } = input;
       const driverWhereClause = {
         drivers: { some: { id: ctx.session.user.id } },
       };
@@ -35,9 +36,9 @@ export const championshipRouter = createTRPCRouter({
           : managerWhereClause,
         include: {
           events: {
-            where: { date: { gte: new Date() } },
+            where: upcoming ? { date: { gte: new Date() } } : undefined,
             orderBy: { date: 'asc' },
-            take: input.upcoming ? 1 : undefined,
+            take: upcoming ? 1 : undefined,
             include: {
               drivers: {
                 select: { id: true, name: true },
@@ -53,9 +54,7 @@ export const championshipRouter = createTRPCRouter({
           },
           result: true,
         },
-        take: input.max === 0 ? undefined : input.max,
-        // TODO add championship start and end
-        // ?^ maybe order by these dates
+        take: max === 0 ? undefined : max,
       });
     }),
   listDriverChamps: driverProcedure.query(async ({ ctx }) => {
