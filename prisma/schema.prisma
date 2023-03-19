@@ -117,6 +117,7 @@ model Championship {
   name      String
   car       String?
   type      EventType
+  archived  Boolean             @default(false)
   events    Event[]
   drivers   User[]              @relation(name: "drivers-championship")
   manager   User?               @relation(fields: [managerId], references: [id])
