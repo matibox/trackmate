@@ -59,7 +59,10 @@ export const championshipRouter = createTRPCRouter({
     }),
   listDriverChamps: driverProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.championship.findMany({
-      where: { drivers: { some: { id: ctx.session.user.id } } },
+      where: {
+        drivers: { some: { id: ctx.session.user.id } },
+        archived: false,
+      },
       include: {
         drivers: {
           select: { id: true, name: true },
@@ -70,7 +73,7 @@ export const championshipRouter = createTRPCRouter({
   }),
   listManagingChamps: managerProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.championship.findMany({
-      where: { managerId: ctx.session.user.id },
+      where: { managerId: ctx.session.user.id, archived: false },
       include: {
         drivers: {
           select: { id: true, name: true },
