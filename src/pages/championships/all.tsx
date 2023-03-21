@@ -258,7 +258,7 @@ const Event: FC<{
               <span>back</span>
             </motion.button>
             <motion.div
-              className='absolute top-12 z-10 flex h-full w-[calc(100%_-_1.5rem)] flex-col gap-4 text-slate-100'
+              className='absolute top-12 z-10 flex max-h-full w-[calc(100%_-_1.5rem)] flex-col gap-4 text-slate-100'
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -285,7 +285,9 @@ const Event: FC<{
               {event.result?.notes && (
                 <div className='flex flex-col'>
                   <span className='text-slate-300'>Notes</span>
-                  <span className='line-clamp-[7]'>{event.result.notes}</span>
+                  <span className='block max-h-48 overflow-y-scroll scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
+                    {event.result.notes}
+                  </span>
                 </div>
               )}
             </motion.div>
