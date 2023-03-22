@@ -10,15 +10,18 @@ import { useError } from '../../../hooks/useError';
 import useForm from '../../../hooks/useForm';
 import { useChampResultStore } from '../../../store/useChampResultStore';
 import { api } from '../../../utils/api';
+import ErrorWrapper from '../../ErrorWrapper';
 
 const formSchema = z.object({
   position: z.string().min(1, 'Position is required'),
+  addToArchive: z.boolean(),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
 
 const defaultFormState: FormSchema = {
   position: '1',
+  addToArchive: true,
 };
 
 const PostChampResult: FC = () => {
@@ -40,8 +43,10 @@ const PostChampResult: FC = () => {
     });
 
   const { handleSubmit, errors } = useForm(formSchema, values => {
+    const { position, ...data } = values;
     postResult({
-      position: parseInt(values.position),
+      ...data,
+      position: parseInt(position),
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       championshipId: championship!.id,
     });
@@ -62,6 +67,27 @@ const PostChampResult: FC = () => {
       isLoading={isLoading}
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
+        <div className='flex w-full flex-wrap justify-start gap-1'>
+          <ErrorWrapper error={errors?.addToArchive}>
+            <Label
+              label='Add to archive'
+              className='flex flex-shrink flex-row items-center gap-2'
+              optional
+            >
+              <input
+                type='checkbox'
+                checked={formState.addToArchive}
+                onChange={e =>
+                  setFormState(prev => ({
+                    ...prev,
+                    addToArchive: e.target.checked,
+                  }))
+                }
+                className='-order-1 h-4 w-4 rounded accent-sky-500'
+              />
+            </Label>
+          </ErrorWrapper>
+        </div>
         <Label label='position'>
           <Input
             type='number'

@@ -165,10 +165,11 @@ export const resultRouter = createTRPCRouter({
       z.object({
         position: z.number(),
         championshipId: z.string(),
+        addToArchive: z.boolean(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { championshipId, ...fields } = input;
+      const { championshipId, addToArchive, ...fields } = input;
       return await ctx.prisma.$transaction(async tx => {
         const result = await tx.championshipResult.create({
           data: {
@@ -181,6 +182,14 @@ export const resultRouter = createTRPCRouter({
           },
           include: { team: { select: { managerId: true } } },
         });
+
+        if (addToArchive) {
+          await tx.championship.update({
+            where: { id: championshipId },
+            data: { archived: true },
+          });
+        }
+
         // ? what if there is no team connected
         return await tx.newChampResultNotification.create({
           data: {

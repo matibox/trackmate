@@ -68,7 +68,7 @@ const AllChampionships: NextPage = () => {
             <Loading />
           </div>
         )}
-        <h1 className='p-4 text-center text-2xl font-semibold sm:text-3xl'>
+        <h1 className='pt-4 pb-8 text-center text-2xl font-semibold sm:text-3xl'>
           All Championships
         </h1>
         <div className='flex flex-col gap-4 px-4'>
@@ -76,13 +76,13 @@ const AllChampionships: NextPage = () => {
             <Championship key={championship.id} championship={championship} />
           ))}
         </div>
-        {archivedChampionships && (
+        {archivedChampionships && archivedChampionships.length > 0 && (
           <>
             <div className='mt-8 mb-6 ml-4 h-[1px] w-[calc(100%_-_2rem)] bg-slate-800 sm:mb-7' />
             <h2 className='mb-2 pl-4 text-base font-semibold sm:text-lg'>
               Archived championships
             </h2>
-            <div className='flex flex-col gap-4 px-4'>
+            <div className='flex flex-col gap-4 px-4 pb-4'>
               {archivedChampionships.map(championship => (
                 <Championship
                   key={championship.id}
@@ -130,7 +130,7 @@ const Championship: FC<{
             <div className='flex w-full flex-col gap-4'>
               <a
                 href={championship.link}
-                className='group flex items-center gap-2 font-semibold transition-colors hover:text-sky-400'
+                className='group flex items-center gap-2 self-start font-semibold transition-colors hover:text-sky-400'
                 target='_blank'
                 rel='noreferrer'
               >
