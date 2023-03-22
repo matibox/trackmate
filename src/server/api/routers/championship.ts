@@ -123,4 +123,16 @@ export const championshipRouter = createTRPCRouter({
         where: { id: championshipId },
       });
     }),
+  archive: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ championshipId: z.string(), moveToArchive: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const { championshipId, moveToArchive } = input;
+
+      return await ctx.prisma.championship.update({
+        where: { id: championshipId },
+        data: {
+          archived: moveToArchive ? true : false,
+        },
+      });
+    }),
 });

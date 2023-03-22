@@ -1,6 +1,8 @@
 import PostResult from '@dashboard/results/PostResult';
 import { Disclosure } from '@headlessui/react';
 import {
+  ArchiveBoxArrowDownIcon,
+  ArchiveBoxXMarkIcon,
   ArrowLeftIcon,
   ArrowTopRightOnSquareIcon,
   ChevronUpIcon,
@@ -102,10 +104,21 @@ const Championship: FC<{
 }> = ({ championship }) => {
   const { open: openPostResult } = useChampResultStore();
 
+  const { Error, setError } = useError();
+
   const everyEventHasResult = useMemo(
     () => championship.events.every(event => event.result),
     [championship.events]
   );
+
+  const utils = api.useContext();
+  const { mutate: manipulateArchive, isLoading } =
+    api.championship.archive.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.championship.invalidate();
+      },
+    });
 
   return (
     <Disclosure key={championship.id}>
@@ -199,6 +212,33 @@ const Championship: FC<{
                       )}
                     </>
                   )}
+                {championship.result && (
+                  <Button
+                    intent='primary'
+                    size='small'
+                    className='mt-2 font-semibold'
+                    disabled={isLoading}
+                    onClick={() => {
+                      manipulateArchive({
+                        championshipId: championship.id,
+                        moveToArchive: !championship.archived,
+                      });
+                    }}
+                  >
+                    <span>
+                      {championship.archived ? 'Restore from ' : 'Move to '}
+                      archive
+                    </span>
+                    {isLoading ? (
+                      <Loading />
+                    ) : championship.archived ? (
+                      <ArchiveBoxXMarkIcon className='h-5' />
+                    ) : (
+                      <ArchiveBoxArrowDownIcon className='h-5' />
+                    )}
+                  </Button>
+                )}
+                <Error />
               </div>
               <div className='border-t border-slate-800 pt-4'>
                 <h3 className='mb-4 text-xl font-semibold'>Events</h3>
