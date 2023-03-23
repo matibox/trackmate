@@ -103,7 +103,7 @@ const Navbar: FC = () => {
             <div className='h-[1px] w-full bg-slate-700' />
             <div className='flex flex-col gap-2 px-4'>
               <Link
-                href={`/user/${session?.user?.id as string}`}
+                href={`/profile/${session?.user?.id as string}`}
                 className='flex items-center justify-between transition-colors hover:text-sky-400'
               >
                 <span>Your profile</span>
