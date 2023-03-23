@@ -4,15 +4,19 @@ import {
 } from '@heroicons/react/20/solid';
 import Image from 'next/image';
 import { useRef, useState, type FC } from 'react';
-import Button from '@ui/Button';
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
-import { BellIcon, Cog8ToothIcon } from '@heroicons/react/24/outline';
+import {
+  BellIcon,
+  Cog8ToothIcon,
+  UserCircleIcon,
+} from '@heroicons/react/24/outline';
 import { useSettingsStore } from '../store/useSettingsStore';
 import cn from '../lib/classes';
 import { useNotificationStore } from '../store/useNotificationsStore';
 import Notifications from './Notifications';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useClickOutside } from '../hooks/useClickOutside';
 
 const Navbar: FC = () => {
   const { open: openSettings } = useSettingsStore();
@@ -28,6 +32,9 @@ const Navbar: FC = () => {
 
   const notificationsBtnRef = useRef<HTMLButtonElement>(null);
   const userBtnRef = useRef<HTMLButtonElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(userMenuRef, () => setUserMenuOpened(false), [userBtnRef]);
 
   return (
     <nav className='fixed z-20 flex h-[var(--navbar-height)] w-full items-center gap-4 border-b border-slate-700 bg-slate-800 px-4'>
@@ -40,17 +47,7 @@ const Navbar: FC = () => {
           priority={true}
         />
       </Link>
-      <Button
-        intent='secondary'
-        size='small'
-        className='ml-auto'
-        gap='small'
-        onClick={() => void signOut()}
-      >
-        <span>Sign out</span>
-        <ArrowLeftOnRectangleIcon className='h-[18px]' />
-      </Button>
-      <div className='flex items-center gap-2'>
+      <div className='ml-auto flex items-center gap-3'>
         <button
           className={cn(
             'relative text-slate-300 transition-colors hover:text-slate-50',
@@ -73,13 +70,6 @@ const Navbar: FC = () => {
           <BellIcon className='h-5' />
         </button>
         <button
-          className='text-slate-300 transition-colors hover:text-slate-50'
-          onClick={openSettings}
-          aria-label='Settings'
-        >
-          <Cog8ToothIcon className='h-5' />
-        </button>
-        <button
           className='flex items-center gap-0.5 text-slate-300 hover:text-slate-50'
           onClick={() => setUserMenuOpened(prev => !prev)}
           ref={userBtnRef}
@@ -97,6 +87,51 @@ const Navbar: FC = () => {
           </motion.div>
         </button>
       </div>
+      <AnimatePresence>
+        {userMenuOpened && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15 }}
+            className='absolute top-[calc(var(--navbar-height)_+_0.5rem)] right-4 z-20 flex max-h-72 w-44 flex-col gap-2 rounded bg-slate-800 py-2 text-sm font-semibold leading-4 text-slate-50 ring-1 ring-slate-700 drop-shadow-xl'
+            ref={userMenuRef}
+          >
+            <div className='flex flex-col gap-2 px-4'>
+              <span>Welcome, {session?.user?.name}</span>
+            </div>
+            <div className='h-[1px] w-full bg-slate-700' />
+            <div className='flex flex-col gap-2 px-4'>
+              <Link
+                href={`/user/${session?.user?.id as string}`}
+                className='flex items-center justify-between transition-colors hover:text-sky-400'
+              >
+                <span>Your profile</span>
+                <UserCircleIcon className='h-[18px]' />
+              </Link>
+            </div>
+            <div className='h-[1px] w-full bg-slate-700' />
+            <div className='flex flex-col gap-2 px-4'>
+              <button
+                className='flex items-center justify-between transition-colors hover:text-sky-400'
+                onClick={openSettings}
+                aria-label='Settings'
+              >
+                <span>Settings</span>
+                <Cog8ToothIcon className='h-[18px]' />
+              </button>
+              <button
+                className='flex items-center justify-between transition-colors hover:text-sky-400'
+                onClick={() => void signOut()}
+                aria-label='Settings'
+              >
+                <span>Sign out</span>
+                <ArrowLeftOnRectangleIcon className='h-[18px]' />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
       <Notifications buttonRef={notificationsBtnRef} />
     </nav>
   );
