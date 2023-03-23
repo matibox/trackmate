@@ -1,14 +1,18 @@
-import { ArrowLeftOnRectangleIcon } from '@heroicons/react/20/solid';
+import {
+  ArrowLeftOnRectangleIcon,
+  ChevronDownIcon,
+} from '@heroicons/react/20/solid';
 import Image from 'next/image';
-import { useRef, type FC } from 'react';
+import { useRef, useState, type FC } from 'react';
 import Button from '@ui/Button';
-import { signOut } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { BellIcon, Cog8ToothIcon } from '@heroicons/react/24/outline';
 import { useSettingsStore } from '../store/useSettingsStore';
 import cn from '../lib/classes';
 import { useNotificationStore } from '../store/useNotificationsStore';
 import Notifications from './Notifications';
+import { motion } from 'framer-motion';
 
 const Navbar: FC = () => {
   const { open: openSettings } = useSettingsStore();
@@ -18,7 +22,12 @@ const Navbar: FC = () => {
     unread,
   } = useNotificationStore();
 
+  const { data: session } = useSession();
+
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
+
   const notificationsBtnRef = useRef<HTMLButtonElement>(null);
+  const userBtnRef = useRef<HTMLButtonElement>(null);
 
   return (
     <nav className='fixed z-20 flex h-[var(--navbar-height)] w-full items-center gap-4 border-b border-slate-700 bg-slate-800 px-4'>
@@ -69,6 +78,23 @@ const Navbar: FC = () => {
           aria-label='Settings'
         >
           <Cog8ToothIcon className='h-5' />
+        </button>
+        <button
+          className='flex items-center gap-0.5 text-slate-300 hover:text-slate-50'
+          onClick={() => setUserMenuOpened(prev => !prev)}
+          ref={userBtnRef}
+        >
+          <Image
+            src={session?.user?.image ?? '/DefaultAvatar.png'}
+            alt={`${session?.user?.name ?? 'user'}'s profile picture`}
+            width={21}
+            height={21}
+            priority={true}
+            className='rounded-full ring-1 ring-slate-700'
+          />
+          <motion.div animate={{ rotate: userMenuOpened ? 180 : 0 }}>
+            <ChevronDownIcon className='h-4 transition-colors' />
+          </motion.div>
         </button>
       </div>
       <Notifications buttonRef={notificationsBtnRef} />
