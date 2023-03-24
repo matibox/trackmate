@@ -129,7 +129,7 @@ const Profile: NextPage = () => {
         <div className='grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3'>
           {profile && (
             <>
-              <Tile>
+              <Tile className='xl:col-span-2'>
                 <div className='flex items-center gap-4'>
                   <Image
                     src={profile.image ?? '/DefaultAvatar.png'}
@@ -200,7 +200,7 @@ const Profile: NextPage = () => {
                 </div>
               </Tile>
               <Tile
-                className='md:col-span-2'
+                className='md:col-span-2 xl:col-span-3'
                 header={
                   <div className='flex items-center gap-2'>
                     <CalendarDaysIcon className='h-6' />
@@ -209,7 +209,7 @@ const Profile: NextPage = () => {
                 }
                 fixedHeader
               >
-                <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_24rem))] justify-center gap-4'>
+                <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_22rem))] justify-center gap-4'>
                   {profile.events.length > 0 ? (
                     profile.events.map(event => (
                       <Event
