@@ -81,4 +81,21 @@ export const userRouter = createTRPCRouter({
 
       return socialMediaManagers;
     }),
+  getProfile: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      return await ctx.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          name: true,
+          image: true,
+          createdAt: true,
+          team: { select: { id: true, name: true } },
+          results: {
+            select: { qualiPosition: true, racePosition: true, DNF: true },
+          },
+        },
+      });
+    }),
 });
