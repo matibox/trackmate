@@ -100,6 +100,15 @@ export const userRouter = createTRPCRouter({
               DNS: true,
             },
           },
+          events: {
+            include: {
+              drivers: { select: { id: true, name: true, teamId: true } },
+              championship: { select: { organizer: true, name: true } },
+              team: { select: { id: true } },
+              result: true,
+            },
+            orderBy: { date: 'desc' },
+          },
         },
       });
     }),

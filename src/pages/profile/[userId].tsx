@@ -11,9 +11,27 @@ import { AnimatePresence, motion } from 'framer-motion';
 import Loading from '@ui/Loading';
 import Tile from '@ui/Tile';
 import Link from 'next/link';
-import { LinkIcon } from '@heroicons/react/20/solid';
+import {
+  LinkIcon,
+  PencilSquareIcon,
+  TrashIcon,
+  EllipsisHorizontalCircleIcon,
+  DocumentArrowUpIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/20/solid';
 import dayjs from 'dayjs';
-import { useCallback, useMemo } from 'react';
+import { type FC, useCallback, useMemo, useState } from 'react';
+import { capitilize } from '../../utils/helpers';
+import { useEventStore } from '../../store/useEventStore';
+import { useResultStore } from '../../store/useResultStore';
+import { useEditEventStore } from '../../store/useEditEventStore';
+import { useSession } from 'next-auth/react';
+import Button from '@ui/Button';
+import cn from '../../lib/classes';
+import EventDuration from '../../components/EventDuration';
+import DeleteEvent from '@dashboard/events/DeleteEvent';
+import EditEvent from '@dashboard/events/EditEvent';
+import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 type Profile = RouterOutputs['user']['getProfile'];
 
@@ -105,6 +123,8 @@ const Profile: NextPage = () => {
           )}
         </AnimatePresence>
         <Settings />
+        <DeleteEvent />
+        <EditEvent />
         <Error />
         <div className='grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3'>
           {profile && (
@@ -179,11 +199,225 @@ const Profile: NextPage = () => {
                   </div>
                 </div>
               </Tile>
+              <Tile
+                className='md:col-span-2'
+                header={
+                  <div className='flex items-center gap-2'>
+                    <CalendarDaysIcon className='h-6' />
+                    <h1 className='text-lg font-semibold'>Events</h1>
+                  </div>
+                }
+                fixedHeader
+              >
+                <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_24rem))] justify-center gap-4'>
+                  {profile.events.length > 0 ? (
+                    profile.events.map(event => (
+                      <Event
+                        key={event.id}
+                        event={event}
+                        profileId={userId as string}
+                      />
+                    ))
+                  ) : (
+                    <span className='text-slate-300'>There are no events</span>
+                  )}
+                </div>
+              </Tile>
             </>
           )}
         </div>
       </main>
     </>
+  );
+};
+
+type Event = NonNullable<Profile>['events'][number];
+
+const Event: FC<{ event: Event; profileId: string }> = ({
+  event,
+  profileId,
+}) => {
+  const { data: session } = useSession();
+
+  const { open: openDeleteEvent } = useEventStore();
+  const { open: openPostResult } = useResultStore();
+  const { open: openEditEvent } = useEditEventStore();
+
+  const [notesOpened, setNotesOpened] = useState(false);
+
+  const Dxx = useMemo(() => {
+    const { result } = event;
+    if (!result) return false;
+    return result.DNF || result.DNS || result.DSQ;
+  }, [event]);
+
+  const isUserProfile = useMemo(
+    () => session?.user?.id === profileId,
+    [profileId, session?.user?.id]
+  );
+
+  const isTeamEvent = useMemo(() => Boolean(event.team), [event.team]);
+
+  const eventTitle = useMemo(() => {
+    const { championship } = event;
+    let title = '';
+    if (championship) {
+      title += `${capitilize(championship.name)} - `;
+    }
+    title += event.title ?? '';
+    return title;
+  }, [event]);
+
+  return (
+    <Tile
+      header={
+        <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
+          <span className='truncate text-base font-semibold' title={eventTitle}>
+            {eventTitle}
+          </span>
+          {!isTeamEvent && isUserProfile && !event.result && (
+            <Button
+              intent='danger'
+              size='xs'
+              gap='small'
+              className='ml-auto p-1'
+              aria-label='delete event'
+              onClick={() =>
+                openDeleteEvent(
+                  event.id,
+                  event.championship?.name,
+                  event.title ?? undefined
+                )
+              }
+            >
+              <TrashIcon className='h-4' />
+            </Button>
+          )}
+          {!isTeamEvent &&
+            isUserProfile &&
+            event.drivers.find(driver => driver.id === session?.user?.id) &&
+            !event.result && (
+              <Button
+                intent='secondary'
+                size='xs'
+                gap='small'
+                className='p-1'
+                aria-label='edit event'
+                onClick={() => openEditEvent(event)}
+              >
+                <PencilSquareIcon className='h-4' />
+              </Button>
+            )}
+        </div>
+      }
+      className='relative h-72'
+    >
+      <AnimatePresence>
+        {notesOpened && (
+          <>
+            <motion.div
+              className='absolute top-0 left-0 z-10 h-full w-full bg-black/50 backdrop-blur-sm'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            />
+            <motion.button
+              className='absolute top-4 left-4 z-10 flex items-center gap-1 transition-colors hover:text-sky-400'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              onClick={() => setNotesOpened(false)}
+            >
+              <ArrowLeftIcon className='h-5' />
+              <span>back</span>
+            </motion.button>
+            <motion.div
+              className='absolute z-10 h-52 w-[calc(100%_-_2rem)] overflow-auto pr-4 text-slate-100 scrollbar-thin scrollbar-track-slate-300 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            >
+              {event.result?.notes}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      <div
+        className={cn('mb-4 grid grid-cols-2 gap-y-4', {
+          hidden: notesOpened,
+        })}
+      >
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>Track</span>
+          <span>{event.track}</span>
+        </div>
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>Duration</span>
+          <EventDuration duration={event.duration} />
+        </div>
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>Date</span>
+          <span>{dayjs(event.date).format('DD MMM YYYY')}</span>
+        </div>
+        {event.result && (
+          <>
+            <div className='flex flex-col'>
+              <span className='text-slate-300'>Quali Position</span>
+              <span>
+                {Dxx ? '-' : `P${event.result.qualiPosition as number}`}
+              </span>
+            </div>
+            <div className='flex flex-col'>
+              <span className='text-slate-300'>Race Position</span>
+              <span>
+                {event.result.DNF
+                  ? 'DNF'
+                  : event.result.DNS
+                  ? 'DNS'
+                  : event.result.DSQ
+                  ? 'DSQ'
+                  : `P${event.result.racePosition as number}`}
+              </span>
+            </div>
+            {event.result.notes && (
+              <div className='flex flex-col'>
+                <button
+                  className='flex items-center gap-1 text-slate-300 transition-colors hover:text-sky-400'
+                  title='Read more'
+                  onClick={() => setNotesOpened(true)}
+                >
+                  <span>Notes</span>
+                  <EllipsisHorizontalCircleIcon className='h-5' />
+                </button>
+                <span className='truncate'>{event.result.notes}</span>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+      {dayjs().isAfter(dayjs(event.date)) &&
+        !event.result &&
+        isUserProfile &&
+        !isTeamEvent && (
+          <Button
+            intent='secondary'
+            size='small'
+            className='font-semibold'
+            onClick={() =>
+              openPostResult({
+                id: event.id,
+                title: event.title ?? 'event',
+              })
+            }
+          >
+            <span>Post result</span>
+            <DocumentArrowUpIcon className='h-5' />
+          </Button>
+        )}
+    </Tile>
   );
 };
 
