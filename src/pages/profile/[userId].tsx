@@ -60,7 +60,7 @@ function useStats(profile: Profile | undefined) {
   }, [countStats]);
 
   const raceStarts = useMemo(() => {
-    return countStats(() => true);
+    return countStats(result => !result.DNS);
   }, [countStats]);
 
   const DNFs = useMemo(() => {

@@ -93,7 +93,12 @@ export const userRouter = createTRPCRouter({
           createdAt: true,
           team: { select: { id: true, name: true } },
           results: {
-            select: { qualiPosition: true, racePosition: true, DNF: true },
+            select: {
+              qualiPosition: true,
+              racePosition: true,
+              DNF: true,
+              DNS: true,
+            },
           },
         },
       });
