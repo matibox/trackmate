@@ -8,7 +8,6 @@ import { useError } from '../../hooks/useError';
 import { getServerAuthSession } from '../../server/auth';
 import { api, type RouterOutputs } from '../../utils/api';
 import { AnimatePresence, motion } from 'framer-motion';
-import Loading from '@ui/Loading';
 import Tile from '@ui/Tile';
 import Link from 'next/link';
 import {
@@ -109,122 +108,102 @@ const Profile: NextPage = () => {
       <NextSeo title={profile?.name ?? 'Profile'} />
       <Navbar />
       <main className='relative min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
-        <AnimatePresence>
-          {isLoading && (
-            <motion.div
-              className='absolute top-0 left-0 grid h-full w-full place-items-center bg-black/50'
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.15 }}
-            >
-              <Loading />
-            </motion.div>
-          )}
-        </AnimatePresence>
         <Settings />
         <DeleteEvent />
         <EditEvent />
         <Error />
         <div className='grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3'>
-          {profile && (
-            <>
-              <Tile className='xl:col-span-2'>
-                <div className='flex items-center gap-4'>
-                  <Image
-                    src={profile.image ?? '/DefaultAvatar.png'}
-                    alt={`${profile.name ?? 'user'}'s avatar`}
-                    width={100}
-                    height={100}
-                    priority={true}
-                    className='rounded-full'
-                  />
-                  <div className='flex flex-col gap-1'>
-                    <h1 className='text-lg font-semibold'>{profile.name}</h1>
-                    <span>
-                      User since:{' '}
-                      {dayjs(profile.createdAt).format('DD MMM YYYY')}
-                    </span>
-                    {profile.team?.name && (
-                      <Link
-                        href={`/team/${profile.team.id}`}
-                        className='flex items-center gap-1 text-slate-300 transition-colors hover:text-sky-400'
-                      >
-                        <span>{profile.team.name}</span>
-                        <LinkIcon className='h-4' />
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </Tile>
-              <Tile>
-                <div className='flex h-full flex-col justify-center gap-2'>
-                  <h1 className='text-lg font-semibold'>User statistics</h1>
-                  <div className='flex flex-col sm:grid sm:grid-cols-2 sm:gap-y-1 md:grid-cols-3'>
-                    <div>
-                      Race starts:
-                      <span className='font-semibold text-sky-400'>
-                        {' '}
-                        {raceStarts}
-                      </span>
-                    </div>
-                    <div>
-                      Wins:
-                      <span className='font-semibold text-sky-400'>
-                        {' '}
-                        {wins}
-                      </span>
-                    </div>
-                    <div>
-                      Podiums:
-                      <span className='font-semibold text-sky-400'>
-                        {' '}
-                        {podiums}
-                      </span>
-                    </div>
-                    <div>
-                      Poles:
-                      <span className='font-semibold text-sky-400'>
-                        {' '}
-                        {polePositions}
-                      </span>
-                    </div>
-                    <div>
-                      DNFs:
-                      <span className='font-semibold text-sky-400'>
-                        {' '}
-                        {DNFs}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </Tile>
-              <Tile
-                className='md:col-span-2 xl:col-span-3'
-                header={
-                  <div className='flex items-center gap-2'>
-                    <CalendarDaysIcon className='h-6' />
-                    <h1 className='text-lg font-semibold'>Events</h1>
-                  </div>
-                }
-                fixedHeader
-              >
-                <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_22rem))] justify-center gap-4'>
-                  {profile.events.length > 0 ? (
-                    profile.events.map(event => (
-                      <Event
-                        key={event.id}
-                        event={event}
-                        profileId={userId as string}
-                      />
-                    ))
-                  ) : (
-                    <span className='text-slate-300'>There are no events</span>
+          <Tile className='xl:col-span-2' isLoading={isLoading}>
+            <div className='flex items-center gap-4'>
+              <Image
+                src={profile?.image ?? '/DefaultAvatar.png'}
+                alt={`${profile?.name ?? 'user'}'s avatar`}
+                width={100}
+                height={100}
+                priority={true}
+                className='rounded-full'
+              />
+              {profile && (
+                <div className='flex flex-col gap-1'>
+                  <h1 className='text-lg font-semibold'>{profile.name}</h1>
+                  <span>
+                    User since: {dayjs(profile.createdAt).format('DD MMM YYYY')}
+                  </span>
+                  {profile.team?.name && (
+                    <Link
+                      href={`/team/${profile.team.id}`}
+                      className='flex items-center gap-1 text-slate-300 transition-colors hover:text-sky-400'
+                    >
+                      <span>{profile.team.name}</span>
+                      <LinkIcon className='h-4' />
+                    </Link>
                   )}
                 </div>
-              </Tile>
-            </>
-          )}
+              )}
+            </div>
+          </Tile>
+          <Tile isLoading={isLoading}>
+            {profile && (
+              <div className='flex h-full flex-col justify-center gap-2'>
+                <h1 className='text-lg font-semibold'>User statistics</h1>
+                <div className='flex flex-col sm:grid sm:grid-cols-2 sm:gap-y-1 md:grid-cols-3'>
+                  <div>
+                    Race starts:
+                    <span className='font-semibold text-sky-400'>
+                      {' '}
+                      {raceStarts}
+                    </span>
+                  </div>
+                  <div>
+                    Wins:
+                    <span className='font-semibold text-sky-400'> {wins}</span>
+                  </div>
+                  <div>
+                    Podiums:
+                    <span className='font-semibold text-sky-400'>
+                      {' '}
+                      {podiums}
+                    </span>
+                  </div>
+                  <div>
+                    Poles:
+                    <span className='font-semibold text-sky-400'>
+                      {' '}
+                      {polePositions}
+                    </span>
+                  </div>
+                  <div>
+                    DNFs:
+                    <span className='font-semibold text-sky-400'> {DNFs}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </Tile>
+          <Tile
+            className='md:col-span-2 xl:col-span-3'
+            header={
+              <div className='flex items-center gap-2'>
+                <CalendarDaysIcon className='h-6' />
+                <h1 className='text-lg font-semibold'>Events</h1>
+              </div>
+            }
+            isLoading={isLoading}
+            fixedHeader
+          >
+            <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_22rem))] justify-center gap-4'>
+              {profile?.events.map(event => (
+                <Event
+                  key={event.id}
+                  event={event}
+                  profileId={userId as string}
+                />
+              ))}
+              {profile?.events.length === 0 && !isLoading && (
+                <span className='text-slate-300'>There are no events</span>
+              )}
+            </div>
+          </Tile>
         </div>
       </main>
     </>
