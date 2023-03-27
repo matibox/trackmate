@@ -2,6 +2,7 @@ import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { type FC } from 'react';
 import { type RouterOutputs } from '../../../utils/api';
+import DriverList from '../../DriverList';
 import EventDuration from '../../EventDuration';
 
 type EventProps = {
@@ -37,7 +38,9 @@ const Event: FC<EventProps> = ({ event }) => {
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Drivers</span>
-          <span>{event.drivers.map(driver => driver.name).join(', ')}</span>
+          <span>
+            <DriverList drivers={event.drivers} />
+          </span>
         </div>
       </div>
     </Tile>

@@ -5,6 +5,7 @@ import { useError } from '../../../hooks/useError';
 import cn from '../../../lib/classes';
 import { api } from '../../../utils/api';
 import { hasRole } from '../../../utils/helpers';
+import DriverList from '../../DriverList';
 import Event from './Event';
 import TeamHeader from './Header';
 
@@ -35,7 +36,9 @@ const Team: FC = () => {
           </div>
           <div className='flex flex-col gap-1'>
             <span className='text-slate-300'>Drivers</span>
-            {team.drivers.map(driver => driver.name).join(', ')}
+            <span>
+              <DriverList drivers={team.drivers} />
+            </span>
           </div>
           <div className='border-t border-slate-700 py-2'>
             <span className='text-base font-semibold sm:text-lg'>

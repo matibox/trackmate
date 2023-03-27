@@ -18,6 +18,7 @@ import cn from '../../../lib/classes';
 import { useSession } from 'next-auth/react';
 import { useEditEventStore } from '../../../store/useEditEventStore';
 import EventDuration from '../../EventDuration';
+import DriverList from '../../DriverList';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
@@ -112,7 +113,9 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
         </div>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Drivers</span>
-          <span>{event.drivers.map(driver => driver.name).join(', ')}</span>
+          <span>
+            <DriverList drivers={event.drivers} />
+          </span>
         </div>
         {event.result && (
           <>

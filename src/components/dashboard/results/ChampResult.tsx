@@ -2,6 +2,7 @@ import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { useMemo, type FC } from 'react';
 import { type RouterOutputs } from '../../../utils/api';
+import DriverList from '../../DriverList';
 
 type ResultProps = {
   result: RouterOutputs['result']['getChampResultPage'][number];
@@ -48,7 +49,9 @@ const ChampResult: FC<ResultProps> = ({ result }) => {
         </div>
         <div className='col-span-2 flex flex-col'>
           <span className='text-slate-300'>Roster</span>
-          {result.championship.drivers.map(driver => driver.name).join(', ')}
+          <span>
+            <DriverList drivers={result.championship.drivers} />
+          </span>
         </div>
       </div>
       <div className='grid-cols-w grid gap-4 pt-4'>

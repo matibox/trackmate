@@ -11,6 +11,7 @@ import cn from '../../../lib/classes';
 import { useChampionshipStore } from '../../../store/useChampionshipStore';
 import { type RouterOutputs } from '../../../utils/api';
 import { capitilize } from '../../../utils/helpers';
+import DriverList from '../../DriverList';
 import EventDuration from '../../EventDuration';
 
 type ChampionshipProps = {
@@ -79,7 +80,7 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
             <div className='col-span-2 flex flex-col'>
               <span className='text-slate-300'>Roster</span>
               <span>
-                {championship.drivers.map(driver => driver.name).join(', ')}
+                <DriverList drivers={championship.drivers} />
               </span>
             </div>
             {championship.result && (
@@ -119,7 +120,7 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
                 >
                   <span className='text-slate-300'>Drivers</span>
                   <span>
-                    {event.drivers.map(driver => driver.name).join(', ')}
+                    <DriverList drivers={event.drivers} />
                   </span>
                 </div>
               </div>

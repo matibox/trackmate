@@ -5,6 +5,7 @@ import dayjs from 'dayjs';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState, type FC } from 'react';
 import { type RouterOutputs } from '../../../utils/api';
+import DriverList from '../../DriverList';
 
 type ResultProps = {
   result: RouterOutputs['result']['getResultPage'][number];
@@ -93,7 +94,9 @@ const Result: FC<ResultProps> = ({ result }) => {
         </div>
         <div className='col-span-2 flex flex-col'>
           <span className='text-slate-300'>Drivers</span>
-          {result.event.drivers.map(driver => driver.name).join(', ')}
+          <span>
+            <DriverList drivers={result.event.drivers} />
+          </span>
         </div>
       </div>
       <div className='grid-cols-w grid gap-4 pt-4'>

@@ -29,6 +29,7 @@ import { api, type RouterOutputs } from '../../utils/api';
 import { capitilize } from '../../utils/helpers';
 import EventDuration from '../../components/EventDuration';
 import Settings from '../../components/Settings';
+import DriverList from '../../components/DriverList';
 
 const AllChampionships: NextPage = () => {
   const { Error, setError } = useError();
@@ -353,7 +354,9 @@ const Event: FC<{
       </div>
       <div className='flex flex-col'>
         <span className='text-slate-300'>Drivers</span>
-        <span>{event.drivers.map(driver => driver.name).join(', ')}</span>
+        <span>
+          <DriverList drivers={event.drivers} />
+        </span>
       </div>
       {dayjs().isAfter(dayjs(event.date)) && (
         <Button
