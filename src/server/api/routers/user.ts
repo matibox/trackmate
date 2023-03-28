@@ -92,19 +92,18 @@ export const userRouter = createTRPCRouter({
           image: true,
           createdAt: true,
           team: { select: { id: true, name: true } },
-          results: {
-            select: {
-              qualiPosition: true,
-              racePosition: true,
-              DNF: true,
-              DNS: true,
-            },
-          },
           events: {
             include: {
               drivers: { select: { id: true, name: true, teamId: true } },
               championship: { select: { organizer: true, name: true } },
-              team: { select: { id: true } },
+              team: {
+                select: {
+                  id: true,
+                  results: {
+                    where: { event: { drivers: { some: { id: userId } } } },
+                  },
+                },
+              },
               result: true,
             },
             orderBy: { date: 'desc' },

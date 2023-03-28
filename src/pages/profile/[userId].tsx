@@ -33,14 +33,18 @@ import EditEvent from '@dashboard/events/EditEvent';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 type Profile = RouterOutputs['user']['getProfile'];
+type Result = NonNullable<NonNullable<Profile>['events'][number]['result']>;
 
 function useStats(profile: Profile | undefined) {
   const countStats = useCallback(
-    (
-      filterFn: (result: NonNullable<Profile>['results'][number]) => boolean
-    ) => {
+    (filterFn: (result: Result) => boolean) => {
       if (!profile) return 0;
-      const { results } = profile;
+      const { events } = profile;
+      const results = events
+        .filter(event => event.result)
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        .map(event => event.result!);
+
       return results.filter(filterFn).length;
     },
     [profile]
@@ -49,9 +53,7 @@ function useStats(profile: Profile | undefined) {
   const podiums = useMemo(() => {
     return countStats(result => {
       const { racePosition } = result;
-      if (racePosition) {
-        return racePosition <= 3;
-      }
+      if (racePosition) return racePosition <= 3;
       return false;
     });
   }, [countStats]);
@@ -59,9 +61,7 @@ function useStats(profile: Profile | undefined) {
   const wins = useMemo(() => {
     return countStats(result => {
       const { racePosition } = result;
-      if (racePosition) {
-        return racePosition === 1;
-      }
+      if (racePosition) return racePosition === 1;
       return false;
     });
   }, [countStats]);
@@ -69,20 +69,17 @@ function useStats(profile: Profile | undefined) {
   const polePositions = useMemo(() => {
     return countStats(result => {
       const { qualiPosition } = result;
-      if (qualiPosition) {
-        return qualiPosition === 1;
-      }
+      if (qualiPosition) return qualiPosition === 1;
       return false;
     });
   }, [countStats]);
 
-  const raceStarts = useMemo(() => {
-    return countStats(result => !result.DNS);
-  }, [countStats]);
+  const raceStarts = useMemo(
+    () => countStats(result => !result.DNS),
+    [countStats]
+  );
 
-  const DNFs = useMemo(() => {
-    return countStats(result => result.DNF);
-  }, [countStats]);
+  const DNFs = useMemo(() => countStats(result => result.DNF), [countStats]);
 
   return { wins, podiums, polePositions, raceStarts, DNFs };
 }
