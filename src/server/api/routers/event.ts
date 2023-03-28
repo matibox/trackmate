@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
@@ -16,7 +17,6 @@ const eventSchema = z.object({
   car: z.string(),
   track: z.string(),
   duration: z.number(),
-  managerId: z.string().optional(),
   drivers: z
     .array(
       z.object({
@@ -76,16 +76,26 @@ export const eventRouter = createTRPCRouter({
   createOneOffEvent: protectedProcedure
     .input(eventSchema)
     .mutation(async ({ ctx, input }) => {
-      const { drivers, type, managerId, ...data } = input;
-      let teamId: string | undefined;
+      const { drivers, type, ...data } = input;
 
-      if (type === 'endurance') {
-        teamId = (
-          await ctx.prisma.team.findUnique({
-            where: { managerId: ctx.session.user.id },
-            select: { id: true },
-          })
-        )?.id;
+      let managerId: string | undefined;
+
+      if (hasRole(ctx.session, 'manager')) {
+        managerId = ctx.session.user.id;
+      } else if (ctx.session.user.teamId && type === 'endurance') {
+        const team = await ctx.prisma.team.findUnique({
+          where: { id: ctx.session.user.teamId },
+          select: { managerId: true },
+        });
+
+        if (!team) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'You need to join a team',
+          });
+        }
+
+        managerId = team.managerId;
       }
 
       return await ctx.prisma.event.create({
@@ -100,13 +110,10 @@ export const eventRouter = createTRPCRouter({
                     id: ctx.session.user.id,
                   },
           },
-          manager:
-            type === 'endurance' && managerId
-              ? {
-                  connect: { id: managerId },
-                }
-              : undefined,
-          team: teamId ? { connect: { id: teamId } } : undefined,
+          manager: managerId ? { connect: { id: managerId } } : undefined,
+          team: ctx.session.user.teamId
+            ? { connect: { id: ctx.session.user.teamId } }
+            : undefined,
         },
       });
     }),

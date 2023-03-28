@@ -42,14 +42,17 @@ const NewChampionship: FC = () => {
         (type === 'endurance' && teammates && teammates?.length < 2) ||
         !teammates
       ) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.too_small,
-          minimum: 2,
-          inclusive: true,
-          type: 'array',
-          message: 'Minimum of 2 drivers are required',
-          path: ['teammates'],
-        });
+      }
+
+      if (type === 'endurance' && teammates && !hasRole(session, 'manager')) {
+        const user = teammates.find(u => u.id === session?.user?.id);
+        if (!user) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'You have to be in a roster',
+            path: ['teammates'],
+          });
+        }
       }
     });
 
@@ -86,12 +89,10 @@ const NewChampionship: FC = () => {
               },
             ]
           : values.teammates,
-      managerId:
-        hasRole(session, 'manager') && values.type === 'endurance'
-          ? session?.user?.id
-          : undefined,
     });
   });
+
+  console.log(formState);
 
   return (
     <Popup
@@ -146,7 +147,6 @@ const NewChampionship: FC = () => {
           setType={type =>
             setFormState(prev => ({ ...prev, type: type ?? 'sprint' }))
           }
-          enduranceNeedsManager
         />
         <DriversPicker
           formState={formState}

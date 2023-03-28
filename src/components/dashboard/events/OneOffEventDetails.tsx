@@ -63,7 +63,6 @@ const OneOffEventDetails: FC<OneOffEventDetailsProps> = ({
       <EventTypePicker
         formState={formState}
         setType={type => setFormState({ type })}
-        enduranceNeedsManager
       />
       <DriversPicker
         formState={{ ...formState, teammates: formState.drivers }}

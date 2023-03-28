@@ -10,7 +10,7 @@ import { z } from 'zod';
 import Form from '@ui/Form';
 import ChampEventDetails from './ChampEventDetails';
 import OneOffEventDetails from './OneOffEventDetails';
-import { eventTypes } from '../../../constants/constants';
+import { eventTypes, roles } from '../../../constants/constants';
 import { api } from '../../../utils/api';
 import { useError } from '../../../hooks/useError';
 import { useCalendarStore } from '../../../store/useCalendarStore';
@@ -24,6 +24,23 @@ const driverSchema = z.object({ id: z.string(), name: z.string().nullable() });
 
 export const formSchema = z
   .object({
+    session: z
+      .object({
+        expires: z.string(),
+        user: z
+          .object({
+            id: z.string(),
+            email: z.string().nullish(),
+            image: z.string().nullish(),
+            name: z.string().nullish(),
+            teamId: z.string().nullable(),
+            roles: z
+              .array(z.object({ id: z.string(), name: z.enum(roles) }))
+              .optional(),
+          })
+          .optional(),
+      })
+      .nullable(),
     championship: z
       .object({
         id: z.string(),
@@ -48,28 +65,46 @@ export const formSchema = z
       .min(0, 'Duration needs to be a valid number'),
     time: z.string(),
   })
-  .superRefine(({ type, drivers, newEventType, championship }, ctx) => {
-    if ((type === 'endurance' && drivers && drivers.length < 2) || !drivers) {
-      ctx.addIssue({
-        code: 'too_small',
-        minimum: 2,
-        inclusive: true,
-        type: 'array',
-        path: ['drivers'],
-        message: 'Pick at least 2 drivers for endurance events.',
-      });
-    }
+  .superRefine(
+    ({ type, drivers, newEventType, championship, session }, ctx) => {
+      if ((type === 'endurance' && drivers && drivers.length < 2) || !drivers) {
+        ctx.addIssue({
+          code: 'too_small',
+          minimum: 2,
+          inclusive: true,
+          type: 'array',
+          path: ['drivers'],
+          message: 'Pick at least 2 drivers for endurance events.',
+        });
+      }
 
-    if (newEventType === 'championship' && !championship) {
-      ctx.addIssue({
-        code: 'invalid_type',
-        expected: 'object',
-        received: 'null',
-        path: ['championship'],
-        message: 'You have to pick a championship',
-      });
+      if (newEventType === 'championship' && !championship) {
+        ctx.addIssue({
+          code: 'invalid_type',
+          expected: 'object',
+          received: 'null',
+          path: ['championship'],
+          message: 'You have to pick a championship',
+        });
+      }
+
+      if (
+        newEventType === 'oneOff' &&
+        type === 'endurance' &&
+        drivers &&
+        !hasRole(session, 'manager')
+      ) {
+        const user = drivers.find(driver => driver.id === session?.user?.id);
+        if (!user) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['drivers'],
+            message: 'You have to be in a roster',
+          });
+        }
+      }
     }
-  });
+  );
 
 export type NewEventFormState = z.infer<typeof formSchema>;
 
@@ -127,31 +162,21 @@ const NewEvent: FC = () => {
       );
 
       if (values.newEventType === 'championship') {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        const { managerId, type: champType, id: champId } = championship!;
         createChampEvent({
           ...data,
           date,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          championshipId: championship!.id,
+          championshipId: champId,
           teamId: championship?.team?.id ?? null,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          type: type ?? championship!.type,
-          managerId:
-            hasRole(session, 'manager') &&
-            (type === 'endurance' ||
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              championship!.type === 'endurance')
-              ? session?.user?.id
-              : undefined,
+          type: type ?? champType,
+          managerId: type === 'endurance' ? managerId ?? undefined : undefined,
         });
       } else {
         createOneOffEvent({
           ...data,
           date,
           type: type ?? 'sprint',
-          managerId:
-            hasRole(session, 'manager') && values.type === 'endurance'
-              ? session?.user?.id
-              : undefined,
         });
       }
     });
@@ -193,7 +218,7 @@ const NewEvent: FC = () => {
   function handleNextStep(e: FormEvent) {
     e.preventDefault();
     if (!isLast) return next();
-    handleSubmit(e, formState);
+    handleSubmit(e, { ...formState, session });
   }
 
   function closeAndReset() {

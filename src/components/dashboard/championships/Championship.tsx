@@ -5,8 +5,7 @@ import {
 import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
-import { useSession } from 'next-auth/react';
-import { useMemo, type FC } from 'react';
+import { type FC } from 'react';
 import cn from '../../../lib/classes';
 import { useChampionshipStore } from '../../../store/useChampionshipStore';
 import { type RouterOutputs } from '../../../utils/api';
@@ -22,15 +21,6 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
   const {
     deleteChampionshipPopup: { open },
   } = useChampionshipStore();
-
-  const { data: session } = useSession();
-
-  const showDelete = useMemo(() => {
-    const type = championship.type;
-    if (type === 'sprint') return true;
-    if (championship.managerId === session?.user?.id) return true;
-    return false;
-  }, [championship.type, championship.managerId, session?.user?.id]);
 
   return (
     <Tile
@@ -51,18 +41,16 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
               {championship.organizer} - {championship.name}
             </span>
           </a>
-          {showDelete && (
-            <Button
-              intent='danger'
-              size='xs'
-              gap='small'
-              onClick={() => open(championship.id, championship.name)}
-              className='h-7 p-1'
-              aria-label='delete'
-            >
-              <TrashIcon className='h-4' />
-            </Button>
-          )}
+          <Button
+            intent='danger'
+            size='xs'
+            gap='small'
+            onClick={() => open(championship.id, championship.name)}
+            className='h-7 p-1'
+            aria-label='delete'
+          >
+            <TrashIcon className='h-4' />
+          </Button>
         </div>
       }
     >

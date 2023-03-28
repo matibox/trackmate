@@ -15,6 +15,7 @@ type NewEventStore = {
 };
 
 export const defaultEventFormState: NewEventFormState = {
+  session: null,
   newEventType: 'oneOff',
   championship: null,
   title: '',

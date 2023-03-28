@@ -1,3 +1,4 @@
+import { TRPCError } from '@trpc/server';
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
 import { hasRole } from '../../../utils/helpers';
@@ -98,11 +99,31 @@ export const championshipRouter = createTRPCRouter({
             })
           )
           .optional(),
-        managerId: z.string().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { type, teammates, managerId, ...data } = input;
+      const { type, teammates, ...data } = input;
+
+      let managerId: string | undefined;
+
+      if (hasRole(ctx.session, 'manager')) {
+        managerId = ctx.session.user.id;
+      } else if (ctx.session.user.teamId && type === 'endurance') {
+        const team = await ctx.prisma.team.findUnique({
+          where: { id: ctx.session.user.teamId },
+          select: { managerId: true },
+        });
+
+        if (!team) {
+          throw new TRPCError({
+            code: 'FORBIDDEN',
+            message: 'You need to join a team',
+          });
+        }
+
+        managerId = team.managerId;
+      }
+
       return await ctx.prisma.championship.create({
         data: {
           ...data,
