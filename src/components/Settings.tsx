@@ -1,6 +1,7 @@
 import { RadioGroup } from '@headlessui/react';
 import Popup from '@ui/Popup';
 import PopupHeader from '@ui/PopupHeader';
+import { useSession } from 'next-auth/react';
 import { type FC } from 'react';
 import cn from '../lib/classes';
 import { useCalendarStore } from '../store/useCalendarStore';
@@ -16,6 +17,8 @@ const Settings: FC = () => {
     settings: { showTeamEvents, eventDurationType },
   } = useSettingsStore();
   const { setTeamEvents, setLoading } = useCalendarStore();
+
+  const { data: session } = useSession();
 
   const utils = api.useContext();
 
@@ -34,45 +37,53 @@ const Settings: FC = () => {
       condition={opened}
       header={<PopupHeader close={close} title='Settings' />}
     >
-      <div className='flex flex-wrap gap-16'>
+      <div
+        className={cn('flex flex-wrap', {
+          'gap-16': session?.user?.teamId,
+        })}
+      >
         <div className='flex flex-col gap-2'>
-          <h3 className='text-lg font-semibold'>Team events</h3>
-          <RadioGroup
-            value={showTeamEvents}
-            onChange={value =>
-              void handleTeamEventsChange(() => setShowTeamEvents(value))
-            }
-            className='flex gap-2'
-          >
-            <RadioGroup.Option value={false}>
-              {({ checked }) => (
-                <span
-                  className={cn(
-                    'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
-                    {
-                      'bg-sky-500 ring-sky-400': checked,
-                    }
+          {session?.user?.teamId && (
+            <>
+              <h3 className='text-lg font-semibold'>Team events</h3>
+              <RadioGroup
+                value={showTeamEvents}
+                onChange={value =>
+                  void handleTeamEventsChange(() => setShowTeamEvents(value))
+                }
+                className='flex gap-2'
+              >
+                <RadioGroup.Option value={false}>
+                  {({ checked }) => (
+                    <span
+                      className={cn(
+                        'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
+                        {
+                          'bg-sky-500 ring-sky-400': checked,
+                        }
+                      )}
+                    >
+                      Hide
+                    </span>
                   )}
-                >
-                  Hide
-                </span>
-              )}
-            </RadioGroup.Option>
-            <RadioGroup.Option value={true}>
-              {({ checked }) => (
-                <span
-                  className={cn(
-                    'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
-                    {
-                      'bg-sky-500 ring-sky-400': checked,
-                    }
+                </RadioGroup.Option>
+                <RadioGroup.Option value={true}>
+                  {({ checked }) => (
+                    <span
+                      className={cn(
+                        'cursor-pointer rounded px-2 py-1 ring-1 ring-slate-700',
+                        {
+                          'bg-sky-500 ring-sky-400': checked,
+                        }
+                      )}
+                    >
+                      Show
+                    </span>
                   )}
-                >
-                  Show
-                </span>
-              )}
-            </RadioGroup.Option>
-          </RadioGroup>
+                </RadioGroup.Option>
+              </RadioGroup>
+            </>
+          )}
         </div>
         <div className='flex flex-col gap-2'>
           <h3 className='text-lg font-semibold'>Event duration</h3>
