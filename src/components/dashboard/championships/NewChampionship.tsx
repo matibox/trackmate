@@ -92,8 +92,6 @@ const NewChampionship: FC = () => {
     });
   });
 
-  console.log(formState);
-
   return (
     <Popup
       header={<PopupHeader close={close} title='New championship' />}

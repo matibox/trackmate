@@ -29,7 +29,6 @@ const ResultsHeader: FC<ResultsHeaderProps> = ({ noResults }) => {
   const utils = api.useContext();
 
   const handleTypeSwitch = async () => {
-    console.log('yes');
     toggleType();
     await new Promise(resolve =>
       setTimeout(() => resolve(utils.result.invalidate()), 100)
