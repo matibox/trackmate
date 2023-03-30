@@ -57,17 +57,18 @@ model Session {
 }
 
 model Team {
-  id                 String               @id @default(cuid())
-  name               String
-  managerId          String               @unique
-  socialMediaId      String?              @unique
-  manager            User                 @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
-  socialMedia        User?                @relation(fields: [socialMediaId], references: [id], name: "social-media-team", onUpdate: NoAction, onDelete: NoAction)
-  drivers            User[]
-  events             Event[]
-  championships      Championship[]
-  results            Result[]
-  ChampionshipResult ChampionshipResult[]
+  id                  String               @id @default(cuid())
+  name                String
+  managerId           String               @unique
+  socialMediaId       String?              @unique
+  manager             User                 @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
+  socialMedia         User?                @relation(fields: [socialMediaId], references: [id], name: "social-media-team", onUpdate: NoAction, onDelete: NoAction)
+  drivers             User[]
+  events              Event[]
+  championships       Championship[]
+  results             Result[]
+  championshipResults ChampionshipResult[]
+  setups              Setup[]
 }
 
 model User {
@@ -92,6 +93,7 @@ model User {
   champResults                ChampionshipResult[]
   newResultNotifications      NewResultNotification[]
   newChampResultNotifications NewChampResultNotification[]
+  setups                      Setup[]
 
   @@index([teamId])
 }
@@ -216,4 +218,18 @@ model NewChampResultNotification {
 
   @@index([resultId])
   @@index([receiverId])
+}
+
+model Setup {
+  id        String   @id @default(cuid())
+  data      Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  team      Team?    @relation(fields: [teamId], references: [id])
+  authorId  String
+  teamId    String?
+
+  @@index([authorId])
+  @@index([teamId])
 }
