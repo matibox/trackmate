@@ -227,9 +227,7 @@ model Setup {
   updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
-  event     Event?   @relation(fields: [eventId], references: [id])
-  eventId   String?
+  events    Event[]
 
   @@index([authorId])
-  @@index([eventId])
 }

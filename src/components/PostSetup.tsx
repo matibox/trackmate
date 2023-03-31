@@ -65,7 +65,7 @@ const PostSetup: FC = () => {
       header={<PopupHeader close={close} title='Upload a setup' />}
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
-        <Label label='Upload setup'>
+        <Label label='Upload a setup'>
           <Input
             className='cursor-pointer rounded bg-transparent p-0 text-sm text-slate-50 focus:outline-none focus:ring focus:ring-sky-600'
             type='file'
