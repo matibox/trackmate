@@ -1,8 +1,8 @@
 import { z } from 'zod';
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 
 export const setupRouter = createTRPCRouter({
-  upload: protectedProcedure
+  upload: multiRoleProcedure(['driver', 'manager'])
     .input(
       z.object({
         data: z.object({}).passthrough(),
@@ -18,4 +18,26 @@ export const setupRouter = createTRPCRouter({
         },
       });
     }),
+  getAll: multiRoleProcedure(['driver', 'manager']).query(async ({ ctx }) => {
+    return await ctx.prisma.setup.findMany({
+      where: {
+        OR: [
+          {
+            events: {
+              some: {
+                drivers: {
+                  some: {
+                    id: ctx.session.user.id,
+                  },
+                },
+              },
+            },
+          },
+          {
+            author: { id: ctx.session.user.id },
+          },
+        ],
+      },
+    });
+  }),
 });
