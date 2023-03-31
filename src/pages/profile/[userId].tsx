@@ -2,8 +2,6 @@ import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
-import Navbar from '../../components/Navbar';
-import Settings from '../../components/Settings';
 import { useError } from '../../hooks/useError';
 import { getServerAuthSession } from '../../server/auth';
 import { api, type RouterOutputs } from '../../utils/api';
@@ -28,8 +26,6 @@ import { useSession } from 'next-auth/react';
 import Button from '@ui/Button';
 import cn from '../../lib/classes';
 import EventDuration from '../../components/EventDuration';
-import DeleteEvent from '@dashboard/events/DeleteEvent';
-import EditEvent from '@dashboard/events/EditEvent';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
 
 type Profile = RouterOutputs['user']['getProfile'];
@@ -103,11 +99,7 @@ const Profile: NextPage = () => {
   return (
     <>
       <NextSeo title={profile?.name ?? 'Profile'} />
-      <Navbar />
       <main className='relative min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
-        <Settings />
-        <DeleteEvent />
-        <EditEvent />
         <Error />
         <div className='grid grid-cols-1 gap-4 p-4 md:grid-cols-2 xl:grid-cols-3'>
           <Tile className='xl:col-span-2' isLoading={isLoading}>

@@ -1,4 +1,3 @@
-import PostResult from '@dashboard/results/PostResult';
 import { Disclosure } from '@headlessui/react';
 import {
   ArchiveBoxArrowDownIcon,
@@ -18,8 +17,6 @@ import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
 import { useMemo, useState, type FC } from 'react';
-import Navbar from '../../components/Navbar';
-import PostChampResult from '../../components/dashboard/results/PostChampResult';
 import { useError } from '../../hooks/useError';
 import cn from '../../lib/classes';
 import { getServerAuthSession } from '../../server/auth';
@@ -28,7 +25,6 @@ import { useResultStore } from '../../store/useResultStore';
 import { api, type RouterOutputs } from '../../utils/api';
 import { capitilize } from '../../utils/helpers';
 import EventDuration from '../../components/EventDuration';
-import Settings from '../../components/Settings';
 import DriverList from '../../components/DriverList';
 
 const AllChampionships: NextPage = () => {
@@ -53,11 +49,7 @@ const AllChampionships: NextPage = () => {
   return (
     <>
       <NextSeo title='All championships' />
-      <Navbar />
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
-        <PostResult />
-        <PostChampResult />
-        <Settings />
         <Link
           href='/'
           className='flex items-center gap-2 pl-4 pt-4 text-slate-300 transition-colors hover:text-sky-400'
