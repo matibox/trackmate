@@ -17,6 +17,7 @@ import Team from '@dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Navbar from '../components/Navbar';
+import PostSetup from '../components/PostSetup';
 import Settings from '../components/Settings';
 import { getServerAuthSession } from '../server/auth';
 
@@ -37,6 +38,7 @@ const Home: NextPage = () => {
         <NewEvent />
         <EditTeam />
         <CreateTeam />
+        <PostSetup />
         <div className='grid grid-flow-dense grid-cols-1 gap-4 p-4 md:h-auto md:grid-cols-2 lg:grid-cols-[35%_1fr] xl:grid-cols-[25%_1fr_1fr]'>
           <Calendar />
           <Events />
