@@ -9,7 +9,9 @@ import Link from 'next/link';
 import {
   BellIcon,
   Cog8ToothIcon,
+  TrophyIcon,
   UserCircleIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline';
 import { useSettingsStore } from '../store/useSettingsStore';
 import cn from '../lib/classes';
@@ -108,6 +110,24 @@ const Navbar: FC = () => {
               >
                 <span>Your profile</span>
                 <UserCircleIcon className='h-[18px]' />
+              </Link>
+            </div>
+            <div className='flex flex-col gap-2 px-4'>
+              <Link
+                href='/championships'
+                className='flex items-center justify-between transition-colors hover:text-sky-400'
+              >
+                <span>Your champs</span>
+                <TrophyIcon className='h-[18px]' />
+              </Link>
+            </div>
+            <div className='flex flex-col gap-2 px-4'>
+              <Link
+                href='/setups'
+                className='flex items-center justify-between transition-colors hover:text-sky-400'
+              >
+                <span>Your setups</span>
+                <WrenchScrewdriverIcon className='h-[18px]' />
               </Link>
             </div>
             <div className='h-[1px] w-full bg-slate-700' />

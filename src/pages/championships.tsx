@@ -17,17 +17,17 @@ import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import Link from 'next/link';
 import { useMemo, useState, type FC } from 'react';
-import { useError } from '../../hooks/useError';
-import cn from '../../lib/classes';
-import { getServerAuthSession } from '../../server/auth';
-import { useChampResultStore } from '../../store/useChampResultStore';
-import { useResultStore } from '../../store/useResultStore';
-import { api, type RouterOutputs } from '../../utils/api';
-import { capitilize } from '../../utils/helpers';
-import EventDuration from '../../components/EventDuration';
-import DriverList from '../../components/DriverList';
+import { useError } from '../hooks/useError';
+import cn from '../lib/classes';
+import { getServerAuthSession } from '../server/auth';
+import { useChampResultStore } from '../store/useChampResultStore';
+import { useResultStore } from '../store/useResultStore';
+import { api, type RouterOutputs } from '../utils/api';
+import { capitilize } from '../utils/helpers';
+import EventDuration from '../components/EventDuration';
+import DriverList from '../components/DriverList';
 
-const AllChampionships: NextPage = () => {
+const YourChampionships: NextPage = () => {
   const { Error, setError } = useError();
 
   const { data: championships, isLoading: getChampsLoading } =
@@ -48,7 +48,7 @@ const AllChampionships: NextPage = () => {
 
   return (
     <>
-      <NextSeo title='All championships' />
+      <NextSeo title='Your championships' />
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <Link
           href='/'
@@ -64,7 +64,7 @@ const AllChampionships: NextPage = () => {
           </div>
         )}
         <h1 className='pt-4 pb-8 text-center text-2xl font-semibold sm:text-3xl'>
-          All Championships
+          Your Championships
         </h1>
         <div className='flex flex-col gap-4 px-4'>
           {unarchivedChampionships?.map(championship => (
@@ -397,4 +397,4 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   };
 };
 
-export default AllChampionships;
+export default YourChampionships;

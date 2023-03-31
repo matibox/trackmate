@@ -32,8 +32,12 @@ const PostSetup: FC = () => {
 
   const { Error, setError } = useError();
 
+  const utils = api.useContext();
   const { mutate: uploadSetup, isLoading } = api.setup.upload.useMutation({
     onError: err => setError(err.message),
+    onSuccess: async () => {
+      await utils.setup.invalidate();
+    },
   });
 
   const { handleSubmit, errors } = useForm(formSchema, values => {

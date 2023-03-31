@@ -40,7 +40,7 @@ const Championships: FC = () => {
             ))}
           </div>
           <Link
-            href='/championships/all'
+            href='/championships'
             className='flex items-center justify-center gap-1 self-end rounded bg-sky-500 px-4 py-1 text-sm font-semibold text-slate-50 ring-1 ring-sky-400 transition hover:bg-sky-400'
           >
             <span>Show all</span>
