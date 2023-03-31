@@ -68,7 +68,6 @@ model Team {
   championships       Championship[]
   results             Result[]
   championshipResults ChampionshipResult[]
-  setups              Setup[]
 }
 
 model User {
@@ -149,6 +148,7 @@ model Event {
   team           Team?         @relation(fields: [teamId], references: [id])
   teamId         String?
   result         Result?
+  setups         Setup[]
 
   @@index([championshipId])
   @@index([teamId])
@@ -226,10 +226,10 @@ model Setup {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])
-  team      Team?    @relation(fields: [teamId], references: [id])
   authorId  String
-  teamId    String?
+  event     Event?   @relation(fields: [eventId], references: [id])
+  eventId   String?
 
   @@index([authorId])
-  @@index([teamId])
+  @@index([eventId])
 }
