@@ -6,14 +6,15 @@ export const setupRouter = createTRPCRouter({
     .input(
       z.object({
         data: z.object({}).passthrough(),
+        name: z.string(),
+        car: z.string(),
+        track: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { data: setupData } = input;
-
       return await ctx.prisma.setup.create({
         data: {
-          data: setupData,
+          ...input,
           author: { connect: { id: ctx.session.user.id } },
         },
       });

@@ -222,6 +222,9 @@ model NewChampResultNotification {
 
 model Setup {
   id        String   @id @default(cuid())
+  name      String
+  car       String
+  track     String
   data      Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -15,19 +15,23 @@ const formSchema = z.object({
   setup: z
     .unknown()
     .refine(file => file !== null, 'You have to choose a setup'),
+  car: z.string().min(1, 'Car is required'),
+  track: z.string().min(1, 'Track is required'),
 });
 
-type Nullable<T extends object> = {
-  [K in keyof T]: T[K] | null;
+type Nullable<T extends object, K extends keyof T> = {
+  [P in keyof T]: P extends K ? T[P] | null : T[P];
 };
 
 const PostSetup: FC = () => {
   const { close, isOpened } = usePostSetupStore();
 
   const [formState, setFormState] = useState<
-    Nullable<z.infer<typeof formSchema>>
+    Nullable<z.infer<typeof formSchema>, 'setup'>
   >({
     setup: null,
+    car: '',
+    track: '',
   });
 
   const { Error, setError } = useError();
@@ -37,6 +41,7 @@ const PostSetup: FC = () => {
     onError: err => setError(err.message),
     onSuccess: async () => {
       await utils.setup.invalidate();
+      close();
     },
   });
 
@@ -45,14 +50,25 @@ const PostSetup: FC = () => {
     const reader = new FileReader();
 
     reader.addEventListener('load', e => {
-      void fetch(e.target?.result as string)
-        .then(res => res.json())
-        .then(res => {
-          const data = res as Record<string, unknown>;
-          uploadSetup({ data });
-        });
+      const result = e.target?.result;
+      if (!result) {
+        return setError(
+          'There was an error while uploading a setup, try again later'
+        );
+      }
+
+      const data = JSON.parse(result as string) as Record<string, unknown>;
+      // cut .json part off
+      const name = setup.name.slice(0, setup.name.length - 5);
+
+      uploadSetup({
+        data,
+        name,
+        car: values.car,
+        track: values.track,
+      });
     });
-    reader.readAsDataURL(setup);
+    reader.readAsText(setup);
   });
 
   function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
@@ -69,6 +85,24 @@ const PostSetup: FC = () => {
       header={<PopupHeader close={close} title='Upload a setup' />}
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
+        <Label label='Car'>
+          <Input
+            onChange={e =>
+              setFormState(prev => ({ ...prev, car: e.target.value }))
+            }
+            value={formState.car}
+            error={errors?.car}
+          />
+        </Label>
+        <Label label='Track'>
+          <Input
+            onChange={e =>
+              setFormState(prev => ({ ...prev, track: e.target.value }))
+            }
+            value={formState.track}
+            error={errors?.track}
+          />
+        </Label>
         <Label label='Upload a setup'>
           <Input
             className='cursor-pointer rounded bg-transparent p-0 text-sm text-slate-50 focus:outline-none focus:ring focus:ring-sky-600'
