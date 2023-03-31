@@ -39,6 +39,7 @@ export const setupRouter = createTRPCRouter({
           },
         ],
       },
+      orderBy: { updatedAt: 'desc' },
     });
   }),
 });
