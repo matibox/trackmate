@@ -1,15 +1,23 @@
 import { PlusIcon } from '@heroicons/react/20/solid';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import {
+  EllipsisHorizontalCircleIcon,
+  MagnifyingGlassIcon,
+} from '@heroicons/react/24/outline';
 import Button from '@ui/Button';
 import Input from '@ui/Input';
 import Loading from '@ui/Loading';
 import Tile from '@ui/Tile';
 import { type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
-import { type FC } from 'react';
+import { useState, type FC, useRef, useMemo } from 'react';
 import { useError } from '../hooks/useError';
 import { usePostSetupStore } from '../store/usePostSetupStore';
 import { api, type RouterOutputs } from '../utils/api';
+import { AnimatePresence, type Variants, motion } from 'framer-motion';
+import { useClickOutside } from '../hooks/useClickOutside';
+import dayjs from 'dayjs';
+import { useSession } from 'next-auth/react';
+import DriverList from '../components/DriverList';
 
 const YourSetups: NextPage = () => {
   const { Error, setError } = useError();
@@ -31,7 +39,7 @@ const YourSetups: NextPage = () => {
             <Loading />
           </div>
         )}
-        <h1 className='pt-4 pb-8 text-center text-2xl font-semibold sm:text-3xl'>
+        <h1 className='py-8 text-center text-2xl font-semibold sm:text-3xl'>
           Your Setups
         </h1>
         <div className='flex flex-col gap-4 md:flex-row'>
@@ -58,12 +66,14 @@ const YourSetups: NextPage = () => {
             </div>
           </Tile>
           <Tile className='flex-1'>
-            {setups?.map(setup => (
-              <Setup key={setup.id} setup={setup} />
-            ))}
-            {setups?.length === 0 && !isLoading && (
-              <span className='text-slate-300'>There are no setups</span>
-            )}
+            <div className='flex flex-wrap justify-center gap-4'>
+              {setups?.map(setup => (
+                <Setup key={setup.id} setup={setup} />
+              ))}
+              {setups?.length === 0 && !isLoading && (
+                <span className='text-slate-300'>There are no setups</span>
+              )}
+            </div>
           </Tile>
         </div>
       </main>
@@ -71,11 +81,156 @@ const YourSetups: NextPage = () => {
   );
 };
 
+const menuAnimation: Variants = {
+  start: { opacity: 0, x: '-100%', width: 0 },
+  show: {
+    opacity: 1,
+    x: 0,
+    width: '100%',
+    transition: { bounce: 0, staggerChildren: 0.1, delayChildren: 0.2 },
+  },
+  end: { opacity: 0, y: '-100%', width: '100%', transition: { duration: 0.3 } },
+};
+
+const itemAnimation: Variants = {
+  start: { opacity: 0 },
+  show: { opacity: 1 },
+  end: { opacity: 0 },
+};
+
 const Setup: FC<{ setup: RouterOutputs['setup']['getAll'][number] }> = ({
   setup,
 }) => {
-  // TODO: setup component
-  return <div>{setup.name}</div>;
+  const { car, createdAt, updatedAt, name, track, author } = setup;
+  const { data: session } = useSession();
+
+  const [actionsOpened, setActionsOpened] = useState(false);
+
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuBtnRef = useRef<HTMLButtonElement>(null);
+  const editBtnRef = useRef<HTMLButtonElement>(null);
+  const previewBtnRef = useRef<HTMLButtonElement>(null);
+  const removeBtnRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = () => {
+    // TODO: actions handling
+    alert('coming soon');
+  };
+
+  useClickOutside(menuRef, () => setActionsOpened(false), [
+    menuBtnRef,
+    editBtnRef,
+    previewBtnRef,
+    removeBtnRef,
+  ]);
+
+  const isEdited = useMemo(
+    () => !dayjs(createdAt).isSame(dayjs(updatedAt)),
+    [createdAt, updatedAt]
+  );
+
+  const isAuthor = useMemo(
+    () => session?.user?.id === author.id,
+    [author.id, session?.user?.id]
+  );
+
+  return (
+    <Tile
+      header={
+        <div className='flex justify-between'>
+          <h1 className='font-semibold'>{name}</h1>
+          <motion.button
+            aria-label={`${actionsOpened ? 'close' : 'open'} menu`}
+            className='relative z-10 transition-colors hover:text-sky-400'
+            onClick={() => setActionsOpened(prev => !prev)}
+            animate={{
+              rotate: actionsOpened ? 90 : 0,
+            }}
+            ref={menuBtnRef}
+          >
+            <EllipsisHorizontalCircleIcon className='h-5' />
+          </motion.button>
+          <AnimatePresence>
+            {actionsOpened && (
+              <motion.div
+                variants={menuAnimation}
+                initial='start'
+                animate='show'
+                exit='end'
+                className='absolute top-0 left-0 flex h-14 w-full items-center gap-2 rounded-t bg-slate-800 py-2 px-4'
+                ref={menuRef}
+              >
+                {isAuthor && (
+                  <>
+                    <motion.button
+                      variants={itemAnimation}
+                      className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
+                      ref={editBtnRef}
+                      onClick={handleClick}
+                    >
+                      edit
+                    </motion.button>
+                    <motion.div
+                      variants={itemAnimation}
+                      className='h-3/5 w-[1px] bg-slate-600'
+                    />
+                  </>
+                )}
+                <motion.button
+                  variants={itemAnimation}
+                  className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
+                  ref={previewBtnRef}
+                  onClick={handleClick}
+                >
+                  preview
+                </motion.button>
+                {isAuthor && (
+                  <>
+                    <motion.div
+                      variants={itemAnimation}
+                      className='h-3/5 w-[1px] bg-slate-600'
+                    />
+                    <motion.button
+                      variants={itemAnimation}
+                      className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
+                      ref={removeBtnRef}
+                      onClick={handleClick}
+                    >
+                      remove
+                    </motion.button>
+                  </>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      }
+      className='w-80'
+    >
+      <div className='grid grid-cols-2 gap-4'>
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>Car</span>
+          <span>{car}</span>
+        </div>
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>Track</span>
+          <span>{track}</span>
+        </div>
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>
+            {isEdited ? 'Edited' : 'Posted'} on
+          </span>
+          <span>{dayjs(updatedAt).format('DD MMM YYYY')}</span>
+        </div>
+        <div className='flex flex-col'>
+          <span className='text-slate-300'>Posted by</span>
+          <span>
+            <DriverList drivers={[author]} />
+          </span>
+        </div>
+      </div>
+    </Tile>
+  );
 };
 
 export default YourSetups;

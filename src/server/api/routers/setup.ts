@@ -39,6 +39,7 @@ export const setupRouter = createTRPCRouter({
           },
         ],
       },
+      include: { author: { select: { id: true, name: true } } },
       orderBy: { updatedAt: 'desc' },
     });
   }),
