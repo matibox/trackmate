@@ -9,7 +9,14 @@ import Loading from '@ui/Loading';
 import Tile from '@ui/Tile';
 import { type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
-import { useState, type FC, useRef, useMemo } from 'react';
+import {
+  useState,
+  type FC,
+  useRef,
+  useMemo,
+  useEffect,
+  useCallback,
+} from 'react';
 import { useError } from '../hooks/useError';
 import { usePostSetupStore } from '../store/usePostSetupStore';
 import { api, type RouterOutputs } from '../utils/api';
@@ -18,6 +25,36 @@ import { useClickOutside } from '../hooks/useClickOutside';
 import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import DriverList from '../components/DriverList';
+import useDebounce from '../hooks/useDebounce';
+
+type Setups = RouterOutputs['setup']['getAll'];
+
+function useQuery(query: string, setups: Setups | undefined) {
+  const debouncedQuery = useDebounce(query);
+  const [filteredSetups, setFilteredSetups] = useState(setups);
+
+  const someIncludes = useCallback((items: string[], string: string) => {
+    return items.some(item => item.includes(string));
+  }, []);
+
+  useEffect(() => {
+    if (!setups) return;
+    const q = debouncedQuery;
+    setFilteredSetups(() =>
+      setups.filter(setup => {
+        const {
+          author: { name: authorName },
+          car,
+          name,
+          track,
+        } = setup;
+        return someIncludes([authorName ?? '', car, name, track], q);
+      })
+    );
+  }, [someIncludes, debouncedQuery, setups]);
+
+  return filteredSetups;
+}
 
 const YourSetups: NextPage = () => {
   const { Error, setError } = useError();
@@ -26,6 +63,9 @@ const YourSetups: NextPage = () => {
   });
 
   const { open } = usePostSetupStore();
+
+  const [query, setQuery] = useState('');
+  const filteredSetups = useQuery(query, setups);
 
   // TODO: setup sorting/filtering
 
@@ -50,6 +90,8 @@ const YourSetups: NextPage = () => {
                 <Input
                   className='h-7'
                   placeholder='Name, car, track or author'
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
                   error={undefined}
                 />
               </label>
@@ -67,10 +109,10 @@ const YourSetups: NextPage = () => {
           </Tile>
           <Tile className='flex-1'>
             <div className='flex flex-wrap justify-center gap-4'>
-              {setups?.map(setup => (
+              {filteredSetups?.map(setup => (
                 <Setup key={setup.id} setup={setup} />
               ))}
-              {setups?.length === 0 && !isLoading && (
+              {filteredSetups?.length === 0 && !isLoading && (
                 <span className='text-slate-300'>There are no setups</span>
               )}
             </div>
@@ -98,9 +140,7 @@ const itemAnimation: Variants = {
   end: { opacity: 0 },
 };
 
-const Setup: FC<{ setup: RouterOutputs['setup']['getAll'][number] }> = ({
-  setup,
-}) => {
+const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
   const { car, createdAt, updatedAt, name, track, author } = setup;
   const { data: session } = useSession();
 

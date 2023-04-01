@@ -162,10 +162,7 @@ const ChampEventDetails: FC<ChampEventDetailsProps> = ({
               <ErrorWrapper error={errors?.drivers}>
                 <Listbox
                   value={formState.drivers}
-                  onChange={drivers => {
-                    console.log(drivers);
-                    setFormState({ drivers });
-                  }}
+                  onChange={drivers => setFormState({ drivers })}
                   by='id'
                   multiple
                 >
