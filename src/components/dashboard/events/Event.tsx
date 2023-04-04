@@ -17,7 +17,6 @@ import { type RouterOutputs } from '../../../utils/api';
 import { capitilize } from '../../../utils/helpers';
 import cn from '../../../lib/classes';
 import { useSession } from 'next-auth/react';
-import { useEditEventStore } from '../../../store/useEditEventStore';
 import EventDuration from '../../EventDuration';
 import DriverList from '../../DriverList';
 
@@ -29,9 +28,11 @@ type EventProps = {
 const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
   const { data: session } = useSession();
 
-  const { open: openDeleteEvent } = useEventStore();
   const { open: openPostResult } = useResultStore();
-  const { open: openEditEvent } = useEditEventStore();
+  const {
+    delete: { open: openDeleteEvent },
+    edit: { open: openEditEvent },
+  } = useEventStore();
 
   const [notesOpened, setNotesOpened] = useState(false);
 
@@ -87,11 +88,11 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
               aria-label='Delete event'
               title='Delete'
               onClick={() =>
-                openDeleteEvent(
-                  event.id,
-                  event.championship?.name,
-                  event.title ?? undefined
-                )
+                openDeleteEvent({
+                  id: event.id,
+                  title: event.title,
+                  championship: event.championship,
+                })
               }
             >
               <TrashIcon className='h-4' />

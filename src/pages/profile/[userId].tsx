@@ -21,7 +21,6 @@ import { type FC, useCallback, useMemo, useState } from 'react';
 import { capitilize } from '../../utils/helpers';
 import { useEventStore } from '../../store/useEventStore';
 import { useResultStore } from '../../store/useResultStore';
-import { useEditEventStore } from '../../store/useEditEventStore';
 import { useSession } from 'next-auth/react';
 import Button from '@ui/Button';
 import cn from '../../lib/classes';
@@ -207,9 +206,11 @@ const Event: FC<{ event: Event; profileId: string }> = ({
 }) => {
   const { data: session } = useSession();
 
-  const { open: openDeleteEvent } = useEventStore();
   const { open: openPostResult } = useResultStore();
-  const { open: openEditEvent } = useEditEventStore();
+  const {
+    delete: { open: openDeleteEvent },
+    edit: { open: openEditEvent },
+  } = useEventStore();
 
   const [notesOpened, setNotesOpened] = useState(false);
 
@@ -251,11 +252,11 @@ const Event: FC<{ event: Event; profileId: string }> = ({
               className='ml-auto p-1'
               aria-label='delete event'
               onClick={() =>
-                openDeleteEvent(
-                  event.id,
-                  event.championship?.name,
-                  event.title ?? undefined
-                )
+                openDeleteEvent({
+                  id: event.id,
+                  championship: event.championship,
+                  title: event.title,
+                })
               }
             >
               <TrashIcon className='h-4' />

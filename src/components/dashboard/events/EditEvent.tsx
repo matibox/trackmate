@@ -11,13 +11,13 @@ import OneOffEventDetails from './OneOffEventDetails';
 import { api } from '../../../utils/api';
 import { useError } from '../../../hooks/useError';
 import Loading from '@ui/Loading';
-import { useEditEventStore } from '../../../store/useEditEventStore';
 import { z } from 'zod';
 import { eventTypes } from '../../../constants/constants';
 import type { allKeys } from '../../../types/utils';
 import dayjs from 'dayjs';
 import { useCalendarStore } from '../../../store/useCalendarStore';
 import type { NewEventFormState } from './NewEvent';
+import { useEventStore } from '../../../store/useEventStore';
 
 export const formSchema = z
   .object({
@@ -80,7 +80,7 @@ const EditEvent: FC = () => {
     errors: storeErrors,
     event,
     setFormState,
-  } = useEditEventStore();
+  } = useEventStore().edit;
   const { selectedDay } = useCalendarStore();
 
   const steps = [

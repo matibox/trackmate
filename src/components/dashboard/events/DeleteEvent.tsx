@@ -7,8 +7,7 @@ import { useEventStore } from '../../../store/useEventStore';
 import { api } from '../../../utils/api';
 
 const DeleteEvent: FC = () => {
-  const { championshipName, eventName, close, isOpened, eventId } =
-    useEventStore();
+  const { close, isOpened, event } = useEventStore().delete;
 
   const { Error, setError } = useError();
 
@@ -27,9 +26,9 @@ const DeleteEvent: FC = () => {
     <Confirmation
       close={close}
       headerMessage={`Delete ${
-        championshipName
-          ? `${championshipName} - ${eventName ?? 'Event'}`
-          : eventName ?? 'Event'
+        event?.championship?.name
+          ? `${event?.championship?.name} - ${event.title ?? 'Event'}`
+          : event?.title ?? 'Event'
       }`}
       isOpened={isOpened}
       message='Are you sure?'
@@ -38,7 +37,8 @@ const DeleteEvent: FC = () => {
     >
       <Button
         intent='danger'
-        onClick={() => deleteEvent({ eventId: eventId as string })}
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        onClick={() => deleteEvent({ eventId: event!.id })}
       >
         <span>Delete</span>
         <TrashIcon className='h-5' />

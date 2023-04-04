@@ -1,5 +1,4 @@
 import { type FormEvent, type FC, useEffect } from 'react';
-import { useNewEventStore } from '../../../store/useNewEventStore';
 import Popup from '@ui/Popup';
 import PopupHeader from '@ui/PopupHeader';
 import Button from '@ui/Button';
@@ -19,6 +18,7 @@ import { hasRole } from '../../../utils/helpers';
 import Loading from '@ui/Loading';
 import { type EditEventFormState } from './EditEvent';
 import type { allKeys } from '../../../types/utils';
+import { useEventStore } from '../../../store/useEventStore';
 
 const driverSchema = z.object({ id: z.string(), name: z.string().nullable() });
 
@@ -130,7 +130,7 @@ const NewEvent: FC = () => {
     setErrors,
     setFormState,
     errors: storeErrors,
-  } = useNewEventStore();
+  } = useEventStore().create;
   const { selectedDay } = useCalendarStore();
 
   const steps = [

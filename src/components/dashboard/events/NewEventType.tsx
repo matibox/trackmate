@@ -1,6 +1,6 @@
 import TileButton from '@ui/TileButton';
 import { type FC } from 'react';
-import { defaultEventFormState } from '../../../store/useNewEventStore';
+import { defaultEventFormState } from '../../../store/useEventStore';
 import { type EventStepProps } from './NewEvent';
 
 const NewEventType: FC<EventStepProps> = ({ formState, setFormState }) => {

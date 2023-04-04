@@ -4,13 +4,15 @@ import Button from '@ui/Button';
 import { useSession } from 'next-auth/react';
 import { type FC } from 'react';
 import { useCalendarStore } from '../../../store/useCalendarStore';
-import { useNewEventStore } from '../../../store/useNewEventStore';
 import { hasRole } from '../../../utils/helpers';
+import { useEventStore } from '../../../store/useEventStore';
 
 const EventsHeader: FC = () => {
   const { data: session } = useSession();
   const { selectedDay } = useCalendarStore();
-  const { open } = useNewEventStore();
+  const {
+    create: { open },
+  } = useEventStore();
 
   return (
     <div className='flex items-center justify-between gap-4'>
