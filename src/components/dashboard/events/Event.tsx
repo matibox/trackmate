@@ -4,6 +4,7 @@ import {
   EllipsisHorizontalCircleIcon,
   ArrowLeftIcon,
   PencilSquareIcon,
+  WrenchScrewdriverIcon,
 } from '@heroicons/react/20/solid';
 import { motion } from 'framer-motion';
 import Button from '@ui/Button';
@@ -44,19 +45,47 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
     <Tile
       header={
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
-          <span className='text-base font-semibold'>
+          <span className='mr-auto text-base font-semibold'>
             {event.championship && (
               <>{capitilize(event.championship.name)} - </>
             )}
             {capitilize(event.title ?? '')}
           </span>
-          {!isTeamEvent && !event.result && (
+          {!isTeamEvent && (
             <Button
-              intent='danger'
+              intent='secondary'
               size='xs'
               gap='small'
-              className='ml-auto p-1'
-              aria-label='delete event'
+              className='p-1'
+              aria-label='Open event setups'
+              title='Setups'
+            >
+              <WrenchScrewdriverIcon className='h-4' />
+            </Button>
+          )}
+          {!isTeamEvent &&
+            event.drivers.find(driver => driver.id === session?.user?.id) &&
+            !event.result && (
+              <Button
+                intent='secondary'
+                size='xs'
+                gap='small'
+                className='p-1'
+                aria-label='Edit event'
+                title='Edit'
+                onClick={() => openEditEvent(event)}
+              >
+                <PencilSquareIcon className='h-4' />
+              </Button>
+            )}
+          {!isTeamEvent && !event.result && (
+            <Button
+              intent='subtleDanger'
+              size='xs'
+              gap='small'
+              className='p-1'
+              aria-label='Delete event'
+              title='Delete'
               onClick={() =>
                 openDeleteEvent(
                   event.id,
@@ -68,20 +97,6 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
               <TrashIcon className='h-4' />
             </Button>
           )}
-          {!isTeamEvent &&
-            event.drivers.find(driver => driver.id === session?.user?.id) &&
-            !event.result && (
-              <Button
-                intent='secondary'
-                size='xs'
-                gap='small'
-                className='p-1'
-                aria-label='edit event'
-                onClick={() => openEditEvent(event)}
-              >
-                <PencilSquareIcon className='h-4' />
-              </Button>
-            )}
         </div>
       }
       className='relative'
