@@ -54,6 +54,12 @@ type EventStore = {
     errors: NewEventErrors;
     setErrors: (errors: NewEventErrors) => void;
   };
+  setups: {
+    isOpened: boolean;
+    open: (event: DeleteEvent | null) => void;
+    close: () => void;
+    event: DeleteEvent | null;
+  };
 };
 
 export const useEventStore = create<EventStore>()(
@@ -131,6 +137,20 @@ export const useEventStore = create<EventStore>()(
       setErrors: errors =>
         set(state => {
           state.create.errors = errors;
+        }),
+    },
+    setups: {
+      event: null,
+      isOpened: false,
+      open: event =>
+        set(state => {
+          state.setups.event = event;
+          state.setups.isOpened = true;
+        }),
+      close: () =>
+        set(state => {
+          state.setups.event = null;
+          state.setups.isOpened = false;
         }),
     },
   }))

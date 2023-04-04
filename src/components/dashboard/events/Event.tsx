@@ -32,6 +32,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
   const {
     delete: { open: openDeleteEvent },
     edit: { open: openEditEvent },
+    setups: { open: openEventSetups },
   } = useEventStore();
 
   const [notesOpened, setNotesOpened] = useState(false);
@@ -60,6 +61,13 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
               className='p-1'
               aria-label='Open event setups'
               title='Setups'
+              onClick={() =>
+                openEventSetups({
+                  id: event.id,
+                  championship: event.championship,
+                  title: event.title,
+                })
+              }
             >
               <WrenchScrewdriverIcon className='h-4' />
             </Button>

@@ -254,4 +254,13 @@ export const eventRouter = createTRPCRouter({
         },
       });
     }),
+  setups: protectedProcedure
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.setup.findMany({
+        where: { events: { some: { id: input.eventId } } },
+        include: { author: { select: { id: true, name: true } } },
+        orderBy: { updatedAt: 'desc' },
+      });
+    }),
 });
