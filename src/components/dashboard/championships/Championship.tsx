@@ -42,7 +42,7 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
             </span>
           </a>
           <Button
-            intent='danger'
+            intent='subtleDanger'
             size='xs'
             gap='small'
             onClick={() => open(championship.id, championship.name)}
