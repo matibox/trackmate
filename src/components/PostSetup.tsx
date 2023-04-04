@@ -8,8 +8,8 @@ import { type ChangeEvent, useState, type FC } from 'react';
 import { z } from 'zod';
 import { useError } from '../hooks/useError';
 import useForm from '../hooks/useForm';
-import { usePostSetupStore } from '../store/usePostSetupStore';
 import { api } from '../utils/api';
+import { useSetupStore } from '../store/useSetupStore';
 
 const formSchema = z.object({
   setup: z
@@ -24,7 +24,9 @@ type Nullable<T extends object, K extends keyof T> = {
 };
 
 const PostSetup: FC = () => {
-  const { close, isOpened } = usePostSetupStore();
+  const {
+    post: { close, isOpened },
+  } = useSetupStore();
 
   const [formState, setFormState] = useState<
     Nullable<z.infer<typeof formSchema>, 'setup'>

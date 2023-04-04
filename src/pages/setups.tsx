@@ -18,7 +18,6 @@ import {
   useCallback,
 } from 'react';
 import { useError } from '../hooks/useError';
-import { usePostSetupStore } from '../store/usePostSetupStore';
 import { api, type RouterOutputs } from '../utils/api';
 import { AnimatePresence, type Variants, motion } from 'framer-motion';
 import { useClickOutside } from '../hooks/useClickOutside';
@@ -26,6 +25,7 @@ import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import DriverList from '../components/DriverList';
 import useDebounce from '../hooks/useDebounce';
+import { useSetupStore } from '../store/useSetupStore';
 
 type Setups = RouterOutputs['setup']['getAll'];
 
@@ -62,7 +62,9 @@ const YourSetups: NextPage = () => {
     onError: err => setError(err.message),
   });
 
-  const { open } = usePostSetupStore();
+  const {
+    post: { open },
+  } = useSetupStore();
 
   const [query, setQuery] = useState('');
   const filteredSetups = useQuery(query, setups);
