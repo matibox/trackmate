@@ -26,6 +26,7 @@ import { useSession } from 'next-auth/react';
 import DriverList from '../components/DriverList';
 import useDebounce from '../hooks/useDebounce';
 import { useSetupStore } from '../store/useSetupStore';
+import { type JSONValue } from 'superjson/dist/types';
 
 type Setups = RouterOutputs['setup']['getAll'];
 
@@ -54,6 +55,21 @@ function useQuery(query: string, setups: Setups | undefined) {
   }, [someIncludes, debouncedQuery, setups]);
 
   return filteredSetups;
+}
+
+function useJSONDownload() {
+  const downloadJSON = useCallback((name: string, data: JSONValue) => {
+    const href = `data:text/json;chatset=utf-8,${encodeURIComponent(
+      JSON.stringify(data)
+    )}`;
+    const link = document.createElement('a');
+    link.href = href;
+    link.download = `${name}.json`;
+    link.click();
+    link.remove();
+  }, []);
+
+  return downloadJSON;
 }
 
 const YourSetups: NextPage = () => {
@@ -143,7 +159,7 @@ const itemAnimation: Variants = {
 };
 
 const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
-  const { car, createdAt, updatedAt, name, track, author } = setup;
+  const { car, createdAt, updatedAt, name, track, author, data } = setup;
   const { data: session } = useSession();
 
   const [actionsOpened, setActionsOpened] = useState(false);
@@ -151,7 +167,7 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const editBtnRef = useRef<HTMLButtonElement>(null);
-  const previewBtnRef = useRef<HTMLButtonElement>(null);
+  const downloadBtnRef = useRef<HTMLButtonElement>(null);
   const removeBtnRef = useRef<HTMLButtonElement>(null);
 
   const handleClick = () => {
@@ -162,9 +178,11 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
   useClickOutside(menuRef, () => setActionsOpened(false), [
     menuBtnRef,
     editBtnRef,
-    previewBtnRef,
+    downloadBtnRef,
     removeBtnRef,
   ]);
+
+  const downloadSetup = useJSONDownload();
 
   const {
     edit: { open: openEdit },
@@ -225,10 +243,10 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
                 <motion.button
                   variants={itemAnimation}
                   className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
-                  ref={previewBtnRef}
-                  onClick={handleClick}
+                  ref={downloadBtnRef}
+                  onClick={() => downloadSetup(name, data)}
                 >
-                  preview
+                  download
                 </motion.button>
                 {isAuthor && (
                   <>
