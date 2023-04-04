@@ -166,6 +166,10 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
     removeBtnRef,
   ]);
 
+  const {
+    edit: { open: openEdit },
+  } = useSetupStore();
+
   const isEdited = useMemo(
     () => !dayjs(createdAt).isSame(dayjs(updatedAt)),
     [createdAt, updatedAt]
@@ -208,7 +212,7 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
                       variants={itemAnimation}
                       className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
                       ref={editBtnRef}
-                      onClick={handleClick}
+                      onClick={() => openEdit(setup)}
                     >
                       edit
                     </motion.button>

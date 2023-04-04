@@ -25,6 +25,7 @@ import EditTeam from '@dashboard/manageTeam/EditTeam';
 import CreateTeam from '@dashboard/manageTeam/CreateTeam';
 import PostSetup from '../components/PostSetup';
 import PostChampResult from '@dashboard/results/PostChampResult';
+import EditSetup from '../components/EditSetup';
 
 const specialRoutes = ['/login', '/welcome'];
 
@@ -85,6 +86,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <CreateTeam />
           <PostSetup />
           <PostChampResult />
+          <EditSetup />
         </>
       )}
       <Component {...pageProps} />

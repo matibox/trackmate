@@ -1,16 +1,16 @@
 import { z } from 'zod';
 import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 
+const setupSchema = z.object({
+  data: z.object({}).passthrough(),
+  name: z.string(),
+  car: z.string(),
+  track: z.string(),
+});
+
 export const setupRouter = createTRPCRouter({
   upload: multiRoleProcedure(['driver', 'manager'])
-    .input(
-      z.object({
-        data: z.object({}).passthrough(),
-        name: z.string(),
-        car: z.string(),
-        track: z.string(),
-      })
-    )
+    .input(setupSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.prisma.setup.create({
         data: {
@@ -43,4 +43,13 @@ export const setupRouter = createTRPCRouter({
       orderBy: { updatedAt: 'desc' },
     });
   }),
+  edit: multiRoleProcedure(['driver', 'manager'])
+    .input(setupSchema.extend({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id, ...values } = input;
+      return await ctx.prisma.setup.update({
+        where: { id },
+        data: { ...values },
+      });
+    }),
 });
