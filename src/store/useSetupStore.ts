@@ -16,6 +16,12 @@ type SetupStore = {
     open: (setup: Setup) => void;
     close: () => void;
   };
+  delete: {
+    setup: Pick<Setup, 'id' | 'name'> | null;
+    isOpened: boolean;
+    open: (setup: Pick<Setup, 'id' | 'name'>) => void;
+    close: () => void;
+  };
 };
 
 export const useSetupStore = create<SetupStore>()(
@@ -42,6 +48,20 @@ export const useSetupStore = create<SetupStore>()(
         set(state => {
           state.edit.isOpened = false;
           state.edit.setup = null;
+        }),
+      setup: null,
+    },
+    delete: {
+      isOpened: false,
+      open: setup =>
+        set(state => {
+          state.delete.isOpened = true;
+          state.delete.setup = setup;
+        }),
+      close: () =>
+        set(state => {
+          state.delete.isOpened = false;
+          state.delete.setup = null;
         }),
       setup: null,
     },

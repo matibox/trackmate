@@ -43,6 +43,7 @@ const PostSetup: FC = () => {
     onError: err => setError(err.message),
     onSuccess: async () => {
       await utils.setup.invalidate();
+      setFormState({ setup: null, car: '', track: '' });
       close();
     },
   });

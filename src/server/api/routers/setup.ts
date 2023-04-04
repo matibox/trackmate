@@ -52,4 +52,10 @@ export const setupRouter = createTRPCRouter({
         data: { ...values },
       });
     }),
+  delete: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.setup.delete({ where: { id } });
+    }),
 });

@@ -85,8 +85,6 @@ const YourSetups: NextPage = () => {
   const [query, setQuery] = useState('');
   const filteredSetups = useQuery(query, setups);
 
-  // TODO: setup sorting/filtering
-
   return (
     <>
       <NextSeo title='Your setups' />
@@ -159,7 +157,7 @@ const itemAnimation: Variants = {
 };
 
 const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
-  const { car, createdAt, updatedAt, name, track, author, data } = setup;
+  const { id, car, createdAt, updatedAt, name, track, author, data } = setup;
   const { data: session } = useSession();
 
   const [actionsOpened, setActionsOpened] = useState(false);
@@ -168,24 +166,20 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const editBtnRef = useRef<HTMLButtonElement>(null);
   const downloadBtnRef = useRef<HTMLButtonElement>(null);
-  const removeBtnRef = useRef<HTMLButtonElement>(null);
-
-  const handleClick = () => {
-    // TODO: actions handling
-    alert('coming soon');
-  };
+  const deleteBtnRef = useRef<HTMLButtonElement>(null);
 
   useClickOutside(menuRef, () => setActionsOpened(false), [
     menuBtnRef,
     editBtnRef,
     downloadBtnRef,
-    removeBtnRef,
+    deleteBtnRef,
   ]);
 
   const downloadSetup = useJSONDownload();
 
   const {
     edit: { open: openEdit },
+    delete: { open: openDelete },
   } = useSetupStore();
 
   const isEdited = useMemo(
@@ -257,10 +251,10 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
                     <motion.button
                       variants={itemAnimation}
                       className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
-                      ref={removeBtnRef}
-                      onClick={handleClick}
+                      ref={deleteBtnRef}
+                      onClick={() => openDelete({ id, name })}
                     >
-                      remove
+                      delete
                     </motion.button>
                   </>
                 )}
