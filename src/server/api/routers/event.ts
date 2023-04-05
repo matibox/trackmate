@@ -255,7 +255,7 @@ export const eventRouter = createTRPCRouter({
       });
     }),
   setups: protectedProcedure
-    .input(z.object({ eventId: z.string() }))
+    .input(z.object({ eventId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.setup.findMany({
         where: { events: { some: { id: input.eventId } } },

@@ -43,6 +43,22 @@ export const setupRouter = createTRPCRouter({
       orderBy: { updatedAt: 'desc' },
     });
   }),
+  byQuery: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ q: z.string(), eventId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { q, eventId } = input;
+      return await ctx.prisma.setup.findMany({
+        where: {
+          AND: [
+            { name: { contains: q.toLowerCase() } },
+            { events: { none: { id: eventId } } },
+            { author: { id: ctx.session.user.id } },
+          ],
+        },
+        include: { author: { select: { id: true, name: true } } },
+        orderBy: { updatedAt: 'desc' },
+      });
+    }),
   edit: multiRoleProcedure(['driver', 'manager'])
     .input(setupSchema.extend({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
@@ -57,5 +73,24 @@ export const setupRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
       return await ctx.prisma.setup.delete({ where: { id } });
+    }),
+  toggleAssignment: multiRoleProcedure(['driver', 'manager'])
+    .input(
+      z.object({
+        setupId: z.string(),
+        eventId: z.string().optional(),
+        assign: z.boolean().default(true),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { setupId, eventId, assign } = input;
+      return await ctx.prisma.setup.update({
+        where: { id: setupId },
+        data: {
+          events: assign
+            ? { connect: { id: eventId } }
+            : { disconnect: { id: eventId } },
+        },
+      });
     }),
 });

@@ -26,7 +26,7 @@ import { useSession } from 'next-auth/react';
 import DriverList from '../components/DriverList';
 import useDebounce from '../hooks/useDebounce';
 import { useSetupStore } from '../store/useSetupStore';
-import { type JSONValue } from 'superjson/dist/types';
+import useJSONDownload from '../hooks/useJSONDownload';
 
 type Setups = RouterOutputs['setup']['getAll'];
 
@@ -55,21 +55,6 @@ function useQuery(query: string, setups: Setups | undefined) {
   }, [someIncludes, debouncedQuery, setups]);
 
   return filteredSetups;
-}
-
-function useJSONDownload() {
-  const downloadJSON = useCallback((name: string, data: JSONValue) => {
-    const href = `data:text/json;chatset=utf-8,${encodeURIComponent(
-      JSON.stringify(data)
-    )}`;
-    const link = document.createElement('a');
-    link.href = href;
-    link.download = `${name}.json`;
-    link.click();
-    link.remove();
-  }, []);
-
-  return downloadJSON;
 }
 
 const YourSetups: NextPage = () => {
