@@ -118,6 +118,16 @@ const PostSetup: FC = () => {
         <Button intent='primary' size='small' className='ml-auto self-end'>
           Upload
         </Button>
+        <div className='w-full'>
+          <p className='text-slate-300'>
+            All of the uploaded setups are{' '}
+            <span className='underline decoration-slate-500 underline-offset-2 transition-colors'>
+              encrypted
+            </span>
+            . No one, except you and people who you share the setup with can see
+            the setup data.
+          </p>
+        </div>
         <Error />
       </Form>
     </Popup>
