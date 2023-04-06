@@ -1,5 +1,12 @@
 import Popup from '@ui/Popup';
-import { useState, type FC, useMemo, useRef } from 'react';
+import {
+  useState,
+  type FC,
+  useMemo,
+  useRef,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import { useEventStore } from '../../../store/useEventStore';
 import PopupHeader from '@ui/PopupHeader';
 import Input from '@ui/Input';
@@ -74,7 +81,12 @@ const EventSetups: FC = () => {
             <Error />
             <div className='flex max-h-96 flex-wrap gap-4 overflow-y-auto rounded p-[1px] scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
               {eventSetups?.map(setup => (
-                <Setup key={setup.id} setup={setup} isAssigned />
+                <Setup
+                  key={setup.id}
+                  setup={setup}
+                  setQuery={setQuery}
+                  isAssigned
+                />
               ))}
             </div>
             {eventSetups?.length === 0 && (
@@ -119,7 +131,7 @@ const EventSetups: FC = () => {
         {assignOpen && (
           <div className='flex max-h-96 flex-wrap gap-4 overflow-y-auto rounded p-[1px] scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
             {searchedSetups?.map(setup => (
-              <Setup key={setup.id} setup={setup} />
+              <Setup key={setup.id} setup={setup} setQuery={setQuery} />
             ))}
             {!searchedSetupsLoading && searchedSetups?.length === 0 && (
               <span className='text-slate-300'>No setups found</span>
@@ -150,8 +162,9 @@ const itemAnimation: Variants = {
 
 const Setup: FC<{
   setup: RouterOutputs['setup']['byQuery'][number];
+  setQuery: Dispatch<SetStateAction<string>>;
   isAssigned?: boolean;
-}> = ({ setup, isAssigned: defaultIsAssigned = false }) => {
+}> = ({ setup, setQuery, isAssigned: defaultIsAssigned = false }) => {
   const { id, car, createdAt, updatedAt, name, track, author } = setup;
   const {
     setups: { event },
@@ -267,13 +280,14 @@ const Setup: FC<{
                   : 'assign setup to a event'
               }
               className='relative z-10 transition-colors hover:text-sky-400'
-              onClick={() =>
+              onClick={() => {
                 toggleAssignment({
                   eventId: event?.id,
                   setupId: id,
                   assign: true,
-                })
-              }
+                });
+                if (!isAssigned) setQuery('');
+              }}
               disabled={assignLoading}
             >
               <CheckCircleIcon className='h-5' />
