@@ -82,10 +82,11 @@ export const setupRouter = createTRPCRouter({
   edit: multiRoleProcedure(['driver', 'manager'])
     .input(setupSchema.extend({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { id, ...values } = input;
+      const { id, data, ...values } = input;
+      const encryptedSetup = encrypt(data);
       await ctx.prisma.setup.update({
         where: { id },
-        data: { ...values },
+        data: { ...values, data: encryptedSetup },
       });
     }),
   delete: multiRoleProcedure(['driver', 'manager'])
@@ -110,8 +111,7 @@ export const setupRouter = createTRPCRouter({
         });
       }
 
-      const data = decrypt(setup.data);
-      return data;
+      return decrypt(setup.data);
     }),
   toggleAssignment: multiRoleProcedure(['driver', 'manager'])
     .input(

@@ -73,7 +73,7 @@ const YourSetups: NextPage = () => {
   return (
     <>
       <NextSeo title='Your setups' />
-      <main className='min-h-screen w-full bg-slate-900 px-4 pt-[var(--navbar-height)] text-slate-50'>
+      <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <Error />
         {isLoading && (
           <div className='flex h-screen w-full items-center justify-center'>
@@ -83,8 +83,8 @@ const YourSetups: NextPage = () => {
         <h1 className='py-8 text-center text-2xl font-semibold sm:text-3xl'>
           Your Setups
         </h1>
-        <div className='flex flex-col gap-4 md:flex-row'>
-          <Tile className='md:basis-1/3 lg:basis-1/4 xl:basis-1/5'>
+        <div className='grid grid-cols-1 grid-rows-[auto,_1fr] gap-y-4 px-4 md:grid-cols-[repeat(2,_calc(100%/2-0.5rem))] md:gap-y-0 md:gap-x-4 lg:grid-cols-[calc(100%/4-0.5rem),calc(100%/4*3-0.5rem)] xl:grid-cols-[calc(100%/5-0.5rem),calc(100%/5*4-0.5rem)]'>
+          <Tile className='row-span-1'>
             <div className='flex w-full flex-col gap-4'>
               <label className='flex w-full items-center gap-2'>
                 <MagnifyingGlassIcon className='h-5' />
@@ -108,13 +108,15 @@ const YourSetups: NextPage = () => {
               </Button>
             </div>
           </Tile>
-          <Tile className='flex-1'>
-            <div className='flex flex-wrap justify-center gap-4'>
+          <Tile className='row-span-2 w-full'>
+            <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_20rem))] justify-center gap-4'>
               {filteredSetups?.map(setup => (
                 <Setup key={setup.id} setup={setup} />
               ))}
               {filteredSetups?.length === 0 && !isLoading && (
-                <span className='text-slate-300'>There are no setups</span>
+                <span className='text-center text-slate-300'>
+                  There are no setups
+                </span>
               )}
             </div>
           </Tile>
@@ -249,7 +251,7 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
           </AnimatePresence>
         </div>
       }
-      className='w-80'
+      className='w-full'
       isLoading={isLoading}
     >
       <Error />
