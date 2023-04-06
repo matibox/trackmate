@@ -128,12 +128,12 @@ const EventSetups: FC = () => {
             </div>
           )}
         </div>
-        {assignOpen && (
+        {assignOpen && searchedSetups && (
           <div className='flex max-h-96 flex-wrap gap-4 overflow-y-auto rounded p-[1px] scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
-            {searchedSetups?.map(setup => (
+            {searchedSetups.map(setup => (
               <Setup key={setup.id} setup={setup} setQuery={setQuery} />
             ))}
-            {!searchedSetupsLoading && searchedSetups?.length === 0 && (
+            {!searchedSetupsLoading && searchedSetups.length === 0 && (
               <span className='text-slate-300'>No setups found</span>
             )}
           </div>
