@@ -225,7 +225,7 @@ model Setup {
   name      String
   car       String
   track     String
-  data      Json
+  data      String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   author    User     @relation(fields: [authorId], references: [id])

@@ -19,7 +19,7 @@ import { type Variants, motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import DriverList from '../../DriverList';
 import { useClickOutside } from '../../../hooks/useClickOutside';
-import useJSONDownload from '../../../hooks/useJSONDownload';
+import useSetupDownload from '../../../hooks/useJSONDownload';
 import { useSession } from 'next-auth/react';
 
 const EventSetups: FC = () => {
@@ -152,7 +152,7 @@ const Setup: FC<{
   setup: RouterOutputs['setup']['byQuery'][number];
   isAssigned?: boolean;
 }> = ({ setup, isAssigned: defaultIsAssigned = false }) => {
-  const { id, car, createdAt, updatedAt, name, track, author, data } = setup;
+  const { id, car, createdAt, updatedAt, name, track, author } = setup;
   const {
     setups: { event },
   } = useEventStore();
@@ -183,12 +183,11 @@ const Setup: FC<{
     unassignBtnRef,
   ]);
 
-  const downloadSetup = useJSONDownload();
-
   const { Error, setError } = useError();
+  const { download, isLoading: downloadLoading } = useSetupDownload(setError);
 
   const utils = api.useContext();
-  const { mutate: toggleAssignment, isLoading } =
+  const { mutate: toggleAssignment, isLoading: assignLoading } =
     api.setup.toggleAssignment.useMutation({
       onError: err => setError(err.message),
       onSuccess: async () => {
@@ -230,7 +229,7 @@ const Setup: FC<{
                       variants={itemAnimation}
                       className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
                       ref={downloadBtnRef}
-                      onClick={() => downloadSetup(name, data)}
+                      onClick={() => void download(id, name)}
                     >
                       download
                     </motion.button>
@@ -275,14 +274,14 @@ const Setup: FC<{
                   assign: true,
                 })
               }
-              disabled={isLoading}
+              disabled={assignLoading}
             >
               <CheckCircleIcon className='h-5' />
             </motion.button>
           )}
         </div>
       }
-      isLoading={isLoading}
+      isLoading={assignLoading || downloadLoading}
       className='w-80'
     >
       <div className='grid grid-cols-2 gap-4'>

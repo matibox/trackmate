@@ -26,7 +26,7 @@ import { useSession } from 'next-auth/react';
 import DriverList from '../components/DriverList';
 import useDebounce from '../hooks/useDebounce';
 import { useSetupStore } from '../store/useSetupStore';
-import useJSONDownload from '../hooks/useJSONDownload';
+import useSetupDownload from '../hooks/useJSONDownload';
 
 type Setups = RouterOutputs['setup']['getAll'];
 
@@ -142,7 +142,7 @@ const itemAnimation: Variants = {
 };
 
 const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
-  const { id, car, createdAt, updatedAt, name, track, author, data } = setup;
+  const { id, car, createdAt, updatedAt, name, track, author } = setup;
   const { data: session } = useSession();
 
   const [actionsOpened, setActionsOpened] = useState(false);
@@ -160,7 +160,8 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
     deleteBtnRef,
   ]);
 
-  const downloadSetup = useJSONDownload();
+  const { Error, setError } = useError();
+  const { download, isLoading } = useSetupDownload(setError);
 
   const {
     edit: { open: openEdit },
@@ -223,7 +224,7 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
                   variants={itemAnimation}
                   className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
                   ref={downloadBtnRef}
-                  onClick={() => downloadSetup(name, data)}
+                  onClick={() => void download(id, name)}
                 >
                   download
                 </motion.button>
@@ -249,7 +250,9 @@ const Setup: FC<{ setup: Setups[number] }> = ({ setup }) => {
         </div>
       }
       className='w-80'
+      isLoading={isLoading}
     >
+      <Error />
       <div className='grid grid-cols-2 gap-4'>
         <div className='flex flex-col'>
           <span className='text-slate-300'>Car</span>

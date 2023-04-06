@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, multiRoleProcedure } from '../trpc';
+import { decrypt, encrypt } from '../../utils/encrypt';
+import { TRPCError } from '@trpc/server';
 
 const setupSchema = z.object({
   data: z.object({}).passthrough(),
@@ -12,9 +14,11 @@ export const setupRouter = createTRPCRouter({
   upload: multiRoleProcedure(['driver', 'manager'])
     .input(setupSchema)
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.setup.create({
+      const encryptedSetup = encrypt(input.data);
+      await ctx.prisma.setup.create({
         data: {
           ...input,
+          data: encryptedSetup,
           author: { connect: { id: ctx.session.user.id } },
         },
       });
@@ -39,7 +43,15 @@ export const setupRouter = createTRPCRouter({
           },
         ],
       },
-      include: { author: { select: { id: true, name: true } } },
+      select: {
+        id: true,
+        name: true,
+        car: true,
+        track: true,
+        createdAt: true,
+        updatedAt: true,
+        author: { select: { id: true, name: true } },
+      },
       orderBy: { updatedAt: 'desc' },
     });
   }),
@@ -55,7 +67,15 @@ export const setupRouter = createTRPCRouter({
             { author: { id: ctx.session.user.id } },
           ],
         },
-        include: { author: { select: { id: true, name: true } } },
+        select: {
+          id: true,
+          name: true,
+          car: true,
+          track: true,
+          createdAt: true,
+          updatedAt: true,
+          author: { select: { id: true, name: true } },
+        },
         orderBy: { updatedAt: 'desc' },
       });
     }),
@@ -63,7 +83,7 @@ export const setupRouter = createTRPCRouter({
     .input(setupSchema.extend({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id, ...values } = input;
-      return await ctx.prisma.setup.update({
+      await ctx.prisma.setup.update({
         where: { id },
         data: { ...values },
       });
@@ -72,7 +92,26 @@ export const setupRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-      return await ctx.prisma.setup.delete({ where: { id } });
+      await ctx.prisma.setup.delete({ where: { id } });
+    }),
+  decryptData: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ setupId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { setupId } = input;
+      const setup = await ctx.prisma.setup.findUnique({
+        where: { id: setupId },
+        select: { data: true },
+      });
+
+      if (!setup) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Setup was not found',
+        });
+      }
+
+      const data = decrypt(setup.data);
+      return data;
     }),
   toggleAssignment: multiRoleProcedure(['driver', 'manager'])
     .input(
@@ -84,7 +123,7 @@ export const setupRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { setupId, eventId, assign } = input;
-      return await ctx.prisma.setup.update({
+      await ctx.prisma.setup.update({
         where: { id: setupId },
         data: {
           events: assign
