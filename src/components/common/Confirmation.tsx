@@ -1,6 +1,6 @@
 import { XMarkIcon } from '@heroicons/react/20/solid';
 import { type ReactNode, type FC } from 'react';
-import Button from '../ui/Button';
+import Button from '@ui/Button';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 
 type ConfirmationProps = {

@@ -1,7 +1,7 @@
 import { type ReactNode, type FC } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Tile, { type TileProps } from '../ui/Tile';
-import cn from '../../lib/classes';
+import Tile, { type TileProps } from '@ui/Tile';
+import cn from '~/lib/classes';
 import { capitilize } from '~/utils/helpers';
 import Button from '@ui/Button';
 import { XMarkIcon } from '@heroicons/react/20/solid';

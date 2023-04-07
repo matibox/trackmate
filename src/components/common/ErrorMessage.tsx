@@ -1,6 +1,6 @@
 import { cva, type VariantProps } from 'class-variance-authority';
 import { type HTMLAttributes, type FC } from 'react';
-import cn from '../../lib/classes';
+import cn from '~/lib/classes';
 
 const errorStyles = cva('text-red-500', {
   variants: {

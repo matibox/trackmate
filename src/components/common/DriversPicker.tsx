@@ -2,11 +2,11 @@ import { Listbox } from '@headlessui/react';
 import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import { type EventType } from '@prisma/client';
 import { type FC } from 'react';
-import cn from '../../lib/classes';
-import { api, type RouterOutputs } from '../../utils/api';
-import ErrorWrapper from '../ErrorWrapper';
-import Label from '../ui/Label';
-import Loading from '../ui/Loading';
+import cn from '~/lib/classes';
+import { api, type RouterOutputs } from '~/utils/api';
+import ErrorWrapper from './ErrorWrapper';
+import Label from '@ui/Label';
+import Loading from '@ui/Loading';
 
 type DriversPickerProps = {
   formState: {

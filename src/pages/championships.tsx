@@ -21,11 +21,11 @@ import { useError } from '../hooks/useError';
 import cn from '../lib/classes';
 import { getServerAuthSession } from '../server/auth';
 import { useChampResultStore } from '../store/useChampResultStore';
-import { useResultStore } from '../store/useResultStore';
 import { api, type RouterOutputs } from '../utils/api';
 import { capitilize } from '../utils/helpers';
-import EventDuration from '../components/EventDuration';
-import DriverList from '../components/DriverList';
+import EventDuration from '../components/common/EventDuration';
+import DriverList from '../components/common/DriverList';
+import { useEventStore } from '~/features/dashboard/events/store';
 
 const YourChampionships: NextPage = () => {
   const { Error, setError } = useError();
@@ -258,7 +258,7 @@ const Championship: FC<{
 const Event: FC<{
   event: RouterOutputs['championship']['get'][number]['events'][number];
 }> = ({ event }) => {
-  const { open } = useResultStore();
+  const { open } = useEventStore().result;
   const [resultsOpened, setResultsOpened] = useState(false);
 
   const Dxx = useMemo(() => {

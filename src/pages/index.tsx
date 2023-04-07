@@ -1,9 +1,9 @@
-import Calendar from '~/components/dashboard/calendar/Calendar';
-import Championships from '~/components/dashboard/championships/Championships';
-import Events from '~/components/dashboard/events/Events';
-import ManageTeam from '~/components/dashboard/manageTeam/ManageTeam';
-import Results from '~/components/dashboard/results/Results';
-import Team from '~/components/dashboard/team/Team';
+import Calendar from '~/features/dashboard/calendar/Calendar';
+import Championships from '~/features/dashboard/championships/Championships';
+import Events from '~/features/dashboard/events/Events';
+import ManageTeam from '~/features/dashboard/manageTeam/ManageTeam';
+import Results from '~/features/dashboard/results/Results';
+import Team from '~/features/dashboard/team/Team';
 import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { getServerAuthSession } from '../server/auth';

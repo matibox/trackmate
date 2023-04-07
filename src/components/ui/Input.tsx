@@ -1,6 +1,6 @@
 import { type InputHTMLAttributes, type FC } from 'react';
 import cn from '../../lib/classes';
-import ErrorWrapper from '../ErrorWrapper';
+import ErrorWrapper from '../common/ErrorWrapper';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error: string[] | undefined;

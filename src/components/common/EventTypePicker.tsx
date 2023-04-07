@@ -2,11 +2,11 @@ import { RadioGroup } from '@headlessui/react';
 import { type EventType } from '@prisma/client';
 import { useSession } from 'next-auth/react';
 import { Fragment, useMemo, type FC } from 'react';
-import { eventTypes } from '../../constants/constants';
-import cn from '../../lib/classes';
-import { api } from '../../utils/api';
-import { hasRole } from '../../utils/helpers';
-import Label from '../ui/Label';
+import { eventTypes } from '~/constants/constants';
+import cn from '~/lib/classes';
+import { api } from '~/utils/api';
+import { hasRole } from '~/utils/helpers';
+import Label from '@ui/Label';
 
 type EventTypePickerProps = {
   formState: {

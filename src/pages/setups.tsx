@@ -23,7 +23,7 @@ import { AnimatePresence, type Variants, motion } from 'framer-motion';
 import { useClickOutside } from '../hooks/useClickOutside';
 import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
-import DriverList from '../components/DriverList';
+import DriverList from '../components/common/DriverList';
 import useDebounce from '../hooks/useDebounce';
 import { useSetupStore } from '../store/useSetupStore';
 import useSetupDownload from '../hooks/useJSONDownload';

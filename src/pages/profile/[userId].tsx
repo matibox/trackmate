@@ -19,13 +19,12 @@ import {
 import dayjs from 'dayjs';
 import { type FC, useCallback, useMemo, useState } from 'react';
 import { capitilize } from '../../utils/helpers';
-import { useEventStore } from '../../store/useEventStore';
-import { useResultStore } from '../../store/useResultStore';
 import { useSession } from 'next-auth/react';
 import Button from '@ui/Button';
 import cn from '../../lib/classes';
-import EventDuration from '../../components/EventDuration';
+import EventDuration from '../../components/common/EventDuration';
 import { CalendarDaysIcon } from '@heroicons/react/24/outline';
+import { useEventStore } from '~/features/dashboard/events/store';
 
 type Profile = RouterOutputs['user']['getProfile'];
 type Result = NonNullable<NonNullable<Profile>['events'][number]['result']>;
@@ -206,10 +205,10 @@ const Event: FC<{ event: Event; profileId: string }> = ({
 }) => {
   const { data: session } = useSession();
 
-  const { open: openPostResult } = useResultStore();
   const {
     delete: { open: openDeleteEvent },
     edit: { open: openEditEvent },
+    result: { open: openPostResult },
   } = useEventStore();
 
   const [notesOpened, setNotesOpened] = useState(false);
