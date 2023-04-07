@@ -4,11 +4,11 @@ import { type RouterOutputs } from '../utils/api';
 import type {
   EditEventErrors,
   EditEventFormState,
-} from '@dashboard/events/EditEvent';
+} from '~/components/dashboard/events/EditEvent';
 import type {
   NewEventErrors,
   NewEventFormState,
-} from '@dashboard/events/NewEvent';
+} from '~/components/dashboard/events/NewEvent';
 import dayjs from 'dayjs';
 
 type Event = RouterOutputs['event']['getDrivingEvents'][number];

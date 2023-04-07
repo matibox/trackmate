@@ -4,7 +4,6 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "paths": {
       "@ui/*": ["./src/components/ui/*"],
-      "@dashboard/*": ["./src/components/dashboard/*"],
       "~/*": ["./src/*"]
     },
     "allowJs": true,
