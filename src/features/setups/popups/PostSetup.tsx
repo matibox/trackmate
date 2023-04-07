@@ -9,6 +9,7 @@ import { useError } from '~/hooks/useError';
 import useForm from '~/hooks/useForm';
 import { api } from '~/utils/api';
 import { useSetupStore } from '../store';
+import { ShieldCheckIcon } from '@heroicons/react/24/outline';
 
 const formSchema = z.object({
   setup: z
@@ -117,15 +118,18 @@ const PostSetup: FC = () => {
         <Button intent='primary' size='small' className='ml-auto self-end'>
           Upload
         </Button>
-        <div className='w-full'>
-          <p className='text-slate-300'>
+        <div className='flex w-full flex-col gap-2 sm:flex-row sm:gap-4'>
+          <div className='flex items-center self-start sm:self-auto'>
+            <ShieldCheckIcon className='h-6 grow text-sky-400' />
+          </div>
+          <div className='text-slate-300'>
             All of the uploaded setups are{' '}
             <span className='underline decoration-slate-500 underline-offset-2 transition-colors'>
               encrypted
             </span>
             . No one, except you and people who you share the setup with can see
             the setup data.
-          </p>
+          </div>
         </div>
         <Error />
       </Form>
