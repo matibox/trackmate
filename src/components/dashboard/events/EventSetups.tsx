@@ -1,4 +1,4 @@
-import Popup from '@ui/Popup';
+import Popup, { PopupHeader } from '~/components/common/Popup';
 import {
   useState,
   type FC,
@@ -8,7 +8,6 @@ import {
   type SetStateAction,
 } from 'react';
 import { useEventStore } from '../../../store/useEventStore';
-import PopupHeader from '@ui/PopupHeader';
 import Input from '@ui/Input';
 import useDebounce from '../../../hooks/useDebounce';
 import { type RouterOutputs, api } from '../../../utils/api';

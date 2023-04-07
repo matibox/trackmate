@@ -1,6 +1,5 @@
 import { RadioGroup } from '@headlessui/react';
-import Popup from '@ui/Popup';
-import PopupHeader from '@ui/PopupHeader';
+import Popup, { PopupHeader } from '~/components/common/Popup';
 import { useSession } from 'next-auth/react';
 import { type FC } from 'react';
 import cn from '../lib/classes';

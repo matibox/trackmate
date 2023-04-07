@@ -1,7 +1,10 @@
 import { type ReactNode, type FC } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import Tile, { type TileProps } from './Tile';
+import Tile, { type TileProps } from '../ui/Tile';
 import cn from '../../lib/classes';
+import { capitilize } from '~/utils/helpers';
+import Button from '@ui/Button';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 
 interface PopupProps extends Omit<TileProps, 'children'> {
   children: ReactNode;
@@ -48,6 +51,33 @@ const Popup: FC<PopupProps> = ({
         </>
       )}
     </AnimatePresence>
+  );
+};
+
+type PopupHeaderProps = {
+  title: string;
+  close: () => void;
+  smallHeading?: boolean;
+};
+
+export const PopupHeader: FC<PopupHeaderProps> = ({
+  title,
+  close,
+  smallHeading = false,
+}) => {
+  return (
+    <div className='flex items-center justify-between'>
+      <h1
+        className={cn('text-xl', {
+          'text-lg': smallHeading,
+        })}
+      >
+        {capitilize(title)}
+      </h1>
+      <Button intent='secondary' size='xs' onClick={close}>
+        <XMarkIcon className='h-6' />
+      </Button>
+    </div>
   );
 };
 

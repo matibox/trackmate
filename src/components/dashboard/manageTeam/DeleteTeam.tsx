@@ -1,6 +1,6 @@
 import { TrashIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
-import Confirmation from '@ui/Confirmation';
+import Confirmation from '../../common/Confirmation';
 import { type FC } from 'react';
 import { useError } from '../../../hooks/useError';
 import { useManagingTeamStore } from '../../../store/useManagingTeamStore';

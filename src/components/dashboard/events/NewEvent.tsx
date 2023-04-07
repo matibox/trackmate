@@ -1,6 +1,5 @@
 import { type FormEvent, type FC, useEffect } from 'react';
-import Popup from '@ui/Popup';
-import PopupHeader from '@ui/PopupHeader';
+import Popup, { PopupHeader } from '~/components/common/Popup';
 import Button from '@ui/Button';
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/20/solid';
 import { useMultistepForm } from './useMultistepForm';

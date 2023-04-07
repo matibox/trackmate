@@ -1,5 +1,5 @@
-import DriversPicker from '@ui/DriversPicker';
-import EventTypePicker from '@ui/EventTypePicker';
+import DriversPicker from '~/components/common/DriversPicker';
+import EventTypePicker from '~/components/common/EventTypePicker';
 import Input from '@ui/Input';
 import Label from '@ui/Label';
 import { type FC } from 'react';

@@ -1,5 +1,4 @@
-import Popup from '@ui/Popup';
-import PopupHeader from '@ui/PopupHeader';
+import Popup, { PopupHeader } from '~/components/common/Popup';
 import { type FC } from 'react';
 import useForm from '../../../hooks/useForm';
 import { useManagingTeamStore } from '../../../store/useManagingTeamStore';

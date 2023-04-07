@@ -1,11 +1,10 @@
 import Button from '@ui/Button';
-import DriversPicker from '@ui/DriversPicker';
-import EventTypePicker from '@ui/EventTypePicker';
+import DriversPicker from '~/components/common/DriversPicker';
+import EventTypePicker from '~/components/common/EventTypePicker';
 import Form from '@ui/Form';
 import Input from '@ui/Input';
 import Label from '@ui/Label';
-import Popup from '@ui/Popup';
-import PopupHeader from '@ui/PopupHeader';
+import Popup, { PopupHeader } from '~/components/common/Popup';
 import { useSession } from 'next-auth/react';
 import { useState, type FC } from 'react';
 import { z } from 'zod';

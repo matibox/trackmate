@@ -6,7 +6,7 @@ import { eventTypes } from '../../constants/constants';
 import cn from '../../lib/classes';
 import { api } from '../../utils/api';
 import { hasRole } from '../../utils/helpers';
-import Label from './Label';
+import Label from '../ui/Label';
 
 type EventTypePickerProps = {
   formState: {
