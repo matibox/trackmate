@@ -5,11 +5,11 @@ import Label from '@ui/Label';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 import { useState, type FC } from 'react';
 import { z } from 'zod';
-import { useError } from '../hooks/useError';
-import useForm from '../hooks/useForm';
-import { useChampResultStore } from '../store/useChampResultStore';
-import { api } from '../utils/api';
+import { useError } from '~/hooks/useError';
+import useForm from '~/hooks/useForm';
+import { api } from '~/utils/api';
 import ErrorWrapper from '~/components/common/ErrorWrapper';
+import { useChampResultStore } from '../store';
 
 const formSchema = z.object({
   position: z.string().min(1, 'Position is required'),
