@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
-import { type RouterOutputs } from '../utils/api';
+import { type RouterOutputs } from '~/utils/api';
 
 type Setup = RouterOutputs['setup']['getAll'][number];
 

@@ -1,10 +1,10 @@
 import { type FC } from 'react';
-import { useSetupStore } from '../store/useSetupStore';
-import Confirmation from './common/Confirmation';
+import Confirmation from '~/components/common/Confirmation';
 import Button from '@ui/Button';
 import { TrashIcon } from '@heroicons/react/24/outline';
-import { api } from '../utils/api';
-import { useError } from '../hooks/useError';
+import { api } from '~/utils/api';
+import { useError } from '~/hooks/useError';
+import { useSetupStore } from '../store';
 
 const DeleteSetup: FC = () => {
   const {

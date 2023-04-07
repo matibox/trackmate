@@ -11,6 +11,7 @@ import '~/styles/globals.css';
 
 import { useRouter } from 'next/router';
 import { useMemo } from 'react';
+
 import Navbar from '~/components/global/Navbar';
 import Settings from '~/components/global/Settings';
 import PostResult from '~/features/dashboard/events/popups/PostResult';
@@ -23,11 +24,11 @@ import EditEvent from '~/features/dashboard/events/popups/EditEvent';
 import NewEvent from '~/features/dashboard/events/popups/NewEvent';
 import EditTeam from '~/features/dashboard/manageTeam/popups/EditTeam';
 import CreateTeam from '~/features/dashboard/manageTeam/popups/CreateTeam';
-import PostSetup from '~/components/PostSetup';
-import PostChampResult from '~/components/PostChampResult';
-import EditSetup from '~/components/EditSetup';
-import DeleteSetup from '~/components/DeleteSetup';
+import PostSetup from '~/features/setups/popups/PostSetup';
+import EditSetup from '~/features/setups/popups/EditSetup';
+import DeleteSetup from '~/features/setups/popups/DeleteSetup';
 import EventSetups from '~/features/dashboard/events/popups/EventSetups';
+import PostChampResult from '~/features/championships/popups/PostChampResult';
 
 const specialRoutes = ['/login', '/welcome'];
 

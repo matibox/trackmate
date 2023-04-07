@@ -5,10 +5,10 @@ import Label from '@ui/Label';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 import { type ChangeEvent, useState, type FC } from 'react';
 import { z } from 'zod';
-import { useError } from '../hooks/useError';
-import useForm from '../hooks/useForm';
-import { api } from '../utils/api';
-import { useSetupStore } from '../store/useSetupStore';
+import { useError } from '~/hooks/useError';
+import useForm from '~/hooks/useForm';
+import { api } from '~/utils/api';
+import { useSetupStore } from '../store';
 
 const formSchema = z.object({
   setup: z
