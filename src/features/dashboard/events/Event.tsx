@@ -13,11 +13,11 @@ import dayjs from 'dayjs';
 import { useMemo, useState, type FC } from 'react';
 import { type RouterOutputs } from '~/utils/api';
 import { capitilize } from '~/utils/helpers';
-import cn from '~/lib/classes';
 import { useSession } from 'next-auth/react';
 import { useEventStore } from './store';
 import EventDuration from '~/components/common/EventDuration';
 import DriverList from '~/components/common/DriverList';
+import Details from '~/components/common/Details';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
@@ -109,73 +109,49 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
       }
       className='relative'
     >
-      <div
-        className={cn('mb-4 grid grid-cols-2 gap-y-4 sm:grid-cols-3', {
-          hidden: notesOpened,
-        })}
+      <Details
+        details={[
+          { label: 'Car', value: event.car },
+          { label: 'Track', value: event.track },
+          { label: 'Type', value: capitilize(event.type) },
+          {
+            label: 'Duration',
+            value: <EventDuration duration={event.duration} />,
+          },
+          { label: 'Start at', value: dayjs(event.date).format('HH:mm') },
+          { label: 'Drivers', value: <DriverList drivers={event.drivers} /> },
+          {
+            condition: Boolean(event.result),
+            label: 'Quali Position',
+            value: Dxx ? '-' : `P${event.result?.qualiPosition as number}`,
+          },
+          {
+            condition: Boolean(event.result),
+            label: 'Race Position',
+            value: event.result?.DNF
+              ? 'DNF'
+              : event.result?.DNS
+              ? 'DNS'
+              : event.result?.DSQ
+              ? 'DSQ'
+              : `P${event.result?.racePosition as number}`,
+          },
+        ]}
       >
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Car</span>
-          <span>{event.car}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Track</span>
-          <span>{event.track}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Type</span>
-          <span>{capitilize(event.type)}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Duration</span>
-          <EventDuration duration={event.duration} />
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Start at</span>
-          <span>{dayjs(event.date).format('HH:mm')}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Drivers</span>
-          <span>
-            <DriverList drivers={event.drivers} />
-          </span>
-        </div>
-        {event.result && (
-          <>
-            <div className='flex flex-col'>
-              <span className='text-slate-300'>Quali Position</span>
-              <span>
-                {Dxx ? '-' : `P${event.result.qualiPosition as number}`}
-              </span>
-            </div>
-            <div className='flex flex-col'>
-              <span className='text-slate-300'>Race Position</span>
-              <span>
-                {event.result.DNF
-                  ? 'DNF'
-                  : event.result.DNS
-                  ? 'DNS'
-                  : event.result.DSQ
-                  ? 'DSQ'
-                  : `P${event.result.racePosition as number}`}
-              </span>
-            </div>
-            {event.result.notes && (
-              <div className='flex flex-col'>
-                <button
-                  className='flex items-center gap-1 text-slate-300 transition-colors hover:text-sky-400'
-                  title='Read more'
-                  onClick={() => setNotesOpened(true)}
-                >
-                  <span>Notes</span>
-                  <EllipsisHorizontalCircleIcon className='h-5' />
-                </button>
-                <span className='truncate'>{event.result.notes}</span>
-              </div>
-            )}
-          </>
+        {event.result && event.result.notes && (
+          <div className='flex flex-col'>
+            <button
+              className='flex items-center gap-1 text-slate-300 transition-colors hover:text-sky-400'
+              title='Read more'
+              onClick={() => setNotesOpened(true)}
+            >
+              <span>Notes</span>
+              <EllipsisHorizontalCircleIcon className='h-5' />
+            </button>
+            <span className='truncate'>{event.result.notes}</span>
+          </div>
         )}
-      </div>
+      </Details>
       {dayjs().isAfter(dayjs(event.date)) && !event.result && !isTeamEvent && (
         <Button
           intent='secondary'
@@ -211,7 +187,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
             <span>back</span>
           </motion.button>
           <motion.div
-            className='relative h-full w-full text-slate-100'
+            className='absolute top-12 left-4 h-full w-[calc(100%_-_2rem)] overflow-y-auto pr-4 text-slate-100 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.15 }}

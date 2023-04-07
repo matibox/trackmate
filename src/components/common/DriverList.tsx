@@ -8,7 +8,7 @@ type DriversProps = {
 
 const DriverList: FC<DriversProps> = ({ drivers }) => {
   return (
-    <>
+    <span>
       {drivers.map(driver => {
         const { id, name } = driver;
         return (
@@ -23,7 +23,7 @@ const DriverList: FC<DriversProps> = ({ drivers }) => {
           </Fragment>
         );
       })}
-    </>
+    </span>
   );
 };
 
