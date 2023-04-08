@@ -217,28 +217,23 @@ export const setupRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { setupId, eventId, setAsActive } = input;
       await ctx.prisma.$transaction(async tx => {
-        if (!setAsActive) {
-          const otherEventSetups = await tx.setup.findMany({
-            where: {
-              AND: [
-                { events: { some: { eventId } } },
-                { id: { not: setupId } },
-              ],
-            },
-            select: { id: true },
-          });
+        const otherEventSetups = await tx.setup.findMany({
+          where: {
+            AND: [{ events: { some: { eventId } } }, { id: { not: setupId } }],
+          },
+          select: { id: true },
+        });
 
-          if (otherEventSetups.length > 0) {
-            await tx.eventsOnSetups.update({
-              where: {
-                eventId_setupId: {
-                  eventId,
-                  setupId: otherEventSetups[0]?.id as string,
-                },
+        if (otherEventSetups.length > 0) {
+          await tx.eventsOnSetups.update({
+            where: {
+              eventId_setupId: {
+                eventId,
+                setupId: otherEventSetups[0]?.id as string,
               },
-              data: { isActive: true },
-            });
-          }
+            },
+            data: { isActive: !setAsActive },
+          });
         }
 
         await tx.eventsOnSetups.update({
