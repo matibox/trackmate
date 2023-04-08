@@ -12,6 +12,8 @@ import useDebounce from '~/hooks/useDebounce';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import {
+  ArrowDownTrayIcon,
+  CheckBadgeIcon,
   CheckCircleIcon,
   EllipsisHorizontalCircleIcon,
   MagnifyingGlassIcon,
@@ -164,7 +166,7 @@ const Setup: FC<{
   setQuery: Dispatch<SetStateAction<string>>;
   isAssigned?: boolean;
 }> = ({ setup, setQuery, isAssigned: defaultIsAssigned = false }) => {
-  const { id, car, createdAt, updatedAt, name, track, author } = setup;
+  const { id, car, createdAt, updatedAt, name, track, author, events } = setup;
   const {
     setups: { event },
   } = useEventStore();
@@ -187,6 +189,11 @@ const Setup: FC<{
   const isAuthor = useMemo(
     () => session?.user?.id === setup.author.id,
     [session?.user?.id, setup.author.id]
+  );
+
+  const isActive = useMemo(
+    () => isAssigned && events[0]?.isActive,
+    [events, isAssigned]
   );
 
   useClickOutside(menuRef, () => setActionsOpened(false), [
@@ -212,8 +219,21 @@ const Setup: FC<{
   return (
     <Tile
       header={
-        <div className='flex justify-between'>
-          <h1 className='font-semibold'>{name}</h1>
+        <div className='flex items-center justify-between'>
+          {isActive && (
+            <CheckBadgeIcon
+              className='h-5 shrink-0 text-sky-400'
+              title='This setup is set as active'
+            />
+          )}
+          <h1
+            className={cn('truncate font-semibold', {
+              'mr-auto ml-2': isActive,
+            })}
+            title={name}
+          >
+            {name}
+          </h1>
           {isAssigned ? (
             <>
               <motion.button
@@ -243,7 +263,7 @@ const Setup: FC<{
                       ref={downloadBtnRef}
                       onClick={() => void download(id, name)}
                     >
-                      download
+                      set as {isActive ? 'in' : ''}active
                     </motion.button>
                     {isAuthor && (
                       <>
@@ -267,6 +287,19 @@ const Setup: FC<{
                         </motion.button>
                       </>
                     )}
+                    <motion.div
+                      variants={itemAnimation}
+                      className='h-3/5 w-[1px] bg-slate-600'
+                    />
+                    <motion.button
+                      variants={itemAnimation}
+                      className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
+                      ref={downloadBtnRef}
+                      onClick={() => void download(id, name)}
+                      aria-label='download setup'
+                    >
+                      <ArrowDownTrayIcon className='h-5' />
+                    </motion.button>
                   </motion.div>
                 )}
               </AnimatePresence>

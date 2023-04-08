@@ -77,6 +77,10 @@ export const setupRouter = createTRPCRouter({
           createdAt: true,
           updatedAt: true,
           author: { select: { id: true, name: true } },
+          events: {
+            where: { event: { id: eventId } },
+            select: { isActive: true },
+          },
         },
         orderBy: { updatedAt: 'desc' },
       });
@@ -125,22 +129,71 @@ export const setupRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { setupId, eventId, assign } = input;
-      await ctx.prisma.setup.update({
-        where: { id: setupId },
-        data: {
-          events: assign
-            ? {
-                create: [
-                  {
-                    event: {
-                      connect: {
-                        id: eventId,
-                      },
+      await ctx.prisma.$transaction(async tx => {
+        if (assign) {
+          const eventWithActiveSetup = await tx.event.findFirst({
+            where: {
+              AND: [{ id: eventId }, { setups: { some: { isActive: true } } }],
+            },
+            select: { id: true },
+          });
+
+          let setIsActive = false;
+          if (eventWithActiveSetup === null) setIsActive = true;
+
+          return await tx.setup.update({
+            where: { id: setupId },
+            data: {
+              events: {
+                create: {
+                  event: {
+                    connect: {
+                      id: eventId,
                     },
                   },
-                ],
-              }
-            : {
+                  isActive: setIsActive,
+                },
+              },
+            },
+          });
+        } else {
+          const activeSetup = await tx.setup.findFirst({
+            where: {
+              AND: {
+                events: { some: { event: { id: eventId }, isActive: true } },
+              },
+            },
+            select: { id: true, name: true },
+          });
+
+          const otherEventSetups =
+            activeSetup?.id === setupId
+              ? await tx.setup.findMany({
+                  where: {
+                    events: { some: { event: { id: eventId } } },
+                    id: { not: activeSetup.id },
+                  },
+                  select: { id: true, name: true },
+                  take: 1,
+                })
+              : undefined;
+
+          if (otherEventSetups && otherEventSetups.length > 0) {
+            await tx.eventsOnSetups.update({
+              where: {
+                eventId_setupId: {
+                  eventId: eventId as string,
+                  setupId: otherEventSetups[0]?.id as string,
+                },
+              },
+              data: { isActive: true },
+            });
+          }
+
+          return await tx.setup.update({
+            where: { id: setupId },
+            data: {
+              events: {
                 delete: {
                   eventId_setupId: {
                     eventId: eventId as string,
@@ -148,6 +201,37 @@ export const setupRouter = createTRPCRouter({
                   },
                 },
               },
+            },
+          });
+        }
+      });
+    }),
+  toggleIsActive: multiRoleProcedure(['driver', 'manager'])
+    .input(
+      z.object({
+        setupId: z.string(),
+        eventId: z.string(),
+        setAsActive: z.boolean().default(true),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { setupId, eventId, setAsActive } = input;
+      await ctx.prisma.setup.update({
+        where: { id: setupId },
+        data: {
+          events: {
+            update: {
+              where: {
+                eventId_setupId: {
+                  eventId,
+                  setupId,
+                },
+              },
+              data: {
+                isActive: setAsActive,
+              },
+            },
+          },
         },
       });
     }),
