@@ -86,6 +86,7 @@ const EventSetups: FC = () => {
                   key={setup.id}
                   setup={setup}
                   setQuery={setQuery}
+                  setupsQuantity={eventSetups.length}
                   isAssigned
                 />
               ))}
@@ -132,7 +133,12 @@ const EventSetups: FC = () => {
         {assignOpen && searchedSetups && (
           <div className='flex max-h-96 flex-wrap gap-4 overflow-y-auto rounded p-[1px] scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
             {searchedSetups.map(setup => (
-              <Setup key={setup.id} setup={setup} setQuery={setQuery} />
+              <Setup
+                key={setup.id}
+                setup={setup}
+                setQuery={setQuery}
+                setupsQuantity={searchedSetups.length}
+              />
             ))}
             {!searchedSetupsLoading && searchedSetups.length === 0 && (
               <span className='text-slate-300'>No setups found</span>
@@ -164,8 +170,14 @@ const itemAnimation: Variants = {
 const Setup: FC<{
   setup: RouterOutputs['setup']['byQuery'][number];
   setQuery: Dispatch<SetStateAction<string>>;
+  setupsQuantity: number;
   isAssigned?: boolean;
-}> = ({ setup, setQuery, isAssigned: defaultIsAssigned = false }) => {
+}> = ({
+  setup,
+  setQuery,
+  setupsQuantity,
+  isAssigned: defaultIsAssigned = false,
+}) => {
   const { id, car, createdAt, updatedAt, name, track, author, events } = setup;
   const {
     setups: { event },
@@ -180,6 +192,7 @@ const Setup: FC<{
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const downloadBtnRef = useRef<HTMLButtonElement>(null);
   const unassignBtnRef = useRef<HTMLButtonElement>(null);
+  const activeBtnRef = useRef<HTMLButtonElement>(null);
 
   const isEdited = useMemo(
     () => !dayjs(createdAt).isSame(dayjs(updatedAt)),
@@ -200,6 +213,7 @@ const Setup: FC<{
     menuBtnRef,
     downloadBtnRef,
     unassignBtnRef,
+    activeBtnRef,
   ]);
 
   const { Error, setError } = useError();
@@ -213,6 +227,15 @@ const Setup: FC<{
         await utils.event.setups.invalidate();
         await utils.setup.invalidate();
         setIsAssigned(prev => !prev);
+      },
+    });
+
+  const { mutate: toggleIsActive, isLoading: activeLoading } =
+    api.setup.toggleIsActive.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.event.setups.invalidate();
+        await utils.setup.invalidate();
       },
     });
 
@@ -257,20 +280,32 @@ const Setup: FC<{
                     className='absolute top-0 left-0 flex h-14 w-full items-center gap-2 rounded-t bg-slate-800 py-2 px-4'
                     ref={menuRef}
                   >
-                    <motion.button
-                      variants={itemAnimation}
-                      className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
-                      ref={downloadBtnRef}
-                      onClick={() => void download(id, name)}
-                    >
-                      set as {isActive ? 'in' : ''}active
-                    </motion.button>
-                    {isAuthor && (
+                    {setupsQuantity > 1 && (
                       <>
+                        <motion.button
+                          variants={itemAnimation}
+                          className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
+                          ref={activeBtnRef}
+                          onClick={() =>
+                            toggleIsActive({
+                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                              eventId: event!.id,
+                              setupId: id,
+                              setAsActive: !isActive,
+                            })
+                          }
+                          disabled={activeLoading}
+                        >
+                          set as {isActive ? 'in' : ''}active
+                        </motion.button>
                         <motion.div
                           variants={itemAnimation}
                           className='h-3/5 w-[1px] bg-slate-600'
                         />
+                      </>
+                    )}
+                    {isAuthor && (
+                      <>
                         <motion.button
                           variants={itemAnimation}
                           className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
@@ -285,12 +320,12 @@ const Setup: FC<{
                         >
                           unassign
                         </motion.button>
+                        <motion.div
+                          variants={itemAnimation}
+                          className='h-3/5 w-[1px] bg-slate-600'
+                        />
                       </>
                     )}
-                    <motion.div
-                      variants={itemAnimation}
-                      className='h-3/5 w-[1px] bg-slate-600'
-                    />
                     <motion.button
                       variants={itemAnimation}
                       className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
@@ -298,7 +333,11 @@ const Setup: FC<{
                       onClick={() => void download(id, name)}
                       aria-label='download setup'
                     >
-                      <ArrowDownTrayIcon className='h-5' />
+                      {setupsQuantity <= 1 ? (
+                        <span>download</span>
+                      ) : (
+                        <ArrowDownTrayIcon className='h-5' />
+                      )}
                     </motion.button>
                   </motion.div>
                 )}
@@ -327,7 +366,7 @@ const Setup: FC<{
           )}
         </div>
       }
-      isLoading={assignLoading || downloadLoading}
+      isLoading={assignLoading || downloadLoading || activeLoading}
       className='w-80'
     >
       <div className='grid grid-cols-2 gap-4'>
