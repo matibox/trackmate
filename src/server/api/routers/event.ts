@@ -258,7 +258,8 @@ export const eventRouter = createTRPCRouter({
     .input(z.object({ eventId: z.string().optional() }))
     .query(async ({ ctx, input }) => {
       return await ctx.prisma.setup.findMany({
-        where: { events: { some: { id: input.eventId } } },
+        // where: { events: { some: { id: input.eventId } } },
+        where: { events: { some: { event: { id: input.eventId } } } },
         include: { author: { select: { id: true, name: true } } },
         orderBy: { updatedAt: 'desc' },
       });

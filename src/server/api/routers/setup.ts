@@ -30,9 +30,11 @@ export const setupRouter = createTRPCRouter({
           {
             events: {
               some: {
-                drivers: {
-                  some: {
-                    id: ctx.session.user.id,
+                event: {
+                  drivers: {
+                    some: {
+                      id: ctx.session.user.id,
+                    },
                   },
                 },
               },
@@ -63,7 +65,7 @@ export const setupRouter = createTRPCRouter({
         where: {
           AND: [
             { name: { contains: q.toLowerCase() } },
-            { events: { none: { id: eventId } } },
+            { events: { none: { event: { id: eventId } } } },
             { author: { id: ctx.session.user.id } },
           ],
         },
@@ -127,8 +129,25 @@ export const setupRouter = createTRPCRouter({
         where: { id: setupId },
         data: {
           events: assign
-            ? { connect: { id: eventId } }
-            : { disconnect: { id: eventId } },
+            ? {
+                create: [
+                  {
+                    event: {
+                      connect: {
+                        id: eventId,
+                      },
+                    },
+                  },
+                ],
+              }
+            : {
+                delete: {
+                  eventId_setupId: {
+                    eventId: eventId as string,
+                    setupId,
+                  },
+                },
+              },
         },
       });
     }),

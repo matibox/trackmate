@@ -133,7 +133,7 @@ model Championship {
 }
 
 model Event {
-  id             String        @id @default(cuid())
+  id             String           @id @default(cuid())
   title          String?
   date           DateTime
   type           EventType
@@ -142,13 +142,13 @@ model Event {
   duration       Int
   championshipId String?
   managerId      String?
-  championship   Championship? @relation(fields: [championshipId], references: [id], onDelete: Cascade)
-  drivers        User[]        @relation(name: "drivers")
-  manager        User?         @relation(fields: [managerId], references: [id], name: "manager")
-  team           Team?         @relation(fields: [teamId], references: [id])
+  championship   Championship?    @relation(fields: [championshipId], references: [id], onDelete: Cascade)
+  drivers        User[]           @relation(name: "drivers")
+  manager        User?            @relation(fields: [managerId], references: [id], name: "manager")
+  team           Team?            @relation(fields: [teamId], references: [id])
   teamId         String?
   result         Result?
-  setups         Setup[]
+  setups         EventsOnSetups[]
 
   @@index([championshipId])
   @@index([teamId])
@@ -220,17 +220,29 @@ model NewChampResultNotification {
   @@index([receiverId])
 }
 
+model EventsOnSetups {
+  event    Event   @relation(fields: [eventId], references: [id])
+  eventId  String
+  setup    Setup   @relation(fields: [setupId], references: [id])
+  setupId  String
+  isActive Boolean @default(false)
+
+  @@id([eventId, setupId])
+  @@index([eventId])
+  @@index([setupId])
+}
+
 model Setup {
-  id        String   @id @default(cuid())
+  id        String           @id @default(cuid())
   name      String
   car       String
   track     String
-  data      String   @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  author    User     @relation(fields: [authorId], references: [id])
+  data      String           @db.Text
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  author    User             @relation(fields: [authorId], references: [id])
   authorId  String
-  events    Event[]
+  events    EventsOnSetups[]
 
   @@index([authorId])
 }
