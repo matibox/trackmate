@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { useMemo, type FC } from 'react';
 import { type RouterOutputs } from '~/utils/api';
 import DriverList from '~/components/common/DriverList';
+import Details from '~/components/common/Details';
 
 type ResultProps = {
   result: RouterOutputs['result']['getChampResultPage'][number];
@@ -34,26 +35,22 @@ const ChampResult: FC<ResultProps> = ({ result }) => {
       }
       className='relative w-96'
     >
-      <div className='grid grid-cols-2 gap-4 border-b border-slate-700 pb-4'>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Created by</span>
-          {result.author.name ?? 'driver'}
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Created at</span>
-          {dayjs(result.createdAt).format('DD MMM HH:mm')}
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Championship occurence</span>
-          <span>{champOccurence}</span>
-        </div>
-        <div className='col-span-2 flex flex-col'>
-          <span className='text-slate-300'>Roster</span>
-          <span>
-            <DriverList drivers={result.championship.drivers} />
-          </span>
-        </div>
-      </div>
+      <Details
+        details={[
+          { label: 'Created by', value: result.author.name ?? 'driver' },
+          {
+            label: 'Created at',
+            value: dayjs(result.createdAt).format('DD MMM HH:mm'),
+          },
+          { label: 'Championship occurence', value: champOccurence },
+          {
+            label: 'Roster',
+            value: <DriverList drivers={result.championship.drivers} />,
+            span: 2,
+          },
+        ]}
+        className='border-b border-slate-700 pb-4'
+      />
       <div className='grid-cols-w grid gap-4 pt-4'>
         <h2 className='col-span-2 text-lg font-semibold'>Result</h2>
         <div className='flex flex-col'>

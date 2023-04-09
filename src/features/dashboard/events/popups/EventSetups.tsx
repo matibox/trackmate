@@ -29,6 +29,7 @@ import useSetupDownload from '~/hooks/useJSONDownload';
 import { useSession } from 'next-auth/react';
 import { useEventStore } from '../store';
 import DriverList from '~/components/common/DriverList';
+import Details from '~/components/common/Details';
 
 const EventSetups: FC = () => {
   const {
@@ -369,28 +370,17 @@ const Setup: FC<{
       isLoading={assignLoading || downloadLoading || activeLoading}
       className='w-80'
     >
-      <div className='grid grid-cols-2 gap-4'>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Car</span>
-          <span>{car}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Track</span>
-          <span>{track}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>
-            {isEdited ? 'Edited' : 'Posted'} on
-          </span>
-          <span>{dayjs(updatedAt).format('DD MMM YYYY')}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Posted by</span>
-          <span>
-            <DriverList drivers={[author]} />
-          </span>
-        </div>
-      </div>
+      <Details
+        details={[
+          { label: 'Car', value: car },
+          { label: 'Track', value: track },
+          {
+            label: `${isEdited ? 'Edited' : 'Posted'} on`,
+            value: dayjs(updatedAt).format('DD MMM YYYY'),
+          },
+          { label: 'Posted by', value: <DriverList drivers={[author]} /> },
+        ]}
+      />
       <Error />
     </Tile>
   );

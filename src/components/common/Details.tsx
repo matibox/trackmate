@@ -6,6 +6,7 @@ interface DetailsProps extends HTMLAttributes<HTMLDivElement> {
     label: string;
     value: string | ReactNode;
     condition?: boolean;
+    span?: 1 | 2 | 3 | 4;
   }>;
   className?: string;
   children?: ReactNode;
@@ -18,14 +19,15 @@ const Details: FC<DetailsProps> = ({
   ...props
 }) => {
   return (
-    <div
-      className={cn('mb-4 grid grid-cols-2 gap-y-4 sm:grid-cols-3', className)}
-      {...props}
-    >
+    <div className={cn('grid grid-cols-2 gap-y-4', className)} {...props}>
       {details.map(detail => {
         const show = detail.condition ?? true;
+        const colSpan = detail.span ?? 1;
         return show ? (
-          <div key={crypto.randomUUID()} className='flex flex-col'>
+          <div
+            key={crypto.randomUUID()}
+            className={`flex flex-col col-span-${colSpan}`}
+          >
             <span className='text-slate-300'>{detail.label}</span>
             {typeof detail.value === 'string' ? (
               <span>{detail.value}</span>

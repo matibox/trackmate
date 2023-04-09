@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState, type FC } from 'react';
 import { type RouterOutputs } from '~/utils/api';
 import DriverList from '~/components/common/DriverList';
+import Details from '~/components/common/Details';
 
 type ResultProps = {
   result: RouterOutputs['result']['getResultPage'][number];
@@ -75,30 +76,26 @@ const Result: FC<ResultProps> = ({ result }) => {
           </>
         )}
       </AnimatePresence>
-      <div className='grid grid-cols-2 gap-4 border-b border-slate-700 pb-4'>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Created by</span>
-          {result.author.name ?? 'driver'}
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Created at</span>
-          {dayjs(result.createdAt).format('DD MMM HH:mm')}
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Event occurence</span>
-          <span>{dayjs(result.event.date).format('YYYY MMM DD')}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Track</span>
-          {result.event.track}
-        </div>
-        <div className='col-span-2 flex flex-col'>
-          <span className='text-slate-300'>Drivers</span>
-          <span>
-            <DriverList drivers={result.event.drivers} />
-          </span>
-        </div>
-      </div>
+      <Details
+        details={[
+          { label: 'Created by', value: result.author.name },
+          {
+            label: 'Created at',
+            value: dayjs(result.createdAt).format('DD MMM HH:mm'),
+          },
+          {
+            label: 'Event occurence',
+            value: dayjs(result.event.date).format('YYYY MMM DD'),
+          },
+          { label: 'Track', value: result.event.track },
+          {
+            label: 'Drivers',
+            value: <DriverList drivers={result.event.drivers} />,
+            span: 2,
+          },
+        ]}
+        className='border-b border-slate-700 pb-4'
+      />
       <div className='grid-cols-w grid gap-4 pt-4'>
         <h2 className='col-span-2 text-lg font-semibold'>Result</h2>
         <div className='flex flex-col'>

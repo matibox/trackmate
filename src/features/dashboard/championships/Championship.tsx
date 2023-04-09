@@ -6,12 +6,12 @@ import Button from '@ui/Button';
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { type FC } from 'react';
-import cn from '~/lib/classes';
 import { useChampionshipStore } from './store';
 import { type RouterOutputs } from '~/utils/api';
 import { capitilize } from '~/utils/helpers';
 import DriverList from '~/components/common/DriverList';
 import EventDuration from '~/components/common/EventDuration';
+import Details from '~/components/common/Details';
 
 type ChampionshipProps = {
   championship: RouterOutputs['championship']['get'][number];
@@ -56,62 +56,53 @@ const Championship: FC<ChampionshipProps> = ({ championship }) => {
     >
       <div className='flex flex-col gap-4'>
         <div className='h-full w-full'>
-          <div className='grid grid-cols-2 gap-4'>
-            <div className='flex flex-col'>
-              <span className='text-slate-300'>Car</span>
-              <span>{championship.car === '' ? '-' : championship.car}</span>
-            </div>
-            <div className='flex flex-col'>
-              <span className='text-slate-300'>Type</span>
-              <span>{capitilize(championship.type as string)}</span>
-            </div>
-            <div className='col-span-2 flex flex-col'>
-              <span className='text-slate-300'>Roster</span>
-              <span>
-                <DriverList drivers={championship.drivers} />
-              </span>
-            </div>
-            {championship.result && (
-              <div className='flex flex-col'>
-                <span className='text-slate-300'>Championship position</span>
-                <span>{championship.result.position}</span>
-              </div>
-            )}
-          </div>
+          <Details
+            details={[
+              {
+                label: 'Car',
+                value: championship.car === '' ? '-' : championship.car,
+              },
+              { label: 'Type', value: capitilize(championship.type as string) },
+              {
+                label: 'Roster',
+                value: <DriverList drivers={championship.drivers} />,
+                span: 2,
+              },
+              {
+                condition: Boolean(championship.result),
+                label: 'Championship position',
+                value: championship.result?.position,
+              },
+            ]}
+          />
         </div>
         <div className='flex flex-col gap-2 border-t border-slate-700 pt-4 pl-2'>
           <span className='font-semibold'>Upcoming event</span>
           {championship.events.length > 0 ? (
             championship.events.map(event => (
-              <div key={event.id} className='grid grid-cols-2 gap-y-4'>
-                <div className='flex flex-col'>
-                  <span className='text-slate-300'>Car</span>
-                  <span>{event.car === '' ? '-' : event.car}</span>
-                </div>
-                <div className='flex flex-col'>
-                  <span className='text-slate-300'>Track</span>
-                  <span>{event.track}</span>
-                </div>
-                <div className='flex flex-col'>
-                  <span className='text-slate-300'>Date</span>
-                  <span>{dayjs(event.date).format('HH:mm DD MMM')}</span>
-                </div>
-                <div className='flex flex-col'>
-                  <span className='text-slate-300'>Duration</span>
-                  <EventDuration duration={event.duration} />
-                </div>
-                <div
-                  className={cn('col-span-2 hidden', {
-                    'flex flex-col':
-                      championship.type === 'sprint' && event.type === 'sprint',
-                  })}
-                >
-                  <span className='text-slate-300'>Drivers</span>
-                  <span>
-                    <DriverList drivers={event.drivers} />
-                  </span>
-                </div>
-              </div>
+              <Details
+                key={event.id}
+                details={[
+                  { label: 'Car', value: event.car === '' ? '-' : event.car },
+                  { label: 'Track', value: event.track },
+                  {
+                    label: 'Date',
+                    value: dayjs(event.date).format('HH:mm DD MMM'),
+                  },
+                  {
+                    label: 'Duration',
+                    value: <EventDuration duration={event.duration} />,
+                  },
+                  {
+                    condition:
+                      championship.type === 'endurance' &&
+                      event.type === 'endurance',
+                    label: 'Drivers',
+                    value: <DriverList drivers={event.drivers} />,
+                    span: 2,
+                  },
+                ]}
+              />
             ))
           ) : (
             <span className='text-slate-300'>No upcoming events</span>

@@ -137,6 +137,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
               : `P${event.result?.racePosition as number}`,
           },
         ]}
+        className='mb-4 sm:grid-cols-3'
       >
         {event.result && event.result.notes && (
           <div className='flex flex-col'>

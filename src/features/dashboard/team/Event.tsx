@@ -1,6 +1,7 @@
 import Tile from '@ui/Tile';
 import dayjs from 'dayjs';
 import { type FC } from 'react';
+import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
 import EventDuration from '~/components/common/EventDuration';
 import { type RouterOutputs } from '~/utils/api';
@@ -23,26 +24,17 @@ const Event: FC<EventProps> = ({ event }) => {
         </div>
       }
     >
-      <div className='grid grid-cols-2 gap-4'>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Car</span>
-          <span>{event.car}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Track</span>
-          <span>{event.track}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Duration</span>
-          <EventDuration duration={event.duration} />
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Drivers</span>
-          <span>
-            <DriverList drivers={event.drivers} />
-          </span>
-        </div>
-      </div>
+      <Details
+        details={[
+          { label: 'Car', value: event.car },
+          { label: 'Track', value: event.track },
+          {
+            label: 'Duration',
+            value: <EventDuration duration={event.duration} />,
+          },
+          { label: 'Drivers', value: <DriverList drivers={event.drivers} /> },
+        ]}
+      />
     </Tile>
   );
 };

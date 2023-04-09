@@ -11,6 +11,7 @@ import { useSetupStore } from './store';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
 
 import Tile from '@ui/Tile';
+import Details from '~/components/common/Details';
 
 const menuAnimation: Variants = {
   start: { opacity: 0, x: '-100%', width: 0 },
@@ -143,28 +144,17 @@ const Setup: FC<{ setup: RouterOutputs['setup']['byQuery'][number] }> = ({
       isLoading={isLoading}
     >
       <Error />
-      <div className='grid grid-cols-2 gap-4'>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Car</span>
-          <span>{car}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Track</span>
-          <span>{track}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>
-            {isEdited ? 'Edited' : 'Posted'} on
-          </span>
-          <span>{dayjs(updatedAt).format('DD MMM YYYY')}</span>
-        </div>
-        <div className='flex flex-col'>
-          <span className='text-slate-300'>Posted by</span>
-          <span>
-            <DriverList drivers={[author]} />
-          </span>
-        </div>
-      </div>
+      <Details
+        details={[
+          { label: 'Car', value: car },
+          { label: 'Track', value: track },
+          {
+            label: `${isEdited ? 'Edited' : 'Posted'} on`,
+            value: dayjs(updatedAt).format('DD MMM YYYY'),
+          },
+          { label: 'Posted by', value: <DriverList drivers={[author]} /> },
+        ]}
+      />
     </Tile>
   );
 };
