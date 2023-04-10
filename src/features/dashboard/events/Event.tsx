@@ -65,6 +65,7 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
                   id: event.id,
                   championship: event.championship,
                   title: event.title,
+                  result: event.result,
                 })
               }
             >

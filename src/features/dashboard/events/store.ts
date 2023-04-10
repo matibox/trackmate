@@ -8,6 +8,7 @@ import dayjs from 'dayjs';
 type Event = RouterOutputs['event']['getDrivingEvents'][number];
 type DeleteEvent = Pick<Event, 'id' | 'title' | 'championship'>;
 type ResultEvent = Pick<Event, 'id' | 'title'>;
+type SetupEvent = Pick<Event, 'id' | 'title' | 'championship' | 'result'>;
 
 export const defaultEventFormState: NewEventFormState = {
   session: null,
@@ -50,9 +51,9 @@ type EventStore = {
   };
   setups: {
     isOpened: boolean;
-    open: (event: DeleteEvent | null) => void;
+    open: (event: SetupEvent | null) => void;
     close: () => void;
-    event: DeleteEvent | null;
+    event: SetupEvent | null;
   };
   result: {
     isOpened: boolean;

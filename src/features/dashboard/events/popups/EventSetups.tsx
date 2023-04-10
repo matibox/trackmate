@@ -100,20 +100,22 @@ const EventSetups: FC = () => {
           </div>
         </div>
         <div className='flex w-full flex-col gap-2 sm:flex-row'>
-          <Button
-            intent='primary'
-            size='small'
-            gap='small'
-            className='self-start font-normal'
-            onClick={() => setAssignOpen(prev => !prev)}
-          >
-            <span>{assignOpen ? 'Close' : 'Assign setup'}</span>
-            <PlusIcon
-              className={cn('h-5 transition-transform', {
-                'rotate-45': assignOpen,
-              })}
-            />
-          </Button>
+          {!event?.result && (
+            <Button
+              intent='primary'
+              size='small'
+              gap='small'
+              className='self-start font-normal'
+              onClick={() => setAssignOpen(prev => !prev)}
+            >
+              <span>{assignOpen ? 'Close' : 'Assign setup'}</span>
+              <PlusIcon
+                className={cn('h-5 transition-transform', {
+                  'rotate-45': assignOpen,
+                })}
+              />
+            </Button>
+          )}
           {assignOpen && (
             <div className='flex flex-col'>
               <div className='flex grow gap-4'>
