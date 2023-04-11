@@ -16,13 +16,15 @@ import { AnimatePresence, motion } from 'framer-motion';
 import cn from '~/lib/classes';
 import EventDuration from '~/components/common/EventDuration';
 import dayjs from 'dayjs';
+import { ForwardIcon } from '@heroicons/react/24/outline';
 
 type Profile = RouterOutputs['user']['getProfile'];
 type Event = NonNullable<Profile>['events'][number];
 
-const Event: FC<{ event: Event; profileId: string }> = ({
+const Event: FC<{ event: Event; profileId: string; upcoming: boolean }> = ({
   event,
   profileId,
+  upcoming,
 }) => {
   const { data: session } = useSession();
 
@@ -61,9 +63,12 @@ const Event: FC<{ event: Event; profileId: string }> = ({
     <Tile
       header={
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
-          <span className='truncate text-base font-semibold' title={eventTitle}>
-            {eventTitle}
-          </span>
+          <div className='flex items-center gap-1.5' title={eventTitle}>
+            {upcoming && <ForwardIcon title='upcoming event' className='h-5' />}
+            <span className='truncate text-base font-semibold'>
+              {eventTitle}
+            </span>
+          </div>
           {!isTeamEvent && isUserProfile && !event.result && (
             <Button
               intent='danger'
