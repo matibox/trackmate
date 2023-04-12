@@ -4,14 +4,20 @@ import { api } from '../utils/api';
 export default function useSetupDownload(
   setError: Dispatch<SetStateAction<string | undefined>>
 ) {
-  const { mutateAsync: getSetupData, isLoading } =
+  const { mutateAsync: getSetupData, isLoading: setupDataLoading } =
     api.setup.decryptData.useMutation({
+      onError: err => setError(err.message),
+    });
+
+  const { mutateAsync: logDownload, isLoading: downloadLoading } =
+    api.setup.logDownload.useMutation({
       onError: err => setError(err.message),
     });
 
   const download = useCallback(
     async (setupId: string, name: string) => {
       const setupData = await getSetupData({ setupId });
+      await logDownload({ setupId });
       const href = `data:text/json;chatset=utf-8,${encodeURIComponent(
         JSON.stringify(setupData)
       )}`;
@@ -21,8 +27,8 @@ export default function useSetupDownload(
       link.click();
       link.remove();
     },
-    [getSetupData]
+    [getSetupData, logDownload]
   );
 
-  return { download, isLoading };
+  return { download, isLoading: setupDataLoading || downloadLoading };
 }

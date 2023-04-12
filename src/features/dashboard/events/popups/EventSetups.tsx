@@ -25,7 +25,7 @@ import Tile from '@ui/Tile';
 import { type Variants, motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
 import { useClickOutside } from '~/hooks/useClickOutside';
-import useSetupDownload from '~/hooks/useJSONDownload';
+import useSetupDownload from '~/hooks/useSetupDownload';
 import { useSession } from 'next-auth/react';
 import { useEventStore } from '../store';
 import DriverList from '~/components/common/DriverList';

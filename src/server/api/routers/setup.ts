@@ -120,6 +120,17 @@ export const setupRouter = createTRPCRouter({
 
       return decrypt(setup.data);
     }),
+  logDownload: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ setupId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { setupId } = input;
+      await ctx.prisma.download.create({
+        data: {
+          setup: { connect: { id: setupId } },
+          user: { connect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
   toggleAssignment: multiRoleProcedure(['driver', 'manager'])
     .input(
       z.object({

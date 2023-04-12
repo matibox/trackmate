@@ -5,7 +5,7 @@ import { useState, type FC, useRef, useMemo } from 'react';
 import DriverList from '~/components/common/DriverList';
 import { useClickOutside } from '~/hooks/useClickOutside';
 import { useError } from '~/hooks/useError';
-import useSetupDownload from '~/hooks/useJSONDownload';
+import useSetupDownload from '~/hooks/useSetupDownload';
 import { type RouterOutputs } from '~/utils/api';
 import { useSetupStore } from './store';
 import { EllipsisHorizontalCircleIcon } from '@heroicons/react/24/outline';
