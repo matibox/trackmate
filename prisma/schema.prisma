@@ -93,6 +93,7 @@ model User {
   newResultNotifications      NewResultNotification[]
   newChampResultNotifications NewChampResultNotification[]
   setups                      Setup[]
+  downloads                   Download[]
 
   @@index([teamId])
 }
@@ -243,6 +244,19 @@ model Setup {
   author    User             @relation(fields: [authorId], references: [id])
   authorId  String
   events    EventsOnSetups[]
+  downloads Download[]
 
   @@index([authorId])
+}
+
+model Download {
+  id          String   @id @default(cuid())
+  downladedAt DateTime @default(now())
+  setup       Setup    @relation(fields: [setupId], references: [id])
+  setupId     String
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+
+  @@index([setupId])
+  @@index([userId])
 }
