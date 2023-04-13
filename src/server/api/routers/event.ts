@@ -263,6 +263,11 @@ export const eventRouter = createTRPCRouter({
         include: {
           author: { select: { id: true, name: true } },
           events: { where: { eventId }, select: { isActive: true } },
+          downloads: {
+            where: { user: { id: ctx.session.user.id } },
+            orderBy: { downloadedAt: 'desc' },
+            take: 1,
+          },
         },
         orderBy: { updatedAt: 'desc' },
       });

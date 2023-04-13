@@ -250,12 +250,12 @@ model Setup {
 }
 
 model Download {
-  id          String   @id @default(cuid())
-  downladedAt DateTime @default(now())
-  setup       Setup    @relation(fields: [setupId], references: [id])
-  setupId     String
-  user        User     @relation(fields: [userId], references: [id])
-  userId      String
+  id           String   @id @default(cuid())
+  downloadedAt DateTime @default(now())
+  setup        Setup    @relation(fields: [setupId], references: [id])
+  setupId      String
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
 
   @@index([setupId])
   @@index([userId])

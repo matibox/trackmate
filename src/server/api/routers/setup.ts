@@ -54,6 +54,11 @@ export const setupRouter = createTRPCRouter({
         updatedAt: true,
         author: { select: { id: true, name: true } },
         events: { select: { isActive: true } },
+        downloads: {
+          where: { user: { id: ctx.session.user.id } },
+          orderBy: { downloadedAt: 'desc' },
+          take: 1,
+        },
       },
       orderBy: { updatedAt: 'desc' },
     });
@@ -81,6 +86,11 @@ export const setupRouter = createTRPCRouter({
           events: {
             where: { event: { id: eventId } },
             select: { isActive: true },
+          },
+          downloads: {
+            where: { user: { id: ctx.session.user.id } },
+            orderBy: { downloadedAt: 'desc' },
+            take: 1,
           },
         },
         orderBy: { updatedAt: 'desc' },

@@ -13,9 +13,9 @@ import { type RouterOutputs, api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import {
   ArrowDownTrayIcon,
-  CheckBadgeIcon,
   CheckCircleIcon,
   EllipsisHorizontalCircleIcon,
+  ExclamationCircleIcon,
   MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline';
 import Button from '@ui/Button';
@@ -78,6 +78,18 @@ const EventSetups: FC = () => {
       className='max-w-[44rem]'
     >
       <div className='flex flex-col gap-4'>
+        {eventSetups?.length !== 0 && (
+          <div className='flex flex-col gap-1'>
+            <div className='flex items-center gap-1 text-sm text-sky-400'>
+              <CheckCircleIcon className='h-5' />
+              <span>Active setup</span>
+            </div>
+            <div className='flex items-center gap-1 text-sm text-amber-400'>
+              <ExclamationCircleIcon className='h-5' />
+              <span>Setup got updated after last download</span>
+            </div>
+          </div>
+        )}
         <div className='flex flex-col gap-4'>
           <div className='flex w-full'>
             <Error />
@@ -212,6 +224,14 @@ const Setup: FC<{
     [events, isAssigned]
   );
 
+  const changedSinceLastDownload = useMemo(() => {
+    if (!isAssigned) return false;
+    const userDownloads = setup.downloads;
+    if (userDownloads.length === 0 || !userDownloads[0]) return false;
+    const lastDownloaded = userDownloads[0].downloadedAt;
+    return dayjs(lastDownloaded).isBefore(dayjs(updatedAt));
+  }, [isAssigned, setup.downloads, updatedAt]);
+
   useClickOutside(menuRef, () => setActionsOpened(false), [
     menuBtnRef,
     downloadBtnRef,
@@ -245,21 +265,29 @@ const Setup: FC<{
   return (
     <Tile
       header={
-        <div className='flex items-center justify-between'>
-          {isActive && (
-            <CheckBadgeIcon
-              className='h-5 shrink-0 text-sky-400'
-              title='This setup is set as active'
-            />
-          )}
+        <div className='flex items-center justify-between gap-1'>
           <h1
             className={cn('truncate font-semibold', {
-              'mr-auto ml-2': isActive,
+              'mr-auto': isActive,
             })}
             title={name}
           >
             {name}
           </h1>
+          <div className='flex items-center gap-0.5 border-r border-slate-600 pr-1'>
+            {isActive && (
+              <CheckCircleIcon
+                className='h-5 text-sky-400'
+                title='This setup is set as active'
+              />
+            )}
+            {changedSinceLastDownload && (
+              <ExclamationCircleIcon
+                className='h-5 text-amber-400'
+                title='The setup got updated after you last downloaded it'
+              />
+            )}
+          </div>
           {isAssigned ? (
             <>
               <motion.button
@@ -280,7 +308,7 @@ const Setup: FC<{
                     initial='start'
                     animate='show'
                     exit='end'
-                    className='absolute top-0 left-0 flex h-14 w-full items-center gap-2 rounded-t bg-slate-800 py-2 px-4'
+                    className='absolute top-0 left-0 flex h-11 w-full items-center gap-2 rounded-t bg-slate-800 py-2 px-4'
                     ref={menuRef}
                   >
                     {setupsQuantity > 1 && (
@@ -369,6 +397,7 @@ const Setup: FC<{
           )}
         </div>
       }
+      smallHeaderPadding
       isLoading={assignLoading || downloadLoading || activeLoading}
       className='w-80'
     >

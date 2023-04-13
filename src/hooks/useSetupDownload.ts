@@ -4,6 +4,7 @@ import { api } from '../utils/api';
 export default function useSetupDownload(
   setError: Dispatch<SetStateAction<string | undefined>>
 ) {
+  const utils = api.useContext();
   const { mutateAsync: getSetupData, isLoading: setupDataLoading } =
     api.setup.decryptData.useMutation({
       onError: err => setError(err.message),
@@ -12,6 +13,9 @@ export default function useSetupDownload(
   const { mutateAsync: logDownload, isLoading: downloadLoading } =
     api.setup.logDownload.useMutation({
       onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.event.setups.invalidate();
+      },
     });
 
   const download = useCallback(

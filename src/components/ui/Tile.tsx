@@ -9,6 +9,7 @@ export type TileProps = {
   className?: string;
   isLoading?: boolean;
   fixedHeader?: boolean;
+  smallHeaderPadding?: boolean;
 };
 
 const Tile: FC<TileProps> = ({
@@ -16,6 +17,7 @@ const Tile: FC<TileProps> = ({
   children,
   isLoading = false,
   fixedHeader = false,
+  smallHeaderPadding = false,
   className,
 }) => {
   return (
@@ -52,6 +54,7 @@ const Tile: FC<TileProps> = ({
             'w-full rounded-t bg-slate-700 p-4 ring-1 ring-slate-600',
             {
               'sticky top-0 left-0 z-10': fixedHeader,
+              'py-2.5 px-4': smallHeaderPadding,
             }
           )}
         >
