@@ -11,9 +11,7 @@ import { api } from '~/utils/api';
 import { useSetupStore } from '../store';
 
 const formSchema = z.object({
-  setup: z
-    .unknown()
-    .refine(file => file !== null, 'You have to choose a setup'),
+  setup: z.unknown(),
   car: z.string().min(1, 'Car is required'),
   track: z.string().min(1, 'Track is required'),
 });
@@ -52,31 +50,42 @@ const EditSetup: FC = () => {
   });
 
   const { handleSubmit, errors } = useForm(formSchema, values => {
-    const setupFile = values.setup as File;
-    const reader = new FileReader();
+    const setupFile = values.setup;
 
-    reader.addEventListener('load', e => {
-      const result = e.target?.result;
-      if (!result) {
-        return setError(
-          'There was an error while uploading a setup, try again later'
-        );
-      }
+    if (setupFile instanceof File) {
+      const reader = new FileReader();
 
-      const data = JSON.parse(result as string) as Record<string, unknown>;
-      // cut .json part off
-      const name = setupFile.name.slice(0, setupFile.name.length - 5);
+      reader.addEventListener('load', e => {
+        const result = e.target?.result;
+        if (!result) {
+          return setError(
+            'There was an error while uploading a setup, try again later'
+          );
+        }
 
-      editSetup({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: setup!.id,
-        data,
-        name,
-        car: values.car,
-        track: values.track,
+        const data = JSON.parse(result as string) as Record<string, unknown>;
+        // cut .json part off
+        const name = setupFile.name.slice(0, setupFile.name.length - 5);
+
+        editSetup({
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          id: setup!.id,
+          car: values.car,
+          track: values.track,
+          data,
+          name,
+        });
       });
+
+      reader.readAsText(setupFile);
+    }
+
+    editSetup({
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      id: setup!.id,
+      car: values.car,
+      track: values.track,
     });
-    reader.readAsText(setupFile);
   });
 
   function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
@@ -95,7 +104,7 @@ const EditSetup: FC = () => {
       }
     >
       <Form onSubmit={e => handleSubmit(e, formState)}>
-        <Label label='Car'>
+        <Label label='Car' optional>
           <Input
             onChange={e =>
               setFormState(prev => ({ ...prev, car: e.target.value }))
@@ -104,7 +113,7 @@ const EditSetup: FC = () => {
             error={errors?.car}
           />
         </Label>
-        <Label label='Track'>
+        <Label label='Track' optional>
           <Input
             onChange={e =>
               setFormState(prev => ({ ...prev, track: e.target.value }))
@@ -113,7 +122,7 @@ const EditSetup: FC = () => {
             error={errors?.track}
           />
         </Label>
-        <Label label='Upload a setup'>
+        <Label label='Upload a setup' optional>
           <Input
             className='cursor-pointer rounded bg-transparent p-0 text-sm text-slate-50 focus:outline-none focus:ring focus:ring-sky-600'
             type='file'

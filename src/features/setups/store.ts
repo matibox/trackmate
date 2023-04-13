@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { subscribeWithSelector } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 import { type RouterOutputs } from '~/utils/api';
 
@@ -28,50 +29,52 @@ type SetupStore = {
 };
 
 export const useSetupStore = create<SetupStore>()(
-  immer(set => ({
-    filter: 'all',
-    setFilter: filter =>
-      set(state => {
-        state.filter = filter;
-      }),
-    post: {
-      isOpened: false,
-      open: () =>
+  subscribeWithSelector(
+    immer(set => ({
+      filter: 'all',
+      setFilter: filter =>
         set(state => {
-          state.post.isOpened = true;
+          state.filter = filter;
         }),
-      close: () =>
-        set(state => {
-          state.post.isOpened = false;
-        }),
-    },
-    edit: {
-      isOpened: false,
-      open: setup =>
-        set(state => {
-          state.edit.isOpened = true;
-          state.edit.setup = setup;
-        }),
-      close: () =>
-        set(state => {
-          state.edit.isOpened = false;
-          state.edit.setup = null;
-        }),
-      setup: null,
-    },
-    delete: {
-      isOpened: false,
-      open: setup =>
-        set(state => {
-          state.delete.isOpened = true;
-          state.delete.setup = setup;
-        }),
-      close: () =>
-        set(state => {
-          state.delete.isOpened = false;
-          state.delete.setup = null;
-        }),
-      setup: null,
-    },
-  }))
+      post: {
+        isOpened: false,
+        open: () =>
+          set(state => {
+            state.post.isOpened = true;
+          }),
+        close: () =>
+          set(state => {
+            state.post.isOpened = false;
+          }),
+      },
+      edit: {
+        isOpened: false,
+        open: setup =>
+          set(state => {
+            state.edit.isOpened = true;
+            state.edit.setup = setup;
+          }),
+        close: () =>
+          set(state => {
+            state.edit.isOpened = false;
+            state.edit.setup = null;
+          }),
+        setup: null,
+      },
+      delete: {
+        isOpened: false,
+        open: setup =>
+          set(state => {
+            state.delete.isOpened = true;
+            state.delete.setup = setup;
+          }),
+        close: () =>
+          set(state => {
+            state.delete.isOpened = false;
+            state.delete.setup = null;
+          }),
+        setup: null,
+      },
+    }))
+  )
 );

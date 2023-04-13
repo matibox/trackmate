@@ -3,16 +3,16 @@ import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 import { decrypt, encrypt } from '../../utils/encrypt';
 import { TRPCError } from '@trpc/server';
 
-const setupSchema = z.object({
-  data: z.object({}).passthrough(),
-  name: z.string(),
-  car: z.string(),
-  track: z.string(),
-});
-
 export const setupRouter = createTRPCRouter({
   upload: multiRoleProcedure(['driver', 'manager'])
-    .input(setupSchema)
+    .input(
+      z.object({
+        data: z.object({}).passthrough(),
+        name: z.string(),
+        car: z.string(),
+        track: z.string(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const encryptedSetup = encrypt(input.data);
       await ctx.prisma.setup.create({
@@ -111,13 +111,21 @@ export const setupRouter = createTRPCRouter({
       });
     }),
   edit: multiRoleProcedure(['driver', 'manager'])
-    .input(setupSchema.extend({ id: z.string() }))
+    .input(
+      z.object({
+        id: z.string(),
+        data: z.object({}).passthrough().optional(),
+        name: z.string().optional(),
+        car: z.string().optional(),
+        track: z.string().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
       const { id, data, ...values } = input;
-      const encryptedSetup = encrypt(data);
+      console.log(data);
       await ctx.prisma.setup.update({
         where: { id },
-        data: { ...values, data: encryptedSetup },
+        data: { ...values, data: data ? encrypt(data) : undefined },
       });
     }),
   delete: multiRoleProcedure(['driver', 'manager'])

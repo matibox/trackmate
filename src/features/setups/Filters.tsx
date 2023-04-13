@@ -34,7 +34,8 @@ const Filters: FC<FiltersProps> = ({ query, setQuery }) => {
 
   useEffect(() => {
     void invalidateSetupsQuery();
-  }, [filter, invalidateSetupsQuery]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter]);
 
   return (
     <Tile className='row-span-1'>
