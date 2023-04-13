@@ -23,46 +23,60 @@ export const setupRouter = createTRPCRouter({
         },
       });
     }),
-  getAll: multiRoleProcedure(['driver', 'manager']).query(async ({ ctx }) => {
-    return await ctx.prisma.setup.findMany({
-      where: {
-        OR: [
-          {
-            events: {
-              some: {
-                event: {
-                  drivers: {
-                    some: {
-                      id: ctx.session.user.id,
-                    },
-                  },
+  getAll: multiRoleProcedure(['driver', 'manager'])
+    .input(
+      z.object({
+        filter: z.enum(['all', 'your', 'shared']).default('all'),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { filter } = input;
+
+      const sharedSetupsQuery = {
+        events: {
+          some: {
+            event: {
+              drivers: {
+                some: {
+                  id: ctx.session.user.id,
                 },
               },
             },
           },
-          {
-            author: { id: ctx.session.user.id },
-          },
-        ],
-      },
-      select: {
-        id: true,
-        name: true,
-        car: true,
-        track: true,
-        createdAt: true,
-        updatedAt: true,
-        author: { select: { id: true, name: true } },
-        events: { select: { isActive: true } },
-        downloads: {
-          where: { user: { id: ctx.session.user.id } },
-          orderBy: { downloadedAt: 'desc' },
-          take: 1,
         },
-      },
-      orderBy: { updatedAt: 'desc' },
-    });
-  }),
+      };
+
+      const yourSetupsQuery = {
+        author: { id: ctx.session.user.id },
+      };
+
+      return await ctx.prisma.setup.findMany({
+        where:
+          filter === 'all'
+            ? {
+                OR: [sharedSetupsQuery, yourSetupsQuery],
+              }
+            : filter === 'your'
+            ? yourSetupsQuery
+            : sharedSetupsQuery,
+        select: {
+          id: true,
+          name: true,
+          car: true,
+          track: true,
+          createdAt: true,
+          updatedAt: true,
+          author: { select: { id: true, name: true } },
+          events: { select: { isActive: true } },
+          downloads: {
+            where: { user: { id: ctx.session.user.id } },
+            orderBy: { downloadedAt: 'desc' },
+            take: 1,
+          },
+        },
+        orderBy: { updatedAt: 'desc' },
+      });
+    }),
   byQuery: multiRoleProcedure(['driver', 'manager'])
     .input(z.object({ q: z.string(), eventId: z.string().optional() }))
     .query(async ({ ctx, input }) => {

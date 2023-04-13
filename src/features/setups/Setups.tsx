@@ -10,7 +10,7 @@ type SetupsProps = {
 
 const Setups: FC<SetupsProps> = ({ setups, isLoading }) => {
   return (
-    <Tile className='row-span-2 w-full'>
+    <Tile className='row-span-2 w-full' isLoading={isLoading}>
       <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_20rem))] justify-center gap-4'>
         {setups?.map(setup => (
           <Setup key={setup.id} setup={setup} />

@@ -9,7 +9,9 @@ export default function useQuery(query: string, setups: Setups | undefined) {
   const [filteredSetups, setFilteredSetups] = useState(setups);
 
   const someIncludes = useCallback((items: string[], string: string) => {
-    return items.some(item => item.includes(string));
+    return items.some(item =>
+      item.toLowerCase().includes(string.toLowerCase())
+    );
   }, []);
 
   useEffect(() => {

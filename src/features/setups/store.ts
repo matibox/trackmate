@@ -3,8 +3,11 @@ import { immer } from 'zustand/middleware/immer';
 import { type RouterOutputs } from '~/utils/api';
 
 type Setup = RouterOutputs['setup']['getAll'][number];
+type Filter = 'all' | 'your' | 'shared';
 
 type SetupStore = {
+  filter: Filter;
+  setFilter: (filter: Filter) => void;
   post: {
     isOpened: boolean;
     open: () => void;
@@ -26,6 +29,11 @@ type SetupStore = {
 
 export const useSetupStore = create<SetupStore>()(
   immer(set => ({
+    filter: 'all',
+    setFilter: filter =>
+      set(state => {
+        state.filter = filter;
+      }),
     post: {
       isOpened: false,
       open: () =>

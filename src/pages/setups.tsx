@@ -1,4 +1,3 @@
-import Loading from '@ui/Loading';
 import { type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { useState } from 'react';
@@ -7,14 +6,20 @@ import { api, type RouterOutputs } from '../utils/api';
 import useQuery from '~/features/setups/hooks/useQuery';
 import Filters from '~/features/setups/Filters';
 import Setups from '~/features/setups/Setups';
+import { useSetupStore } from '~/features/setups/store';
 
 type Setups = RouterOutputs['setup']['getAll'];
 
 const YourSetups: NextPage = () => {
   const { Error, setError } = useError();
-  const { data: setups, isLoading } = api.setup.getAll.useQuery(undefined, {
-    onError: err => setError(err.message),
-  });
+  const { filter } = useSetupStore();
+  const { data: setups, isInitialLoading: isLoading } =
+    api.setup.getAll.useQuery(
+      { filter },
+      {
+        onError: err => setError(err.message),
+      }
+    );
 
   const [query, setQuery] = useState('');
   const filteredSetups = useQuery(query, setups);
@@ -24,11 +29,6 @@ const YourSetups: NextPage = () => {
       <NextSeo title='Your setups' />
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <Error />
-        {isLoading && (
-          <div className='flex h-screen w-full items-center justify-center'>
-            <Loading />
-          </div>
-        )}
         <h1 className='py-8 text-center text-2xl font-semibold sm:text-3xl'>
           Your Setups
         </h1>
