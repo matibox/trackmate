@@ -252,9 +252,9 @@ model Setup {
 model Download {
   id           String   @id @default(cuid())
   downloadedAt DateTime @default(now())
-  setup        Setup    @relation(fields: [setupId], references: [id])
+  setup        Setup    @relation(fields: [setupId], references: [id], onDelete: Cascade)
   setupId      String
-  user         User     @relation(fields: [userId], references: [id])
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
 
   @@index([setupId])
