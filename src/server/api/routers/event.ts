@@ -233,8 +233,20 @@ export const eventRouter = createTRPCRouter({
   delete: protectedProcedure
     .input(z.object({ eventId: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      return await ctx.prisma.event.delete({
-        where: { id: input.eventId },
+      const { eventId } = input;
+      return await ctx.prisma.$transaction(async tx => {
+        await tx.event.update({
+          where: { id: eventId },
+          data: {
+            setups: {
+              deleteMany: {},
+            },
+          },
+        });
+
+        await tx.event.delete({
+          where: { id: eventId },
+        });
       });
     }),
   edit: protectedProcedure

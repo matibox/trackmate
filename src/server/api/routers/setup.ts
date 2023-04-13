@@ -132,7 +132,18 @@ export const setupRouter = createTRPCRouter({
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
-      await ctx.prisma.setup.delete({ where: { id } });
+      await ctx.prisma.$transaction(async tx => {
+        await tx.setup.update({
+          where: { id },
+          data: {
+            events: {
+              deleteMany: {},
+            },
+          },
+        });
+
+        await tx.setup.delete({ where: { id } });
+      });
     }),
   decryptData: multiRoleProcedure(['driver', 'manager'])
     .input(z.object({ setupId: z.string() }))
