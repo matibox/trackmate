@@ -18,6 +18,7 @@ import { useEventStore } from './store';
 import EventDuration from '~/components/common/EventDuration';
 import DriverList from '~/components/common/DriverList';
 import Details from '~/components/common/Details';
+import Link from 'next/link';
 
 type EventProps = {
   event: RouterOutputs['event']['getDrivingEvents'][number];
@@ -46,12 +47,15 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
     <Tile
       header={
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
-          <span className='mr-auto text-base font-semibold'>
+          <Link
+            href={`/event/${event.id}`}
+            className='mr-auto text-base font-semibold'
+          >
             {event.championship && (
               <>{capitilize(event.championship.name)} - </>
             )}
             {capitilize(event.title ?? '')}
-          </span>
+          </Link>
           {!isTeamEvent && (
             <Button
               intent='secondary'

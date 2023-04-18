@@ -12,6 +12,7 @@ import { createInnerTRPCContext } from '~/server/api/trpc';
 import superjson from 'superjson';
 import { useMemo } from 'react';
 import { capitilize } from '~/utils/helpers';
+import EventTabs from '~/features/event/Tabs';
 
 const EventPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
@@ -31,7 +32,9 @@ const EventPage: NextPage<
   return (
     <>
       <NextSeo title={tabTitle} />
-      <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)]'></main>
+      <main className='min-h-screen w-full bg-slate-900 p-4 pt-[calc(var(--navbar-height)_+_1rem)] text-slate-50'>
+        <EventTabs />
+      </main>
     </>
   );
 };
