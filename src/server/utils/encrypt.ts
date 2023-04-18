@@ -5,7 +5,6 @@ const key = Buffer.from(process.env.ENCRYPTION_KEY as string, 'hex');
 const alg = 'aes-256-cbc';
 
 export function encrypt(data: object) {
-  console.log(iv);
   const cipher = crypto.createCipheriv(alg, key, iv);
   let encrypted = cipher.update(JSON.stringify(data), 'utf-8', 'hex');
   encrypted += cipher.final('hex');

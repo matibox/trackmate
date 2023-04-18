@@ -122,7 +122,6 @@ export const setupRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       const { id, data, ...values } = input;
-      console.log(data);
       await ctx.prisma.setup.update({
         where: { id },
         data: { ...values, data: data ? encrypt(data) : undefined },

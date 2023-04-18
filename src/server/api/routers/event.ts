@@ -284,4 +284,21 @@ export const eventRouter = createTRPCRouter({
         orderBy: { updatedAt: 'desc' },
       });
     }),
+  single: protectedProcedure
+    .input(
+      z.object({
+        eventId: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { eventId } = input;
+      return await ctx.prisma.event.findUnique({
+        where: { id: eventId },
+        include: {
+          drivers: { select: { id: true, name: true } },
+          manager: { select: { id: true, name: true } },
+          championship: { select: { id: true, name: true } },
+        },
+      });
+    }),
 });
