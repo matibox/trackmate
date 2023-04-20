@@ -47,6 +47,21 @@ const EventTabs: FC = () => {
                 }
               )}
             >
+              Setups
+            </button>
+          )}
+        </Tab>
+        <Tab as={Fragment}>
+          {({ selected }) => (
+            <button
+              className={cn(
+                'foucs:bg-slate-700 bg-slate-800 px-4 py-1 transition-colors first:rounded-l last:rounded-r focus:outline-none hover:bg-slate-700',
+                {
+                  'bg-sky-500 focus:bg-sky-400 focus:outline-none hover:bg-sky-500':
+                    selected,
+                }
+              )}
+            >
               Result
             </button>
           )}
@@ -55,6 +70,7 @@ const EventTabs: FC = () => {
       <Tab.Panels>
         <Tab.Panel>Information stuff</Tab.Panel>
         <Tab.Panel>Driver cards</Tab.Panel>
+        <Tab.Panel>Setup stuff</Tab.Panel>
         <Tab.Panel>Result stuff</Tab.Panel>
       </Tab.Panels>
     </Tab.Group>
