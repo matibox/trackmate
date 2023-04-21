@@ -13,11 +13,16 @@ import superjson from 'superjson';
 import { useMemo } from 'react';
 import { capitilize } from '~/utils/helpers';
 import EventTabs from '~/features/event/Tabs';
+import { useEventStore } from '~/features/event/store';
 
 const EventPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ eventId }) => {
-  const { data: event } = api.event.single.useQuery({ eventId });
+  const { setEvent } = useEventStore();
+  const { data: event } = api.event.single.useQuery(
+    { eventId },
+    { onSuccess: setEvent }
+  );
 
   const title = useMemo(() => {
     if (!event) return 'Event';
@@ -34,7 +39,7 @@ const EventPage: NextPage<
       <NextSeo title={title} />
       <main className='min-h-screen w-full bg-slate-900 p-4 pt-[calc(var(--navbar-height)_+_1rem)] text-slate-50'>
         <div className='mb-4'>
-          <h1 className='text-xl font-semibold leading-none sm:text-2xl sm:leading-none'>
+          <h1 className='text-xl font-semibold leading-none sm:text-3xl sm:leading-none'>
             {title}
           </h1>
           {event?.championship?.organizer && (
