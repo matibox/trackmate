@@ -1,8 +1,10 @@
 import { create } from 'zustand';
 
+export type TabLabel = 'Information' | 'Drivers' | 'Setups' | 'Result';
+
 type Tab = {
   id: number;
-  label: string;
+  label: TabLabel;
   selected: boolean;
 };
 
