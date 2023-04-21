@@ -1,12 +1,40 @@
 import { create } from 'zustand';
 
-export type TabLabel = 'Information' | 'Drivers' | 'Setups' | 'Result';
-
 type Tab = {
   id: number;
-  label: TabLabel;
+  label: string;
   selected: boolean;
+  disabled: boolean;
 };
+
+const tabs = [
+  {
+    id: 0,
+    label: 'Information',
+    disabled: false,
+    selected: true,
+  },
+  {
+    id: 1,
+    label: 'Drivers',
+    selected: false,
+    disabled: false,
+  },
+  {
+    id: 2,
+    label: 'Setups',
+    selected: false,
+    disabled: false,
+  },
+  {
+    id: 3,
+    label: 'Result',
+    selected: false,
+    disabled: true,
+  },
+] as const satisfies readonly Tab[];
+
+export type TabLabel = (typeof tabs)[number]['label'];
 
 type EventStore = {
   tabs: Tab[];
@@ -15,32 +43,7 @@ type EventStore = {
 };
 
 export const useEventStore = create<EventStore>()((set, get) => ({
-  tabs: [
-    {
-      id: 0,
-      label: 'Information',
-      selected: true,
-      disabled: false,
-    },
-    {
-      id: 1,
-      label: 'Drivers',
-      selected: false,
-      disabled: false,
-    },
-    {
-      id: 2,
-      label: 'Setups',
-      selected: false,
-      disabled: false,
-    },
-    {
-      id: 3,
-      label: 'Result',
-      selected: false,
-      disabled: true,
-    },
-  ],
+  tabs: [...tabs],
   selectTab: id =>
     set(state => ({
       tabs: state.tabs.map(tab => ({
