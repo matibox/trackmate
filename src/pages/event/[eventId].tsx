@@ -19,7 +19,7 @@ const EventPage: NextPage<
 > = ({ eventId }) => {
   const { data: event } = api.event.single.useQuery({ eventId });
 
-  const tabTitle = useMemo(() => {
+  const title = useMemo(() => {
     if (!event) return 'Event';
     const { championship } = event;
     return championship
@@ -31,8 +31,9 @@ const EventPage: NextPage<
 
   return (
     <>
-      <NextSeo title={tabTitle} />
+      <NextSeo title={title} />
       <main className='min-h-screen w-full bg-slate-900 p-4 pt-[calc(var(--navbar-height)_+_1rem)] text-slate-50'>
+        <h1 className='mb-4 text-xl font-semibold sm:text-2xl'>{title}</h1>
         <EventTabs />
       </main>
     </>
