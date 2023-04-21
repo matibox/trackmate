@@ -33,7 +33,16 @@ const EventPage: NextPage<
     <>
       <NextSeo title={title} />
       <main className='min-h-screen w-full bg-slate-900 p-4 pt-[calc(var(--navbar-height)_+_1rem)] text-slate-50'>
-        <h1 className='mb-4 text-xl font-semibold sm:text-2xl'>{title}</h1>
+        <div className='mb-4'>
+          <h1 className='text-xl font-semibold leading-none sm:text-2xl sm:leading-none'>
+            {title}
+          </h1>
+          {event?.championship?.organizer && (
+            <span className='text-slate-400'>
+              {event.championship.organizer}
+            </span>
+          )}
+        </div>
         <EventTabs />
       </main>
     </>

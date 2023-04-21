@@ -297,7 +297,7 @@ export const eventRouter = createTRPCRouter({
         include: {
           drivers: { select: { id: true, name: true } },
           manager: { select: { id: true, name: true } },
-          championship: { select: { id: true, name: true } },
+          championship: { select: { id: true, name: true, organizer: true } },
         },
       });
     }),
