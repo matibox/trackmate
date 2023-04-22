@@ -41,12 +41,24 @@ const EventTabs: FC = () => {
         <>
           <Tab showedOn='information'>
             <div className='flex gap-4'>
+              {/*// TODO: cant edit when event is over */}
+              {/*// TODO: past / future event indication */}
               <div className='flex flex-col gap-2'>
-                <Button intent='secondary' onClick={() => openEdit(event)}>
+                <Button
+                  intent='secondary'
+                  onClick={() => openEdit(event)}
+                  disabled={!!event?.result}
+                  title={!!event?.result ? "Can't edit ended event" : ''}
+                >
                   <span>Edit event</span>
                   <PencilSquareIcon className='h-5' />
                 </Button>
-                <Button intent='subtleDanger' onClick={() => openDelete(event)}>
+                <Button
+                  intent='subtleDanger'
+                  onClick={() => openDelete(event)}
+                  disabled={!!event?.result}
+                  title={!!event?.result ? "Can't edit ended event" : ''}
+                >
                   <span>Delete event</span>
                   <TrashIcon className='h-5' />
                 </Button>

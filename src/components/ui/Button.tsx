@@ -54,8 +54,7 @@ const Button: FC<ButtonProps> = ({
   return (
     <button
       className={cn(buttonStyles({ intent, fullWidth, gap, size }), className, {
-        'cursor-not-allowed bg-sky-900 text-slate-400 ring-sky-800 hover:bg-sky-900 hover:text-slate-400 hover:ring-sky-800':
-          props.disabled,
+        'cursor-not-allowed brightness-50': props.disabled,
       })}
       {...props}
     >
