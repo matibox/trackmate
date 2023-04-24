@@ -295,7 +295,17 @@ export const eventRouter = createTRPCRouter({
       return await ctx.prisma.event.findUnique({
         where: { id: eventId },
         include: {
-          drivers: { select: { id: true, name: true, teamId: true } },
+          drivers: {
+            select: {
+              id: true,
+              name: true,
+              teamId: true,
+              image: true,
+              team: {
+                select: { id: true, name: true },
+              },
+            },
+          },
           manager: { select: { id: true, name: true } },
           championship: { select: { id: true, name: true, organizer: true } },
           result: true,
