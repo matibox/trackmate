@@ -4,33 +4,28 @@ type Tab = {
   id: number;
   label: string;
   selected: boolean;
-  disabled: boolean;
 };
 
 const tabs = [
   {
     id: 0,
     label: 'Information',
-    disabled: false,
     selected: true,
   },
   {
     id: 1,
     label: 'Drivers',
     selected: false,
-    disabled: false,
   },
   {
     id: 2,
     label: 'Setups',
     selected: false,
-    disabled: false,
   },
   {
     id: 3,
-    label: 'Result',
+    label: 'Stints',
     selected: false,
-    disabled: true,
   },
 ] as const satisfies readonly Tab[];
 
