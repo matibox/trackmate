@@ -29,6 +29,8 @@ type EventStore = {
     isOpened: boolean;
     open: (event: DeleteEvent) => void;
     close: () => void;
+    additionalActions: (() => Promise<void>) | undefined;
+    setAdditionalActions: (fn: () => Promise<void>) => void;
   };
   edit: {
     isOpened: boolean;
@@ -77,6 +79,12 @@ export const useEventStore = create<EventStore>()(
         set(state => {
           state.delete.event = null;
           state.delete.isOpened = false;
+          state.delete.additionalActions = undefined;
+        }),
+      additionalActions: undefined,
+      setAdditionalActions: fn =>
+        set(state => {
+          state.delete.additionalActions = fn;
         }),
     },
     edit: {

@@ -7,13 +7,14 @@ import Confirmation from '~/components/common/Confirmation';
 import { useEventStore } from '../store';
 
 const DeleteEvent: FC = () => {
-  const { close, isOpened, event } = useEventStore().delete;
+  const { close, isOpened, event, additionalActions } = useEventStore().delete;
 
   const { Error, setError } = useError();
 
   const utils = api.useContext();
   const { mutate: deleteEvent, isLoading } = api.event.delete.useMutation({
     async onSuccess() {
+      additionalActions && (await additionalActions());
       close();
       await utils.event.invalidate();
       await utils.team.getDriveFor.invalidate();

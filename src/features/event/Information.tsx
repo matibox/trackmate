@@ -19,10 +19,12 @@ import { capitilize } from '~/utils/helpers';
 import dayjs from 'dayjs';
 import EventDuration from '~/components/common/EventDuration';
 import { Event } from '~/pages/event/[eventId]';
+import { useRouter } from 'next/router';
 
 const Information: FC<{ event: Event }> = ({ event }) => {
+  const router = useRouter();
   const {
-    delete: { open: openDelete },
+    delete: { open: openDelete, setAdditionalActions },
   } = useEventStore();
   const [isEditing, setIsEditing] = useState(false);
 
@@ -103,7 +105,12 @@ const Information: FC<{ event: Event }> = ({ event }) => {
         )}
         <Button
           intent='subtleDanger'
-          onClick={() => openDelete(event)}
+          onClick={() => {
+            setAdditionalActions(async () => {
+              await router.push('/');
+            });
+            openDelete(event);
+          }}
           disabled={!!event?.result || isEditing}
           title={!!event?.result ? "Can't delete ended event" : ''}
         >
