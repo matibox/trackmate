@@ -12,6 +12,7 @@ import {
   ClipboardDocumentCheckIcon,
   PencilSquareIcon,
   TrashIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { useEventStore } from '../dashboard/events/store';
 import Avatar from '~/components/common/Avatar';
@@ -19,6 +20,9 @@ import Link from 'next/link';
 import Input from '@ui/Input';
 import useForm from '~/hooks/useForm';
 import { z } from 'zod';
+import { api } from '~/utils/api';
+import { useError } from '~/hooks/useError';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const EventTabs: FC = () => {
   const { event, tabs, selectTab } = useDetailedEventStore();
@@ -33,6 +37,16 @@ const EventTabs: FC = () => {
   const carRef = useRef<HTMLInputElement>(null);
   const trackRef = useRef<HTMLInputElement>(null);
 
+  const { Error, setError } = useError();
+  const utils = api.useContext();
+  const { mutate: editEvent, isLoading } = api.event.edit.useMutation({
+    onError: err => setError(err.message),
+    onSuccess: async () => {
+      await utils.event.invalidate();
+      setIsEditing(false);
+    },
+  });
+
   const { handleSubmit, errors } = useForm(
     z.object({
       car: z.string().min(1, 'Car is required'),
@@ -42,7 +56,11 @@ const EventTabs: FC = () => {
         .min(0, 'Duration needs to be a valid number'),
     }),
     values => {
-      console.log(values);
+      editEvent({
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        id: event!.id,
+        ...values,
+      });
     }
   );
 
@@ -101,6 +119,16 @@ const EventTabs: FC = () => {
                     </>
                   )}
                 </Button>
+                {isEditing && (
+                  <Button
+                    intent='secondary'
+                    onClick={() => setIsEditing(false)}
+                    disabled={isLoading}
+                  >
+                    <span>Cancel changes</span>
+                    <XMarkIcon className='h-5' />
+                  </Button>
+                )}
                 <Button
                   intent='subtleDanger'
                   onClick={() => openDelete(event)}
@@ -115,6 +143,7 @@ const EventTabs: FC = () => {
                 className={cn('grow', {
                   'ring-sky-500': isEditing,
                 })}
+                isLoading={isLoading}
               >
                 {isEditing ? (
                   <form
@@ -123,7 +152,9 @@ const EventTabs: FC = () => {
                       handleSubmit(e, {
                         car: carRef.current?.value,
                         track: trackRef.current?.value,
-                        duration: Number(durationRef.current?.value),
+                        duration: parseInt(
+                          durationRef.current?.value as string
+                        ),
                       })
                     }
                   >
@@ -209,6 +240,7 @@ const EventTabs: FC = () => {
                     ]}
                   />
                 )}
+                <Error />
               </Tile>
             </div>
           </Tab>

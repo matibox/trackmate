@@ -43,7 +43,7 @@ const editEventSchema = z.object({
         name: z.string().nullable(),
       })
     )
-    .nullable(),
+    .nullish(),
 });
 
 export const eventRouter = createTRPCRouter({
