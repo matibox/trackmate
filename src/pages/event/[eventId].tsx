@@ -5,7 +5,7 @@ import {
 } from 'next';
 import { NextSeo } from 'next-seo';
 import { getServerAuthSession } from '~/server/auth';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import { createProxySSGHelpers } from '@trpc/react-query/ssg';
 import { appRouter } from '~/server/api/root';
 import { createInnerTRPCContext } from '~/server/api/trpc';
@@ -13,16 +13,11 @@ import superjson from 'superjson';
 import { useMemo } from 'react';
 import { capitilize } from '~/utils/helpers';
 import EventTabs from '~/features/event/Tabs';
-import { useEventStore } from '~/features/event/store';
 
 const EventPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = ({ eventId }) => {
-  const { setEvent } = useEventStore();
-  const { data: event } = api.event.single.useQuery(
-    { eventId },
-    { onSuccess: setEvent }
-  );
+  const { data: event } = api.event.single.useQuery({ eventId });
 
   const title = useMemo(() => {
     if (!event) return 'Event';
@@ -48,11 +43,14 @@ const EventPage: NextPage<
             </span>
           )}
         </div>
-        <EventTabs />
+        {/* Type cast because of gssp prefetch */}
+        <EventTabs event={event as Event} />
       </main>
     </>
   );
 };
+
+export type Event = NonNullable<RouterOutputs['event']['single']>;
 
 export const getServerSideProps: GetServerSideProps<{
   eventId: string;

@@ -1,14 +1,15 @@
 import { type FC } from 'react';
 import cn from '~/lib/classes';
-import { useEventStore as useDetailedEventStore } from './store';
 import Tab from './Tab';
 import Tile from '@ui/Tile';
 import Avatar from '~/components/common/Avatar';
 import Link from 'next/link';
 import Information from './Information';
+import { type Event } from '~/pages/event/[eventId]';
+import { useEventTabsStore } from './store';
 
-const EventTabs: FC = () => {
-  const { event, tabs, selectTab } = useDetailedEventStore();
+const EventTabs: FC<{ event: Event }> = ({ event }) => {
+  const { tabs, selectTab } = useEventTabsStore();
 
   return (
     <div className='flex flex-col gap-5'>
@@ -32,7 +33,7 @@ const EventTabs: FC = () => {
       {event && (
         <>
           <Tab showedOn='information'>
-            <Information />
+            <Information event={event} />
           </Tab>
           <Tab showedOn='drivers'>
             <div className='flex flex-wrap gap-4'>

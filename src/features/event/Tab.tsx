@@ -1,5 +1,5 @@
 import { type ReactNode, type FC } from 'react';
-import { type TabLabel, useEventStore } from './store';
+import { type TabLabel, useEventTabsStore } from './store';
 
 type TabProps = {
   showedOn: Lowercase<TabLabel>;
@@ -7,7 +7,7 @@ type TabProps = {
 };
 
 const Tab: FC<TabProps> = ({ showedOn, children }) => {
-  const { getSelectedTab } = useEventStore();
+  const { getSelectedTab } = useEventTabsStore();
 
   return getSelectedTab().label.toLowerCase() === showedOn ? (
     <div>{children}</div>

@@ -1,6 +1,5 @@
 import { useState, type FC, useRef } from 'react';
 import { useEventStore } from '../dashboard/events/store';
-import { useEventStore as useSingleEventStore } from './store';
 import { useError } from '~/hooks/useError';
 import { api } from '~/utils/api';
 import useForm from '~/hooks/useForm';
@@ -19,12 +18,12 @@ import Input from '@ui/Input';
 import { capitilize } from '~/utils/helpers';
 import dayjs from 'dayjs';
 import EventDuration from '~/components/common/EventDuration';
+import { Event } from '~/pages/event/[eventId]';
 
-const Information: FC = () => {
+const Information: FC<{ event: Event }> = ({ event }) => {
   const {
     delete: { open: openDelete },
   } = useEventStore();
-  const { event } = useSingleEventStore();
   const [isEditing, setIsEditing] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -52,14 +51,13 @@ const Information: FC = () => {
     }),
     values => {
       editEvent({
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: event!.id,
+        id: event.id,
         ...values,
       });
     }
   );
 
-  return event ? (
+  return (
     <div className='flex gap-4'>
       {/*// TODO: past / future event indication */}
       {/*// ? mini calendar on the side on pc view */}
@@ -215,7 +213,7 @@ const Information: FC = () => {
         <Error />
       </Tile>
     </div>
-  ) : null;
+  );
 };
 
 export default Information;

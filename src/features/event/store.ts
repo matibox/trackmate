@@ -1,7 +1,4 @@
 import { create } from 'zustand';
-import { type RouterOutputs } from '~/utils/api';
-
-type Event = NonNullable<RouterOutputs['event']['single']>;
 
 type Tab = {
   id: number;
@@ -39,17 +36,13 @@ const tabs = [
 
 export type TabLabel = (typeof tabs)[number]['label'];
 
-type EventStore = {
-  event: Event | null;
-  setEvent: (event: Event) => void;
+type EventTabStore = {
   tabs: Tab[];
   selectTab: (id: number) => void;
   getSelectedTab: () => Tab;
 };
 
-export const useEventStore = create<EventStore>()((set, get) => ({
-  event: null,
-  setEvent: event => set(() => ({ event })),
+export const useEventTabsStore = create<EventTabStore>()((set, get) => ({
   tabs: [...tabs],
   selectTab: id =>
     set(state => ({
