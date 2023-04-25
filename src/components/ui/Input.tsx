@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, type FC } from 'react';
+import { type InputHTMLAttributes, forwardRef } from 'react';
 import cn from '../../lib/classes';
 import ErrorWrapper from '../common/ErrorWrapper';
 
@@ -6,7 +6,10 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error: string[] | undefined;
 }
 
-const Input: FC<InputProps> = ({ className, error, ...props }) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  { className, error, ...props },
+  ref
+) {
   return (
     <ErrorWrapper error={error}>
       <input
@@ -15,9 +18,10 @@ const Input: FC<InputProps> = ({ className, error, ...props }) => {
           className
         )}
         {...props}
+        ref={ref}
       />
     </ErrorWrapper>
   );
-};
+});
 
 export default Input;

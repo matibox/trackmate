@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { useState, type FC, useRef } from 'react';
 import cn from '~/lib/classes';
 import { useEventStore as useDetailedEventStore } from './store';
 import Tab from './Tab';
@@ -8,17 +8,43 @@ import dayjs from 'dayjs';
 import EventDuration from '~/components/common/EventDuration';
 import { capitilize } from '~/utils/helpers';
 import Button from '@ui/Button';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline';
+import {
+  ClipboardDocumentCheckIcon,
+  PencilSquareIcon,
+  TrashIcon,
+} from '@heroicons/react/24/outline';
 import { useEventStore } from '../dashboard/events/store';
 import Avatar from '~/components/common/Avatar';
 import Link from 'next/link';
+import Input from '@ui/Input';
+import useForm from '~/hooks/useForm';
+import { z } from 'zod';
 
 const EventTabs: FC = () => {
   const { event, tabs, selectTab } = useDetailedEventStore();
   const {
-    edit: { open: openEdit },
     delete: { open: openDelete },
   } = useEventStore();
+
+  const [isEditing, setIsEditing] = useState(false);
+
+  const formRef = useRef<HTMLFormElement>(null);
+  const durationRef = useRef<HTMLInputElement>(null);
+  const carRef = useRef<HTMLInputElement>(null);
+  const trackRef = useRef<HTMLInputElement>(null);
+
+  const { handleSubmit, errors } = useForm(
+    z.object({
+      car: z.string().min(1, 'Car is required'),
+      track: z.string().min(1, 'Track is required'),
+      duration: z
+        .number({ invalid_type_error: 'Duration is required' })
+        .min(0, 'Duration needs to be a valid number'),
+    }),
+    values => {
+      console.log(values);
+    }
+  );
 
   return (
     <div className='flex flex-col gap-5'>
@@ -45,56 +71,144 @@ const EventTabs: FC = () => {
             <div className='flex gap-4'>
               {/*// TODO: past / future event indication */}
               {/*// ? mini calendar on the side on pc view */}
-              <div className='flex flex-col gap-2'>
+              <div className='flex w-48 flex-col gap-2'>
                 <Button
                   intent='secondary'
-                  onClick={() => openEdit(event)}
+                  onClick={() => {
+                    if (isEditing) {
+                      formRef.current?.dispatchEvent(
+                        new Event('submit', { cancelable: true, bubbles: true })
+                      );
+                    } else {
+                      setIsEditing(true);
+                    }
+                  }}
                   disabled={!!event?.result}
                   title={!!event?.result ? "Can't edit ended event" : ''}
+                  className={cn({
+                    'ring-sky-500 hover:ring-sky-400': isEditing,
+                  })}
                 >
-                  <span>Edit event</span>
-                  <PencilSquareIcon className='h-5' />
+                  {isEditing ? (
+                    <>
+                      <span>Save changes</span>
+                      <ClipboardDocumentCheckIcon className='h-5' />
+                    </>
+                  ) : (
+                    <>
+                      <span>Edit event</span>
+                      <PencilSquareIcon className='h-5' />
+                    </>
+                  )}
                 </Button>
                 <Button
                   intent='subtleDanger'
                   onClick={() => openDelete(event)}
-                  disabled={!!event?.result}
+                  disabled={!!event?.result || isEditing}
                   title={!!event?.result ? "Can't delete ended event" : ''}
                 >
                   <span>Delete event</span>
                   <TrashIcon className='h-5' />
                 </Button>
               </div>
-              <Tile className='grow'>
-                <Details
-                  details={[
-                    {
-                      label: 'Event occurence',
-                      value: dayjs(event?.date).format('YYYY MMM DD'),
-                    },
-                    {
-                      label: 'Duration',
-                      value: <EventDuration duration={event?.duration} />,
-                    },
-                    {
-                      label: 'Event type',
-                      value: capitilize(event?.type),
-                    },
-                    {
-                      label: 'Manager',
-                      value: event?.manager?.name,
-                      condition: !!event?.manager,
-                    },
-                    {
-                      label: 'Car',
-                      value: capitilize(event?.car),
-                    },
-                    {
-                      label: 'Track',
-                      value: capitilize(event?.track),
-                    },
-                  ]}
-                />
+              <Tile
+                className={cn('grow', {
+                  'ring-sky-500': isEditing,
+                })}
+              >
+                {isEditing ? (
+                  <form
+                    ref={formRef}
+                    onSubmit={e =>
+                      handleSubmit(e, {
+                        car: carRef.current?.value,
+                        track: trackRef.current?.value,
+                        duration: Number(durationRef.current?.value),
+                      })
+                    }
+                  >
+                    <Details
+                      details={[
+                        {
+                          label: 'Event occurence',
+                          value: dayjs(event?.date).format('YYYY MMM DD'),
+                        },
+                        {
+                          label: 'Duration (in minutes)',
+                          value: (
+                            <Input
+                              defaultValue={event.duration}
+                              error={errors?.duration}
+                              ref={durationRef}
+                              className='max-w-xs'
+                            />
+                          ),
+                        },
+                        {
+                          label: 'Event type',
+                          value: capitilize(event.type),
+                        },
+                        {
+                          label: 'Manager',
+                          value: event?.manager?.name,
+                          condition: !!event?.manager,
+                        },
+                        {
+                          label: 'Car',
+                          value: (
+                            <Input
+                              defaultValue={event.car}
+                              error={errors?.car}
+                              ref={carRef}
+                              className='max-w-xs'
+                            />
+                          ),
+                        },
+                        {
+                          label: 'Track',
+                          value: (
+                            <Input
+                              defaultValue={event.track}
+                              error={errors?.track}
+                              ref={trackRef}
+                              className='max-w-xs'
+                            />
+                          ),
+                        },
+                      ]}
+                    />
+                  </form>
+                ) : (
+                  <Details
+                    details={[
+                      {
+                        label: 'Event occurence',
+                        value: dayjs(event?.date).format('YYYY MMM DD'),
+                      },
+                      {
+                        label: 'Duration',
+                        value: <EventDuration duration={event.duration} />,
+                      },
+                      {
+                        label: 'Event type',
+                        value: capitilize(event.type),
+                      },
+                      {
+                        label: 'Manager',
+                        value: event?.manager?.name,
+                        condition: !!event?.manager,
+                      },
+                      {
+                        label: 'Car',
+                        value: capitilize(event?.car),
+                      },
+                      {
+                        label: 'Track',
+                        value: capitilize(event?.track),
+                      },
+                    ]}
+                  />
+                )}
               </Tile>
             </div>
           </Tab>
