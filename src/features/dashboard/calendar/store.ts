@@ -1,7 +1,7 @@
 import dayjs, { type Dayjs } from 'dayjs';
 import { create } from 'zustand';
 import { subscribeWithSelector } from 'zustand/middleware';
-import { getCalendarPage } from './utils';
+import { getCalendarPage } from '~/lib/dates';
 import { type RouterOutputs } from '~/utils/api';
 
 type CalendarStore = {

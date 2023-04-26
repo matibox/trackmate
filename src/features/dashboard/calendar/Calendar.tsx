@@ -10,7 +10,7 @@ import { api } from '~/utils/api';
 import { hasRole } from '~/utils/helpers';
 import { Day } from './Day';
 import CalendarHeader from './Header';
-import { getCalendarPageBoundaries } from './utils';
+import { getCalendarPageBoundaries } from '~/lib/dates';
 
 const Calendar: FC = () => {
   const { data: session } = useSession();
