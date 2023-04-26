@@ -71,71 +71,17 @@ const Information: FC<{ event: Event }> = ({ event }) => {
         })}
         isLoading={isLoading}
       >
-        <div className='flex h-full items-center'>
-          {isEditing ? (
-            <form
-              ref={formRef}
-              onSubmit={e =>
-                handleSubmit(e, {
-                  car: carRef.current?.value,
-                  track: trackRef.current?.value,
-                  duration: parseInt(durationRef.current?.value as string),
-                })
-              }
-            >
-              <Details
-                details={[
-                  {
-                    label: 'Event occurence',
-                    value: dayjs(event?.date).format('dddd, DD MMM YYYY'),
-                  },
-                  {
-                    label: 'Duration (in minutes)',
-                    value: (
-                      <Input
-                        defaultValue={event.duration}
-                        error={errors?.duration}
-                        ref={durationRef}
-                        className='max-w-xs'
-                      />
-                    ),
-                  },
-                  {
-                    label: 'Event type',
-                    value: capitilize(event.type),
-                  },
-                  {
-                    label: 'Manager',
-                    value: event?.manager?.name,
-                    condition: !!event?.manager,
-                  },
-                  {
-                    label: 'Car',
-                    value: (
-                      <Input
-                        defaultValue={event.car}
-                        error={errors?.car}
-                        ref={carRef}
-                        className='max-w-xs'
-                      />
-                    ),
-                  },
-                  {
-                    label: 'Track',
-                    value: (
-                      <Input
-                        defaultValue={event.track}
-                        error={errors?.track}
-                        ref={trackRef}
-                        className='max-w-xs'
-                      />
-                    ),
-                  },
-                ]}
-                className='h-full w-full'
-              />
-            </form>
-          ) : (
+        {isEditing ? (
+          <form
+            ref={formRef}
+            onSubmit={e =>
+              handleSubmit(e, {
+                car: carRef.current?.value,
+                track: trackRef.current?.value,
+                duration: parseInt(durationRef.current?.value as string),
+              })
+            }
+          >
             <Details
               details={[
                 {
@@ -143,8 +89,15 @@ const Information: FC<{ event: Event }> = ({ event }) => {
                   value: dayjs(event?.date).format('dddd, DD MMM YYYY'),
                 },
                 {
-                  label: 'Duration',
-                  value: <EventDuration duration={event.duration} />,
+                  label: 'Duration (in minutes)',
+                  value: (
+                    <Input
+                      defaultValue={event.duration}
+                      error={errors?.duration}
+                      ref={durationRef}
+                      className='max-w-xs'
+                    />
+                  ),
                 },
                 {
                   label: 'Event type',
@@ -157,18 +110,60 @@ const Information: FC<{ event: Event }> = ({ event }) => {
                 },
                 {
                   label: 'Car',
-                  value: capitilize(event?.car),
+                  value: (
+                    <Input
+                      defaultValue={event.car}
+                      error={errors?.car}
+                      ref={carRef}
+                      className='max-w-xs'
+                    />
+                  ),
                 },
                 {
                   label: 'Track',
-                  value: capitilize(event?.track),
+                  value: (
+                    <Input
+                      defaultValue={event.track}
+                      error={errors?.track}
+                      ref={trackRef}
+                      className='max-w-xs'
+                    />
+                  ),
                 },
               ]}
-              className='h-full w-full'
             />
-          )}
-        </div>
-
+          </form>
+        ) : (
+          <Details
+            details={[
+              {
+                label: 'Event occurence',
+                value: dayjs(event?.date).format('dddd, DD MMM YYYY'),
+              },
+              {
+                label: 'Duration',
+                value: <EventDuration duration={event.duration} />,
+              },
+              {
+                label: 'Event type',
+                value: capitilize(event.type),
+              },
+              {
+                label: 'Manager',
+                value: event?.manager?.name,
+                condition: !!event?.manager,
+              },
+              {
+                label: 'Car',
+                value: capitilize(event?.car),
+              },
+              {
+                label: 'Track',
+                value: capitilize(event?.track),
+              },
+            ]}
+          />
+        )}
         <Error />
       </Tile>
       <div className='flex w-full flex-wrap gap-2 sm:w-48 sm:flex-col sm:flex-nowrap'>
