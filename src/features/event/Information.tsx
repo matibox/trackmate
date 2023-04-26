@@ -235,7 +235,6 @@ const Information: FC<{ event: Event }> = ({ event }) => {
 
 const MiniCalendar: FC<{ eventDate: Date }> = ({ eventDate }) => {
   const page = getCalendarPage(dayjs(eventDate).month());
-  console.log(page);
   return (
     <Tile className='hidden md:flex'>
       <div className='flex h-full w-full items-center justify-center'>

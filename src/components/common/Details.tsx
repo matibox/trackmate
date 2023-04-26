@@ -1,5 +1,6 @@
 import { type ReactNode, type FC, type HTMLAttributes } from 'react';
 import cn from '~/lib/classes';
+import crypto from 'crypto';
 
 interface DetailsProps extends HTMLAttributes<HTMLDivElement> {
   details: Array<{
@@ -25,7 +26,7 @@ const Details: FC<DetailsProps> = ({
         const colSpan = detail.span ?? 1;
         return show ? (
           <div
-            key={crypto.randomUUID()}
+            key={crypto.randomBytes(20).toString('hex')}
             className={`flex flex-col col-span-${colSpan}`}
           >
             <span className='text-slate-300'>{detail.label}</span>
