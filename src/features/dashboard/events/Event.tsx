@@ -43,19 +43,36 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
     return result.DNF || result.DNS || result.DSQ;
   }, [event]);
 
+  const canAccessEventPage = useMemo(() => {
+    if (!session?.user?.id) return false;
+    return [
+      event.managerId,
+      ...event.drivers.map(driver => driver.id),
+    ].includes(session?.user?.id);
+  }, [event.drivers, event.managerId, session?.user?.id]);
+
   return (
     <Tile
       header={
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
-          <Link
-            href={`/event/${event.id}`}
-            className='mr-auto text-base font-semibold'
-          >
-            {event.championship && (
-              <>{capitilize(event.championship.name)} - </>
-            )}
-            {capitilize(event.title ?? '')}
-          </Link>
+          {canAccessEventPage ? (
+            <Link
+              href={`/event/${event.id}`}
+              className='mr-auto text-base font-semibold underline decoration-slate-500 underline-offset-2 transition-colors hover:decoration-slate-50'
+            >
+              {event.championship && (
+                <>{capitilize(event.championship.name)} - </>
+              )}
+              {capitilize(event.title ?? '')}
+            </Link>
+          ) : (
+            <span className='mr-auto text-base font-semibold'>
+              {event.championship && (
+                <>{capitilize(event.championship.name)} - </>
+              )}
+              {capitilize(event.title ?? '')}
+            </span>
+          )}
           {!isTeamEvent && (
             <Button
               intent='secondary'
