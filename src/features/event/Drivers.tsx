@@ -56,9 +56,13 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
 
   return (
     <div className='flex flex-col gap-4'>
-      <div className='flex grow flex-wrap gap-4'>
+      <div className='grid grow grid-cols-[repeat(auto-fill,_10rem)] justify-center gap-4 sm:flex sm:flex-wrap sm:justify-start'>
         {event.drivers.map(driver => (
-          <Tile key={driver.id} className='w-60' isLoading={editDriversLoading}>
+          <Tile
+            key={driver.id}
+            className='w-40 sm:w-60'
+            isLoading={editDriversLoading}
+          >
             {isEditing && driver.id !== session?.user?.id ? (
               <Button
                 intent='subtleDanger'
@@ -77,29 +81,7 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
                 <TrashIcon className='h-4' />
               </Button>
             ) : null}
-            <div className='flex flex-col items-center justify-center'>
-              <Avatar
-                height={100}
-                width={100}
-                src={driver.image ?? ''}
-                alt={`${driver.name ?? 'driver'}'s profile picture`}
-                priority={true}
-                className='mb-2 flex items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700'
-              />
-              <Link
-                href={`/profile/${driver.id}`}
-                className='font-semibold transition-colors hover:text-sky-400'
-              >
-                <span>{driver.name}</span>
-              </Link>
-              {driver.team && (
-                <Link href={`/team/${driver.team.id}`}>
-                  <span className='text-slate-400 underline decoration-slate-500/0 transition hover:decoration-slate-500'>
-                    {driver.team.name}
-                  </span>
-                </Link>
-              )}
-            </div>
+            <DriverImage driver={driver} />
           </Tile>
         ))}
       </div>
@@ -127,7 +109,7 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
           ) : (
             <>
               <h2 className='text-xl font-semibold'>Drivers to add</h2>
-              <div className='flex grow flex-wrap gap-4'>
+              <div className='grid grow grid-cols-[repeat(auto-fill,_10rem)] justify-center gap-4 sm:flex sm:flex-wrap sm:justify-start'>
                 {driversToAdd.length === 0 ? (
                   <span className='text-slate-300'>
                     There are no drivers to add
@@ -136,7 +118,7 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
                 {driversToAdd.map(driver => (
                   <Tile
                     key={driver.id}
-                    className='w-60'
+                    className='w-40 sm:w-60'
                     isLoading={editDriversLoading}
                   >
                     <Button
@@ -155,29 +137,7 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
                     >
                       <PlusIcon className='h-5' />
                     </Button>
-                    <div className='flex flex-col items-center justify-center'>
-                      <Avatar
-                        height={100}
-                        width={100}
-                        src={driver.image ?? ''}
-                        alt={`${driver.name ?? 'driver'}'s profile picture`}
-                        priority={true}
-                        className='mb-2 flex items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700'
-                      />
-                      <Link
-                        href={`/profile/${driver.id}`}
-                        className='font-semibold transition-colors hover:text-sky-400'
-                      >
-                        <span>{driver.name}</span>
-                      </Link>
-                      {driver.team && (
-                        <Link href={`/team/${driver.team.id}`}>
-                          <span className='text-slate-400 underline decoration-slate-500/0 transition hover:decoration-slate-500'>
-                            {driver.team.name}
-                          </span>
-                        </Link>
-                      )}
-                    </div>
+                    <DriverImage driver={driver} />
                   </Tile>
                 ))}
               </div>
@@ -186,6 +146,34 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
         </>
       ) : null}
       <Error />
+    </div>
+  );
+};
+
+const DriverImage: FC<{ driver: Event['drivers'][number] }> = ({ driver }) => {
+  return (
+    <div className='flex flex-col items-center justify-center'>
+      <Avatar
+        height={96}
+        width={96}
+        src={driver.image ?? ''}
+        alt={`${driver.name ?? 'driver'}'s profile picture`}
+        priority={true}
+        className='mb-2 flex h-20 w-20 items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700 sm:h-24 sm:w-24'
+      />
+      <Link
+        href={`/profile/${driver.id}`}
+        className='font-semibold transition-colors hover:text-sky-400'
+      >
+        <span>{driver.name}</span>
+      </Link>
+      {driver.team && (
+        <Link href={`/team/${driver.team.id}`}>
+          <span className='text-slate-400 underline decoration-slate-500/0 transition hover:decoration-slate-500'>
+            {driver.team.name}
+          </span>
+        </Link>
+      )}
     </div>
   );
 };
