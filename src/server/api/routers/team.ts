@@ -181,6 +181,11 @@ export const teamRouter = createTRPCRouter({
         select: {
           id: true,
           name: true,
+          teamId: true,
+          image: true,
+          team: {
+            select: { id: true, name: true },
+          },
         },
       });
     }
