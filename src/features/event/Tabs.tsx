@@ -39,8 +39,8 @@ const EventTabs: FC<{ event: Event }> = ({ event }) => {
           <Tab showedOn='drivers'>
             <Drivers event={event} />
           </Tab>
-          <Tab showedOn='setups'>setups</Tab>
-          <Tab showedOn='stints'>stints</Tab>
+          <Tab showedOn='setups'>coming soon</Tab>
+          <Tab showedOn='stints'>coming soon</Tab>
         </>
       )}
     </div>
