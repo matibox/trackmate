@@ -11,6 +11,7 @@ import EventDuration from '~/components/common/EventDuration';
 import DriverList from '~/components/common/DriverList';
 import { useEventStore } from '~/features/dashboard/events/store';
 import { type RouterOutputs } from '~/utils/api';
+import Link from 'next/link';
 
 const Event: FC<{
   event: RouterOutputs['championship']['get'][number]['events'][number];
@@ -84,7 +85,12 @@ const Event: FC<{
           </>
         )}
       </AnimatePresence>
-      <span className='self-center text-xl font-semibold'>{event.title}</span>
+      <Link
+        href={`/events/${event.id}`}
+        className='self-center text-xl font-semibold underline decoration-slate-500 underline-offset-2 transition-colors hover:decoration-slate-50'
+      >
+        {event.title}
+      </Link>
       <div className='flex flex-col'>
         <span className='text-slate-300'>Date</span>
         <span>{dayjs(event.date).format('DD MMM YYYY HH:mm')}</span>
