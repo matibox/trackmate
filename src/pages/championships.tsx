@@ -48,7 +48,7 @@ const YourChampionships: NextPage = () => {
         <h1 className='pt-4 pb-8 text-center text-2xl font-semibold sm:text-3xl'>
           Your Championships
         </h1>
-        <div className='flex flex-col gap-4 px-4'>
+        <div className='flex flex-col gap-4 px-4 pb-4'>
           {unarchivedChampionships?.map(championship => (
             <Championship key={championship.id} championship={championship} />
           ))}
