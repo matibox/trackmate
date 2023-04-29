@@ -62,9 +62,7 @@ const Information: FC<{ event: Event }> = ({ event }) => {
 
   return (
     <div className='flex flex-col gap-4 sm:flex-row'>
-      {/*// TODO: past / future event indication */}
       <MiniCalendar eventDate={event.date} />
-
       <Tile
         className={cn('grow', {
           'ring-sky-500': isEditing,
@@ -86,7 +84,7 @@ const Information: FC<{ event: Event }> = ({ event }) => {
               details={[
                 {
                   label: 'Event occurence',
-                  value: dayjs(event?.date).format('dddd, DD MMM YYYY'),
+                  value: dayjs(event?.date).format('dddd HH:mm, DD MMM YYYY'),
                 },
                 {
                   label: 'Duration (in minutes)',
@@ -138,7 +136,7 @@ const Information: FC<{ event: Event }> = ({ event }) => {
             details={[
               {
                 label: 'Event occurence',
-                value: dayjs(event?.date).format('dddd, DD MMM YYYY'),
+                value: dayjs(event?.date).format('dddd HH:mm, DD MMM YYYY'),
               },
               {
                 label: 'Duration',
