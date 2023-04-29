@@ -17,6 +17,7 @@ import cn from '~/lib/classes';
 import EventDuration from '~/components/common/EventDuration';
 import dayjs from 'dayjs';
 import { ForwardIcon } from '@heroicons/react/24/outline';
+import Link from 'next/link';
 
 type Profile = RouterOutputs['user']['getProfile'];
 type Event = NonNullable<Profile>['events'][number];
@@ -59,16 +60,40 @@ const Event: FC<{ event: Event; profileId: string; upcoming: boolean }> = ({
     return title;
   }, [event]);
 
+  const canAccessEventPage = useMemo(() => {
+    if (!session?.user?.id) return false;
+    return [
+      event.managerId,
+      ...event.drivers.map(driver => driver.id),
+    ].includes(session?.user?.id);
+  }, [event.drivers, event.managerId, session?.user?.id]);
+
   return (
     <Tile
       header={
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
-          <div className='flex items-center gap-1.5' title={eventTitle}>
-            {upcoming && <ForwardIcon title='upcoming event' className='h-5' />}
-            <span className='truncate text-base font-semibold'>
-              {eventTitle}
-            </span>
-          </div>
+          {canAccessEventPage ? (
+            <Link
+              href={`/event/${event.id}`}
+              className='flex items-center gap-1.5 font-semibold underline decoration-slate-500 underline-offset-2 transition-colors hover:decoration-slate-50'
+              title={eventTitle}
+            >
+              {upcoming && (
+                <ForwardIcon title='upcoming event' className='h-5' />
+              )}
+              <span className='truncate text-base'>{eventTitle}</span>
+            </Link>
+          ) : (
+            <div
+              className='flex items-center gap-1.5 font-semibold'
+              title={eventTitle}
+            >
+              {upcoming && (
+                <ForwardIcon title='upcoming event' className='h-5' />
+              )}
+              <span className='truncate text-base'>{eventTitle}</span>
+            </div>
+          )}
           {!isTeamEvent && isUserProfile && !event.result && (
             <Button
               intent='danger'

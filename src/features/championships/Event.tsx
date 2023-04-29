@@ -86,7 +86,7 @@ const Event: FC<{
         )}
       </AnimatePresence>
       <Link
-        href={`/events/${event.id}`}
+        href={`/event/${event.id}`}
         className='self-center text-xl font-semibold underline decoration-slate-500 underline-offset-2 transition-colors hover:decoration-slate-50'
       >
         {event.title}
