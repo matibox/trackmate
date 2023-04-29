@@ -21,11 +21,12 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
 
   const canManageDrivers = useMemo(() => {
+    if (event.result) return false;
     return (
       event.managerId === session?.user?.id ||
       event.drivers.some(driver => driver.id === session?.user?.id)
     );
-  }, [event.drivers, event.managerId, session?.user?.id]);
+  }, [event.drivers, event.managerId, event.result, session?.user?.id]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [driversToAdd, setDriversToAdd] = useState<DriversToAdd>([]);
