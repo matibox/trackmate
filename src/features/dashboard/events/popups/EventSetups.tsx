@@ -205,9 +205,6 @@ const Setup: FC<{
 
   const menuRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
-  const downloadBtnRef = useRef<HTMLButtonElement>(null);
-  const unassignBtnRef = useRef<HTMLButtonElement>(null);
-  const activeBtnRef = useRef<HTMLButtonElement>(null);
 
   const isEdited = useMemo(
     () => !dayjs(createdAt).isSame(dayjs(updatedAt)),
@@ -232,12 +229,7 @@ const Setup: FC<{
     return dayjs(lastDownloaded).isBefore(dayjs(updatedAt));
   }, [isAssigned, setup.downloads, updatedAt]);
 
-  useClickOutside(menuRef, () => setActionsOpened(false), [
-    menuBtnRef,
-    downloadBtnRef,
-    unassignBtnRef,
-    activeBtnRef,
-  ]);
+  useClickOutside(menuRef, () => setActionsOpened(false), [menuBtnRef]);
 
   const { Error, setError } = useError();
   const { download, isLoading: downloadLoading } = useSetupDownload(setError);
@@ -316,7 +308,6 @@ const Setup: FC<{
                         <motion.button
                           variants={itemAnimation}
                           className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
-                          ref={activeBtnRef}
                           onClick={() =>
                             toggleIsActive({
                               // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -340,7 +331,6 @@ const Setup: FC<{
                         <motion.button
                           variants={itemAnimation}
                           className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
-                          ref={unassignBtnRef}
                           onClick={() =>
                             toggleAssignment({
                               eventId: event?.id,
@@ -360,7 +350,6 @@ const Setup: FC<{
                     <motion.button
                       variants={itemAnimation}
                       className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
-                      ref={downloadBtnRef}
                       onClick={() => void download(id, name)}
                       aria-label='download setup'
                     >
