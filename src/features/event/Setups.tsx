@@ -27,6 +27,9 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
             isAssigned={true}
           />
         ))}
+        {event.setups.length === 0 ? (
+          <span className='text-slate-300'>There are no assigned setups</span>
+        ) : null}
       </div>
     </div>
   );
@@ -73,6 +76,7 @@ const Setup: FC<SetupProps> = ({
     changedSinceLastDownload,
     download,
     toggleIsActive,
+    toggleAssignment,
     isLoading,
     actionsOpened,
     setActionsOpened,
@@ -158,13 +162,13 @@ const Setup: FC<SetupProps> = ({
                         <motion.button
                           variants={itemAnimation}
                           className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
-                          // onClick={() =>
-                          //   toggleAssignment({
-                          //     eventId: event?.id,
-                          //     setupId: id,
-                          //     assign: false,
-                          //   })
-                          // }
+                          onClick={() =>
+                            toggleAssignment({
+                              eventId,
+                              setupId: id,
+                              assign: false,
+                            })
+                          }
                           disabled={isLoading}
                         >
                           unassign
@@ -196,11 +200,11 @@ const Setup: FC<SetupProps> = ({
               }
               className='relative z-10 transition-colors hover:text-sky-400'
               onClick={() => {
-                // toggleAssignment({
-                //   eventId: event?.id,
-                //   setupId: id,
-                //   assign: true,
-                // });
+                toggleAssignment({
+                  eventId,
+                  setupId: id,
+                  assign: true,
+                });
                 // if (!isAssigned) setQuery('');
               }}
               disabled={isLoading}

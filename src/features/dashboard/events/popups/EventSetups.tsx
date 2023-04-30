@@ -333,7 +333,8 @@ const Setup: FC<{
                           className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
                           onClick={() =>
                             toggleAssignment({
-                              eventId: event?.id,
+                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                              eventId: event!.id,
                               setupId: id,
                               assign: false,
                             })
@@ -373,7 +374,8 @@ const Setup: FC<{
               className='relative z-10 transition-colors hover:text-sky-400'
               onClick={() => {
                 toggleAssignment({
-                  eventId: event?.id,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  eventId: event!.id,
                   setupId: id,
                   assign: true,
                 });

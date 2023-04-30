@@ -1,12 +1,6 @@
 import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
-import {
-  type RefObject,
-  useMemo,
-  useState,
-  type Dispatch,
-  type SetStateAction,
-} from 'react';
+import { type RefObject, useMemo, useState } from 'react';
 import { useClickOutside } from '~/hooks/useClickOutside';
 import { useError } from '~/hooks/useError';
 import useSetupDownload from '~/hooks/useSetupDownload';
@@ -70,6 +64,18 @@ export function useSetup({
       },
     });
 
+  const { mutate: toggleAssignment, isLoading: assignmentLoading } =
+    api.setup.toggleAssignment.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.event.single.invalidate();
+        await utils.event.setups.invalidate();
+        await utils.setup.invalidate();
+        setIsAssigned(prev => !prev);
+        setActionsOpened(false);
+      },
+    });
+
   return {
     isEdited,
     isActive,
@@ -80,7 +86,8 @@ export function useSetup({
     setActionsOpened,
     download,
     toggleIsActive,
+    toggleAssignment,
     Error,
-    isLoading: isDownloadLoading || activeToggleLoading,
+    isLoading: isDownloadLoading || activeToggleLoading || assignmentLoading,
   };
 }
