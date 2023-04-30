@@ -292,24 +292,55 @@ export const eventRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       const { eventId } = input;
-      return await ctx.prisma.event.findUnique({
-        where: { id: eventId },
-        include: {
-          drivers: {
-            select: {
-              id: true,
-              name: true,
-              teamId: true,
-              image: true,
-              team: {
-                select: { id: true, name: true },
+      return await ctx.prisma.$transaction(async tx => {
+        const event = await tx.event.findUnique({
+          where: { id: eventId },
+          include: {
+            drivers: {
+              select: {
+                id: true,
+                name: true,
+                teamId: true,
+                image: true,
+                team: {
+                  select: { id: true, name: true },
+                },
               },
             },
+            manager: { select: { id: true, name: true } },
+            championship: { select: { id: true, name: true, organizer: true } },
+            result: true,
           },
-          manager: { select: { id: true, name: true } },
-          championship: { select: { id: true, name: true, organizer: true } },
-          result: true,
-        },
+        });
+
+        if (!event) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Event not found',
+          });
+        }
+
+        const eventSetups = await tx.setup.findMany({
+          where: { events: { some: { event: { id: event.id } } } },
+          include: {
+            author: { select: { id: true, name: true } },
+            events: {
+              where: { eventId: event.id },
+              select: { isActive: true },
+            },
+            downloads: {
+              where: { user: { id: ctx.session.user.id } },
+              orderBy: { downloadedAt: 'desc' },
+              take: 1,
+            },
+          },
+          orderBy: { updatedAt: 'desc' },
+        });
+
+        return {
+          ...event,
+          setups: eventSetups,
+        };
       });
     }),
 });

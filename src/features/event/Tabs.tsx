@@ -5,6 +5,7 @@ import Information from './Information';
 import { type Event } from '~/pages/event/[eventId]';
 import { useEventTabsStore } from './store';
 import Drivers from './Drivers';
+import Setups from './Setups';
 
 const EventTabs: FC<{ event: Event }> = ({ event }) => {
   const { tabs, selectTab } = useEventTabsStore();
@@ -39,7 +40,9 @@ const EventTabs: FC<{ event: Event }> = ({ event }) => {
           <Tab showedOn='drivers'>
             <Drivers event={event} />
           </Tab>
-          <Tab showedOn='setups'>coming soon</Tab>
+          <Tab showedOn='setups'>
+            <Setups event={event} />
+          </Tab>
           <Tab showedOn='stints'>coming soon</Tab>
         </>
       )}
