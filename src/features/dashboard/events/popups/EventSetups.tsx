@@ -2,7 +2,6 @@ import Popup, { PopupHeader } from '~/components/common/Popup';
 import {
   useState,
   type FC,
-  useMemo,
   useRef,
   type Dispatch,
   type SetStateAction,
@@ -24,12 +23,10 @@ import cn from '~/lib/classes';
 import Tile from '@ui/Tile';
 import { type Variants, motion, AnimatePresence } from 'framer-motion';
 import dayjs from 'dayjs';
-import { useClickOutside } from '~/hooks/useClickOutside';
-import useSetupDownload from '~/hooks/useSetupDownload';
-import { useSession } from 'next-auth/react';
 import { useEventStore } from '../store';
 import DriverList from '~/components/common/DriverList';
 import Details from '~/components/common/Details';
+import { useSetup } from '~/hooks/useSetup';
 
 const EventSetups: FC = () => {
   const {
@@ -193,66 +190,35 @@ const Setup: FC<{
   setupsQuantity,
   isAssigned: defaultIsAssigned = false,
 }) => {
-  const { id, car, createdAt, updatedAt, name, track, author, events } = setup;
+  const { id, car, updatedAt, name, track, author } = setup;
   const {
     setups: { event },
   } = useEventStore();
 
-  const { data: session } = useSession();
-
-  const [actionsOpened, setActionsOpened] = useState(false);
-  const [isAssigned, setIsAssigned] = useState(defaultIsAssigned);
-
   const menuRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
 
-  const isEdited = useMemo(
-    () => !dayjs(createdAt).isSame(dayjs(updatedAt)),
-    [createdAt, updatedAt]
-  );
-
-  const isAuthor = useMemo(
-    () => session?.user?.id === setup.author.id,
-    [session?.user?.id, setup.author.id]
-  );
-
-  const isActive = useMemo(
-    () => isAssigned && events[0]?.isActive,
-    [events, isAssigned]
-  );
-
-  const changedSinceLastDownload = useMemo(() => {
-    if (!isAssigned) return false;
-    const userDownloads = setup.downloads;
-    if (userDownloads.length === 0 || !userDownloads[0]) return false;
-    const lastDownloaded = userDownloads[0].downloadedAt;
-    return dayjs(lastDownloaded).isBefore(dayjs(updatedAt));
-  }, [isAssigned, setup.downloads, updatedAt]);
-
-  useClickOutside(menuRef, () => setActionsOpened(false), [menuBtnRef]);
-
-  const { Error, setError } = useError();
-  const { download, isLoading: downloadLoading } = useSetupDownload(setError);
-
-  const utils = api.useContext();
-  const { mutate: toggleAssignment, isLoading: assignLoading } =
-    api.setup.toggleAssignment.useMutation({
-      onError: err => setError(err.message),
-      onSuccess: async () => {
-        await utils.event.setups.invalidate();
-        await utils.setup.invalidate();
-        setIsAssigned(prev => !prev);
-      },
-    });
-
-  const { mutate: toggleIsActive, isLoading: activeLoading } =
-    api.setup.toggleIsActive.useMutation({
-      onError: err => setError(err.message),
-      onSuccess: async () => {
-        await utils.event.setups.invalidate();
-        await utils.setup.invalidate();
-      },
-    });
+  const {
+    Error,
+    actionsOpened,
+    setActionsOpened,
+    changedSinceLastDownload,
+    download,
+    isActive,
+    isAssigned,
+    isAuthor,
+    isEdited,
+    isLoading,
+    toggleAssignment,
+    toggleIsActive,
+  } = useSetup({
+    setup,
+    refs: {
+      menuRef,
+      menuBtnRef,
+    },
+    isAssigned: defaultIsAssigned,
+  });
 
   return (
     <Tile
@@ -316,7 +282,7 @@ const Setup: FC<{
                               setAsActive: !isActive,
                             })
                           }
-                          disabled={activeLoading}
+                          disabled={isLoading}
                         >
                           set as {isActive ? 'in' : ''}active
                         </motion.button>
@@ -381,7 +347,7 @@ const Setup: FC<{
                 });
                 if (!isAssigned) setQuery('');
               }}
-              disabled={assignLoading}
+              disabled={isLoading}
             >
               <CheckCircleIcon className='h-5' />
             </motion.button>
@@ -389,7 +355,7 @@ const Setup: FC<{
         </div>
       }
       smallHeaderPadding
-      isLoading={assignLoading || downloadLoading || activeLoading}
+      isLoading={isLoading}
       className='w-80'
     >
       <Details

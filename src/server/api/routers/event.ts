@@ -322,7 +322,13 @@ export const eventRouter = createTRPCRouter({
 
         const eventSetups = await tx.setup.findMany({
           where: { events: { some: { event: { id: event.id } } } },
-          include: {
+          select: {
+            id: true,
+            name: true,
+            car: true,
+            track: true,
+            createdAt: true,
+            updatedAt: true,
             author: { select: { id: true, name: true } },
             events: {
               where: { eventId: event.id },

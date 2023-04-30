@@ -12,7 +12,7 @@ import {
 import cn from '~/lib/classes';
 import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
-import { useSetup } from './hooks/useSetup';
+import { useSetup } from '../../hooks/useSetup';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   return (
