@@ -17,6 +17,16 @@ import { useSetup } from '../../hooks/useSetup';
 const Setups: FC<{ event: Event }> = ({ event }) => {
   return (
     <div className='flex flex-col gap-2'>
+      <div className='flex flex-col gap-1'>
+        <div className='flex items-center gap-1 text-sm text-sky-400'>
+          <CheckCircleIcon className='h-5' />
+          <span>Active setup</span>
+        </div>
+        <div className='flex items-center gap-1 text-sm text-amber-400'>
+          <ExclamationCircleIcon className='h-5' />
+          <span>Setup got updated after last download</span>
+        </div>
+      </div>
       <h2 className='text-lg font-semibold'>Assigned setups</h2>
       <div>
         {event.setups.map(setup => (
