@@ -35,12 +35,14 @@ type SetupProps = {
   setup: Event['setups'][number];
   isAssigned: boolean;
   eventId: string;
+  fullWidth?: boolean;
 };
 
 const Setup: FC<SetupProps> = ({
   setup,
   eventId,
   isAssigned: defaultIsAssigned,
+  fullWidth = false,
 }) => {
   const { id, car, track, updatedAt, author, name } = setup;
 
@@ -194,7 +196,9 @@ const Setup: FC<SetupProps> = ({
       }
       isLoading={isLoading}
       smallHeaderPadding
-      className='w-80'
+      className={cn('w-80', {
+        'full-width': fullWidth,
+      })}
     >
       <Details
         details={[

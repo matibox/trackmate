@@ -34,11 +34,11 @@ const AssignSetup: FC = () => {
       header={<PopupHeader close={close} title='Assign new setup' />}
       isLoading={isInitialLoading}
       smallHeaderPadding
-      className='max-w-[43rem]'
+      className='max-w-sm md:max-w-[43rem]'
     >
       <div className='flex flex-col gap-4'>
         <div className='flex grow gap-4'>
-          <label className='flex grow items-center gap-2 sm:grow-0'>
+          <label className='flex grow items-center gap-2 md:grow-0'>
             <MagnifyingGlassIcon className='h-5' />
             <Input
               className='h-7'
@@ -49,7 +49,7 @@ const AssignSetup: FC = () => {
             />
           </label>
         </div>
-        <div className='flex max-h-[25rem] flex-wrap gap-3 overflow-y-auto rounded p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
+        <div className='flex max-h-[25rem] flex-wrap gap-3 overflow-y-auto p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
           {setups?.map(setup => (
             <Setup
               key={setup.id}

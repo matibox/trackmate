@@ -29,13 +29,14 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
             </div>
           </div>
           <h2 className='text-lg font-semibold'>Assigned setups</h2>
-          <div>
+          <div className='grid grid-cols-[repeat(auto-fit,_min(100%,_20rem))] gap-4'>
             {event.setups.map(setup => (
               <Setup
                 key={setup.id}
                 setup={setup}
                 eventId={event.id}
                 isAssigned={true}
+                fullWidth
               />
             ))}
             {event.setups.length === 0 ? (
