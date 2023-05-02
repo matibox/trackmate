@@ -37,6 +37,12 @@ const Information: FC<{ event: Event }> = ({ event }) => {
   const carRef = useRef<HTMLInputElement>(null);
   const trackRef = useRef<HTMLInputElement>(null);
 
+  const Dxx = useMemo(() => {
+    if (!event.result) return;
+    const { DNF, DNS, DSQ } = event.result;
+    return DNF || DNS || DSQ;
+  }, [event.result]);
+
   const { Error, setError } = useError();
   const utils = api.useContext();
   const { mutate: editEvent, isLoading } = api.event.edit.useMutation({
@@ -231,8 +237,35 @@ const Information: FC<{ event: Event }> = ({ event }) => {
           <TrashIcon className='h-5' />
         </Button>
       </div>
-      <div className='col-span-full'>
-        {/* result + champ info / next event */}
+      <div className='col-span-full flex flex-col gap-4 sm:flex-row'>
+        {event.result ? (
+          <Tile className='sm:basis-1/2'>
+            <Details
+              details={[
+                {
+                  label: 'Qualifying',
+                  value: Dxx ? '-' : `P${event.result.qualiPosition as number}`,
+                },
+                {
+                  label: 'Race',
+                  value: event.result.DNF
+                    ? 'DNF'
+                    : event.result.DNS
+                    ? 'DNS'
+                    : event.result.DSQ
+                    ? 'DSQ'
+                    : `P${event.result.racePosition as number}`,
+                },
+                {
+                  label: 'Notes',
+                  value: event.result.notes,
+                  condition: !!event.result.notes,
+                  span: 2,
+                },
+              ]}
+            />
+          </Tile>
+        ) : null}
       </div>
     </div>
   );
