@@ -21,12 +21,15 @@ import EventDuration from '~/components/common/EventDuration';
 import { Event } from '~/pages/event/[eventId]';
 import { useRouter } from 'next/router';
 import { getCalendarPage } from '~/lib/dates';
+import { DocumentArrowUpIcon } from '@heroicons/react/20/solid';
 
 const Information: FC<{ event: Event }> = ({ event }) => {
   const router = useRouter();
   const {
     delete: { open: openDelete, setAdditionalActions },
+    result: { open: openResult },
   } = useEventStore();
+
   const [isEditing, setIsEditing] = useState(false);
 
   const formRef = useRef<HTMLFormElement>(null);
@@ -61,7 +64,7 @@ const Information: FC<{ event: Event }> = ({ event }) => {
   );
 
   return (
-    <div className='flex flex-col gap-4 sm:flex-row'>
+    <div className='grid w-full grid-cols-1 gap-4 sm:grid-cols-[1fr,_auto] md:grid-cols-[auto,_1fr,_auto]'>
       <MiniCalendar eventDate={event.date} />
       <Tile
         className={cn('grow', {
@@ -165,6 +168,12 @@ const Information: FC<{ event: Event }> = ({ event }) => {
         <Error />
       </Tile>
       <div className='flex w-full flex-wrap gap-2 sm:w-48 sm:flex-col sm:flex-nowrap'>
+        {dayjs(event.date).isBefore(dayjs()) && !event.result ? (
+          <Button intent='primary' onClick={() => openResult(event)}>
+            <span>Post result</span>
+            <DocumentArrowUpIcon className='h-5' />
+          </Button>
+        ) : null}
         <Button
           intent='secondary'
           onClick={() => {
@@ -195,7 +204,7 @@ const Information: FC<{ event: Event }> = ({ event }) => {
             </>
           )}
         </Button>
-        {isEditing && (
+        {isEditing ? (
           <Button
             intent='secondary'
             onClick={() => setIsEditing(false)}
@@ -205,7 +214,7 @@ const Information: FC<{ event: Event }> = ({ event }) => {
             <span>Cancel</span>
             <XMarkIcon className='h-5' />
           </Button>
-        )}
+        ) : null}
         <Button
           intent='subtleDanger'
           onClick={() => {
@@ -221,6 +230,9 @@ const Information: FC<{ event: Event }> = ({ event }) => {
           <span>Delete event</span>
           <TrashIcon className='h-5' />
         </Button>
+      </div>
+      <div className='col-span-full'>
+        {/* result + champ info / next event */}
       </div>
     </div>
   );
