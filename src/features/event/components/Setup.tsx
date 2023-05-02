@@ -197,7 +197,7 @@ const Setup: FC<SetupProps> = ({
       isLoading={isLoading}
       smallHeaderPadding
       className={cn('w-80', {
-        'full-width': fullWidth,
+        'w-full': fullWidth,
       })}
     >
       <Details
