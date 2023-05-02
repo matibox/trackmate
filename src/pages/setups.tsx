@@ -1,14 +1,43 @@
 import { type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useError } from '../hooks/useError';
 import { api, type RouterOutputs } from '../utils/api';
-import useQuery from '~/features/setups/hooks/useQuery';
 import Filters from '~/features/setups/Filters';
 import Setups from '~/features/setups/Setups';
 import { useSetupStore } from '~/features/setups/store';
+import useDebounce from '~/hooks/useDebounce';
 
 type Setups = RouterOutputs['setup']['getAll'];
+
+function useSetupFilters(query: string, setups: Setups | undefined) {
+  const debouncedQuery = useDebounce(query);
+  const [filteredSetups, setFilteredSetups] = useState(setups);
+
+  const someIncludes = useCallback((items: string[], string: string) => {
+    return items.some(item =>
+      item.toLowerCase().includes(string.toLowerCase())
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!setups) return;
+    const q = debouncedQuery;
+    setFilteredSetups(() =>
+      setups.filter(setup => {
+        const {
+          author: { name: authorName },
+          car,
+          name,
+          track,
+        } = setup;
+        return someIncludes([authorName ?? '', car, name, track], q);
+      })
+    );
+  }, [someIncludes, debouncedQuery, setups]);
+
+  return filteredSetups;
+}
 
 const YourSetups: NextPage = () => {
   const { Error, setError } = useError();
@@ -22,7 +51,7 @@ const YourSetups: NextPage = () => {
     );
 
   const [query, setQuery] = useState('');
-  const filteredSetups = useQuery(query, setups);
+  const filteredSetups = useSetupFilters(query, setups);
 
   return (
     <>

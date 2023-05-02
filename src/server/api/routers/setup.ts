@@ -84,7 +84,14 @@ export const setupRouter = createTRPCRouter({
       return await ctx.prisma.setup.findMany({
         where: {
           AND: [
-            { name: { contains: q.toLowerCase() } },
+            {
+              OR: [
+                { name: { contains: q.toLowerCase() } },
+                { car: { contains: q.toLowerCase() } },
+                { track: { contains: q.toLowerCase() } },
+                { author: { name: { contains: q.toLowerCase() } } },
+              ],
+            },
             { events: { none: { event: { id: eventId } } } },
             { author: { id: ctx.session.user.id } },
           ],

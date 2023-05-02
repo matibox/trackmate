@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { useSession } from 'next-auth/react';
 import { type RefObject, useMemo, useState } from 'react';
+import { useEventSetupAssignStore } from '~/features/event/store';
 import { useClickOutside } from '~/hooks/useClickOutside';
 import { useError } from '~/hooks/useError';
 import useSetupDownload from '~/hooks/useSetupDownload';
@@ -23,6 +24,8 @@ export function useSetup({
 }: UseSetupProps) {
   const [actionsOpened, setActionsOpened] = useState(false);
   const [isAssigned, setIsAssigned] = useState(defaultIsAssigned);
+
+  const closeSetupAssignment = useEventSetupAssignStore().close;
 
   const { data: session } = useSession();
   const { Error, setError } = useError();
@@ -73,6 +76,7 @@ export function useSetup({
         await utils.setup.invalidate();
         setIsAssigned(prev => !prev);
         setActionsOpened(false);
+        closeSetupAssignment();
       },
     });
 
