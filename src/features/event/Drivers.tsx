@@ -166,11 +166,11 @@ const DriverImage: FC<{ driver: Event['drivers'][number] }> = ({ driver }) => {
         href={`/profile/${driver.id}`}
         className='font-semibold transition-colors hover:text-sky-400'
       >
-        <span>{driver.name}</span>
+        <p className='text-center leading-5'>{driver.name}</p>
       </Link>
       {driver.team && (
         <Link href={`/team/${driver.team.id}`}>
-          <span className='text-slate-400 underline decoration-slate-500/0 transition hover:decoration-slate-500'>
+          <span className='text-sm text-slate-400 underline decoration-slate-500/0 transition hover:decoration-slate-500 sm:text-base'>
             {driver.team.name}
           </span>
         </Link>
