@@ -5,6 +5,7 @@ import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import dayjs from 'dayjs';
 import {
   ArrowDownTrayIcon,
+  ChatBubbleOvalLeftEllipsisIcon,
   CheckCircleIcon,
   EllipsisHorizontalCircleIcon,
   ExclamationCircleIcon,
@@ -13,6 +14,7 @@ import cn from '~/lib/classes';
 import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
 import { useSetup } from '~/hooks/useSetup';
+import { useEventSetupFeedbackStore } from '../store';
 
 const menuAnimation: Variants = {
   start: { opacity: 0, x: '-100%', width: 0 },
@@ -36,6 +38,7 @@ type SetupProps = {
   isAssigned: boolean;
   eventId: string;
   fullWidth?: boolean;
+  feedback?: boolean;
 };
 
 const Setup: FC<SetupProps> = ({
@@ -43,8 +46,15 @@ const Setup: FC<SetupProps> = ({
   eventId,
   isAssigned: defaultIsAssigned,
   fullWidth = false,
+  feedback = false,
 }) => {
   const { id, car, track, updatedAt, author, name } = setup;
+
+  const {
+    isSetupFeedbackOpened,
+    open: openFeedback,
+    close: closeFeedback,
+  } = useEventSetupFeedbackStore();
 
   const menuRef = useRef<HTMLDivElement>(null);
   const menuBtnRef = useRef<HTMLButtonElement>(null);
@@ -99,17 +109,42 @@ const Setup: FC<SetupProps> = ({
           </div>
           {isAssigned ? (
             <>
-              <motion.button
-                aria-label={`${actionsOpened ? 'close' : 'open'} menu`}
-                className='relative z-10 transition-colors hover:text-sky-400'
-                onClick={() => setActionsOpened(prev => !prev)}
-                animate={{
-                  rotate: actionsOpened ? 90 : 0,
-                }}
-                ref={menuBtnRef}
-              >
-                <EllipsisHorizontalCircleIcon className='h-5' />
-              </motion.button>
+              <div className='flex items-center gap-1'>
+                {feedback && (
+                  <button
+                    className={cn('transition-colors hover:text-sky-400', {
+                      'text-sky-400': isSetupFeedbackOpened(setup.id),
+                    })}
+                    aria-label={`${
+                      isSetupFeedbackOpened(setup.id)
+                        ? 'Close feedback'
+                        : 'Open feedback'
+                    }`}
+                    title='Setup feedback'
+                    onClick={() => {
+                      if (isSetupFeedbackOpened(setup.id)) {
+                        closeFeedback();
+                      } else {
+                        closeFeedback();
+                        openFeedback(setup);
+                      }
+                    }}
+                  >
+                    <ChatBubbleOvalLeftEllipsisIcon className='h-5' />
+                  </button>
+                )}
+                <motion.button
+                  aria-label={`${actionsOpened ? 'close' : 'open'} menu`}
+                  className='relative z-10 transition-colors hover:text-sky-400'
+                  onClick={() => setActionsOpened(prev => !prev)}
+                  animate={{
+                    rotate: actionsOpened ? 90 : 0,
+                  }}
+                  ref={menuBtnRef}
+                >
+                  <EllipsisHorizontalCircleIcon className='h-5' />
+                </motion.button>
+              </div>
               <AnimatePresence>
                 {actionsOpened && (
                   <motion.div

@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { type RouterOutputs } from '~/utils/api';
 
 type Tab = {
   id: number;
@@ -60,7 +61,29 @@ export const useEventSetupAssignStore = create<EventSetupAssignStore>()(
   set => ({
     eventId: undefined,
     isOpened: false,
-    open: setupId => set(() => ({ eventId: setupId, isOpened: true })),
+    open: eventId => set(() => ({ eventId, isOpened: true })),
     close: () => set(() => ({ eventId: undefined, isOpened: false })),
+  })
+);
+
+type Setup = RouterOutputs['event']['single']['setups'][number];
+
+type EventSetupFeedbackStore = {
+  setup: Setup | undefined;
+  isOpened: boolean;
+  open: (setup: Setup) => void;
+  close: () => void;
+  isSetupFeedbackOpened: (setupId: string) => boolean;
+};
+
+export const useEventSetupFeedbackStore = create<EventSetupFeedbackStore>()(
+  (set, get) => ({
+    setup: undefined,
+    isOpened: false,
+    open: setup => set(() => ({ setup, isOpened: true })),
+    close: () => set(() => ({ setup: undefined, isOpened: false })),
+    isSetupFeedbackOpened: setupId => {
+      return get().setup?.id === setupId && get().isOpened;
+    },
   })
 );
