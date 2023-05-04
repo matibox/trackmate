@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { notificationGroups } from '../../../constants/constants';
-import { type NewResultNotification } from '@prisma/client';
 
 export const notificationRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -14,8 +13,10 @@ export const notificationRouter = createTRPCRouter({
 
     const isEmpty = data.every(notifGroup => notifGroup.length === 0);
     const isAllRead = data.every(notifGroup =>
-      // ? this is a bit sketchy
-      (notifGroup as NewResultNotification[]).every(notif => notif.read)
+      // ! this is sketchy
+      // @ts-expect-error 2349
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-return
+      notifGroup.every(notif => notif.read)
     );
     const [
       newResultNotification,
@@ -49,13 +50,7 @@ export const notificationRouter = createTRPCRouter({
         data: { read: true },
       };
 
-      switch (type) {
-        case 'newResultNotification':
-          return await ctx.prisma.newResultNotification.update(updateClause);
-        case 'newChampResultNotification':
-          return await ctx.prisma.newChampResultNotification.update(
-            updateClause
-          );
-      }
+      // @ts-expect-error 2349
+      await ctx.prisma[type].update(updateClause);
     }),
 });

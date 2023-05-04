@@ -41,20 +41,22 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
     },
   });
 
-  useEffect(() => {
-    if (!isOpened || !data || data.isEmpty) return;
-    const timeout = setTimeout(() => {
-      objectEntries(data.notifGroups).forEach(([type, group]) => {
-        group
-          .filter(notif => !notif.read)
-          .forEach(notif => {
-            markAsRead({ id: notif.id, type });
-          });
-      });
-    }, 2000);
+  // ! this causes infinite loop
+  // TODO: fix^
+  // useEffect(() => {
+  //   if (!isOpened || !data || data.isEmpty) return;
+  //   const timeout = setTimeout(() => {
+  //     objectEntries(data.notifGroups).forEach(([type, group]) => {
+  //       (group as NewResultNotification[])
+  //         .filter(notif => !notif.read)
+  //         .forEach(notif => {
+  //           markAsRead({ id: notif.id, type });
+  //         });
+  //     });
+  //   }, 2000);
 
-    return () => clearTimeout(timeout);
-  }, [data, isOpened, markAsRead]);
+  //   return () => clearTimeout(timeout);
+  // }, [data, isOpened, markAsRead]);
 
   return (
     <AnimatePresence>
@@ -79,25 +81,22 @@ const Notifications: FC<NotificationsProps> = ({ buttonRef }) => {
           </div>
           <Error />
           {isLoading && <Loading />}
+          {data?.isEmpty ? (
+            <span className='pt-1 pl-1 text-sm text-slate-300 sm:text-base'>
+              You don&apos;t have any notifications
+            </span>
+          ) : null}
           {data && (
             <>
-              {data.isEmpty ? (
-                <span className='pt-1 pl-1 text-sm text-slate-300 sm:text-base'>
-                  You don&apos;t have any notifications
-                </span>
-              ) : (
-                <>
-                  {objectEntries(data.notifGroups).forEach(([type, group]) => {
-                    group.map(notification => (
-                      <Notification
-                        key={notification.id}
-                        type={type}
-                        notification={notification}
-                      />
-                    ));
-                  })}
-                </>
-              )}
+              {objectEntries(data.notifGroups).map(([type, group]) => {
+                return group.map(notification => (
+                  <Notification
+                    key={notification.id}
+                    type={type}
+                    notification={notification}
+                  />
+                ));
+              })}
             </>
           )}
         </motion.div>

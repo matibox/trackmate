@@ -15,12 +15,25 @@ import AssignSetup from './popups/AssignSetup';
 import Setup from './components/Setup';
 import Tile from '@ui/Tile';
 import { useSession } from 'next-auth/react';
+import { api } from '~/utils/api';
+import { useError } from '~/hooks/useError';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
 
   const { open: openSetupAssignment } = useEventSetupAssignStore();
   const { setup, isOpened: isFeedbackOpened } = useEventSetupFeedbackStore();
+
+  const { Error, setError } = useError();
+  const utils = api.useContext();
+
+  const { mutate: requestFeedback, isLoading } =
+    api.setup.requestFeedback.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.event.single.invalidate();
+      },
+    });
 
   return (
     <>
@@ -73,7 +86,7 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
         <div className='flex flex-col gap-2 md:basis-1/2'>
           <h2 className='text-lg font-semibold leading-none'>Setup feedback</h2>
           {isFeedbackOpened && setup ? (
-            <Tile>
+            <Tile isLoading={isLoading}>
               <div className='flex flex-col gap-4'>
                 {setup.feedback.length === 0 ? (
                   <span className='text-slate-300'>
@@ -90,6 +103,17 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                       intent='secondary'
                       size='small'
                       className='self-start'
+                      onClick={() => {
+                        requestFeedback({
+                          reviewers: event.drivers.map(driver => ({
+                            id: driver.id,
+                          })),
+                          setup: {
+                            id: setup.id,
+                            name: setup.name,
+                          },
+                        });
+                      }}
                     >
                       <span>Request feedback</span>
                       <ChatBubbleLeftRightIcon className='h-4' />
@@ -97,6 +121,7 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                   ) : null}
                 </div>
               </div>
+              <Error />
             </Tile>
           ) : (
             <span className='text-slate-300'>
