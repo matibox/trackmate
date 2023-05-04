@@ -295,7 +295,7 @@ model Feedback {
 model FeedbackRequestNotification {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
-  read      Boolean
+  read      Boolean  @default(false)
   message   String
 
   setup      Setup  @relation(fields: [setupId], references: [id])

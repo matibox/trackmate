@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { notificationGroups } from '../../../constants/constants';
+import { type NewResultNotification } from '@prisma/client';
 
 export const notificationRouter = createTRPCRouter({
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -8,18 +9,25 @@ export const notificationRouter = createTRPCRouter({
     const data = await ctx.prisma.$transaction([
       ctx.prisma.newResultNotification.findMany(whereClause),
       ctx.prisma.newChampResultNotification.findMany(whereClause),
+      ctx.prisma.feedbackRequestNotification.findMany(whereClause),
     ]);
 
     const isEmpty = data.every(notifGroup => notifGroup.length === 0);
     const isAllRead = data.every(notifGroup =>
-      notifGroup.every(notif => notif.read)
+      // ? this is a bit sketchy
+      (notifGroup as NewResultNotification[]).every(notif => notif.read)
     );
-    const [newResultNotification, newChampResultNotification] = data;
+    const [
+      newResultNotification,
+      newChampResultNotification,
+      feedbackRequestNotification,
+    ] = data;
 
     const returnObj = {
       notifGroups: {
         newResultNotification,
         newChampResultNotification,
+        feedbackRequestNotification,
       },
       isEmpty,
       isAllRead,

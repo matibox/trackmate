@@ -4,15 +4,21 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
-import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/20/solid';
+import {
+  ChatBubbleBottomCenterTextIcon,
+  ChatBubbleLeftRightIcon,
+} from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import { PlusIcon } from '@heroicons/react/20/solid';
 import { useEventSetupAssignStore, useEventSetupFeedbackStore } from './store';
 import AssignSetup from './popups/AssignSetup';
 import Setup from './components/Setup';
 import Tile from '@ui/Tile';
+import { useSession } from 'next-auth/react';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
+  const { data: session } = useSession();
+
   const { open: openSetupAssignment } = useEventSetupAssignStore();
   const { setup, isOpened: isFeedbackOpened } = useEventSetupFeedbackStore();
 
@@ -74,10 +80,22 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                     There is no feedback for this setup
                   </span>
                 ) : null}
-                <Button intent='primary' size='small' className='self-start'>
-                  <span>Post feedback</span>
-                  <ChatBubbleBottomCenterTextIcon className='h-4' />
-                </Button>
+                <div className='flex gap-2'>
+                  <Button intent='primary' size='small' className='self-start'>
+                    <span>Post feedback</span>
+                    <ChatBubbleBottomCenterTextIcon className='h-4' />
+                  </Button>
+                  {setup.author.id === session?.user?.id ? (
+                    <Button
+                      intent='secondary'
+                      size='small'
+                      className='self-start'
+                    >
+                      <span>Request feedback</span>
+                      <ChatBubbleLeftRightIcon className='h-4' />
+                    </Button>
+                  ) : null}
+                </div>
               </div>
             </Tile>
           ) : (
