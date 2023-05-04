@@ -9,4 +9,5 @@ export const resultsSortingOptions = [
 export const notificationGroups = [
   'newResultNotification',
   'newChampResultNotification',
+  'feedbackRequestNotification',
 ] as const;
