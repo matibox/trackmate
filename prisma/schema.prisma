@@ -94,6 +94,7 @@ model User {
   newChampResultNotifications NewChampResultNotification[]
   setups                      Setup[]
   downloads                   Download[]
+  setupFeedback               Feedback[]
 
   @@index([teamId])
 }
@@ -245,6 +246,7 @@ model Setup {
   authorId  String
   events    EventsOnSetups[]
   downloads Download[]
+  feedback  Feedback[]
 
   @@index([authorId])
 }
@@ -256,6 +258,33 @@ model Download {
   setupId      String
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId       String
+
+  @@index([setupId])
+  @@index([userId])
+}
+
+enum CornerPart {
+  entry
+  apex
+  exit
+}
+
+enum Steer {
+  understeer
+  oversteer
+}
+
+model Feedback {
+  id                 String     @id @default(cuid())
+  corner             Int        @db.TinyInt
+  cornerPart         CornerPart
+  steer              Steer
+  additionalFeedback String?    @db.Text
+
+  setup   Setup  @relation(fields: [setupId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+  setupId String
+  userId  String
 
   @@index([setupId])
   @@index([userId])
