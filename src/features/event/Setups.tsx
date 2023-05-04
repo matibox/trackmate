@@ -4,6 +4,7 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
+import { ChatBubbleBottomCenterTextIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import { PlusIcon } from '@heroicons/react/20/solid';
 import { useEventSetupAssignStore, useEventSetupFeedbackStore } from './store';
@@ -13,7 +14,7 @@ import Tile from '@ui/Tile';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   const { open: openSetupAssignment } = useEventSetupAssignStore();
-  const { isOpened: isFeedbackOpened } = useEventSetupFeedbackStore();
+  const { setup, isOpened: isFeedbackOpened } = useEventSetupFeedbackStore();
 
   return (
     <>
@@ -65,8 +66,20 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
         </div>
         <div className='flex flex-col gap-2 md:basis-1/2'>
           <h2 className='text-lg font-semibold leading-none'>Setup feedback</h2>
-          {isFeedbackOpened ? (
-            <Tile className=''>feedback</Tile>
+          {isFeedbackOpened && setup ? (
+            <Tile>
+              <div className='flex flex-col gap-4'>
+                {setup.feedback.length === 0 ? (
+                  <span className='text-slate-300'>
+                    There is no feedback for this setup
+                  </span>
+                ) : null}
+                <Button intent='primary' size='small' className='self-start'>
+                  <span>Post feedback</span>
+                  <ChatBubbleBottomCenterTextIcon className='h-4' />
+                </Button>
+              </div>
+            </Tile>
           ) : (
             <span className='text-slate-300'>
               Click on the chat icon on the setup to open it&apos;s feedback
