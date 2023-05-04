@@ -71,30 +71,31 @@ model Team {
 }
 
 model User {
-  id                          String                       @id @default(cuid())
-  name                        String?
-  email                       String?                      @unique
-  emailVerified               DateTime?
-  image                       String?
-  createdAt                   DateTime                     @default(now())
-  accounts                    Account[]
-  sessions                    Session[]
-  roles                       Role[]
-  championships               Championship[]               @relation(name: "drivers-championship")
-  events                      Event[]                      @relation(name: "drivers")
-  managingEvents              Event[]                      @relation(name: "manager")
-  managingTeam                Team?                        @relation(name: "manager-team")
-  socialManagingTeam          Team?                        @relation(name: "social-media-team")
-  team                        Team?                        @relation(fields: [teamId], references: [id])
-  teamId                      String?
-  managingChampionships       Championship[]
-  results                     Result[]
-  champResults                ChampionshipResult[]
-  newResultNotifications      NewResultNotification[]
-  newChampResultNotifications NewChampResultNotification[]
-  setups                      Setup[]
-  downloads                   Download[]
-  setupFeedback               Feedback[]
+  id                           String                        @id @default(cuid())
+  name                         String?
+  email                        String?                       @unique
+  emailVerified                DateTime?
+  image                        String?
+  createdAt                    DateTime                      @default(now())
+  accounts                     Account[]
+  sessions                     Session[]
+  roles                        Role[]
+  championships                Championship[]                @relation(name: "drivers-championship")
+  events                       Event[]                       @relation(name: "drivers")
+  managingEvents               Event[]                       @relation(name: "manager")
+  managingTeam                 Team?                         @relation(name: "manager-team")
+  socialManagingTeam           Team?                         @relation(name: "social-media-team")
+  team                         Team?                         @relation(fields: [teamId], references: [id])
+  teamId                       String?
+  managingChampionships        Championship[]
+  results                      Result[]
+  champResults                 ChampionshipResult[]
+  newResultNotifications       NewResultNotification[]
+  newChampResultNotifications  NewChampResultNotification[]
+  setups                       Setup[]
+  downloads                    Download[]
+  setupFeedback                Feedback[]
+  feedbackRequestNotifications FeedbackRequestNotification[]
 
   @@index([teamId])
 }
@@ -235,18 +236,19 @@ model EventsOnSetups {
 }
 
 model Setup {
-  id        String           @id @default(cuid())
-  name      String
-  car       String
-  track     String
-  data      String           @db.Text
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-  author    User             @relation(fields: [authorId], references: [id])
-  authorId  String
-  events    EventsOnSetups[]
-  downloads Download[]
-  feedback  Feedback[]
+  id                           String                        @id @default(cuid())
+  name                         String
+  car                          String
+  track                        String
+  data                         String                        @db.Text
+  createdAt                    DateTime                      @default(now())
+  updatedAt                    DateTime                      @updatedAt
+  author                       User                          @relation(fields: [authorId], references: [id])
+  authorId                     String
+  events                       EventsOnSetups[]
+  downloads                    Download[]
+  feedback                     Feedback[]
+  feedbackRequestNotifications FeedbackRequestNotification[]
 
   @@index([authorId])
 }
@@ -288,4 +290,19 @@ model Feedback {
 
   @@index([setupId])
   @@index([userId])
+}
+
+model FeedbackRequestNotification {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  read      Boolean
+  message   String
+
+  setup      Setup  @relation(fields: [setupId], references: [id])
+  receiver   User   @relation(fields: [receiverId], references: [id])
+  setupId    String
+  receiverId String
+
+  @@index([receiverId])
+  @@index([setupId])
 }
