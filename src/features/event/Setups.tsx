@@ -10,7 +10,11 @@ import {
 } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import { PlusIcon } from '@heroicons/react/20/solid';
-import { useEventSetupAssignStore, useEventSetupFeedbackStore } from './store';
+import {
+  useEventSetupAssignStore,
+  useEventSetupFeedbackStore,
+  usePostFeedbackStore,
+} from './store';
 import AssignSetup from './popups/AssignSetup';
 import Setup from './components/Setup';
 import Tile from '@ui/Tile';
@@ -23,6 +27,7 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
 
   const { open: openSetupAssignment } = useEventSetupAssignStore();
   const { setup, isOpened: isFeedbackOpened } = useEventSetupFeedbackStore();
+  const { open: openPostFeedback } = usePostFeedbackStore();
 
   const { Error, setError } = useError();
   const utils = api.useContext();
@@ -94,7 +99,12 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                   </span>
                 ) : null}
                 <div className='flex gap-2'>
-                  <Button intent='primary' size='small' className='self-start'>
+                  <Button
+                    intent='primary'
+                    size='small'
+                    className='self-start'
+                    onClick={() => openPostFeedback(setup.id)}
+                  >
                     <span>Post feedback</span>
                     <ChatBubbleBottomCenterTextIcon className='h-4' />
                   </Button>

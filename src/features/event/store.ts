@@ -87,3 +87,17 @@ export const useEventSetupFeedbackStore = create<EventSetupFeedbackStore>()(
     },
   })
 );
+
+type PostFeedbackStore = {
+  setupId: undefined | string;
+  isOpened: boolean;
+  open: (setupId: string) => void;
+  close: () => void;
+};
+
+export const usePostFeedbackStore = create<PostFeedbackStore>()(set => ({
+  setupId: undefined,
+  isOpened: false,
+  open: setupId => set(() => ({ setupId, isOpened: true })),
+  close: () => set(() => ({ setupId: undefined, isOpened: false })),
+}));

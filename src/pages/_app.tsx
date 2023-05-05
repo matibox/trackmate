@@ -29,6 +29,7 @@ import EditSetup from '~/features/setups/popups/EditSetup';
 import DeleteSetup from '~/features/setups/popups/DeleteSetup';
 import EventSetups from '~/features/dashboard/events/popups/EventSetups';
 import PostChampResult from '~/features/championships/popups/PostChampResult';
+import PostFeedback from '~/features/event/popups/PostFeedback';
 
 const specialRoutes = ['/login', '/welcome'];
 
@@ -92,6 +93,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <EditSetup />
           <DeleteSetup />
           <EventSetups />
+          <PostFeedback />
         </>
       )}
       <Component {...pageProps} />
