@@ -13,9 +13,8 @@ type NotificationProps = {
 const Notification: FC<NotificationProps> = ({ type, notification }) => {
   const handleAction = () => {
     switch (type) {
-      case 'newResultNotification': {
-        // console.log('new result');
-        break;
+      case 'feedbackRequestNotification': {
+        // TODO: open post feedback
       }
     }
   };

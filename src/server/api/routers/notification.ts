@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { notificationGroups } from '../../../constants/constants';
 
@@ -40,17 +39,14 @@ export const notificationRouter = createTRPCRouter({
 
     return returnObj;
   }),
-  markAsRead: protectedProcedure
-    .input(z.object({ id: z.string(), type: z.enum(notificationGroups) }))
-    .mutation(async ({ ctx, input }) => {
-      const { id, type } = input;
-
-      const updateClause = {
-        where: { id },
-        data: { read: true },
-      };
-
+  markAllAsRead: protectedProcedure.mutation(({ ctx }) => {
+    async function markAsRead(group: (typeof notificationGroups)[number]) {
       // @ts-expect-error 2349
-      await ctx.prisma[type].update(updateClause);
-    }),
+      await ctx.prisma[group].updateMany({ data: { read: true } });
+    }
+
+    notificationGroups.forEach(group => {
+      void markAsRead(group);
+    });
+  }),
 });
