@@ -175,7 +175,11 @@ const Information: FC<{ event: Event }> = ({ event }) => {
       </Tile>
       <div className='flex w-full flex-wrap gap-2 sm:w-48 sm:flex-col sm:flex-nowrap'>
         {dayjs(event.date).isBefore(dayjs()) && !event.result ? (
-          <Button intent='primary' onClick={() => openResult(event)}>
+          <Button
+            intent='primary'
+            className='basis-full sm:basis-auto'
+            onClick={() => openResult(event)}
+          >
             <span>Post result</span>
             <DocumentArrowUpIcon className='h-5' />
           </Button>
