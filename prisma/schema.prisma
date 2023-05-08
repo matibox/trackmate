@@ -277,11 +277,9 @@ enum Steer {
 }
 
 model Feedback {
-  id                 String     @id @default(cuid())
-  corner             Int        @db.TinyInt
-  cornerPart         CornerPart
-  steer              Steer
-  additionalFeedback String?    @db.Text
+  id              String    @id @default(cuid())
+  generalFeedback String?   @db.Text
+  problems        Problem[]
 
   setup   Setup  @relation(fields: [setupId], references: [id])
   user    User   @relation(fields: [userId], references: [id])
@@ -290,6 +288,19 @@ model Feedback {
 
   @@index([setupId])
   @@index([userId])
+}
+
+model Problem {
+  id                 String     @id @default(cuid())
+  corner             Int        @db.TinyInt
+  cornerPart         CornerPart
+  steer              Steer
+  additionalFeedback String?    @db.Text
+
+  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedbackId String
+
+  @@index([feedbackId])
 }
 
 model FeedbackRequestNotification {
