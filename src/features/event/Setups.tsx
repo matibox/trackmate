@@ -99,15 +99,6 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                   </span>
                 ) : null}
                 <div className='flex gap-2'>
-                  <Button
-                    intent='primary'
-                    size='small'
-                    className='self-start'
-                    onClick={() => openPostFeedback(setup.id)}
-                  >
-                    <span>Post feedback</span>
-                    <ChatBubbleBottomCenterTextIcon className='h-4' />
-                  </Button>
                   {setup.author.id === session?.user?.id ? (
                     <Button
                       intent='secondary'
@@ -128,7 +119,17 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                       <span>Request feedback</span>
                       <ChatBubbleLeftRightIcon className='h-4' />
                     </Button>
-                  ) : null}
+                  ) : (
+                    <Button
+                      intent='primary'
+                      size='small'
+                      className='self-start'
+                      onClick={() => openPostFeedback(setup.id)}
+                    >
+                      <span>Post feedback</span>
+                      <ChatBubbleBottomCenterTextIcon className='h-4' />
+                    </Button>
+                  )}
                 </div>
               </div>
               <Error />

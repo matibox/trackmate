@@ -4,6 +4,7 @@ import Popup, { PopupHeader } from '~/components/common/Popup';
 
 const PostFeedback: FC = () => {
   const { isOpened, close, setupId } = usePostFeedbackStore();
+
   return (
     <Popup
       close={close}
