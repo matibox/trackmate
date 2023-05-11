@@ -4,7 +4,7 @@ import { type RouterOutputs } from '~/utils/api';
 import Setup from './Setup';
 
 type SetupsProps = {
-  setups: RouterOutputs['setup']['byQuery'] | undefined;
+  setups: RouterOutputs['setup']['getAll'] | undefined;
   isLoading: boolean;
 };
 

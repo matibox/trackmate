@@ -30,7 +30,7 @@ const itemAnimation: Variants = {
   end: { opacity: 0 },
 };
 
-const Setup: FC<{ setup: RouterOutputs['setup']['byQuery'][number] }> = ({
+const Setup: FC<{ setup: RouterOutputs['setup']['getAll'][number] }> = ({
   setup,
 }) => {
   const { id, car, createdAt, updatedAt, name, track, author } = setup;
