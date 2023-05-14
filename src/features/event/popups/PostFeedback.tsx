@@ -16,10 +16,13 @@ import {
   ChevronUpDownIcon,
   TrashIcon,
 } from '@heroicons/react/20/solid';
+import { api } from '~/utils/api';
+import { useError } from '~/hooks/useError';
+import Loading from '@ui/Loading';
 
-const problemSchema = z.object({
+export const problemSchema = z.object({
   id: z.string(),
-  corner: z.number(),
+  corner: z.number().min(1, 'Corner number must be positive'),
   cornerPart: z.enum(cornerParts),
   steer: z.enum(steers),
   notes: z.string().optional(),
@@ -65,6 +68,18 @@ const PostFeedback: FC = () => {
     setProblems(prev => prev.filter(problem => problem.id !== id));
   }
 
+  const { Error, setError } = useError();
+  const utils = api.useContext();
+
+  const { mutate: postFeedback, isLoading } =
+    api.setup.postFeedback.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.event.single.invalidate();
+        close();
+      },
+    });
+
   const { errors, handleSubmit } = useForm(
     z.object({
       problems: z
@@ -72,7 +87,8 @@ const PostFeedback: FC = () => {
         .min(1, 'There has to be at least 1 problem.'),
     }),
     ({ problems }) => {
-      console.log(problems);
+      if (!setupId) return;
+      postFeedback({ setupId, problems });
     }
   );
 
@@ -81,6 +97,7 @@ const PostFeedback: FC = () => {
       close={close}
       condition={isOpened}
       header={<PopupHeader close={close} title='Post feedback' />}
+      isLoading={isLoading}
     >
       <Form onSubmit={e => handleSubmit(e, { problems })} className='relative'>
         <div className='flex max-h-96 w-full flex-col gap-4 overflow-y-auto py-0.5 px-1 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
@@ -102,7 +119,9 @@ const PostFeedback: FC = () => {
               <div className='flex w-full flex-wrap gap-x-2 gap-y-1 sm:gap-x-4'>
                 <Label label='Corner number'>
                   <Input
-                    type='text'
+                    type='number'
+                    min={1}
+                    max={100}
                     value={problem.corner}
                     onChange={e =>
                       updateProblem({
@@ -114,7 +133,7 @@ const PostFeedback: FC = () => {
                     error={errors?.problems}
                   />
                 </Label>
-                <Label label='Corner part'>
+                <Label label='Corner part' className='relative'>
                   <Listbox
                     value={problem.cornerPart}
                     onChange={e =>
@@ -233,7 +252,8 @@ const PostFeedback: FC = () => {
                 <Label label='Notes' optional>
                   <Input
                     type='text'
-                    value={problem.notes}
+                    maxLength={65535}
+                    value={problem.notes ?? ''}
                     onChange={e =>
                       updateProblem({
                         id: problem.id,
@@ -250,6 +270,7 @@ const PostFeedback: FC = () => {
           <Button
             intent='secondary'
             size='small'
+            type='button'
             onClick={() =>
               setProblems(prev => [...prev, generateDefaultProblem()])
             }
@@ -259,9 +280,21 @@ const PostFeedback: FC = () => {
           </Button>
         </div>
         {problems.length > 0 ? (
-          <div className='sticky bottom-0 left-0 h-8 w-full border-t border-sky-600 bg-slate-800'>
-            test
-          </div>
+          <>
+            <div className='sticky bottom-0 left-0 flex w-full items-center border-t border-slate-600 bg-slate-800 px-1 pt-3'>
+              <Button
+                intent='primary'
+                size='small'
+                type='submit'
+                gap={isLoading ? 'normal' : 'small'}
+                disabled={isLoading}
+              >
+                <span>Submit</span>
+                {isLoading ? <Loading /> : null}
+              </Button>
+            </div>
+            <Error />
+          </>
         ) : null}
       </Form>
     </Popup>

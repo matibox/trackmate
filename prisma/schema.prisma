@@ -291,13 +291,13 @@ model Feedback {
 }
 
 model Problem {
-  id                 String     @id @default(cuid())
-  corner             Int        @db.TinyInt
-  cornerPart         CornerPart
-  steer              Steer
-  additionalFeedback String?    @db.Text
+  id         String     @id @default(cuid())
+  corner     Int        @db.TinyInt
+  cornerPart CornerPart
+  steer      Steer
+  notes      String?
 
-  feedback   Feedback @relation(fields: [feedbackId], references: [id])
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
   feedbackId String
 
   @@index([feedbackId])

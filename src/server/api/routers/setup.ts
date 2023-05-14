@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { createTRPCRouter, driverProcedure, multiRoleProcedure } from '../trpc';
 import { decrypt, encrypt } from '../../utils/encrypt';
 import { TRPCError } from '@trpc/server';
+import { problemSchema } from '~/features/event/popups/PostFeedback';
 
 export const setupRouter = createTRPCRouter({
   upload: multiRoleProcedure(['driver', 'manager'])
@@ -270,6 +271,35 @@ export const setupRouter = createTRPCRouter({
           receiverId: reviewer.id,
           setupId: id,
         })),
+      });
+    }),
+  postFeedback: driverProcedure
+    .input(
+      z.object({
+        setupId: z.string(),
+        problems: z.array(problemSchema),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { setupId, problems } = input;
+      return await ctx.prisma.feedback.create({
+        data: {
+          user: { connect: { id: ctx.session.user.id } },
+          setup: { connect: { id: setupId } },
+          problems: {
+            createMany: {
+              data: problems.map(problem => {
+                const { corner, cornerPart, steer, notes } = problem;
+                return {
+                  corner,
+                  cornerPart,
+                  steer,
+                  notes,
+                };
+              }),
+            },
+          },
+        },
       });
     }),
 });
