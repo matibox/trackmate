@@ -11,7 +11,11 @@ import { z } from 'zod';
 import { Listbox } from '@headlessui/react';
 import { cornerParts, steers } from '~/constants/constants';
 import cn from '~/lib/classes';
-import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
+import {
+  CheckIcon,
+  ChevronUpDownIcon,
+  TrashIcon,
+} from '@heroicons/react/20/solid';
 
 const problemSchema = z.object({
   id: z.string(),
@@ -57,8 +61,16 @@ const PostFeedback: FC = () => {
     );
   }
 
+  function deleteProblem({ id }: { id: string }) {
+    setProblems(prev => prev.filter(problem => problem.id !== id));
+  }
+
   const { errors, handleSubmit } = useForm(
-    z.object({ problems: z.array(problemSchema) }),
+    z.object({
+      problems: z
+        .array(problemSchema)
+        .min(1, 'There has to be at least 1 problem.'),
+    }),
     ({ problems }) => {
       console.log(problems);
     }
@@ -71,12 +83,22 @@ const PostFeedback: FC = () => {
       header={<PopupHeader close={close} title='Post feedback' />}
     >
       <Form onSubmit={e => handleSubmit(e, { problems })} className='relative'>
-        <div className='mb-2 flex max-h-96 w-full flex-col gap-4 overflow-y-auto py-0.5 px-1 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
+        <div className='flex max-h-96 w-full flex-col gap-4 overflow-y-auto py-0.5 px-1 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
           {problems.map((problem, i) => (
             <div key={problem.id} className='flex w-full flex-col'>
-              <span className='text-base font-semibold sm:text-lg'>
-                Problem {i + 1}
-              </span>
+              <div className='flex items-center gap-2'>
+                <span className='text-base font-semibold sm:text-lg'>
+                  Problem {i + 1}
+                </span>
+                <button
+                  className='h-4'
+                  aria-label='Delete problem'
+                  title='Delete problem'
+                  onClick={() => deleteProblem({ id: problem.id })}
+                >
+                  <TrashIcon className='h-4 text-red-500 transition-colors hover:text-red-400' />
+                </button>
+              </div>
               <div className='flex w-full flex-wrap gap-x-2 gap-y-1 sm:gap-x-4'>
                 <Label label='Corner number'>
                   <Input
@@ -236,9 +258,11 @@ const PostFeedback: FC = () => {
             Add new problem
           </Button>
         </div>
-        <div className='absolute bottom-0 left-0 h-12 w-full border-t border-sky-600 bg-slate-800'>
-          test
-        </div>
+        {problems.length > 0 ? (
+          <div className='sticky bottom-0 left-0 h-8 w-full border-t border-sky-600 bg-slate-800'>
+            test
+          </div>
+        ) : null}
       </Form>
     </Popup>
   );
