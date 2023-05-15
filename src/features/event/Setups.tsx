@@ -22,6 +22,8 @@ import { useSession } from 'next-auth/react';
 import { api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import Avatar from '~/components/common/Avatar';
+import Link from 'next/link';
+import { capitilize } from '~/utils/helpers';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
@@ -101,7 +103,10 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                 ) : (
                   setup.feedback.map(feedback => (
                     <div key={feedback.id} className='flex flex-col gap-2'>
-                      <div className='flex items-center gap-2'>
+                      <Link
+                        href={`/profile/${feedback.user.id}`}
+                        className='flex items-center gap-2 transition-colors hover:text-sky-400'
+                      >
                         <Avatar
                           src={feedback.user.image ?? ''}
                           alt={`${
@@ -114,19 +119,42 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                         <span className='font-semibold'>
                           {feedback.user.name}
                         </span>
-                      </div>
-                      <div className='flex flex-col gap-2'>
+                      </Link>
+                      <div className='flex flex-wrap gap-4'>
                         {feedback.problems.map(problem => (
                           <div
                             key={problem.id}
-                            className='flex-col gap-1 rounded px-4 py-2 ring-1 ring-slate-700'
+                            className='max-w-xs flex-col rounded p-4 ring-1 ring-slate-700'
                           >
                             <span className='block font-semibold'>
-                              {`${problem.steer} at turn ${problem.corner} ${problem.cornerPart}`}
+                              {`${capitilize(problem.steer)} at turn ${
+                                problem.corner
+                              } ${problem.cornerPart}`}
                             </span>
                             {problem.notes ? (
-                              <span className='block'>{problem.notes}</span>
+                              <span className='block text-slate-300'>
+                                {capitilize(problem.notes)}
+                              </span>
                             ) : null}
+                            {/* // TODO: uncomment below */}
+                            {/* {setup.author.id === session?.user?.id ? (
+                              <Button
+                                intent='secondary'
+                                size='small'
+                                gap='small'
+                                className='mt-2'
+                              >
+                                Mark as {problem.resolved ? 'Un' : ''}resolved
+                              </Button>
+                            ) : null} */}
+                            <Button
+                              intent='secondary'
+                              size='small'
+                              gap='small'
+                              className='mt-2'
+                            >
+                              Mark as {problem.resolved ? 'Un' : ''}resolved
+                            </Button>
                           </div>
                         ))}
                       </div>
