@@ -1,13 +1,10 @@
-import { useState, type FC } from 'react';
+import { type FC } from 'react';
 import { usePostFeedbackStore } from '../store';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 import Button from '@ui/Button';
-import crypto from 'crypto';
 import Form from '@ui/Form';
 import Label from '@ui/Label';
 import Input from '@ui/Input';
-import useForm from '~/hooks/useForm';
-import { z } from 'zod';
 import { Listbox } from '@headlessui/react';
 import { cornerParts, steers } from '~/constants/constants';
 import cn from '~/lib/classes';
@@ -16,81 +13,22 @@ import {
   ChevronUpDownIcon,
   TrashIcon,
 } from '@heroicons/react/20/solid';
-import { api } from '~/utils/api';
-import { useError } from '~/hooks/useError';
 import Loading from '@ui/Loading';
-
-export const problemSchema = z.object({
-  id: z.string(),
-  corner: z.number().min(1, 'Corner number must be positive'),
-  cornerPart: z.enum(cornerParts),
-  steer: z.enum(steers),
-  notes: z.string().optional(),
-});
-
-type Problem = z.infer<typeof problemSchema>;
-
-const generateDefaultProblem = (): Problem => ({
-  id: crypto.randomBytes(8).toString('hex'),
-  corner: 1,
-  cornerPart: 'entry',
-  steer: 'oversteer',
-});
+import usePostFeedback from '../hooks/usePostFeedback';
 
 const PostFeedback: FC = () => {
   const { isOpened, close, setupId } = usePostFeedbackStore();
 
-  const [problems, setProblems] = useState<Problem[]>([]);
-
-  function updateProblem<K extends keyof Omit<Problem, 'id'>>({
-    id,
-    property,
-    value,
-  }: {
-    id: string;
-    property: K;
-    value: Omit<Problem, 'id'>[K];
-  }) {
-    setProblems(prev =>
-      prev.map(problem => {
-        if (problem.id === id) {
-          return {
-            ...problem,
-            [property]: value,
-          };
-        }
-        return problem;
-      })
-    );
-  }
-
-  function deleteProblem({ id }: { id: string }) {
-    setProblems(prev => prev.filter(problem => problem.id !== id));
-  }
-
-  const { Error, setError } = useError();
-  const utils = api.useContext();
-
-  const { mutate: postFeedback, isLoading } =
-    api.setup.postFeedback.useMutation({
-      onError: err => setError(err.message),
-      onSuccess: async () => {
-        await utils.event.single.invalidate();
-        close();
-      },
-    });
-
-  const { errors, handleSubmit } = useForm(
-    z.object({
-      problems: z
-        .array(problemSchema)
-        .min(1, 'There has to be at least 1 problem.'),
-    }),
-    ({ problems }) => {
-      if (!setupId) return;
-      postFeedback({ setupId, problems });
-    }
-  );
+  const {
+    problems,
+    addProblem,
+    deleteProblem,
+    updateProblem,
+    Error,
+    errors,
+    handleSubmit,
+    isLoading,
+  } = usePostFeedback({ setupId });
 
   return (
     <Popup
@@ -99,8 +37,11 @@ const PostFeedback: FC = () => {
       header={<PopupHeader close={close} title='Post feedback' />}
       isLoading={isLoading}
     >
-      <Form onSubmit={e => handleSubmit(e, { problems })} className='relative'>
-        <div className='flex max-h-96 w-full flex-col gap-4 overflow-y-auto py-0.5 px-1 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
+      <Form
+        onSubmit={e => handleSubmit(e, { problems })}
+        className='relative gap-0 sm:gap-0'
+      >
+        <div className='flex max-h-96 w-full flex-col gap-4 overflow-y-auto px-1 py-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
           {problems.map((problem, i) => (
             <div key={problem.id} className='flex w-full flex-col'>
               <div className='flex items-center gap-2'>
@@ -191,7 +132,7 @@ const PostFeedback: FC = () => {
                     </Listbox.Options>
                   </Listbox>
                 </Label>
-                <Label label='Steer'>
+                <Label label='Steer' className='relative'>
                   <Listbox
                     value={problem.steer}
                     onChange={e =>
@@ -271,17 +212,15 @@ const PostFeedback: FC = () => {
             intent='secondary'
             size='small'
             type='button'
-            onClick={() =>
-              setProblems(prev => [...prev, generateDefaultProblem()])
-            }
-            className='self-start'
+            onClick={addProblem}
+            className={cn('self-start', { 'mb-4': problems.length > 0 })}
           >
             Add new problem
           </Button>
         </div>
         {problems.length > 0 ? (
           <>
-            <div className='sticky bottom-0 left-0 flex w-full items-center border-t border-slate-600 bg-slate-800 px-1 pt-3'>
+            <div className='sticky -bottom-6 left-0 flex w-full items-center border-t border-slate-600 bg-slate-800 px-1 pt-3'>
               <Button
                 intent='primary'
                 size='small'

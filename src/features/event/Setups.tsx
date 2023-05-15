@@ -21,6 +21,7 @@ import Tile from '@ui/Tile';
 import { useSession } from 'next-auth/react';
 import { api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
+import Avatar from '~/components/common/Avatar';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
@@ -97,7 +98,41 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                   <span className='text-slate-300'>
                     There is no feedback for this setup
                   </span>
-                ) : null}
+                ) : (
+                  setup.feedback.map(feedback => (
+                    <div key={feedback.id} className='flex flex-col gap-2'>
+                      <div className='flex items-center gap-2'>
+                        <Avatar
+                          src={feedback.user.image ?? ''}
+                          alt={`${
+                            feedback.user.name ?? 'driver'
+                          }'s profile picture`}
+                          width={30}
+                          height={30}
+                          className='flex items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700'
+                        />
+                        <span className='font-semibold'>
+                          {feedback.user.name}
+                        </span>
+                      </div>
+                      <div className='flex flex-col gap-2'>
+                        {feedback.problems.map(problem => (
+                          <div
+                            key={problem.id}
+                            className='flex-col gap-1 rounded px-4 py-2 ring-1 ring-slate-700'
+                          >
+                            <span className='block font-semibold'>
+                              {`${problem.steer} at turn ${problem.corner} ${problem.cornerPart}`}
+                            </span>
+                            {problem.notes ? (
+                              <span className='block'>{problem.notes}</span>
+                            ) : null}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))
+                )}
                 <div className='flex gap-2'>
                   {setup.author.id === session?.user?.id ? (
                     <Button
