@@ -224,9 +224,9 @@ model NewChampResultNotification {
 }
 
 model EventsOnSetups {
-  event    Event   @relation(fields: [eventId], references: [id])
+  event    Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId  String
-  setup    Setup   @relation(fields: [setupId], references: [id])
+  setup    Setup   @relation(fields: [setupId], references: [id], onDelete: Cascade)
   setupId  String
   isActive Boolean @default(false)
 
