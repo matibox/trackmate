@@ -296,6 +296,7 @@ model Problem {
   cornerPart CornerPart
   steer      Steer
   notes      String?
+  resolved   Boolean    @default(false)
 
   feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
   feedbackId String
