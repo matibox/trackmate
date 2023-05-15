@@ -25,6 +25,7 @@ import Avatar from '~/components/common/Avatar';
 import Link from 'next/link';
 import { capitilize } from '~/utils/helpers';
 import cn from '~/lib/classes';
+import dayjs from 'dayjs';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
@@ -131,22 +132,24 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                 ) : (
                   feedback?.map(feedback => (
                     <div key={feedback.id} className='flex flex-col gap-2'>
-                      <Link
-                        href={`/profile/${feedback.user.id}`}
-                        className='flex items-center gap-2 transition-colors hover:text-sky-400'
-                      >
-                        <Avatar
-                          src={feedback.user.image ?? ''}
-                          alt={`${
-                            feedback.user.name ?? 'driver'
-                          }'s profile picture`}
-                          width={30}
-                          height={30}
-                          className='flex items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700'
-                        />
-                        <span className='font-semibold'>
-                          {feedback.user.name}
-                        </span>
+                      <div className='flex items-center gap-2'>
+                        <Link
+                          href={`/profile/${feedback.user.id}`}
+                          className='flex items-center gap-2 transition-colors hover:text-sky-400'
+                        >
+                          <Avatar
+                            src={feedback.user.image ?? ''}
+                            alt={`${
+                              feedback.user.name ?? 'driver'
+                            }'s profile picture`}
+                            width={30}
+                            height={30}
+                            className='flex items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700'
+                          />
+                          <span className='font-semibold'>
+                            {feedback.user.name}
+                          </span>
+                        </Link>
                         {feedback.problems.every(
                           problem => problem.resolved
                         ) ? (
@@ -155,7 +158,11 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                             title='Every problem was resolved'
                           />
                         ) : null}
-                      </Link>
+                        <span className='text-sm text-slate-300'>
+                          {dayjs(feedback.createdAt).format('DD MMM HH:mm')}
+                        </span>
+                      </div>
+
                       <div className='flex flex-wrap gap-4'>
                         {feedback.problems.map(problem => (
                           <Tile

@@ -264,6 +264,7 @@ export const setupRouter = createTRPCRouter({
           },
           problems: true,
         },
+        orderBy: { createdAt: 'desc' },
       });
     }),
   requestFeedback: driverProcedure

@@ -279,6 +279,7 @@ enum Steer {
 model Feedback {
   id              String    @id @default(cuid())
   generalFeedback String?   @db.Text
+  createdAt       DateTime  @default(now())
   problems        Problem[]
 
   setup   Setup  @relation(fields: [setupId], references: [id])
