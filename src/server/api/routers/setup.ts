@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { createTRPCRouter, driverProcedure, multiRoleProcedure } from '../trpc';
 import { decrypt, encrypt } from '../../utils/encrypt';
 import { TRPCError } from '@trpc/server';
-import { problemSchema } from '~/features/event/popups/PostFeedback';
+import { problemSchema } from '~/features/event/hooks/usePostFeedback';
 
 export const setupRouter = createTRPCRouter({
   upload: multiRoleProcedure(['driver', 'manager'])
@@ -248,6 +248,24 @@ export const setupRouter = createTRPCRouter({
         data: { isActive: setAsActive },
       });
     }),
+  feedback: driverProcedure
+    .input(z.object({ setupId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { setupId } = input;
+      return ctx.prisma.feedback.findMany({
+        where: { setup: { id: setupId } },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          problems: true,
+        },
+      });
+    }),
   requestFeedback: driverProcedure
     .input(
       z.object({
@@ -300,6 +318,15 @@ export const setupRouter = createTRPCRouter({
             },
           },
         },
+      });
+    }),
+  toggleProblemResolved: driverProcedure
+    .input(z.object({ problemId: z.string(), markAsResolved: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const { problemId, markAsResolved } = input;
+      return await ctx.prisma.problem.update({
+        where: { id: problemId },
+        data: { resolved: markAsResolved },
       });
     }),
 });

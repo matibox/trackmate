@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { useError } from '~/hooks/useError';
 import { api } from '~/utils/api';
 import useForm from '~/hooks/useForm';
+import { usePostFeedbackStore } from '../store';
 
 export const problemSchema = z.object({
   id: z.string(),
@@ -29,6 +30,7 @@ export default function usePostFeedback({
   setupId: string | undefined;
 }) {
   const [problems, setProblems] = useState<Problem[]>([]);
+  const { close } = usePostFeedbackStore();
 
   function addProblem() {
     setProblems(prev => [...prev, generateDefaultProblem()]);
@@ -68,6 +70,7 @@ export default function usePostFeedback({
       onError: err => setError(err.message),
       onSuccess: async () => {
         await utils.event.single.invalidate();
+        await utils.setup.feedback.invalidate();
         close();
       },
     });

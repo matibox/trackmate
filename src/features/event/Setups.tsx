@@ -1,4 +1,4 @@
-import { type FC } from 'react';
+import { useState, type FC } from 'react';
 import { type Event } from '~/pages/event/[eventId]';
 import {
   CheckCircleIcon,
@@ -24,6 +24,7 @@ import { useError } from '~/hooks/useError';
 import Avatar from '~/components/common/Avatar';
 import Link from 'next/link';
 import { capitilize } from '~/utils/helpers';
+import cn from '~/lib/classes';
 
 const Setups: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
@@ -35,11 +36,38 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
   const { Error, setError } = useError();
   const utils = api.useContext();
 
-  const { mutate: requestFeedback, isLoading } =
+  const { data: feedback, isLoading: feedbackLoading } =
+    api.setup.feedback.useQuery(
+      { setupId: setup?.id },
+      {
+        onError: err => setError(err.message),
+        enabled: !!setup?.id,
+      }
+    );
+
+  const { mutate: requestFeedback, isLoading: requestFeedbackLoading } =
     api.setup.requestFeedback.useMutation({
       onError: err => setError(err.message),
       onSuccess: async () => {
         await utils.event.single.invalidate();
+      },
+    });
+
+  const [problemLoadingId, setProblemLoadingId] = useState<string | undefined>(
+    undefined
+  );
+  const { mutate: toggleProblemResolved, isLoading: problemResolvedLoading } =
+    api.setup.toggleProblemResolved.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.event.single.invalidate();
+        await utils.setup.feedback.invalidate();
+      },
+      onMutate: ({ problemId }) => {
+        setProblemLoadingId(problemId);
+      },
+      onSettled: () => {
+        setProblemLoadingId(undefined);
       },
     });
 
@@ -94,14 +122,14 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
         <div className='flex flex-col gap-2 md:basis-1/2'>
           <h2 className='text-lg font-semibold leading-none'>Setup feedback</h2>
           {isFeedbackOpened && setup ? (
-            <Tile isLoading={isLoading}>
+            <Tile isLoading={requestFeedbackLoading || feedbackLoading}>
               <div className='flex flex-col gap-4'>
-                {setup.feedback.length === 0 ? (
+                {feedback?.length === 0 ? (
                   <span className='text-slate-300'>
                     There is no feedback for this setup
                   </span>
                 ) : (
-                  setup.feedback.map(feedback => (
+                  feedback?.map(feedback => (
                     <div key={feedback.id} className='flex flex-col gap-2'>
                       <Link
                         href={`/profile/${feedback.user.id}`}
@@ -119,43 +147,63 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                         <span className='font-semibold'>
                           {feedback.user.name}
                         </span>
+                        {feedback.problems.every(
+                          problem => problem.resolved
+                        ) ? (
+                          <CheckCircleIcon
+                            className='h-5 text-sky-400'
+                            title='Every problem was resolved'
+                          />
+                        ) : null}
                       </Link>
                       <div className='flex flex-wrap gap-4'>
                         {feedback.problems.map(problem => (
-                          <div
+                          <Tile
                             key={problem.id}
-                            className='max-w-xs flex-col rounded p-4 ring-1 ring-slate-700'
+                            className='max-w-xs'
+                            isLoading={
+                              problemLoadingId === problem.id &&
+                              problemResolvedLoading
+                            }
                           >
-                            <span className='block font-semibold'>
-                              {`${capitilize(problem.steer)} at turn ${
-                                problem.corner
-                              } ${problem.cornerPart}`}
-                            </span>
-                            {problem.notes ? (
-                              <span className='block text-slate-300'>
-                                {capitilize(problem.notes)}
-                              </span>
-                            ) : null}
-                            {/* // TODO: uncomment below */}
-                            {/* {setup.author.id === session?.user?.id ? (
-                              <Button
-                                intent='secondary'
-                                size='small'
-                                gap='small'
-                                className='mt-2'
+                            <div className='flex flex-col'>
+                              <span
+                                className={cn('block font-semibold', {
+                                  'text-slate-400': problem.resolved,
+                                })}
                               >
-                                Mark as {problem.resolved ? 'Un' : ''}resolved
-                              </Button>
-                            ) : null} */}
-                            <Button
-                              intent='secondary'
-                              size='small'
-                              gap='small'
-                              className='mt-2'
-                            >
-                              Mark as {problem.resolved ? 'Un' : ''}resolved
-                            </Button>
-                          </div>
+                                {`${capitilize(problem.steer)} at turn ${
+                                  problem.corner
+                                } ${problem.cornerPart}`}
+                              </span>
+                              {problem.notes ? (
+                                <span
+                                  className={cn('block text-slate-300', {
+                                    'text-slate-500': problem.resolved,
+                                  })}
+                                >
+                                  {capitilize(problem.notes)}
+                                </span>
+                              ) : null}
+                              {setup.author.id === session?.user?.id ? (
+                                <Button
+                                  intent='secondary'
+                                  size='small'
+                                  gap='small'
+                                  className='mt-2'
+                                  onClick={() =>
+                                    toggleProblemResolved({
+                                      problemId: problem.id,
+                                      markAsResolved: !problem.resolved,
+                                    })
+                                  }
+                                >
+                                  Mark as {problem.resolved ? 'Un' : ''}
+                                  resolved
+                                </Button>
+                              ) : null}
+                            </div>
+                          </Tile>
                         ))}
                       </div>
                     </div>

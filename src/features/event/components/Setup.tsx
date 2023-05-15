@@ -1,5 +1,5 @@
 import Tile from '@ui/Tile';
-import { type FC, useRef } from 'react';
+import { type FC, useRef, useCallback } from 'react';
 import { type Event } from '~/pages/event/[eventId]';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
 import dayjs from 'dayjs';
@@ -15,6 +15,9 @@ import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
 import { useSetup } from '~/hooks/useSetup';
 import { useEventSetupFeedbackStore } from '../store';
+import { api } from '~/utils/api';
+import { hasRole } from '~/utils/helpers';
+import { useSession } from 'next-auth/react';
 
 const menuAnimation: Variants = {
   start: { opacity: 0, x: '-100%', width: 0 },
@@ -49,6 +52,7 @@ const Setup: FC<SetupProps> = ({
   feedback = false,
 }) => {
   const { id, car, track, updatedAt, author, name } = setup;
+  const { data: session } = useSession();
 
   const {
     isSetupFeedbackOpened,
@@ -81,6 +85,11 @@ const Setup: FC<SetupProps> = ({
     isAssigned: defaultIsAssigned,
   });
 
+  const utils = api.useContext();
+  const invalidateFeedbackQuery = useCallback(async () => {
+    await utils.setup.feedback.invalidate();
+  }, [utils.setup.feedback]);
+
   return (
     <Tile
       header={
@@ -110,7 +119,7 @@ const Setup: FC<SetupProps> = ({
           {isAssigned ? (
             <>
               <div className='flex items-center gap-1'>
-                {feedback && (
+                {feedback && !hasRole(session, 'manager') ? (
                   <button
                     className={cn('transition-colors hover:text-sky-400', {
                       'text-sky-400': isSetupFeedbackOpened(setup.id),
@@ -127,12 +136,13 @@ const Setup: FC<SetupProps> = ({
                       } else {
                         closeFeedback();
                         openFeedback(setup);
+                        void invalidateFeedbackQuery();
                       }
                     }}
                   >
                     <ChatBubbleOvalLeftEllipsisIcon className='h-5' />
                   </button>
-                )}
+                ) : null}
                 <motion.button
                   aria-label={`${actionsOpened ? 'close' : 'open'} menu`}
                   className='relative z-10 transition-colors hover:text-sky-400'

@@ -350,18 +350,6 @@ export const eventRouter = createTRPCRouter({
               orderBy: { downloadedAt: 'desc' },
               take: 1,
             },
-            feedback: {
-              include: {
-                user: {
-                  select: {
-                    id: true,
-                    name: true,
-                    image: true,
-                  },
-                },
-                problems: true,
-              },
-            },
           },
           orderBy: { updatedAt: 'desc' },
         });
