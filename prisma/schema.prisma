@@ -61,8 +61,8 @@ model Team {
   name                String
   managerId           String               @unique
   socialMediaId       String?              @unique
-  manager             User                 @relation(fields: [managerId], references: [id], name: "manager-team", onUpdate: NoAction, onDelete: NoAction)
   socialMedia         User?                @relation(fields: [socialMediaId], references: [id], name: "social-media-team", onUpdate: NoAction, onDelete: NoAction)
+  managers            User[]               @relation(name: "team-managers")
   drivers             User[]
   events              Event[]
   championships       Championship[]
@@ -83,9 +83,10 @@ model User {
   championships                Championship[]                @relation(name: "drivers-championship")
   events                       Event[]                       @relation(name: "drivers")
   managingEvents               Event[]                       @relation(name: "manager")
-  managingTeam                 Team?                         @relation(name: "manager-team")
+  managingTeam                 Team?                         @relation(fields: [managingTeamId], references: [id], name: "team-managers")
   socialManagingTeam           Team?                         @relation(name: "social-media-team")
   team                         Team?                         @relation(fields: [teamId], references: [id])
+  managingTeamId               String?
   teamId                       String?
   managingChampionships        Championship[]
   results                      Result[]
@@ -98,6 +99,7 @@ model User {
   feedbackRequestNotifications FeedbackRequestNotification[]
 
   @@index([teamId])
+  @@index([managingTeamId])
 }
 
 model VerificationToken {

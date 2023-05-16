@@ -35,7 +35,7 @@ export const teamRouter = createTRPCRouter({
             name: true,
           },
         },
-        manager: {
+        managers: {
           select: {
             id: true,
             name: true,
@@ -104,7 +104,7 @@ export const teamRouter = createTRPCRouter({
           drivers: {
             connect: drivers.map(driver => ({ id: driver.id })),
           },
-          manager: { connect: { id: ctx.session.user.id } },
+          managerId: ctx.session.user.id,
           socialMedia: socialMedia
             ? {
                 connect: {
