@@ -30,6 +30,7 @@ import DeleteSetup from '~/features/setups/popups/DeleteSetup';
 import EventSetups from '~/features/dashboard/events/popups/EventSetups';
 import PostChampResult from '~/features/championships/popups/PostChampResult';
 import PostFeedback from '~/features/event/popups/PostFeedback';
+import DevRoleSwitch from '~/components/global/DevRoleSwitch';
 
 const specialRoutes = ['/login', '/welcome'];
 
@@ -76,6 +77,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <ReactQueryDevtools />
       {!isSpecialRoute && (
         <>
+          <DevRoleSwitch />
           <Navbar />
           <Settings />
           <PostResult />

@@ -9,6 +9,29 @@ import {
 } from '../trpc';
 
 export const userRouter = createTRPCRouter({
+  __devToggleRole: protectedProcedure
+    .input(z.object({ roleName: z.enum(roles) }))
+    .mutation(async ({ ctx, input }) => {
+      const { roleName } = input;
+      if (process.env.NODE_ENV !== 'development') return;
+      return await ctx.prisma.user.update({
+        where: {
+          id: ctx.session.user.id,
+        },
+        data: {
+          roles: ctx.session.user.roles?.some(role => role.name === roleName)
+            ? {
+                disconnect: { name: roleName },
+              }
+            : {
+                connectOrCreate: {
+                  where: { name: roleName },
+                  create: { name: roleName },
+                },
+              },
+        },
+      });
+    }),
   assignRoles: protectedProcedure
     .input(z.array(z.enum(roles)))
     .mutation(async ({ input, ctx }) => {
