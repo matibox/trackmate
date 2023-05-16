@@ -16,10 +16,8 @@ const DeleteDriver: FC = () => {
   const utils = api.useContext();
   const { mutate: removeDriver, isLoading } = api.team.removeDriver.useMutation(
     {
-      onError(err) {
-        setError(err.message);
-      },
-      async onSuccess() {
+      onError: err => setError(err.message),
+      onSuccess: async () => {
         close();
         await utils.team.getDriveFor.invalidate();
         await utils.team.getManagingFor.invalidate();

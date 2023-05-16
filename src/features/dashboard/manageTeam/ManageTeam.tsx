@@ -13,6 +13,7 @@ import { api } from '../../../utils/api';
 import { hasRole } from '../../../utils/helpers';
 import Driver from './Driver';
 import { UserGroupIcon } from '@heroicons/react/24/outline';
+import Manager from './Manager';
 
 const ManageTeam: FC = () => {
   const { data: session } = useSession();
@@ -71,6 +72,15 @@ const ManageTeam: FC = () => {
             <ul>
               {team.drivers.map(driver => (
                 <Driver key={driver.id} driver={driver} />
+              ))}
+            </ul>
+            <span className='self-end font-semibold'>
+              {team.managers.length} other
+              {team.managers.length === 1 ? ' manager' : ' managers'}
+            </span>
+            <ul>
+              {team.managers.map(manager => (
+                <Manager key={manager.id} manager={manager} teamId={team.id} />
               ))}
             </ul>
             <Button

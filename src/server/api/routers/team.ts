@@ -188,6 +188,15 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
+  removeManager: managerProcedure
+    .input(z.object({ teamId: z.string(), managerId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { teamId, managerId } = input;
+      return await ctx.prisma.team.update({
+        where: { id: teamId },
+        data: { managers: { disconnect: { id: managerId } } },
+      });
+    }),
   getTeammatesOrDrivers: multiRoleProcedure(['driver', 'manager']).query(
     async ({ ctx }) => {
       const driverWhereClause = {
