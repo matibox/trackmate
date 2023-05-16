@@ -14,20 +14,15 @@ import { api } from '~/utils/api';
 
 export const formSchema = z.object({
   name: z.string().min(1, 'Name is required'),
-  drivers: z
-    .array(z.object({ id: z.string(), name: z.string() }))
-    .min(1, 'Drivers are required'),
+  drivers: z.array(z.object({ id: z.string(), name: z.string() })),
   socialMedia: z.object({ id: z.string(), name: z.string() }).nullable(),
+  otherManagers: z.array(z.object({ id: z.string(), name: z.string() })),
 });
 
 type TeamFormProps = {
   initialData?: z.infer<typeof formSchema>;
   errors:
-    | {
-        name?: string[] | undefined;
-        drivers?: string[] | undefined;
-        socialMedia?: string[] | undefined;
-      }
+    | { [P in keyof z.infer<typeof formSchema>]?: string[] | undefined }
     | undefined;
   handleSubmit: (e: FormEvent<Element>, values: unknown) => void;
   submitLoading: boolean;
@@ -38,6 +33,7 @@ const TeamForm: FC<TeamFormProps> = ({
     name: '',
     drivers: [],
     socialMedia: null,
+    otherManagers: [],
   },
   errors,
   handleSubmit,
@@ -48,9 +44,11 @@ const TeamForm: FC<TeamFormProps> = ({
 
   const [driversQuery, setDriversQuery] = useState('');
   const [socialMediaQuery, setSocialMediaQuery] = useState('');
+  const [managerQuery, setManagerQuery] = useState('');
 
   const debouncedDriversQuery = useDebounce(driversQuery, 500);
   const debouncedSocialMediaQuery = useDebounce(socialMediaQuery, 500);
+  const debouncedManagerQuery = useDebounce(managerQuery, 500);
 
   const { data: drivers, isLoading: driversLoading } =
     api.user.getDrivers.useQuery(
@@ -70,6 +68,12 @@ const TeamForm: FC<TeamFormProps> = ({
       { enabled: Boolean(debouncedSocialMediaQuery) }
     );
 
+  const { data: managers, isLoading: managersLoading } =
+    api.user.getManagers.useQuery(
+      { q: debouncedManagerQuery },
+      { enabled: Boolean(debouncedManagerQuery) }
+    );
+
   return (
     <Form onSubmit={e => handleSubmit(e, formState)}>
       <Label label='name'>
@@ -86,7 +90,8 @@ const TeamForm: FC<TeamFormProps> = ({
         label={`drivers: ${formState.drivers
           .map(driver => driver.name)
           .join(', ')}`}
-        className='relative'
+        className='relative z-20'
+        optional
       >
         <ErrorWrapper error={errors?.drivers}>
           <Combobox
@@ -243,6 +248,87 @@ const TeamForm: FC<TeamFormProps> = ({
                 Reset
               </Button>
             )}
+          </Combobox>
+        </ErrorWrapper>
+      </Label>
+      <Label
+        label={`other managers: ${formState.otherManagers
+          .map(manager => manager.name)
+          .join(', ')}`}
+        className='relative'
+        optional
+      >
+        <ErrorWrapper error={errors?.otherManagers}>
+          <Combobox
+            value={formState.otherManagers}
+            onChange={managers =>
+              setFormState(prev => ({
+                ...prev,
+                otherManagers: [
+                  ...new Map(
+                    managers.map(v => [JSON.stringify([v.id, v.name]), v])
+                  ).values(),
+                ],
+              }))
+            }
+            multiple
+          >
+            <Combobox.Input
+              className='relative h-8 cursor-default rounded bg-slate-50 pl-2 text-left text-slate-900 selection:bg-sky-500 selection:text-slate-50 focus:outline-none focus-visible:ring focus-visible:ring-sky-600 sm:text-sm'
+              onChange={e => setManagerQuery(e.target.value)}
+            />
+            <Combobox.Options className='absolute top-16 mt-1 max-h-60 min-h-[2.5rem] w-full overflow-auto rounded bg-slate-50 py-1 text-base focus:outline-none sm:text-sm'>
+              {!managersLoading &&
+              managers?.length === 0 &&
+              managerQuery !== '' ? (
+                <div className='relative cursor-default select-none py-2 px-4 text-gray-700'>
+                  No managers found.
+                </div>
+              ) : (
+                <>
+                  {managers?.map(manager => (
+                    <Combobox.Option
+                      key={manager.id}
+                      value={manager}
+                      className={({ active }) =>
+                        cn(
+                          'relative cursor-default select-none py-2 pl-10 pr-4 text-slate-900',
+                          {
+                            'bg-sky-500 text-slate-50': active,
+                          }
+                        )
+                      }
+                    >
+                      {({ selected }) => (
+                        <>
+                          <span
+                            className={`block truncate ${
+                              selected ? 'font-medium' : 'font-normal'
+                            }`}
+                          >
+                            {manager.name}
+                          </span>
+                          {selected && (
+                            <span className='absolute inset-y-0 left-0 flex items-center pl-3 text-slate-900'>
+                              <CheckIcon
+                                className='h-5 w-5'
+                                aria-hidden='true'
+                              />
+                            </span>
+                          )}
+                        </>
+                      )}
+                    </Combobox.Option>
+                  ))}
+                </>
+              )}
+
+              {managersLoading && (
+                <div className='absolute top-0 left-0 grid h-full w-full place-items-center rounded bg-slate-900'>
+                  <Loading />
+                </div>
+              )}
+            </Combobox.Options>
           </Combobox>
         </ErrorWrapper>
       </Label>

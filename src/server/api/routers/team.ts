@@ -84,6 +84,10 @@ export const teamRouter = createTRPCRouter({
             name: true,
           },
         },
+        managers: {
+          where: { id: { not: ctx.session.user.id } },
+          select: { id: true, name: true },
+        },
       },
     });
   }),
@@ -93,10 +97,13 @@ export const teamRouter = createTRPCRouter({
         name: z.string(),
         drivers: z.array(z.object({ id: z.string(), name: z.string() })),
         socialMedia: z.object({ id: z.string(), name: z.string() }).nullish(),
+        otherManagers: z
+          .array(z.object({ id: z.string(), name: z.string() }))
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, drivers, socialMedia } = input;
+      const { name, drivers, socialMedia, otherManagers } = input;
 
       return await ctx.prisma.team.create({
         data: {
@@ -112,6 +119,14 @@ export const teamRouter = createTRPCRouter({
                 },
               }
             : undefined,
+          managers: otherManagers
+            ? {
+                connect: [
+                  { id: ctx.session.user.id },
+                  ...otherManagers.map(manager => ({ id: manager.id })),
+                ],
+              }
+            : { connect: { id: ctx.session.user.id } },
         },
       });
     }),
@@ -129,10 +144,13 @@ export const teamRouter = createTRPCRouter({
           .array(z.object({ id: z.string(), name: z.string() }))
           .optional(),
         socialMedia: z.object({ id: z.string(), name: z.string() }).nullish(),
+        otherManagers: z
+          .array(z.object({ id: z.string(), name: z.string() }))
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { teamId, name, drivers, socialMedia } = input;
+      const { teamId, name, drivers, socialMedia, otherManagers } = input;
       return await ctx.prisma.team.update({
         where: { id: teamId },
         data: {
@@ -142,6 +160,14 @@ export const teamRouter = createTRPCRouter({
             disconnect: true,
             connect: socialMedia ? { id: socialMedia.id } : undefined,
           },
+          managers: otherManagers
+            ? {
+                set: [
+                  { id: ctx.session.user.id },
+                  ...otherManagers?.map(manager => ({ id: manager.id })),
+                ],
+              }
+            : undefined,
         },
       });
     }),

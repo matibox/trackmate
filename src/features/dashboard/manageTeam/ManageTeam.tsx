@@ -27,12 +27,8 @@ const ManageTeam: FC = () => {
   const { data: team, isLoading } = api.team.getManagingFor.useQuery(
     undefined,
     {
-      onSettled(data) {
-        setTeam(data);
-      },
-      onError(err) {
-        setError(err.message);
-      },
+      onSettled: setTeam,
+      onError: err => setError(err.message),
       enabled: Boolean(hasRole(session, 'manager')),
     }
   );
