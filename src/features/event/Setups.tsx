@@ -162,7 +162,9 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                           {dayjs(feedback.createdAt).format('DD MMM HH:mm')}
                         </span>
                       </div>
-
+                      {feedback.generalFeedback ? (
+                        <p className='mb-2'>{feedback.generalFeedback}</p>
+                      ) : null}
                       <div className='flex flex-wrap gap-4'>
                         {feedback.problems.map(problem => (
                           <Tile
