@@ -30,6 +30,8 @@ export default function usePostFeedback({
   setupId: string | undefined;
 }) {
   const [problems, setProblems] = useState<Problem[]>([]);
+  const [generalFeedback, setGeneralFeedback] = useState('');
+
   const { close } = usePostFeedbackStore();
 
   function addProblem() {
@@ -80,10 +82,11 @@ export default function usePostFeedback({
       problems: z
         .array(problemSchema)
         .min(1, 'There has to be at least 1 problem.'),
+      generalFeedback: z.string().nullish(),
     }),
-    ({ problems }) => {
+    ({ problems, generalFeedback }) => {
       if (!setupId) return;
-      postFeedback({ setupId, problems });
+      postFeedback({ setupId, problems, generalFeedback });
     }
   );
 
@@ -96,5 +99,7 @@ export default function usePostFeedback({
     isLoading,
     errors,
     handleSubmit,
+    generalFeedback,
+    setGeneralFeedback,
   };
 }

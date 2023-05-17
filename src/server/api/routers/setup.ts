@@ -297,12 +297,14 @@ export const setupRouter = createTRPCRouter({
       z.object({
         setupId: z.string(),
         problems: z.array(problemSchema),
+        generalFeedback: z.string().nullish(),
       })
     )
     .mutation(async ({ ctx, input }) => {
-      const { setupId, problems } = input;
+      const { setupId, problems, generalFeedback } = input;
       return await ctx.prisma.feedback.create({
         data: {
+          generalFeedback,
           user: { connect: { id: ctx.session.user.id } },
           setup: { connect: { id: setupId } },
           problems: {

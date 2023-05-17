@@ -167,7 +167,7 @@ const Setups: FC<{ event: Event }> = ({ event }) => {
                         {feedback.problems.map(problem => (
                           <Tile
                             key={problem.id}
-                            className='max-w-xs'
+                            className='w-full sm:max-w-xs'
                             isLoading={
                               problemLoadingId === problem.id &&
                               problemResolvedLoading

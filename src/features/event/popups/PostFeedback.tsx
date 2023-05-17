@@ -28,6 +28,8 @@ const PostFeedback: FC = () => {
     errors,
     handleSubmit,
     isLoading,
+    generalFeedback,
+    setGeneralFeedback,
   } = usePostFeedback({ setupId });
 
   return (
@@ -38,7 +40,7 @@ const PostFeedback: FC = () => {
       isLoading={isLoading}
     >
       <Form
-        onSubmit={e => handleSubmit(e, { problems })}
+        onSubmit={e => handleSubmit(e, { problems, generalFeedback })}
         className='relative gap-0 sm:gap-0'
       >
         <div className='flex max-h-96 w-full flex-col gap-4 overflow-y-auto px-1 py-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400'>
@@ -220,13 +222,21 @@ const PostFeedback: FC = () => {
         </div>
         {problems.length > 0 ? (
           <>
-            <div className='sticky -bottom-6 left-0 flex w-full items-center border-t border-slate-600 bg-slate-800 px-1 pt-3'>
+            <div className='sticky -bottom-14 left-0 flex w-full flex-col items-center gap-2 border-t border-slate-600 bg-slate-800 px-1 pt-3'>
+              <Label label='general feeling' optional className='self-start'>
+                <Input
+                  error={errors?.generalFeedback}
+                  value={generalFeedback}
+                  onChange={e => setGeneralFeedback(e.target.value)}
+                />
+              </Label>
               <Button
                 intent='primary'
                 size='small'
                 type='submit'
                 gap={isLoading ? 'normal' : 'small'}
                 disabled={isLoading}
+                className='self-end'
               >
                 <span>Submit</span>
                 {isLoading ? <Loading /> : null}
