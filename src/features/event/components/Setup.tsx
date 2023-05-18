@@ -67,7 +67,6 @@ const Setup: FC<SetupProps> = ({
     isEdited,
     isActive,
     isAssigned,
-    isAuthor,
     changedSinceLastDownload,
     download,
     toggleIsActive,
@@ -183,28 +182,25 @@ const Setup: FC<SetupProps> = ({
                       variants={itemAnimation}
                       className='h-3/5 w-[1px] bg-slate-600'
                     />
-                    {isAuthor && (
-                      <>
-                        <motion.button
-                          variants={itemAnimation}
-                          className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
-                          onClick={() =>
-                            toggleAssignment({
-                              eventId,
-                              setupId: id,
-                              assign: false,
-                            })
-                          }
-                          disabled={isLoading}
-                        >
-                          unassign
-                        </motion.button>
-                        <motion.div
-                          variants={itemAnimation}
-                          className='h-3/5 w-[1px] bg-slate-600'
-                        />
-                      </>
-                    )}
+
+                    <motion.button
+                      variants={itemAnimation}
+                      className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-red-400'
+                      onClick={() =>
+                        toggleAssignment({
+                          eventId,
+                          setupId: id,
+                          assign: false,
+                        })
+                      }
+                      disabled={isLoading}
+                    >
+                      unassign
+                    </motion.button>
+                    <motion.div
+                      variants={itemAnimation}
+                      className='h-3/5 w-[1px] bg-slate-600'
+                    />
                     <motion.button
                       variants={itemAnimation}
                       className='underline decoration-slate-500 underline-offset-2 transition-colors hover:text-sky-400'
