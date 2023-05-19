@@ -97,6 +97,7 @@ model User {
   downloads                    Download[]
   setupFeedback                Feedback[]
   feedbackRequestNotifications FeedbackRequestNotification[]
+  stints                       Stint[]
 
   @@index([teamId])
   @@index([managingTeamId])
@@ -154,6 +155,7 @@ model Event {
   teamId         String?
   result         Result?
   setups         EventsOnSetups[]
+  stints         Stint[]
 
   @@index([championshipId])
   @@index([teamId])
@@ -320,4 +322,19 @@ model FeedbackRequestNotification {
 
   @@index([receiverId])
   @@index([setupId])
+}
+
+model Stint {
+  id           String   @id @default(cuid())
+  start        DateTime
+  estimatedEnd DateTime
+  duration     Int
+
+  event   Event  @relation(fields: [eventId], references: [id])
+  user    User   @relation(fields: [userId], references: [id])
+  eventId String
+  userId  String
+
+  @@index([eventId])
+  @@index([userId])
 }
