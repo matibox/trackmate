@@ -330,11 +330,11 @@ model Stint {
   estimatedEnd DateTime
   duration     Int
 
-  event   Event  @relation(fields: [eventId], references: [id])
-  user    User   @relation(fields: [userId], references: [id])
-  eventId String
-  userId  String
+  event    Event  @relation(fields: [eventId], references: [id])
+  driver   User   @relation(fields: [driverId], references: [id])
+  eventId  String
+  driverId String
 
   @@index([eventId])
-  @@index([userId])
+  @@index([driverId])
 }
