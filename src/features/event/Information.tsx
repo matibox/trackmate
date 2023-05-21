@@ -18,7 +18,7 @@ import Input from '@ui/Input';
 import { capitilize } from '~/utils/helpers';
 import dayjs, { type Dayjs } from 'dayjs';
 import EventDuration from '~/components/common/EventDuration';
-import { Event } from '~/pages/event/[eventId]';
+import { type Event } from '~/pages/event/[eventId]';
 import { useRouter } from 'next/router';
 import { getCalendarPage } from '~/lib/dates';
 import { DocumentArrowUpIcon } from '@heroicons/react/20/solid';
