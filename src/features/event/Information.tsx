@@ -64,6 +64,11 @@ const Information: FC<{ event: Event }> = ({ event }) => {
     values => {
       editEvent({
         id: event.id,
+        date: event.date,
+        drivers: event.drivers,
+        managerId: event.managerId ?? undefined,
+        title: event.title ?? undefined,
+        type: event.type,
         ...values,
       });
     }
