@@ -16,6 +16,8 @@ import { api, type RouterOutputs } from '~/utils/api';
 import { capitilize } from '~/utils/helpers';
 import Event from './Event';
 import { useChampResultStore } from './store';
+import Details from '~/components/common/Details';
+import DriverList from '~/components/common/DriverList';
 
 const Championship: FC<{
   championship: RouterOutputs['championship']['get'][number];
@@ -69,22 +71,24 @@ const Championship: FC<{
                 <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
               </a>
               <div className='relative grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-                <div className='flex flex-col'>
-                  <span className='text-slate-300'>Car</span>
-                  <span className='text-slate-50'>
-                    {capitilize(
-                      championship.car === '' || !championship.car
-                        ? '-'
-                        : championship.car
-                    )}
-                  </span>
-                </div>
-                <div className='flex flex-col'>
-                  <span className='text-slate-300'>Type</span>
-                  <span className='text-slate-50'>
-                    {capitilize(championship.type)}
-                  </span>
-                </div>
+                <Details
+                  details={[
+                    {
+                      label: 'Car',
+                      value: capitilize(
+                        championship.car === '' || !championship.car
+                          ? '-'
+                          : championship.car
+                      ),
+                    },
+                    { label: 'Type', value: capitilize(championship.type) },
+                    {
+                      label: 'Roster',
+                      value: <DriverList drivers={championship.drivers} />,
+                      span: 2,
+                    },
+                  ]}
+                />
                 {championship.result && (
                   <div className='flex flex-col'>
                     <span className='text-slate-300'>
