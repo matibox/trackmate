@@ -18,6 +18,7 @@ import Event from './Event';
 import { useChampResultStore } from './store';
 import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
+import { UsersIcon } from '@heroicons/react/24/outline';
 
 const Championship: FC<{
   championship: RouterOutputs['championship']['get'][number];
@@ -71,24 +72,35 @@ const Championship: FC<{
                 <ArrowTopRightOnSquareIcon className='h-5 text-slate-300 transition-colors group-hover:text-sky-400' />
               </a>
               <div className='relative grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-                <Details
-                  details={[
-                    {
-                      label: 'Car',
-                      value: capitilize(
-                        championship.car === '' || !championship.car
-                          ? '-'
-                          : championship.car
-                      ),
-                    },
-                    { label: 'Type', value: capitilize(championship.type) },
-                    {
-                      label: 'Roster',
-                      value: <DriverList drivers={championship.drivers} />,
-                      span: 2,
-                    },
-                  ]}
-                />
+                <div className='flex flex-col gap-4'>
+                  <Details
+                    details={[
+                      {
+                        label: 'Car',
+                        value: capitilize(
+                          championship.car === '' || !championship.car
+                            ? '-'
+                            : championship.car
+                        ),
+                      },
+                      { label: 'Type', value: capitilize(championship.type) },
+                      {
+                        label: 'Roster',
+                        value: <DriverList drivers={championship.drivers} />,
+                        span: 2,
+                      },
+                    ]}
+                  />
+                  <Button
+                    intent='secondary'
+                    size='small'
+                    gap='small'
+                    className='self-start'
+                  >
+                    <span>Edit roster</span>
+                    <UsersIcon className='h-5' />
+                  </Button>
+                </div>
                 {championship.result && (
                   <div className='flex flex-col'>
                     <span className='text-slate-300'>
