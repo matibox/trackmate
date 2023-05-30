@@ -360,4 +360,82 @@ export const eventRouter = createTRPCRouter({
         };
       });
     }),
+  roster: protectedProcedure
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { eventId } = input;
+      const event = await ctx.prisma.event.findUnique({
+        where: { id: eventId },
+        include: { drivers: { select: { id: true } } },
+      });
+      if (!event) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Event not found' });
+      }
+      if (event.championshipId) {
+        const foundChampionship = await ctx.prisma.championship.findUnique({
+          where: { id: event.championshipId },
+          select: {
+            drivers: {
+              where: {
+                id: {
+                  notIn: [
+                    ctx.session.user.id,
+                    ...event.drivers.map(driver => driver.id),
+                  ],
+                },
+              },
+              select: {
+                id: true,
+                name: true,
+                teamId: true,
+                image: true,
+                team: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
+          },
+        });
+
+        if (!foundChampionship) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Championship not found',
+          });
+        }
+
+        return foundChampionship.drivers;
+      }
+
+      const team = await ctx.prisma.team.findUnique({
+        where: { id: ctx.session.user.teamId ?? undefined },
+        select: {
+          drivers: {
+            where: {
+              id: {
+                notIn: [
+                  ctx.session.user.id,
+                  ...event.drivers.map(driver => driver.id),
+                ],
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+              teamId: true,
+              image: true,
+              team: {
+                select: { id: true, name: true },
+              },
+            },
+          },
+        },
+      });
+
+      if (!team) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Team not found' });
+      }
+
+      return team.drivers;
+    }),
 });

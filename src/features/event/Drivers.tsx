@@ -11,11 +11,9 @@ import Link from 'next/link';
 import { useMemo, type FC, useState } from 'react';
 import Avatar from '~/components/common/Avatar';
 import { type Event } from '~/pages/event/[eventId]';
-import { type RouterOutputs, api } from '~/utils/api';
+import { api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import Loading from '@ui/Loading';
-
-type DriversToAdd = RouterOutputs['team']['getTeammatesOrDrivers'];
 
 const Drivers: FC<{ event: Event }> = ({ event }) => {
   const { data: session } = useSession();
@@ -29,22 +27,18 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
   }, [event.drivers, event.managerId, event.result, session?.user?.id]);
 
   const [isEditing, setIsEditing] = useState(false);
-  const [driversToAdd, setDriversToAdd] = useState<DriversToAdd>([]);
 
   const { Error, setError } = useError();
   const utils = api.useContext();
 
-  const { isLoading: driversToAddLoading } =
-    api.team.getTeammatesOrDrivers.useQuery(undefined, {
-      onError: err => setError(err.message),
-      onSuccess: data => {
-        const drivers = data.filter(
-          driver => !event.drivers.some(d => d.id === driver.id)
-        );
-        setDriversToAdd(drivers);
-      },
-      enabled: isEditing,
-    });
+  const { data: driversToAdd, isLoading: driversToAddLoading } =
+    api.event.roster.useQuery(
+      { eventId: event.id },
+      {
+        onError: err => setError(err.message),
+        enabled: isEditing,
+      }
+    );
 
   const { mutate: editDrivers, isLoading: editDriversLoading } =
     api.event.edit.useMutation({
@@ -69,7 +63,7 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
                 intent='subtleDanger'
                 size='xs'
                 gap='small'
-                className='absolute top-2 right-2 h-7 p-1'
+                className='absolute right-2 top-2 h-7 p-1'
                 aria-label='Delete driver'
                 onClick={() =>
                   editDrivers({
@@ -111,12 +105,12 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
             <>
               <h2 className='text-xl font-semibold'>Drivers to add</h2>
               <div className='grid grow grid-cols-[repeat(auto-fill,_10rem)] justify-center gap-4 sm:flex sm:flex-wrap sm:justify-start'>
-                {driversToAdd.length === 0 ? (
+                {driversToAdd?.length === 0 ? (
                   <span className='text-slate-300'>
                     There are no drivers to add
                   </span>
                 ) : null}
-                {driversToAdd.map(driver => (
+                {driversToAdd?.map(driver => (
                   <Tile
                     key={driver.id}
                     className='w-40 sm:w-60'
@@ -126,7 +120,7 @@ const Drivers: FC<{ event: Event }> = ({ event }) => {
                       intent='primary'
                       size='xs'
                       gap='small'
-                      className='absolute top-2 right-2 h-7 p-1'
+                      className='absolute right-2 top-2 h-7 p-1'
                       aria-label='Add driver'
                       onClick={() =>
                         editDrivers({
