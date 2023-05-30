@@ -136,6 +136,20 @@ export const championshipRouter = createTRPCRouter({
         },
       });
     }),
+  editRoster: multiRoleProcedure(['driver', 'manager'])
+    .input(
+      z.object({
+        championshipId: z.string(),
+        drivers: z.array(z.object({ id: z.string() })),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { championshipId, drivers } = input;
+      return await ctx.prisma.championship.update({
+        where: { id: championshipId },
+        data: { drivers: { connect: drivers } },
+      });
+    }),
   delete: multiRoleProcedure(['driver', 'manager'])
     .input(z.object({ championshipId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
