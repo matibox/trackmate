@@ -1,23 +1,72 @@
-import { type FC } from 'react';
+import { useState, type FC, useEffect, type DragEvent } from 'react';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 import { useEditRosterStore } from '../store';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import Loading from '@ui/Loading';
+import { polyfill } from 'mobile-drag-drop';
+
+type Driver = RouterOutputs['championship']['driversToAdd'][number] & {
+  roster: 'champ' | 'team';
+};
 
 const EditRoster: FC = () => {
   const { close, isOpened, championship } = useEditRosterStore();
 
+  const [champRoster, setChampRoster] = useState<Driver[]>([]);
+  const [teamRoster, setTeamRoster] = useState<Driver[]>([]);
+
+  useEffect(() => {
+    polyfill();
+  }, []);
+
+  useEffect(() => {
+    if (!championship?.roster) return;
+    setChampRoster(
+      championship.roster.map(driver => ({ ...driver, roster: 'champ' }))
+    );
+  }, [championship?.roster]);
+
   const { Error, setError } = useError();
 
-  const { data: driversToAdd, isLoading: driversToAddLoading } =
+  const { isLoading: driversToAddLoading } =
     api.championship.driversToAdd.useQuery(
       { championshipId: championship?.id },
       {
         onError: err => setError(err.message),
+        onSuccess: data =>
+          setTeamRoster(data.map(driver => ({ ...driver, roster: 'team' }))),
         enabled: Boolean(championship?.id),
       }
     );
+
+  function handleOnDrag(e: DragEvent, driver: Driver) {
+    console.log(JSON.stringify(driver));
+    e.dataTransfer.setData('driver', JSON.stringify(driver));
+  }
+
+  function handleOnDrop(e: DragEvent) {
+    const driver = JSON.parse(e.dataTransfer.getData('driver')) as Driver;
+    const target = e.target as HTMLElement;
+
+    if (driver.roster === 'team') {
+      if (target.dataset.roster !== 'champ') return;
+      setTeamRoster(prev => prev.filter(d => d.id !== driver.id));
+      setChampRoster(prev => [...prev, { ...driver, roster: 'champ' }]);
+    } else {
+      if (target.dataset.roster !== 'team') return;
+      setChampRoster(prev => prev.filter(d => d.id !== driver.id));
+      setTeamRoster(prev => [...prev, { ...driver, roster: 'team' }]);
+    }
+  }
+
+  function handleOnDragEnter(e: DragEvent) {
+    e.preventDefault();
+  }
+
+  function handleDragOver(e: DragEvent) {
+    e.preventDefault();
+  }
 
   return (
     <Popup
@@ -42,14 +91,28 @@ const EditRoster: FC = () => {
           <h2 className='text-lg font-semibold'>Roster</h2>
           {championship ? (
             <>
-              {championship.roster.length === 0 ? (
+              {champRoster.length === 0 ? (
                 <span className='text-slate-300'>
                   There are no drivers in the roster.
                 </span>
               ) : (
-                <div className='grid grid-cols-2 gap-2'>
-                  {championship.roster.map(driver => (
-                    <Driver key={driver.id} driver={driver} />
+                <div
+                  className='grid grid-cols-2 gap-2'
+                  onDrop={handleOnDrop}
+                  onDragEnter={handleOnDragEnter}
+                  onDragOver={handleDragOver}
+                  data-roster='champ'
+                >
+                  {champRoster.map(driver => (
+                    <div
+                      key={driver.id}
+                      className='w-full cursor-grab gap-2 rounded py-2 px-3 ring-1 ring-slate-700'
+                      draggable
+                      onDragStart={e => handleOnDrag(e, driver)}
+                      data-roster='champ'
+                    >
+                      {driver.name}
+                    </div>
                   ))}
                 </div>
               )}
@@ -59,16 +122,30 @@ const EditRoster: FC = () => {
         <div className='flex flex-col gap-2'>
           <h2 className='text-lg font-semibold'>Team drivers</h2>
           {driversToAddLoading ? <Loading /> : null}
-          {driversToAdd ? (
+          {teamRoster ? (
             <>
-              {driversToAdd.length === 0 ? (
+              {teamRoster.length === 0 ? (
                 <span className='text-slate-300'>
                   There are no drivers in the roster.
                 </span>
               ) : (
-                <div className='grid grid-cols-2 gap-2'>
-                  {driversToAdd.map(driver => (
-                    <Driver key={driver.id} driver={driver} />
+                <div
+                  className='grid grid-cols-2 gap-2'
+                  onDrop={handleOnDrop}
+                  onDragEnter={handleOnDragEnter}
+                  onDragOver={handleDragOver}
+                  data-roster='team'
+                >
+                  {teamRoster.map(driver => (
+                    <div
+                      key={driver.id}
+                      className='w-full cursor-grab gap-2 rounded py-2 px-3 ring-1 ring-slate-700'
+                      draggable
+                      onDragStart={e => handleOnDrag(e, driver)}
+                      data-roster='team'
+                    >
+                      {driver.name}
+                    </div>
                   ))}
                 </div>
               )}
@@ -78,16 +155,6 @@ const EditRoster: FC = () => {
         <Error />
       </div>
     </Popup>
-  );
-};
-
-const Driver: FC<{
-  driver: RouterOutputs['championship']['driversToAdd'][number];
-}> = ({ driver }) => {
-  return (
-    <div className='w-full gap-2 rounded py-2 px-3 ring-1 ring-slate-700'>
-      {driver.name}
-    </div>
   );
 };
 
