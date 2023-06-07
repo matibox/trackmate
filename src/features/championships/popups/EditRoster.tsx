@@ -31,7 +31,7 @@ const EditRoster: FC = () => {
   const utils = api.useContext();
   const { Error, setError } = useError();
 
-  const { isLoading: driversToAddLoading } =
+  const { data: driversToAdd, isLoading: driversToAddLoading } =
     api.championship.driversToAdd.useQuery(
       { championshipId: championship?.id },
       {
@@ -111,7 +111,7 @@ const EditRoster: FC = () => {
                 </span>
               ) : (
                 <div
-                  className='grid grid-cols-1 gap-2 sm:grid-cols-2'
+                  className='grid max-h-48 grid-cols-1 gap-2 overflow-y-scroll p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:grid-cols-2'
                   onDrop={handleOnDrop}
                   onDragEnter={handleOnDragEnter}
                   onDragOver={handleDragOver}
@@ -136,7 +136,7 @@ const EditRoster: FC = () => {
         <div className='flex flex-col gap-2'>
           <h2 className='text-lg font-semibold'>Team drivers</h2>
           {driversToAddLoading ? <Loading /> : null}
-          {teamRoster ? (
+          {driversToAdd && teamRoster ? (
             <>
               {teamRoster.length === 0 ? (
                 <span className='text-slate-300'>
@@ -144,7 +144,7 @@ const EditRoster: FC = () => {
                 </span>
               ) : (
                 <div
-                  className='grid grid-cols-1 gap-2 sm:grid-cols-2'
+                  className='grid max-h-48 grid-cols-1 gap-2 overflow-y-scroll p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:grid-cols-2'
                   onDrop={handleOnDrop}
                   onDragEnter={handleOnDragEnter}
                   onDragOver={handleDragOver}
