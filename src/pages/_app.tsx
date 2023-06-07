@@ -31,6 +31,7 @@ import EventSetups from '~/features/dashboard/events/popups/EventSetups';
 import PostChampResult from '~/features/championships/popups/PostChampResult';
 import PostFeedback from '~/features/event/popups/PostFeedback';
 import DevRoleSwitch from '~/components/global/DevRoleSwitch';
+import EditRoster from '~/features/championships/popups/EditRoster';
 
 const specialRoutes = ['/login', '/welcome'];
 
@@ -96,6 +97,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           <DeleteSetup />
           <EventSetups />
           <PostFeedback />
+          <EditRoster />
         </>
       )}
       <Component {...pageProps} />

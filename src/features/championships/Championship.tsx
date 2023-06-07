@@ -15,7 +15,7 @@ import cn from '~/lib/classes';
 import { api, type RouterOutputs } from '~/utils/api';
 import { capitilize } from '~/utils/helpers';
 import Event from './Event';
-import { useChampResultStore } from './store';
+import { useChampResultStore, useEditRosterStore } from './store';
 import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
 import { UsersIcon } from '@heroicons/react/24/outline';
@@ -24,6 +24,7 @@ const Championship: FC<{
   championship: RouterOutputs['championship']['get'][number];
 }> = ({ championship }) => {
   const { open: openPostResult } = useChampResultStore();
+  const { open: openEditRoster } = useEditRosterStore();
 
   const { Error, setError } = useError();
 
@@ -96,6 +97,7 @@ const Championship: FC<{
                     size='small'
                     gap='small'
                     className='self-start'
+                    onClick={() => openEditRoster(championship.drivers)}
                   >
                     <span>Edit roster</span>
                     <UsersIcon className='h-5' />

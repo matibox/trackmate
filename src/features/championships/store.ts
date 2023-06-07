@@ -19,3 +19,19 @@ export const useChampResultStore = create<ResultStore>()(set => ({
   close: () => set(() => ({ isOpened: false, championship: undefined })),
   championship: undefined,
 }));
+
+type Driver = { id: string; name: string | null };
+
+type EditRosterStore = {
+  isOpened: boolean;
+  open: (currentRoster: Driver[]) => void;
+  close: () => void;
+  roster: Driver[] | undefined;
+};
+
+export const useEditRosterStore = create<EditRosterStore>()(set => ({
+  isOpened: false,
+  open: roster => set(() => ({ isOpened: true, roster })),
+  close: () => set(() => ({ isOpened: false, roster: undefined })),
+  roster: undefined,
+}));
