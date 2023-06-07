@@ -170,4 +170,57 @@ export const championshipRouter = createTRPCRouter({
         },
       });
     }),
+  driversToAdd: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ championshipId: z.string().optional() }))
+    .query(async ({ ctx, input }) => {
+      const { championshipId } = input;
+
+      const championship = await ctx.prisma.championship.findUnique({
+        where: { id: championshipId },
+        select: { teamId: true, drivers: true },
+      });
+
+      if (!championship) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Championship not found',
+        });
+      }
+
+      if (!championship.teamId) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: 'User is not in a team',
+        });
+      }
+
+      const team = await ctx.prisma.team.findUnique({
+        where: { id: championship.teamId },
+        select: {
+          drivers: {
+            where: {
+              id: {
+                notIn: [
+                  ...championship.drivers.map(driver => driver.id),
+                  ctx.session.user.id,
+                ],
+              },
+            },
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      if (!team) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Team not found',
+        });
+      }
+
+      return team.drivers;
+    }),
 });
