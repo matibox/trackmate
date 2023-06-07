@@ -21,17 +21,18 @@ export const useChampResultStore = create<ResultStore>()(set => ({
 }));
 
 type Driver = { id: string; name: string | null };
+type RosterChampionship = Championship & { roster: Driver[] };
 
 type EditRosterStore = {
   isOpened: boolean;
-  open: (currentRoster: Driver[]) => void;
+  open: (championship: RosterChampionship) => void;
   close: () => void;
-  roster: Driver[] | undefined;
+  championship: RosterChampionship | undefined;
 };
 
 export const useEditRosterStore = create<EditRosterStore>()(set => ({
   isOpened: false,
-  open: roster => set(() => ({ isOpened: true, roster })),
-  close: () => set(() => ({ isOpened: false, roster: undefined })),
-  roster: undefined,
+  open: championship => set(() => ({ isOpened: true, championship })),
+  close: () => set(() => ({ isOpened: false, championship: undefined })),
+  championship: undefined,
 }));

@@ -97,7 +97,14 @@ const Championship: FC<{
                     size='small'
                     gap='small'
                     className='self-start'
-                    onClick={() => openEditRoster(championship.drivers)}
+                    onClick={() =>
+                      openEditRoster({
+                        id: championship.id,
+                        title: championship.name,
+                        organizer: championship.organizer,
+                        roster: championship.drivers,
+                      })
+                    }
                   >
                     <span>Edit roster</span>
                     <UsersIcon className='h-5' />
