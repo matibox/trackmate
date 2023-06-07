@@ -147,7 +147,7 @@ export const championshipRouter = createTRPCRouter({
       const { championshipId, drivers } = input;
       return await ctx.prisma.championship.update({
         where: { id: championshipId },
-        data: { drivers: { connect: drivers } },
+        data: { drivers: { set: drivers } },
       });
     }),
   delete: multiRoleProcedure(['driver', 'manager'])

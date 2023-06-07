@@ -5,6 +5,7 @@ import { type RouterOutputs, api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import Loading from '@ui/Loading';
 import { polyfill } from 'mobile-drag-drop';
+import Button from '@ui/Button';
 
 type Driver = RouterOutputs['championship']['driversToAdd'][number] & {
   roster: 'champ' | 'team';
@@ -27,6 +28,7 @@ const EditRoster: FC = () => {
     );
   }, [championship?.roster]);
 
+  const utils = api.useContext();
   const { Error, setError } = useError();
 
   const { isLoading: driversToAddLoading } =
@@ -37,11 +39,22 @@ const EditRoster: FC = () => {
         onSuccess: data =>
           setTeamRoster(data.map(driver => ({ ...driver, roster: 'team' }))),
         enabled: Boolean(championship?.id),
+        refetchOnWindowFocus: false,
+        refetchOnMount: false,
+        refetchOnReconnect: false,
       }
     );
 
+  const { mutate: editRoster, isLoading: editRosterLoading } =
+    api.championship.editRoster.useMutation({
+      onError: err => setError(err.message),
+      onSuccess: async () => {
+        await utils.invalidate();
+        close();
+      },
+    });
+
   function handleOnDrag(e: DragEvent, driver: Driver) {
-    console.log(JSON.stringify(driver));
     e.dataTransfer.setData('driver', JSON.stringify(driver));
   }
 
@@ -82,6 +95,7 @@ const EditRoster: FC = () => {
           }
         />
       }
+      isLoading={editRosterLoading}
     >
       <div className='flex flex-col gap-4'>
         <span className='text-slate-300'>
@@ -152,6 +166,23 @@ const EditRoster: FC = () => {
             </>
           ) : null}
         </div>
+        {championship ? (
+          <Button
+            intent='primary'
+            size='small'
+            className='self-end'
+            onClick={() =>
+              editRoster({
+                championshipId: championship.id,
+                drivers: champRoster.map(driver => ({
+                  id: driver.id,
+                })),
+              })
+            }
+          >
+            Save
+          </Button>
+        ) : null}
         <Error />
       </div>
     </Popup>
