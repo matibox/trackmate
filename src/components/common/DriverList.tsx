@@ -14,6 +14,7 @@ const DriverList: FC<DriversProps> = ({ drivers }) => {
         return (
           <Fragment key={id}>
             <Link
+              draggable={false}
               href={`/profile/${id}`}
               className='transition-colors hover:text-sky-400'
             >
