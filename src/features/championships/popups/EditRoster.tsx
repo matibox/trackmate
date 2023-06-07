@@ -111,7 +111,7 @@ const EditRoster: FC = () => {
                 </span>
               ) : (
                 <div
-                  className='grid grid-cols-2 gap-2'
+                  className='grid grid-cols-1 gap-2 sm:grid-cols-2'
                   onDrop={handleOnDrop}
                   onDragEnter={handleOnDragEnter}
                   onDragOver={handleDragOver}
@@ -144,7 +144,7 @@ const EditRoster: FC = () => {
                 </span>
               ) : (
                 <div
-                  className='grid grid-cols-2 gap-2'
+                  className='grid grid-cols-1 gap-2 sm:grid-cols-2'
                   onDrop={handleOnDrop}
                   onDragEnter={handleOnDragEnter}
                   onDragOver={handleDragOver}
