@@ -51,18 +51,16 @@ export const useEventTabsStore = create<EventTabStore>()((set, get) => ({
 }));
 
 type EventSetupAssignStore = {
-  eventId: string | undefined;
   isOpened: boolean;
-  open: (eventId: string) => void;
+  open: () => void;
   close: () => void;
 };
 
 export const useEventSetupAssignStore = create<EventSetupAssignStore>()(
   set => ({
-    eventId: undefined,
     isOpened: false,
-    open: eventId => set(() => ({ eventId, isOpened: true })),
-    close: () => set(() => ({ eventId: undefined, isOpened: false })),
+    open: () => set(() => ({ isOpened: true })),
+    close: () => set(() => ({ isOpened: false })),
   })
 );
 

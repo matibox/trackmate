@@ -7,9 +7,11 @@ import useDebounce from '~/hooks/useDebounce';
 import Input from '@ui/Input';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import Setup from '../components/Setup';
+import { useEventQuery } from '../hooks/useEventQuery';
 
 const AssignSetup: FC = () => {
-  const { close, isOpened, eventId } = useEventSetupAssignStore();
+  const { close, isOpened } = useEventSetupAssignStore();
+  const { id: eventId } = useEventQuery();
 
   const { Error, setError } = useError();
 
@@ -55,7 +57,7 @@ const AssignSetup: FC = () => {
               key={setup.id}
               setup={setup}
               isAssigned={false}
-              eventId={eventId as string}
+              eventId={eventId}
             />
           ))}
           {setups && setups.length === 0 && debouncedQuery ? (

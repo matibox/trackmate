@@ -115,7 +115,7 @@ const Setups: FC = () => {
             size='small'
             gap='small'
             className='self-start'
-            onClick={() => openSetupAssignment(event.id)}
+            onClick={openSetupAssignment}
           >
             <span>Assign setup</span>
             <PlusIcon className='h-5' />
