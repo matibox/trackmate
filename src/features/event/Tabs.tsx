@@ -45,7 +45,7 @@ const EventTabs: FC<{ event: Event }> = ({ event }) => {
             <Setups event={event} />
           </Tab>
           <Tab showedOn='stints'>
-            <Stints event={event} />
+            <Stints />
           </Tab>
         </>
       )}

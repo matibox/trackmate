@@ -101,3 +101,15 @@ export const usePostFeedbackStore = create<PostFeedbackStore>()(set => ({
   open: setupId => set(() => ({ setupId, isOpened: true })),
   close: () => set(() => ({ setupId: undefined, isOpened: false })),
 }));
+
+type AddStintStore = {
+  isOpened: boolean;
+  open: () => void;
+  close: () => void;
+};
+
+export const useAddStintStore = create<AddStintStore>()(set => ({
+  isOpened: false,
+  open: () => set(() => ({ isOpened: true })),
+  close: () => set(() => ({ isOpened: false })),
+}));
