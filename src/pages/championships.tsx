@@ -33,6 +33,7 @@ const YourChampionships: NextPage = () => {
       <NextSeo title='Your championships' />
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
         <Link
+          draggable={false}
           href='/'
           className='flex items-center gap-2 pl-4 pt-4 text-slate-300 transition-colors hover:text-sky-400'
         >

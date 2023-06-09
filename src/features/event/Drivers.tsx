@@ -157,13 +157,14 @@ const DriverImage: FC<{ driver: Event['drivers'][number] }> = ({ driver }) => {
         className='mb-2 flex h-20 w-20 items-center justify-center rounded-full text-center text-sm ring-1 ring-slate-700 sm:h-24 sm:w-24'
       />
       <Link
+        draggable={false}
         href={`/profile/${driver.id}`}
         className='font-semibold transition-colors hover:text-sky-400'
       >
         <p className='text-center leading-5'>{driver.name}</p>
       </Link>
       {driver.team && (
-        <Link href={`/team/${driver.team.id}`}>
+        <Link draggable={false} href={`/team/${driver.team.id}`}>
           <span className='text-sm text-slate-400 underline decoration-slate-500/0 transition hover:decoration-slate-500 sm:text-base'>
             {driver.team.name}
           </span>

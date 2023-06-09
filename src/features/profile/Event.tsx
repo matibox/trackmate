@@ -74,6 +74,7 @@ const Event: FC<{ event: Event; profileId: string; upcoming: boolean }> = ({
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
           {canAccessEventPage ? (
             <Link
+              draggable={false}
               href={`/event/${event.id}`}
               className='flex items-center gap-1.5 font-semibold underline decoration-slate-500 underline-offset-2 transition-colors hover:decoration-slate-50'
               title={eventTitle}

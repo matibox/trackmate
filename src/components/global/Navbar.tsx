@@ -40,7 +40,7 @@ const Navbar: FC = () => {
 
   return (
     <nav className='fixed z-20 flex h-[var(--navbar-height)] w-full items-center gap-4 border-b border-slate-700 bg-slate-800 px-4'>
-      <Link href='/' aria-label='dashboard'>
+      <Link href='/' aria-label='dashboard' draggable={false}>
         <Image
           src='/Mono.png'
           alt='Logo'
@@ -105,6 +105,7 @@ const Navbar: FC = () => {
             <div className='h-[1px] w-full bg-slate-700' />
             <div className='flex flex-col gap-2 px-4'>
               <Link
+                draggable={false}
                 href={`/profile/${session?.user?.id as string}`}
                 className='flex items-center justify-between transition-colors hover:text-sky-400'
               >
@@ -114,6 +115,7 @@ const Navbar: FC = () => {
             </div>
             <div className='flex flex-col gap-2 px-4'>
               <Link
+                draggable={false}
                 href='/championships'
                 className='flex items-center justify-between transition-colors hover:text-sky-400'
               >
@@ -123,6 +125,7 @@ const Navbar: FC = () => {
             </div>
             <div className='flex flex-col gap-2 px-4'>
               <Link
+                draggable={false}
                 href='/setups'
                 className='flex items-center justify-between transition-colors hover:text-sky-400'
               >
