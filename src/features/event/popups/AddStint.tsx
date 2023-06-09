@@ -15,6 +15,7 @@ import { CheckIcon, ChevronUpDownIcon } from '@heroicons/react/20/solid';
 import cn from '~/lib/classes';
 import ErrorWrapper from '~/components/common/ErrorWrapper';
 import Button from '@ui/Button';
+import { useEventQuery } from '../hooks/useEventQuery';
 
 export const addStintSchema = z.object({
   start: z.date(),
@@ -32,7 +33,9 @@ type Nullable<T extends object, K extends keyof T> = {
 const AddStint: FC = () => {
   const { isOpened, close } = useAddStintStore();
   const { lastStintEndsAt, availableDrivers } = useStints();
+  const { id: eventId } = useEventQuery();
 
+  const utils = api.useContext();
   const { Error, setError } = useError();
 
   const [formState, setFormState] = useState<
@@ -45,11 +48,17 @@ const AddStint: FC = () => {
 
   const { mutate: addStint, isLoading } = api.stint.add.useMutation({
     onError: err => setError(err.message),
-    // onSuccess: invalidate queries
+    onSuccess: async () => {
+      await utils.invalidate();
+      close();
+    },
   });
 
   const { errors, handleSubmit } = useForm(addStintSchema, values => {
-    console.log(values);
+    addStint({
+      eventId,
+      ...values,
+    });
   });
 
   function formatTimeInput(value: string) {
