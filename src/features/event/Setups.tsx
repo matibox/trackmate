@@ -1,5 +1,4 @@
 import { useState, type FC } from 'react';
-import { type Event } from '~/pages/event/[eventId]';
 import {
   CheckCircleIcon,
   ExclamationCircleIcon,
@@ -26,9 +25,11 @@ import Link from 'next/link';
 import { capitilize } from '~/utils/helpers';
 import cn from '~/lib/classes';
 import dayjs from 'dayjs';
+import { useEventQuery } from './hooks/useEventQuery';
 
-const Setups: FC<{ event: Event }> = ({ event }) => {
+const Setups: FC = () => {
   const { data: session } = useSession();
+  const event = useEventQuery();
 
   const { open: openSetupAssignment } = useEventSetupAssignStore();
   const { setup, isOpened: isFeedbackOpened } = useEventSetupFeedbackStore();

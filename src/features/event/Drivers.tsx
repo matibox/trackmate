@@ -14,9 +14,11 @@ import { type Event } from '~/pages/event/[eventId]';
 import { api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import Loading from '@ui/Loading';
+import { useEventQuery } from './hooks/useEventQuery';
 
-const Drivers: FC<{ event: Event }> = ({ event }) => {
+const Drivers: FC = () => {
   const { data: session } = useSession();
+  const event = useEventQuery();
 
   const canManageDrivers = useMemo(() => {
     if (event.result) return false;

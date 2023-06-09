@@ -5,7 +5,7 @@ import {
 } from 'next';
 import { NextSeo } from 'next-seo';
 import { getServerAuthSession } from '~/server/auth';
-import { type RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import { createProxySSGHelpers } from '@trpc/react-query/ssg';
 import { appRouter } from '~/server/api/root';
 import { createInnerTRPCContext } from '~/server/api/trpc';
@@ -13,11 +13,12 @@ import superjson from 'superjson';
 import { useMemo } from 'react';
 import { capitilize } from '~/utils/helpers';
 import EventTabs from '~/features/event/Tabs';
+import { useEventQuery } from '~/features/event/hooks/useEventQuery';
 
 const EventPage: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ eventId }) => {
-  const { data: event } = api.event.single.useQuery({ eventId });
+> = () => {
+  const event = useEventQuery();
 
   const title = useMemo(() => {
     if (!event) return 'Event';
@@ -37,14 +38,13 @@ const EventPage: NextPage<
           <h1 className='text-xl font-semibold leading-none sm:text-3xl sm:leading-none'>
             {title}
           </h1>
-          {event?.championship?.organizer && (
+          {event.championship?.organizer && (
             <span className='text-slate-400'>
               {event.championship.organizer}
             </span>
           )}
         </div>
-        {/* Type cast because of gssp prefetch */}
-        <EventTabs event={event as Event} />
+        <EventTabs />
       </main>
     </>
   );
@@ -52,9 +52,7 @@ const EventPage: NextPage<
 
 export type Event = NonNullable<RouterOutputs['event']['single']>;
 
-export const getServerSideProps: GetServerSideProps<{
-  eventId: string;
-}> = async ctx => {
+export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx);
 
   if (!session || !session.user) {
@@ -111,7 +109,6 @@ export const getServerSideProps: GetServerSideProps<{
   return {
     props: {
       session,
-      eventId,
       trpcState: ssg.dehydrate(),
     },
   };

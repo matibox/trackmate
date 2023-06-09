@@ -19,7 +19,10 @@ import Button from '@ui/Button';
 export const addStintSchema = z.object({
   start: z.date(),
   estimatedEnd: z.date(),
-  driver: z.object({ id: z.string(), name: z.string().nullable() }),
+  driver: z.object(
+    { id: z.string(), name: z.string().nullable() },
+    { invalid_type_error: 'Driver is required' }
+  ),
 });
 
 type Nullable<T extends object, K extends keyof T> = {
@@ -63,8 +66,6 @@ const AddStint: FC = () => {
       minutes
     );
   }
-
-  console.log(formState);
 
   return (
     <Popup

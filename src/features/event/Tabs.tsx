@@ -2,14 +2,15 @@ import { type FC } from 'react';
 import cn from '~/lib/classes';
 import Tab from './Tab';
 import Information from './Information';
-import { type Event } from '~/pages/event/[eventId]';
 import { useEventTabsStore } from './store';
 import Drivers from './Drivers';
 import Setups from './Setups';
 import Stints from './Stints';
+import { useEventQuery } from './hooks/useEventQuery';
 
-const EventTabs: FC<{ event: Event }> = ({ event }) => {
+const EventTabs: FC = () => {
   const { tabs, selectTab } = useEventTabsStore();
+  const event = useEventQuery();
 
   return (
     <div className='flex flex-col gap-5'>
@@ -33,22 +34,18 @@ const EventTabs: FC<{ event: Event }> = ({ event }) => {
           ) : null;
         })}
       </div>
-      {event && (
-        <>
-          <Tab showedOn='information'>
-            <Information event={event} />
-          </Tab>
-          <Tab showedOn='drivers'>
-            <Drivers event={event} />
-          </Tab>
-          <Tab showedOn='setups'>
-            <Setups event={event} />
-          </Tab>
-          <Tab showedOn='stints'>
-            <Stints />
-          </Tab>
-        </>
-      )}
+      <Tab showedOn='information'>
+        <Information />
+      </Tab>
+      <Tab showedOn='drivers'>
+        <Drivers />
+      </Tab>
+      <Tab showedOn='setups'>
+        <Setups />
+      </Tab>
+      <Tab showedOn='stints'>
+        <Stints />
+      </Tab>
     </div>
   );
 };
