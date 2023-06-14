@@ -9,6 +9,7 @@ import Avatar from '~/components/common/Avatar';
 import DriverList from '~/components/common/DriverList';
 import Details from '~/components/common/Details';
 import { PlusCircleIcon } from '@heroicons/react/20/solid';
+import Button from '@ui/Button';
 
 const Stints: FC = () => {
   const { stints } = useEventQuery();
@@ -22,7 +23,7 @@ const Stints: FC = () => {
         <div className='flex flex-col gap-2'>
           {stints.map((stint, i) => (
             <Fragment key={stint.id}>
-              <div className='rounded p-2 ring-1 ring-slate-800'>
+              <div className='flex flex-col gap-3 rounded p-2 ring-1 ring-slate-800'>
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center gap-2'>
                     <Avatar
@@ -58,6 +59,14 @@ const Stints: FC = () => {
                     />
                   </div>
                 </div>
+                <Button
+                  intent='secondary'
+                  size='small'
+                  gap='small'
+                  className='self-start'
+                >
+                  Update stint
+                </Button>
               </div>
               {stints.length > 1 && i !== stints.length - 1 ? (
                 <button
@@ -75,7 +84,6 @@ const Stints: FC = () => {
             </Fragment>
           ))}
         </div>
-
         <button
           className='flex h-8 items-center justify-center rounded px-2 py-1 text-slate-300 ring-1 ring-slate-800 transition hover:bg-slate-800 hover:ring-slate-700'
           title='Add new stint'
