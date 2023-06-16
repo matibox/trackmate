@@ -64,6 +64,14 @@ const AddStint: FC = () => {
   });
 
   const { errors, handleSubmit } = useForm(addStintSchema, values => {
+    if (insert) {
+      return addStint({
+        eventId,
+        nextStintId: insert.nextStintId,
+        ...values,
+      });
+    }
+
     addStint({
       eventId,
       ...values,
