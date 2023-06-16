@@ -329,6 +329,7 @@ model Stint {
   start        DateTime
   estimatedEnd DateTime
   duration     Int?
+  ended        Boolean  @default(false)
 
   event    Event  @relation(fields: [eventId], references: [id])
   driver   User   @relation(fields: [driverId], references: [id])

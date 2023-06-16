@@ -79,7 +79,7 @@ const Stints: FC = () => {
                   gap='small'
                   className='self-start'
                 >
-                  Update stint
+                  Mark as ended
                 </Button>
               </div>
               {stints.length > 1 && i !== stints.length - 1 ? (
