@@ -15,4 +15,10 @@ export const stintRouter = createTRPCRouter({
         },
       });
     }),
+  delete: multiRoleProcedure(['driver', 'manager'])
+    .input(z.object({ stintId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { stintId } = input;
+      return await ctx.prisma.stint.delete({ where: { id: stintId } });
+    }),
 });
