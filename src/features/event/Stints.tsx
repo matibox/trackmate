@@ -2,7 +2,7 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { Fragment, type FC } from 'react';
 import { useStints } from './hooks/useStints';
 import AddStint from './popups/AddStint';
-import { useAddStintStore } from './store';
+import { useAddStintStore, useDeleteStintStore } from './store';
 import { useEventQuery } from './hooks/useEventQuery';
 import dayjs from 'dayjs';
 import Avatar from '~/components/common/Avatar';
@@ -10,15 +10,18 @@ import DriverList from '~/components/common/DriverList';
 import Details from '~/components/common/Details';
 import { PlusCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
+import DeleteStint from './popups/DeleteStint';
 
 const Stints: FC = () => {
   const { stints } = useEventQuery();
   const { totalDuration: duration } = useStints();
   const { open: openAddStint } = useAddStintStore();
+  const { open: openDeleteStint } = useDeleteStintStore();
 
   return (
     <>
       <AddStint />
+      <DeleteStint />
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
           {stints.map((stint, i) => (
@@ -41,6 +44,7 @@ const Stints: FC = () => {
                       className='ml-auto h-6 p-1'
                       aria-label='Delete stint'
                       title='Delete stint'
+                      onClick={() => openDeleteStint(stint.id)}
                     >
                       <TrashIcon className='h-4' />
                     </Button>
