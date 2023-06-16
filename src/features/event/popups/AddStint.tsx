@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, type FC, useEffect, useMemo } from 'react';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 import { useAddStintStore } from '../store';
 import { useError } from '~/hooks/useError';
@@ -30,21 +30,30 @@ type Nullable<T extends object, K extends keyof T> = {
   [P in keyof T]: P extends K ? T[P] | null : T[P];
 };
 
+type FormState = Nullable<z.infer<typeof addStintSchema>, 'driver'>;
+
 const AddStint: FC = () => {
-  const { isOpened, close } = useAddStintStore();
+  const { isOpened, close, insert } = useAddStintStore();
   const { lastStintEndsAt, availableDrivers } = useStints();
   const { id: eventId } = useEventQuery();
 
   const utils = api.useContext();
   const { Error, setError } = useError();
 
-  const [formState, setFormState] = useState<
-    Nullable<z.infer<typeof addStintSchema>, 'driver'>
-  >({
-    start: lastStintEndsAt,
-    driver: null,
-    estimatedEnd: lastStintEndsAt,
-  });
+  const defaultFormState: FormState = useMemo(
+    () => ({
+      start: insert?.after || lastStintEndsAt,
+      driver: null,
+      estimatedEnd: insert?.after || lastStintEndsAt,
+    }),
+    [insert, lastStintEndsAt]
+  );
+
+  const [formState, setFormState] = useState<FormState>(defaultFormState);
+
+  useEffect(() => {
+    setFormState(defaultFormState);
+  }, [defaultFormState, insert]);
 
   const { mutate: addStint, isLoading } = api.stint.add.useMutation({
     onError: err => setError(err.message),

@@ -87,6 +87,15 @@ const Stints: FC = () => {
                   className='group flex items-center gap-3'
                   title='Add a stint between these 2 stints'
                   aria-label='Add a stint between these 2 stints'
+                  onClick={() => {
+                    const { duration, start, estimatedEnd } = stint;
+                    openAddStint({
+                      after: duration
+                        ? dayjs(start).add(duration, 'minutes').toDate()
+                        : estimatedEnd,
+                      nextStintId: stints[i + 1]?.id,
+                    });
+                  }}
                 >
                   <div className='h-[1px] grow bg-slate-800' />
                   <div>
@@ -102,7 +111,7 @@ const Stints: FC = () => {
           className='flex h-8 items-center justify-center rounded px-2 py-1 text-slate-300 ring-1 ring-slate-800 transition hover:bg-slate-800 hover:ring-slate-700'
           title='Add new stint'
           aria-label='Add new stint'
-          onClick={openAddStint}
+          onClick={() => openAddStint()}
         >
           <PlusIcon className='h-[22px]' />
         </button>

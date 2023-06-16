@@ -100,16 +100,25 @@ export const usePostFeedbackStore = create<PostFeedbackStore>()(set => ({
   close: () => set(() => ({ setupId: undefined, isOpened: false })),
 }));
 
+type Insert =
+  | {
+      after: Date;
+      nextStintId: string | undefined;
+    }
+  | undefined;
+
 type AddStintStore = {
   isOpened: boolean;
-  open: () => void;
+  open: (insert?: Insert) => void;
   close: () => void;
+  insert: Insert;
 };
 
 export const useAddStintStore = create<AddStintStore>()(set => ({
   isOpened: false,
-  open: () => set(() => ({ isOpened: true })),
-  close: () => set(() => ({ isOpened: false })),
+  open: (insert = undefined) => set(() => ({ isOpened: true, insert })),
+  close: () => set(() => ({ isOpened: false, insert: undefined })),
+  insert: undefined,
 }));
 
 type DeleteStintStore = {
