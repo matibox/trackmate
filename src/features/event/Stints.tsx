@@ -8,13 +8,13 @@ import dayjs from 'dayjs';
 import Avatar from '~/components/common/Avatar';
 import DriverList from '~/components/common/DriverList';
 import Details from '~/components/common/Details';
-import { PlusCircleIcon } from '@heroicons/react/20/solid';
+import { PlusCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 
 const Stints: FC = () => {
   const { stints } = useEventQuery();
   const { totalDuration: duration } = useStints();
-  const { open } = useAddStintStore();
+  const { open: openAddStint } = useAddStintStore();
 
   return (
     <>
@@ -34,6 +34,16 @@ const Stints: FC = () => {
                       className='rounded-full'
                     />
                     <DriverList drivers={[stint.driver]} />
+                    <Button
+                      intent='subtleDanger'
+                      size='xs'
+                      gap='small'
+                      className='ml-auto h-6 p-1'
+                      aria-label='Delete stint'
+                      title='Delete stint'
+                    >
+                      <TrashIcon className='h-4' />
+                    </Button>
                   </div>
                   <div>
                     <Details
@@ -88,7 +98,7 @@ const Stints: FC = () => {
           className='flex h-8 items-center justify-center rounded px-2 py-1 text-slate-300 ring-1 ring-slate-800 transition hover:bg-slate-800 hover:ring-slate-700'
           title='Add new stint'
           aria-label='Add new stint'
-          onClick={open}
+          onClick={openAddStint}
         >
           <PlusIcon className='h-[22px]' />
         </button>
