@@ -44,17 +44,19 @@ const Stints: FC = () => {
                       className='rounded-full'
                     />
                     <DriverList drivers={[stint.driver]} />
-                    <Button
-                      intent='subtleDanger'
-                      size='xs'
-                      gap='small'
-                      className='ml-auto h-6 p-1'
-                      aria-label='Delete stint'
-                      title='Delete stint'
-                      onClick={() => openDeleteStint(stint.id)}
-                    >
-                      <TrashIcon className='h-4' />
-                    </Button>
+                    {!stint.ended && i === stints.length - 1 ? (
+                      <Button
+                        intent='subtleDanger'
+                        size='xs'
+                        gap='small'
+                        className='ml-auto h-6 p-1'
+                        aria-label='Delete stint'
+                        title='Delete stint'
+                        onClick={() => openDeleteStint(stint.id)}
+                      >
+                        <TrashIcon className='h-4' />
+                      </Button>
+                    ) : null}
                   </div>
                   <div>
                     <Details
@@ -80,7 +82,8 @@ const Stints: FC = () => {
                     />
                   </div>
                 </div>
-                {!stint.ended ? (
+                {!stint.ended &&
+                stints.slice(0, i).filter(s => !s.ended).length === 0 ? (
                   <Button
                     intent='secondary'
                     size='small'
@@ -94,7 +97,9 @@ const Stints: FC = () => {
                   </Button>
                 ) : null}
               </div>
-              {stints.length > 1 && i !== stints.length - 1 ? (
+              {stints.length > 1 &&
+              i !== stints.length - 1 &&
+              (!stint.ended || !stints[i + 1]?.ended) ? (
                 <button
                   className='group flex max-w-2xl items-center gap-3'
                   title='Add a stint between these 2 stints'
