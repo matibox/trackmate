@@ -4,22 +4,7 @@ import { addStintSchema } from '~/features/event/popups/AddStint';
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
 import { finishStintSchema } from '~/features/event/popups/FinishStint';
-import { type Stint } from '@prisma/client';
-
-const getMinutes = (date: Date) => {
-  const [hours, minutes] = dayjs(date)
-    .format('HH:mm')
-    .split(':')
-    .map(Number) as [number, number];
-  return minutes + hours * 60;
-};
-
-const getStintDuration = (stint: Stint) => {
-  const { duration, estimatedEnd, start } = stint;
-  if (duration) return duration;
-
-  return getMinutes(estimatedEnd) - getMinutes(start);
-};
+import { getStintDuration } from '~/utils/stints';
 
 export const stintRouter = createTRPCRouter({
   add: multiRoleProcedure(['driver', 'manager'])

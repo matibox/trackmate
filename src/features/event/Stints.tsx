@@ -16,13 +16,19 @@ import { PlusCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import DeleteStint from './popups/DeleteStint';
 import FinishStint from './popups/FinishStint';
+import cn from '~/lib/classes';
 
 const Stints: FC = () => {
   const { stints } = useEventQuery();
-  const { totalDuration: duration } = useStints();
   const { open: openAddStint } = useAddStintStore();
   const { open: openDeleteStint } = useDeleteStintStore();
   const { open: openFinishStint } = useFinishStintStore();
+
+  const {
+    totalDuration: duration,
+    totalStintsDuration,
+    stintLengthStatus,
+  } = useStints();
 
   return (
     <>
@@ -31,6 +37,12 @@ const Stints: FC = () => {
       <FinishStint />
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
+          {stints.length === 0 ? (
+            <span className='text-slate-300'>
+              There are no stints. Start by adding a first stint by clicking the
+              button below.
+            </span>
+          ) : null}
           {stints.map((stint, i) => (
             <Fragment key={stint.id}>
               <div className='flex max-w-2xl flex-col gap-3 rounded p-2 ring-1 ring-slate-800'>
@@ -132,9 +144,23 @@ const Stints: FC = () => {
         >
           <PlusIcon className='h-[22px]' />
         </button>
-        <h2>
-          Event duration: <span className='font-semibold'>{duration}</span>
-        </h2>
+        <div className='flex flex-col'>
+          <h2>
+            Total stint length:{' '}
+            <span
+              className={cn('font-semibold', {
+                'text-red-300': stintLengthStatus === 'less',
+                'text-green-300': stintLengthStatus === 'more',
+                'text-slate-50': stintLengthStatus === 'even',
+              })}
+            >
+              {totalStintsDuration}
+            </span>
+          </h2>
+          <h2>
+            Event duration: <span className='font-semibold'>{duration}</span>
+          </h2>
+        </div>
       </div>
     </>
   );
