@@ -32,7 +32,7 @@ type FormState = Nullable<z.infer<typeof addStintSchema>, 'driver'>;
 const AddStint: FC = () => {
   const { isOpened, close, insert } = useAddStintStore();
   const { lastStintEndsAt, availableDrivers } = useStints();
-  const { id: eventId } = useEventQuery();
+  const { id: eventId, stints } = useEventQuery();
 
   const utils = api.useContext();
   const { Error, setError } = useError();
@@ -109,6 +109,8 @@ const AddStint: FC = () => {
                 start: formatTimeInput(e.target.value),
               }))
             }
+            disabled={stints.length > 0}
+            className={cn({ 'cursor-not-allowed': stints.length > 0 })}
           />
         </Label>
         <Label label='Estimated duration (in minutes)'>
