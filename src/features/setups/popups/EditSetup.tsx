@@ -9,16 +9,13 @@ import { useError } from '~/hooks/useError';
 import useForm from '~/hooks/useForm';
 import { api } from '~/utils/api';
 import { useSetupStore } from '../store';
+import type { Nullable } from '~/types/utils';
 
 const formSchema = z.object({
   setup: z.unknown(),
   car: z.string().min(1, 'Car is required'),
   track: z.string().min(1, 'Track is required'),
 });
-
-type Nullable<T extends object, K extends keyof T> = {
-  [P in keyof T]: P extends K ? T[P] | null : T[P];
-};
 
 const EditSetup: FC = () => {
   const {

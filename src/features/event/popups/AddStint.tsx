@@ -16,6 +16,7 @@ import cn from '~/lib/classes';
 import ErrorWrapper from '~/components/common/ErrorWrapper';
 import Button from '@ui/Button';
 import { useEventQuery } from '../hooks/useEventQuery';
+import type { Nullable } from '~/types/utils';
 
 export const addStintSchema = z.object({
   start: z.date(),
@@ -25,10 +26,6 @@ export const addStintSchema = z.object({
     { invalid_type_error: 'Driver is required' }
   ),
 });
-
-type Nullable<T extends object, K extends keyof T> = {
-  [P in keyof T]: P extends K ? T[P] | null : T[P];
-};
 
 type FormState = Nullable<z.infer<typeof addStintSchema>, 'driver'>;
 

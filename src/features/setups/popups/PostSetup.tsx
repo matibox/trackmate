@@ -10,6 +10,7 @@ import useForm from '~/hooks/useForm';
 import { api } from '~/utils/api';
 import { useSetupStore } from '../store';
 import { ShieldCheckIcon } from '@heroicons/react/24/outline';
+import type { Nullable } from '~/types/utils';
 
 const formSchema = z.object({
   setup: z
@@ -18,10 +19,6 @@ const formSchema = z.object({
   car: z.string().min(1, 'Car is required'),
   track: z.string().min(1, 'Track is required'),
 });
-
-type Nullable<T extends object, K extends keyof T> = {
-  [P in keyof T]: P extends K ? T[P] | null : T[P];
-};
 
 const PostSetup: FC = () => {
   const {
