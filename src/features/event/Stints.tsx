@@ -2,7 +2,11 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { Fragment, type FC } from 'react';
 import { useStints } from './hooks/useStints';
 import AddStint from './popups/AddStint';
-import { useAddStintStore, useDeleteStintStore } from './store';
+import {
+  useAddStintStore,
+  useDeleteStintStore,
+  useFinishStintStore,
+} from './store';
 import { useEventQuery } from './hooks/useEventQuery';
 import dayjs from 'dayjs';
 import Avatar from '~/components/common/Avatar';
@@ -11,17 +15,20 @@ import Details from '~/components/common/Details';
 import { PlusCircleIcon, TrashIcon } from '@heroicons/react/20/solid';
 import Button from '@ui/Button';
 import DeleteStint from './popups/DeleteStint';
+import FinishStint from './popups/FinishStint';
 
 const Stints: FC = () => {
   const { stints } = useEventQuery();
   const { totalDuration: duration } = useStints();
   const { open: openAddStint } = useAddStintStore();
   const { open: openDeleteStint } = useDeleteStintStore();
+  const { open: openFinishStint } = useFinishStintStore();
 
   return (
     <>
       <AddStint />
       <DeleteStint />
+      <FinishStint />
       <div className='flex flex-col gap-4'>
         <div className='flex flex-col gap-2'>
           {stints.map((stint, i) => (
@@ -78,8 +85,11 @@ const Stints: FC = () => {
                   size='small'
                   gap='small'
                   className='self-start'
+                  onClick={() =>
+                    openFinishStint({ id: stint.id, start: stint.start })
+                  }
                 >
-                  Mark as ended
+                  Finish stint
                 </Button>
               </div>
               {stints.length > 1 && i !== stints.length - 1 ? (

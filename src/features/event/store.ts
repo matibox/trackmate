@@ -134,3 +134,17 @@ export const useDeleteStintStore = create<DeleteStintStore>()(set => ({
   close: () => set(() => ({ isOpened: false, stintId: undefined })),
   stintId: undefined,
 }));
+
+type FinishStintStore = {
+  isOpened: boolean;
+  open: (stint: { id: string; start: Date }) => void;
+  close: () => void;
+  stint: { id: string; start: Date } | undefined;
+};
+
+export const useFinishStintStore = create<FinishStintStore>()(set => ({
+  isOpened: false,
+  open: stint => set(() => ({ isOpened: true, stint })),
+  close: () => set(() => ({ isOpened: false, stintId: undefined })),
+  stint: undefined,
+}));
