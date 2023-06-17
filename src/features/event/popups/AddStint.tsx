@@ -183,7 +183,12 @@ const AddStint: FC = () => {
             </Listbox>
           </ErrorWrapper>
         </Label>
-        <Button intent='primary' size='small' gap='small' className='ml-auto'>
+        <Button
+          intent='primary'
+          size='small'
+          gap='small'
+          className='ml-auto self-end'
+        >
           Submit
         </Button>
       </Form>

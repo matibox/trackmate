@@ -26,7 +26,7 @@ const Stints: FC = () => {
         <div className='flex flex-col gap-2'>
           {stints.map((stint, i) => (
             <Fragment key={stint.id}>
-              <div className='flex flex-col gap-3 rounded p-2 ring-1 ring-slate-800'>
+              <div className='flex max-w-2xl flex-col gap-3 rounded p-2 ring-1 ring-slate-800'>
                 <div className='flex flex-col gap-2'>
                   <div className='flex items-center gap-2'>
                     <Avatar
@@ -84,7 +84,7 @@ const Stints: FC = () => {
               </div>
               {stints.length > 1 && i !== stints.length - 1 ? (
                 <button
-                  className='group flex items-center gap-3'
+                  className='group flex max-w-2xl items-center gap-3'
                   title='Add a stint between these 2 stints'
                   aria-label='Add a stint between these 2 stints'
                   onClick={() => {
@@ -108,7 +108,7 @@ const Stints: FC = () => {
           ))}
         </div>
         <button
-          className='flex h-8 items-center justify-center rounded px-2 py-1 text-slate-300 ring-1 ring-slate-800 transition hover:bg-slate-800 hover:ring-slate-700'
+          className='flex h-8 max-w-2xl items-center justify-center rounded px-2 py-1 text-slate-300 ring-1 ring-slate-800 transition hover:bg-slate-800 hover:ring-slate-700'
           title='Add new stint'
           aria-label='Add new stint'
           onClick={() => openAddStint()}
