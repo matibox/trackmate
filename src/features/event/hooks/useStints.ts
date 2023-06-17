@@ -39,8 +39,8 @@ export function useStints() {
   }, [totalDuration, totalStintsDuration]);
 
   const allDriversUsed = useMemo(() => {
-    const usedDrivers = new Set([...event.stints.map(s => s.driver)]);
-    return event.drivers.length === usedDrivers.size;
+    const usedDriversIds = new Set([...event.stints.map(s => s.driver.id)]);
+    return event.drivers.length === usedDriversIds.size;
   }, [event.drivers.length, event.stints]);
 
   return {

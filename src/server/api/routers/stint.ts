@@ -42,11 +42,39 @@ export const stintRouter = createTRPCRouter({
             where: { id: nextStint.id },
             data: {
               start: stint.estimatedEnd,
-              estimatedEnd: dayjs(stint.start)
-                .add(getStintDuration(stint), 'minutes')
+              estimatedEnd: dayjs(stint.estimatedEnd)
+                .add(getStintDuration(nextStint), 'minutes')
                 .toDate(),
             },
           });
+
+          const stints = await tx.stint.findMany({
+            where: { eventId: stint.eventId },
+            orderBy: { start: 'asc' },
+          });
+
+          const i = stints.findIndex(s => s.id === nextStint.id);
+          const stintsAfterAddedStint = stints.slice(i + 1);
+
+          console.log(stintsAfterAddedStint);
+
+          if (stintsAfterAddedStint.length > 0) {
+            await ctx.prisma.$transaction(
+              stintsAfterAddedStint.map(s => {
+                const duration = getStintDuration(stint);
+
+                return ctx.prisma.stint.update({
+                  where: { id: s.id },
+                  data: {
+                    start: dayjs(s.start).add(duration, 'minutes').toDate(),
+                    estimatedEnd: dayjs(s.estimatedEnd)
+                      .add(duration, 'minutes')
+                      .toDate(),
+                  },
+                });
+              })
+            );
+          }
         });
       }
     }),
