@@ -80,17 +80,19 @@ const Stints: FC = () => {
                     />
                   </div>
                 </div>
-                <Button
-                  intent='secondary'
-                  size='small'
-                  gap='small'
-                  className='self-start'
-                  onClick={() =>
-                    openFinishStint({ id: stint.id, start: stint.start })
-                  }
-                >
-                  Finish stint
-                </Button>
+                {!stint.ended ? (
+                  <Button
+                    intent='secondary'
+                    size='small'
+                    gap='small'
+                    className='self-start'
+                    onClick={() =>
+                      openFinishStint({ id: stint.id, start: stint.start })
+                    }
+                  >
+                    Finish stint
+                  </Button>
+                ) : null}
               </div>
               {stints.length > 1 && i !== stints.length - 1 ? (
                 <button

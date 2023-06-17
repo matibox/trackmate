@@ -3,7 +3,7 @@ import { createTRPCRouter, multiRoleProcedure } from '../trpc';
 import { addStintSchema } from '~/features/event/popups/AddStint';
 import { TRPCError } from '@trpc/server';
 import dayjs from 'dayjs';
-import { finishStint } from '~/features/event/popups/FinishStint';
+import { finishStintSchema } from '~/features/event/popups/FinishStint';
 import { type Stint } from '@prisma/client';
 
 const getMinutes = (date: Date) => {
@@ -72,7 +72,7 @@ export const stintRouter = createTRPCRouter({
       return await ctx.prisma.stint.delete({ where: { id: stintId } });
     }),
   finish: multiRoleProcedure(['driver', 'manager'])
-    .input(finishStint.extend({ stintId: z.string() }))
+    .input(finishStintSchema.extend({ stintId: z.string().optional() }))
     .mutation(async ({ ctx, input }) => {
       const { stintId, duration } = input;
 
@@ -90,8 +90,7 @@ export const stintRouter = createTRPCRouter({
       });
 
       const i = stints.findIndex(s => s.id === stint.id);
-
-      const stintsAfterFinishedStint = stints.slice(i);
+      const stintsAfterFinishedStint = stints.slice(i + 1);
 
       if (stintsAfterFinishedStint.length > 0) {
         await ctx.prisma.$transaction(
