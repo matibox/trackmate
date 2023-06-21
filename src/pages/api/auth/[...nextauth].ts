@@ -14,7 +14,8 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        session.user.teamId = (user as User & { teamId: string }).teamId;
+        session.user.sharedCalendar = (user as User).sharedCalendar;
+        session.user.teamId = (user as User).teamId;
         session.user.roles = (user as User & { roles: Role[] }).roles;
       }
       return session;

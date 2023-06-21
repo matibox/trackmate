@@ -10,6 +10,7 @@ declare module 'next-auth' {
       id: string;
       roles?: Role[];
       teamId: string | null;
+      sharedCalendar: boolean;
     } & DefaultSession['user'];
   }
 }
