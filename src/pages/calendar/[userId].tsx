@@ -62,7 +62,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   return {
     props: {
       session,
-      hasSharedCalendar: true,
       trpcState: ssg.dehydrate(),
     },
   };
