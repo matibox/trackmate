@@ -6,6 +6,7 @@ import {
   createTRPCRouter,
   managerProcedure,
   protectedProcedure,
+  publicProcedure,
 } from '../trpc';
 
 export const userRouter = createTRPCRouter({
@@ -161,5 +162,34 @@ export const userRouter = createTRPCRouter({
           },
         },
       });
+    }),
+  calendar: publicProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { userId } = input;
+      const user = await ctx.prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          sharedCalendar: true,
+          events: true,
+        },
+      });
+
+      if (!user) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'User not found.',
+        });
+      }
+
+      if (!user.sharedCalendar) {
+        throw new TRPCError({
+          code: 'FORBIDDEN',
+          message: "User's calendar is not shared.",
+        });
+      }
+
+      return user;
     }),
 });
