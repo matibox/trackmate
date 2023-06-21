@@ -14,19 +14,20 @@ import { useCalendarQuery } from '~/features/userCalendar/hooks/useCalendarQuery
 
 const Calendar: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ hasSharedCalendar }) => {
+> = () => {
   const events = useCalendarQuery();
 
   return (
     <>
       <NextSeo title='Race calendar' />
+      <main className='min-h-screen w-full bg-slate-900 p-4 pt-[calc(var(--navbar-height)_+_1rem)] text-slate-50'>
+        calendar
+      </main>
     </>
   );
 };
 
-export const getServerSideProps: GetServerSideProps<{
-  hasSharedCalendar: boolean;
-}> = async ctx => {
+export const getServerSideProps: GetServerSideProps = async ctx => {
   const session = await getServerAuthSession(ctx);
   const userId = ctx.query.userId as string | undefined;
 
@@ -49,22 +50,12 @@ export const getServerSideProps: GetServerSideProps<{
     await ssg.user.calendar.fetch({ userId });
   } catch (err) {
     if (err instanceof TRPCError) {
-      switch (err.code) {
-        case 'NOT_FOUND':
-          return {
-            redirect: {
-              destination: '/',
-              permanent: false,
-            },
-          };
-        case 'FORBIDDEN':
-          return {
-            props: {
-              session,
-              hasSharedCalendar: false,
-            },
-          };
-      }
+      return {
+        redirect: {
+          destination: '/',
+          permanent: false,
+        },
+      };
     }
   }
 

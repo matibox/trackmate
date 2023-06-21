@@ -10,5 +10,6 @@ export function useCalendarQuery() {
     { enabled: !!userId }
   );
 
-  return user?.events;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return user!.events;
 }
