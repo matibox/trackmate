@@ -33,6 +33,7 @@ export const formSchema = z
             image: z.string().nullish(),
             name: z.string().nullish(),
             teamId: z.string().nullable(),
+            sharedCalendar: z.boolean(),
             roles: z
               .array(z.object({ id: z.string(), name: z.enum(roles) }))
               .optional(),
