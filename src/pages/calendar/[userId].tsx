@@ -10,18 +10,20 @@ import { createInnerTRPCContext } from '~/server/api/trpc';
 import { getServerAuthSession } from '~/server/auth';
 import superjson from 'superjson';
 import { TRPCError } from '@trpc/server';
-import { useCalendarQuery } from '~/features/userCalendar/hooks/useCalendarQuery';
+import { getCalendarPage, getCalendarPageBoundaries } from '~/lib/dates';
+import { hasRole } from '~/utils/helpers';
+import UserCalendar from '~/features/userCalendar/components/Calendar';
 
 const Calendar: NextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = () => {
-  const events = useCalendarQuery();
-
   return (
     <>
       <NextSeo title='Race calendar' />
       <main className='min-h-screen w-full bg-slate-900 p-4 pt-[calc(var(--navbar-height)_+_1rem)] text-slate-50'>
-        calendar
+        <div className='w-96'>
+          <UserCalendar />
+        </div>
       </main>
     </>
   );
@@ -47,7 +49,24 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
   });
 
   try {
-    await ssg.user.calendar.fetch({ userId });
+    await ssg.user.hasSharedCalendar.fetch({ userId });
+
+    const page = getCalendarPage();
+    const [firstDay, lastDay] = getCalendarPageBoundaries(page);
+
+    if (hasRole(session, 'driver')) {
+      await ssg.event.getDrivingEvents.fetch({
+        firstDay,
+        lastDay,
+      });
+    }
+
+    if (hasRole(session, 'manager')) {
+      await ssg.event.getManagingEvents.fetch({
+        firstDay,
+        lastDay,
+      });
+    }
   } catch (err) {
     if (err instanceof TRPCError) {
       return {

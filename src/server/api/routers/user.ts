@@ -163,7 +163,7 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
-  calendar: publicProcedure
+  hasSharedCalendar: publicProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({ ctx, input }) => {
       const { userId } = input;
@@ -172,7 +172,6 @@ export const userRouter = createTRPCRouter({
         select: {
           id: true,
           sharedCalendar: true,
-          events: true,
         },
       });
 
@@ -189,7 +188,5 @@ export const userRouter = createTRPCRouter({
           message: "User's calendar is not shared.",
         });
       }
-
-      return user;
     }),
 });
