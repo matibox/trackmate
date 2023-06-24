@@ -10,8 +10,6 @@ import { createInnerTRPCContext } from '~/server/api/trpc';
 import { getServerAuthSession } from '~/server/auth';
 import superjson from 'superjson';
 import { TRPCError } from '@trpc/server';
-import { getCalendarPage, getCalendarPageBoundaries } from '~/lib/dates';
-import { hasRole } from '~/utils/helpers';
 import UserCalendar from '~/features/userCalendar/components/Calendar';
 
 const Calendar: NextPage<
@@ -50,23 +48,6 @@ export const getServerSideProps: GetServerSideProps = async ctx => {
 
   try {
     await ssg.user.hasSharedCalendar.fetch({ userId });
-
-    const page = getCalendarPage();
-    const [firstDay, lastDay] = getCalendarPageBoundaries(page);
-
-    if (hasRole(session, 'driver')) {
-      await ssg.event.getDrivingEvents.fetch({
-        firstDay,
-        lastDay,
-      });
-    }
-
-    if (hasRole(session, 'manager')) {
-      await ssg.event.getManagingEvents.fetch({
-        firstDay,
-        lastDay,
-      });
-    }
   } catch (err) {
     if (err instanceof TRPCError) {
       return {

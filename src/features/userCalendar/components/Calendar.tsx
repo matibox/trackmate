@@ -2,9 +2,10 @@ import Tile from '@ui/Tile';
 import { Fragment, type FC } from 'react';
 import { useCalendar } from '../hooks/useCalendar';
 import dayjs from 'dayjs';
-import { Day } from '~/features/dashboard/calendar/Day';
 import Button from '@ui/Button';
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/20/solid';
+import Day from './Day';
+import crypto from 'crypto';
 
 const UserCalendar: FC = () => {
   const {
@@ -46,18 +47,18 @@ const UserCalendar: FC = () => {
       isLoading={isLoading}
     >
       <div className='grid grid-cols-7 grid-rows-[20px,_repeat(6,_minmax(0,_1fr))] place-items-center gap-2 text-slate-50 sm:gap-4'>
-        {calendarPage?.[0]?.map((day, i) => (
+        {calendarPage?.[0]?.map(day => (
           <div
-            key={i}
+            key={crypto.randomBytes(4).toString('hex')}
             className='text-center text-xs font-semibold uppercase sm:text-base'
           >
             {dayjs(day).format('ddd')}
           </div>
         ))}
-        {calendarPage.map((row, i) => (
-          <Fragment key={i}>
-            {row.map((day, i) => (
-              <Day key={i} day={day} />
+        {calendarPage.map(row => (
+          <Fragment key={crypto.randomBytes(4).toString('hex')}>
+            {row.map(day => (
+              <Day key={crypto.randomBytes(4).toString('hex')} day={day} />
             ))}
           </Fragment>
         ))}
