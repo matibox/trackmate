@@ -27,7 +27,6 @@ specifiers:
   eslint-config-next: 13.1.2
   framer-motion: ^8.5.2
   immer: ^9.0.21
-  mobile-drag-drop: 3.0.0-rc.0
   next: 13.1.2
   next-auth: ^4.18.7
   next-pwa: ^5.6.0
@@ -64,7 +63,6 @@ dependencies:
   dayjs: 1.11.7
   framer-motion: 8.5.2_biqbaboplfbrettd7655fr4n2y
   immer: 9.0.21
-  mobile-drag-drop: 3.0.0-rc.0
   next: 13.1.2_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.18.10_7jnwqgtpcnwg4nzft4b6xlzlfi
   next-pwa: 5.6.0_next@13.1.2
@@ -3684,10 +3682,6 @@ packages:
 
   /mkdirp-classic/0.5.3:
     resolution: {integrity: sha512-gKLcREMhtuZRwRAfqP3RFW+TK4JqApVBtOIftVgjuABpAtpxhPGaDcfvbhNvD0B8iD1oUr/txX35NjcaY6Ns/A==}
-    dev: false
-
-  /mobile-drag-drop/3.0.0-rc.0:
-    resolution: {integrity: sha512-f8wIDTbBYLBW/+5sei1cqUE+StyDpf/LP+FRZELlVX6tmOOmELk84r3wh1z3woxCB9G5octhF06K5COvFjGgqg==}
     dev: false
 
   /ms/2.1.2:

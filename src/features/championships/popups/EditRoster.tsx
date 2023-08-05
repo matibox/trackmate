@@ -1,10 +1,9 @@
-import { useState, type FC, useEffect, type DragEvent } from 'react';
+import { useState, type FC, useEffect } from 'react';
 import Popup, { PopupHeader } from '~/components/common/Popup';
 import { useEditRosterStore } from '../store';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useError } from '~/hooks/useError';
 import Loading from '@ui/Loading';
-import { polyfill } from 'mobile-drag-drop';
 import Button from '@ui/Button';
 
 type Driver = RouterOutputs['championship']['driversToAdd'][number] & {
@@ -16,10 +15,6 @@ const EditRoster: FC = () => {
 
   const [champRoster, setChampRoster] = useState<Driver[]>([]);
   const [teamRoster, setTeamRoster] = useState<Driver[]>([]);
-
-  useEffect(() => {
-    polyfill();
-  }, []);
 
   useEffect(() => {
     if (!championship?.roster) return;
@@ -54,31 +49,14 @@ const EditRoster: FC = () => {
       },
     });
 
-  function handleOnDrag(e: DragEvent, driver: Driver) {
-    e.dataTransfer.setData('driver', JSON.stringify(driver));
-  }
-
-  function handleOnDrop(e: DragEvent) {
-    const driver = JSON.parse(e.dataTransfer.getData('driver')) as Driver;
-    const target = e.target as HTMLElement;
-
+  function changeRoster(driver: Driver) {
     if (driver.roster === 'team') {
-      if (target.dataset.roster !== 'champ') return;
       setTeamRoster(prev => prev.filter(d => d.id !== driver.id));
       setChampRoster(prev => [...prev, { ...driver, roster: 'champ' }]);
     } else {
-      if (target.dataset.roster !== 'team') return;
       setChampRoster(prev => prev.filter(d => d.id !== driver.id));
       setTeamRoster(prev => [...prev, { ...driver, roster: 'team' }]);
     }
-  }
-
-  function handleOnDragEnter(e: DragEvent) {
-    e.preventDefault();
-  }
-
-  function handleDragOver(e: DragEvent) {
-    e.preventDefault();
   }
 
   return (
@@ -99,7 +77,7 @@ const EditRoster: FC = () => {
     >
       <div className='flex flex-col gap-4'>
         <span className='text-slate-300'>
-          Drag and drop drivers to move them from one roster to another
+          Click on a driver to move him to or from the roster
         </span>
         <div className='flex flex-col gap-2'>
           <h2 className='text-lg font-semibold'>Roster</h2>
@@ -110,23 +88,17 @@ const EditRoster: FC = () => {
                   There are no drivers in the roster.
                 </span>
               ) : (
-                <div
-                  className='grid max-h-48 grid-cols-1 gap-2 overflow-y-scroll p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:grid-cols-2'
-                  onDrop={handleOnDrop}
-                  onDragEnter={handleOnDragEnter}
-                  onDragOver={handleDragOver}
-                  data-roster='champ'
-                >
+                <div className='grid max-h-48 grid-cols-1 gap-2 overflow-y-scroll p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:grid-cols-2'>
                   {champRoster.map(driver => (
-                    <div
+                    <Button
                       key={driver.id}
-                      className='w-full cursor-grab gap-2 rounded py-2 px-3 ring-1 ring-slate-700'
-                      draggable
-                      onDragStart={e => handleOnDrag(e, driver)}
-                      data-roster='champ'
+                      intent='secondary'
+                      size='small'
+                      className='text-base'
+                      onClick={() => changeRoster(driver)}
                     >
                       {driver.name}
-                    </div>
+                    </Button>
                   ))}
                 </div>
               )}
@@ -143,23 +115,17 @@ const EditRoster: FC = () => {
                   There are no drivers in the roster.
                 </span>
               ) : (
-                <div
-                  className='grid max-h-48 grid-cols-1 gap-2 overflow-y-scroll p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:grid-cols-2'
-                  onDrop={handleOnDrop}
-                  onDragEnter={handleOnDragEnter}
-                  onDragOver={handleDragOver}
-                  data-roster='team'
-                >
+                <div className='grid max-h-48 grid-cols-1 gap-2 overflow-y-scroll p-0.5 scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-sky-500 hover:scrollbar-thumb-sky-400 sm:grid-cols-2'>
                   {teamRoster.map(driver => (
-                    <div
+                    <Button
                       key={driver.id}
-                      className='w-full cursor-grab gap-2 rounded py-2 px-3 ring-1 ring-slate-700'
-                      draggable
-                      onDragStart={e => handleOnDrag(e, driver)}
-                      data-roster='team'
+                      intent='secondary'
+                      size='small'
+                      className='text-base'
+                      onClick={() => changeRoster(driver)}
                     >
                       {driver.name}
-                    </div>
+                    </Button>
                   ))}
                 </div>
               )}

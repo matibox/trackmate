@@ -135,7 +135,6 @@ const Setups: FC = () => {
                     <div key={feedback.id} className='flex flex-col gap-2'>
                       <div className='flex items-center gap-2'>
                         <Link
-                          draggable={false}
                           href={`/profile/${feedback.user.id}`}
                           className='flex items-center gap-2 transition-colors hover:text-sky-400'
                         >

@@ -57,7 +57,6 @@ const Event: FC<EventProps> = ({ event, isTeamEvent = false }) => {
         <div className='flex w-full items-center justify-between gap-2 rounded bg-slate-700'>
           {canAccessEventPage ? (
             <Link
-              draggable={false}
               href={`/event/${event.id}`}
               className='mr-auto text-base font-semibold underline decoration-slate-500 underline-offset-2 transition-colors hover:decoration-slate-50'
             >

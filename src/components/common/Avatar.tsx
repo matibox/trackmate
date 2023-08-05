@@ -5,12 +5,7 @@ const Avatar: FC<ImageProps> = ({ ...props }) => {
   const [src, setSrc] = useState(props.src);
   return (
     // eslint-disable-next-line jsx-a11y/alt-text
-    <Image
-      {...props}
-      src={src}
-      onError={() => setSrc('/DefaultAvatar.png')}
-      draggable={false}
-    />
+    <Image {...props} src={src} onError={() => setSrc('/DefaultAvatar.png')} />
   );
 };
 

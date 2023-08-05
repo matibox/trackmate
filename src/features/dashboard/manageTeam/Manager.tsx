@@ -26,7 +26,6 @@ const Manager: FC<ManagerProps> = ({ manager, teamId }) => {
   return (
     <li className='flex justify-between border-y border-slate-700 py-2 first:border-t-0 last:border-b-0'>
       <Link
-        draggable={false}
         href={`/profile/${manager.id}`}
         className='transition-colors hover:text-sky-400'
       >

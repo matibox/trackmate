@@ -31,7 +31,6 @@ const UserData: FC<UserDataProps> = ({ profile, isLoading }) => {
             </span>
             {profile.team?.name && (
               <Link
-                draggable={false}
                 href={`/team/${profile.team.id}`}
                 className='flex items-center gap-1 text-slate-300 transition-colors hover:text-sky-400'
               >
