@@ -77,7 +77,7 @@ const EditRoster: FC = () => {
     >
       <div className='flex flex-col gap-4'>
         <span className='text-slate-300'>
-          Click on a driver to move him to or from the roster
+          Click on a driver to move him in or out from the roster
         </span>
         <div className='flex flex-col gap-2'>
           <h2 className='text-lg font-semibold'>Roster</h2>

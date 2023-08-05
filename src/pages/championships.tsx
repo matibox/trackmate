@@ -1,8 +1,6 @@
-import { ChevronLeftIcon } from '@heroicons/react/24/solid';
 import Loading from '@ui/Loading';
 import { type GetServerSideProps, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
-import Link from 'next/link';
 import { useMemo } from 'react';
 import { useError } from '../hooks/useError';
 import { getServerAuthSession } from '../server/auth';
@@ -32,13 +30,6 @@ const YourChampionships: NextPage = () => {
     <>
       <NextSeo title='Your championships' />
       <main className='min-h-screen w-full bg-slate-900 pt-[var(--navbar-height)] text-slate-50'>
-        <Link
-          href='/'
-          className='flex items-center gap-2 pl-4 pt-4 text-slate-300 transition-colors hover:text-sky-400'
-        >
-          <ChevronLeftIcon className='h-5' />
-          <span className='text-base font-normal'>back</span>
-        </Link>
         <Error />
         {getChampsLoading && (
           <div className='flex h-screen w-full items-center justify-center'>
