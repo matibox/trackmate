@@ -18,13 +18,17 @@ import Event from './Event';
 import { useChampResultStore, useEditRosterStore } from './store';
 import Details from '~/components/common/Details';
 import DriverList from '~/components/common/DriverList';
-import { UsersIcon } from '@heroicons/react/24/outline';
+import { TrashIcon, UsersIcon } from '@heroicons/react/24/outline';
+import { useChampionshipStore } from '../dashboard/championships/store';
 
 const Championship: FC<{
   championship: RouterOutputs['championship']['get'][number];
 }> = ({ championship }) => {
   const { open: openPostResult } = useChampResultStore();
   const { open: openEditRoster } = useEditRosterStore();
+  const {
+    delete: { open: openDeleteChamp },
+  } = useChampionshipStore();
 
   const { Error, setError } = useError();
 
@@ -92,23 +96,37 @@ const Championship: FC<{
                       },
                     ]}
                   />
-                  <Button
-                    intent='secondary'
-                    size='small'
-                    gap='small'
-                    className='self-start'
-                    onClick={() =>
-                      openEditRoster({
-                        id: championship.id,
-                        title: championship.name,
-                        organizer: championship.organizer,
-                        roster: championship.drivers,
-                      })
-                    }
-                  >
-                    <span>Edit roster</span>
-                    <UsersIcon className='h-5' />
-                  </Button>
+                  <div className='flex gap-2'>
+                    {!championship.archived ? (
+                      <Button
+                        intent='secondary'
+                        size='small'
+                        gap='small'
+                        onClick={() =>
+                          openEditRoster({
+                            id: championship.id,
+                            title: championship.name,
+                            organizer: championship.organizer,
+                            roster: championship.drivers,
+                          })
+                        }
+                      >
+                        <span>Edit roster</span>
+                        <UsersIcon className='h-5' />
+                      </Button>
+                    ) : null}
+                    <Button
+                      intent='danger'
+                      size='small'
+                      gap='small'
+                      onClick={() =>
+                        openDeleteChamp(championship.id, championship.name)
+                      }
+                    >
+                      <span>Delete championship</span>
+                      <TrashIcon className='h-5' />
+                    </Button>
+                  </div>
                 </div>
                 {championship.result && (
                   <div className='flex flex-col'>
