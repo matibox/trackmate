@@ -22,6 +22,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           images: [
             {
               url: '/og_image.png',
+              secureUrl: '/og_image.png',
               alt: 'Trackmate star logo',
               height: 1375,
               width: 1375,
