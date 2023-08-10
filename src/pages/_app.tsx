@@ -17,6 +17,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         description='Revisited race planning and results posting'
         openGraph={{
           type: 'website',
+          url: 'https://trackmateapp.vercel.app/',
           title: 'Trackmate',
         }}
         additionalLinkTags={[
