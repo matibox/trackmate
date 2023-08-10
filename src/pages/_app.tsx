@@ -19,6 +19,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
           type: 'website',
           title: 'Trackmate',
         }}
+        additionalLinkTags={[
+          {
+            rel: 'icon',
+            href: '/favicon.ico',
+          },
+        ]}
       />
       <Component {...pageProps} />
     </SessionProvider>
