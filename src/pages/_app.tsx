@@ -14,9 +14,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <DefaultSeo
         titleTemplate='%s - Trackmate'
         defaultTitle='Trackmate'
-        description='Revisited race planning and results posting'
+        description='Plan, Race, Win: Trackmate - Your Simracing Scheduler'
         openGraph={{
           type: 'website',
+          description: 'Plan, Race, Win: Trackmate - Your Simracing Scheduler',
           url: 'https://trackmateapp.vercel.app/',
           title: 'Trackmate',
           images: [
