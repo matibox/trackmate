@@ -19,6 +19,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
           type: 'website',
           url: 'https://trackmateapp.vercel.app/',
           title: 'Trackmate',
+          images: [
+            {
+              url: '/og_image.png',
+              alt: 'Trackmate star logo',
+              height: 1375,
+              width: 1375,
+            },
+          ],
         }}
         additionalLinkTags={[
           {
