@@ -1,9 +1,6 @@
-/** @type {import('prettier').Config} */
+/** @type {import("prettier").Config} */
 const config = {
-  plugins: [require.resolve('prettier-plugin-tailwindcss')],
-  singleQuote: true,
-  jsxSingleQuote: true,
-  arrowParens: 'avoid',
+  plugins: [require.resolve("prettier-plugin-tailwindcss")],
 };
 
 module.exports = config;
