@@ -30,6 +30,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
             },
           ],
         }}
+        twitter={{ cardType: 'summary' }}
         additionalLinkTags={[
           {
             rel: 'icon',
