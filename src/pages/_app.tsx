@@ -38,7 +38,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
           },
         ]}
       />
-      <Component {...pageProps} />
+      <div className='min-h-screen bg-slate-950'>
+        <Component {...pageProps} />
+      </div>
     </SessionProvider>
   );
 };
