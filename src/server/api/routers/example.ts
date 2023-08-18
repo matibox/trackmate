@@ -15,7 +15,15 @@ export const exampleRouter = createTRPCRouter({
     }),
 
   getAll: publicProcedure.query(({ ctx }) => {
-    return ctx.db.query.example.findMany();
+    return ctx.db.query.users.findMany({
+      with: {
+        accounts: {
+          columns: {
+            provider: true,
+          },
+        },
+      },
+    });
   }),
 
   getSecretMessage: protectedProcedure.query(() => {
