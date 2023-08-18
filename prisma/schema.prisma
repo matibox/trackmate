@@ -11,7 +11,6 @@ datasource db {
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
-  userId            String
   type              String
   provider          String
   providerAccountId String
@@ -23,6 +22,7 @@ model Account {
   id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String
 
   @@unique([provider, providerAccountId])
   @@index([userId])
@@ -31,21 +31,11 @@ model Account {
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
-  userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId       String
 
   @@index([userId])
-}
-
-model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
 }
 
 model VerificationToken {
@@ -54,4 +44,59 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  firstName     String?
+  lastName      String?
+
+  accounts   Account[]
+  sessions   Session[]
+  events     Event[]
+  eventParts EventPart[]
+}
+
+enum EventType {
+  sprint
+  endurance
+}
+
+model Event {
+  id   String    @id @default(cuid())
+  name String?
+  type EventType
+
+  users      User[]
+  eventParts EventPart[]
+}
+
+enum EventPartType {
+  briefing
+  practice
+  qualifying
+  race
+}
+
+model EventPart {
+  id      String        @id @default(cuid())
+  type    EventPartType
+  start   DateTime
+  end     DateTime
+  event   Event         @relation(fields: [eventId], references: [id])
+  eventId String
+
+  users User[]
+
+  @@index([eventId])
+}
+
+model Result {
+  id       String  @id @default(cuid())
+  position Int     @db.TinyInt
+  note     String?
 }
