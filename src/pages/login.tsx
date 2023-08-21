@@ -3,11 +3,11 @@ import { MoveLeft, X } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import Link from 'next/link';
 import Image, { type StaticImageData } from 'next/image';
+import { cn } from '~/lib/utils';
 
 import Logo from '/public/images/TM_Symbol_2_Text.png';
 import Rally1 from '/public/images/rally-1.png';
-import FormulaOne1 from '/public/images/f1-1.png';
-import { cn } from '~/lib/utils';
+import GT1 from '/public/images/gt-1.png';
 
 const Login: NextPage = () => {
   return (
@@ -47,7 +47,7 @@ const Login: NextPage = () => {
           </Button>
         </div>
       </main>
-      <BgImage src={FormulaOne1} alt='' />
+      <BgImage src={GT1} alt='' />
     </div>
   );
 };
