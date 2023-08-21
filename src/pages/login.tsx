@@ -21,7 +21,7 @@ const Login: NextPage = () => {
         </Button>
       </header>
       <BgImage sources={[Rally1, GT1]} priority />
-      <main className='flex h-1/2 flex-col items-center justify-center gap-16 border-y border-slate-900 py-10 xl:h-full xl:w-1/3'>
+      <main className='flex h-1/2 flex-col items-center justify-between border-y border-slate-900 py-10 sm:justify-center sm:gap-16 xl:h-full xl:w-1/3'>
         <div className='flex flex-col items-center gap-2'>
           <Image
             src={Logo}
