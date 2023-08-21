@@ -11,7 +11,7 @@ import GT1 from '/public/images/gt-1.png';
 
 const Login: NextPage = () => {
   return (
-    <div className='relative flex h-screen flex-col xl:flex-row'>
+    <div className='relative flex h-full flex-col xl:flex-row'>
       <header className='absolute left-0 top-0 z-10 flex w-full justify-end p-4 xl:justify-start'>
         <Button variant='ghost' size='icon' asChild aria-label='back'>
           <Link href='/'>
