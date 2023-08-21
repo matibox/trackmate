@@ -20,7 +20,7 @@ const Login: NextPage = () => {
           </Link>
         </Button>
       </header>
-      <BgImage src={Rally1} alt='' priority />
+      <BgImage sources={[Rally1, GT1]} priority />
       <main className='flex h-1/2 flex-col items-center justify-center gap-16 border-y border-slate-900 py-10 xl:h-full xl:w-1/3'>
         <div className='flex flex-col items-center gap-2'>
           <Image
@@ -47,29 +47,36 @@ const Login: NextPage = () => {
           </Button>
         </div>
       </main>
-      <BgImage src={GT1} alt='' />
+      <BgImage sources={[GT1, Rally1]} />
     </div>
   );
 };
 
 type BgImageProps = {
-  src: StaticImageData;
-  alt: string;
+  sources: StaticImageData[];
   className?: string;
   priority?: boolean;
 };
 
-function BgImage({ src, alt, className, priority = false }: BgImageProps) {
+function BgImage({ sources, className, priority = false }: BgImageProps) {
   return (
-    <Image
-      src={src}
-      alt={alt}
-      className={cn(
-        'h-1/4 w-full object-cover opacity-10 xl:h-full xl:w-1/3',
-        className
-      )}
-      priority={priority}
-    />
+    <div className='relative h-1/4 w-full xl:h-full xl:w-1/3'>
+      {sources.map((source, i) => (
+        <Image
+          key={source.src}
+          src={source}
+          alt=''
+          className={cn(
+            'absolute left-0 top-0 h-full w-full animate-image-carousel object-cover opacity-0',
+            className
+          )}
+          style={{
+            animationDelay: `${i * 20}s`,
+          }}
+          priority={priority}
+        />
+      ))}
+    </div>
   );
 }
 
