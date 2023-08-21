@@ -23,7 +23,7 @@ specifiers:
   drizzle-orm: ^0.26.3
   eslint: ^8.40.0
   eslint-config-next: ^13.4.2
-  lucide-react: ^0.268.0
+  lucide-react: ^0.263.1
   next: ^13.4.2
   next-auth: ^4.22.1
   next-seo: ^6.1.0
@@ -53,7 +53,7 @@ dependencies:
   class-variance-authority: 0.7.0
   clsx: 2.0.0
   drizzle-orm: 0.26.5
-  lucide-react: 0.268.0_react@18.2.0
+  lucide-react: 0.263.1_react@18.2.0
   next: 13.4.13_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.22.5_7bxrc77cqw5efxjm7xsv6oi4pi
   next-seo: 6.1.0_7bxrc77cqw5efxjm7xsv6oi4pi
@@ -1965,8 +1965,8 @@ packages:
     dependencies:
       yallist: 4.0.0
 
-  /lucide-react/0.268.0_react@18.2.0:
-    resolution: {integrity: sha512-XP/xY3ASJAViqNqVnDRcEfdxfRB7uNST8sqTLwZhL983ikmHMQ7qQak7ZxrnXOVhB3QDBawdr3ANq0P+iWHP/g==}
+  /lucide-react/0.263.1_react@18.2.0:
+    resolution: {integrity: sha512-keqxAx97PlaEN89PXZ6ki1N8nRjGWtDa4021GFYLNj0RgruM5odbpl8GHTExj0hhPq3sF6Up0gnxt6TSHu+ovw==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
