@@ -20,7 +20,7 @@ const Login: NextPage = () => {
           </Link>
         </Button>
       </header>
-      <BgImage src={Rally1} alt='' />
+      <BgImage src={Rally1} alt='' priority />
       <main className='flex h-1/2 flex-col items-center justify-center gap-16 border-y border-slate-900 py-10 xl:h-full xl:w-1/3'>
         <div className='flex flex-col items-center gap-2'>
           <Image
@@ -56,9 +56,10 @@ type BgImageProps = {
   src: StaticImageData;
   alt: string;
   className?: string;
+  priority?: boolean;
 };
 
-function BgImage({ src, alt, className }: BgImageProps) {
+function BgImage({ src, alt, className, priority = false }: BgImageProps) {
   return (
     <Image
       src={src}
@@ -67,6 +68,7 @@ function BgImage({ src, alt, className }: BgImageProps) {
         'h-1/4 w-full object-cover opacity-10 xl:h-full xl:w-1/3',
         className
       )}
+      priority={priority}
     />
   );
 }
