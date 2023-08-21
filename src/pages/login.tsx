@@ -1,5 +1,5 @@
 import { type NextPage } from 'next';
-import { X } from 'lucide-react';
+import { MoveLeft, X } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import Link from 'next/link';
 import Image, { type StaticImageData } from 'next/image';
@@ -11,29 +11,30 @@ import { cn } from '~/lib/utils';
 
 const Login: NextPage = () => {
   return (
-    <div className='relative flex h-screen flex-col'>
-      <header className='absolute left-0 top-0 z-10 flex w-full justify-end p-4'>
-        <Button variant='ghost' size='icon' asChild>
+    <div className='relative flex h-screen flex-col xl:flex-row'>
+      <header className='absolute left-0 top-0 z-10 flex w-full justify-end p-4 xl:justify-start'>
+        <Button variant='ghost' size='icon' asChild aria-label='back'>
           <Link href='/'>
-            <X />
+            <X className='xl:hidden' />
+            <MoveLeft className='hidden xl:block' />
           </Link>
         </Button>
       </header>
       <BgImage src={Rally1} alt='' />
-      <main className='flex grow flex-col items-center justify-between border-y border-slate-900 py-10'>
+      <main className='flex h-1/2 flex-col items-center justify-center gap-16 border-y border-slate-900 py-10 xl:h-full xl:w-1/3'>
         <div className='flex flex-col items-center gap-2'>
           <Image
             src={Logo}
             alt='TrackMate logo'
-            className='w-[221px]'
+            className='w-[221px] xl:w-[354px]'
             priority
           />
-          <span className='antial text-center text-slate-300'>
+          <span className='text-center text-slate-300 xl:text-xl'>
             Plan, Race, Win - Your Simracing Scheduler
           </span>
         </div>
-        <div className='flex flex-col items-center gap-3'>
-          <span className='text-xl'>Sign in with</span>
+        <div className='flex flex-col items-center gap-3 xl:gap-6'>
+          <span className='text-xl xl:text-2xl'>Sign in with</span>
           <Button variant='outline'>
             <Image
               src='/images/Discord.svg'
@@ -62,7 +63,10 @@ function BgImage({ src, alt, className }: BgImageProps) {
     <Image
       src={src}
       alt={alt}
-      className={cn('h-[191px] object-cover opacity-10', className)}
+      className={cn(
+        'h-1/4 w-full object-cover opacity-10 xl:h-full xl:w-1/3',
+        className
+      )}
     />
   );
 }
