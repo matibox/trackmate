@@ -7,9 +7,9 @@ import SimImage from '~/components/SimImage';
 import { getServerAuthSession } from '~/server/auth';
 import Image from 'next/image';
 import { type ReactNode } from 'react';
-import WelcomeLayout from '~/core/welcome/components/Layout';
 import { useWelcomeForm } from '~/core/welcome/store/formStore';
 import StepOne from '~/core/welcome/components/StepOne';
+import StepTwo from '~/core/welcome/components/StepTwo';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -32,7 +32,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-const steps: ReactNode[] = [<StepOne key={1} />];
+const steps: ReactNode[] = [<StepOne key={1} />, <StepTwo key={2} />];
 
 const Welcome: NextPage = () => {
   const stepIndex = useWelcomeForm(state => state.stepIndex);
@@ -44,12 +44,7 @@ const Welcome: NextPage = () => {
       </header>
       <SimImage sources={[Rally1, GT1]} priority />
       <main className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:h-full xl:w-2/5 xl:p-16'>
-        <WelcomeLayout
-          title='Welcome to TrackMate'
-          description='Fill in your data to continue with the app. We use your name only for displaying purposes.'
-        >
-          {steps[stepIndex]}
-        </WelcomeLayout>
+        {steps[stepIndex]}
       </main>
       <footer className='absolute bottom-0 w-full pb-4 text-center text-sm'>
         Step {stepIndex + 1} of 3
