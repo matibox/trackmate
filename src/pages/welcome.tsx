@@ -6,19 +6,10 @@ import { type GetServerSidePropsContext, type NextPage } from 'next';
 import SimImage from '~/components/SimImage';
 import { getServerAuthSession } from '~/server/auth';
 import Image from 'next/image';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '~/components/ui/Form';
-import { Input } from '~/components/ui/Input';
-import { Button } from '~/components/ui/Button';
+import { type ReactNode } from 'react';
+import WelcomeLayout from '~/core/welcome/components/Layout';
+import { useWelcomeForm } from '~/core/welcome/store/formStore';
+import StepOne from '~/core/welcome/components/StepOne';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -41,33 +32,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-const usernameError = 'Username needs to be between 2 and 20 characters';
-
-const formSchema = z.object({
-  username: z.string().min(2, usernameError).max(20, usernameError),
-  firstName: z
-    .string()
-    .min(1, 'First name is required')
-    .max(35, "First name can't be longer than 35 characters"),
-  lastName: z
-    .string()
-    .min(1, 'Last name is required')
-    .max(35, "Last name can't be longer than 35 characters"),
-});
+const steps: ReactNode[] = [<StepOne key={1} />];
 
 const Welcome: NextPage = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: '',
-      firstName: '',
-      lastName: '',
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-  }
+  const stepIndex = useWelcomeForm(state => state.stepIndex);
 
   return (
     <div className='relative flex h-[100dvh] flex-col xl:flex-row'>
@@ -76,65 +44,16 @@ const Welcome: NextPage = () => {
       </header>
       <SimImage sources={[Rally1, GT1]} priority />
       <main className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:h-full xl:w-2/5 xl:p-16'>
-        <div className='flex flex-col items-center gap-9 xl:h-full xl:gap-16'>
-          <div className='flex flex-col gap-0.5 text-center sm:gap-1 lg:gap-3'>
-            <h1 className='text-3xl font-bold sm:text-4xl 2xl:text-5xl'>
-              Welcome to <span className='text-sky-500'>TrackMate</span>
-            </h1>
-            <p className='text-xs leading-[18px] text-slate-300 sm:text-sm lg:text-lg'>
-              Fill in your data to continue with the app. We use your name only
-              for displaying purposes.
-            </p>
-          </div>
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className='w-full max-w-sm space-y-5'
-            >
-              <FormField
-                control={form.control}
-                name='username'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='firstName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>First name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name='lastName'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Last name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type='submit'>Continue</Button>
-            </form>
-          </Form>
-        </div>
+        <WelcomeLayout
+          title='Welcome to TrackMate'
+          description='Fill in your data to continue with the app. We use your name only for displaying purposes.'
+        >
+          {steps[stepIndex]}
+        </WelcomeLayout>
       </main>
+      <footer className='absolute bottom-0 w-full pb-4 text-center text-sm'>
+        Step {stepIndex + 1} of 3
+      </footer>
       <SimImage sources={[GT1, Rally1]} />
       {/* gradient */}
       <div className='absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20' />
