@@ -25,6 +25,9 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'image-carousel': 'image-carousel 40s infinite',
       },
+      backgroundImage: {
+        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],
