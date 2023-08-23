@@ -2,7 +2,7 @@ import Logo from '/public/images/TM_Symbol_2_Text.png';
 import Rally1 from '/public/images/rally-1.png';
 import GT1 from '/public/images/gt-1.png';
 
-import { type NextPage } from 'next';
+import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { MoveLeft, X } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import Link from 'next/link';
@@ -13,13 +13,30 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useToast } from '~/components/ui/use-toast';
 import { Toaster } from '~/components/ui/toaster';
+import { getServerAuthSession } from '~/server/auth';
+
+export async function getServerSideProps(ctx: GetServerSidePropsContext) {
+  const session = await getServerAuthSession(ctx);
+
+  if (session) {
+    return {
+      redirect: {
+        // TODO: set this to '/' after welcome is done
+        destination: '/welcome',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {},
+  };
+}
 
 const Login: NextPage = () => {
   const router = useRouter();
   const { error } = router.query as { error: string | undefined };
   const { toast } = useToast();
-
-  console.log('a');
 
   useEffect(() => {
     if (!error) return;
