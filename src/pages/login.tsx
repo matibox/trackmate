@@ -10,8 +10,8 @@ import Image from 'next/image';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { useToast } from '~/components/ui/use-toast';
-import { Toaster } from '~/components/ui/toaster';
+import { useToast } from '~/components/ui/useToast';
+import { Toaster } from '~/components/ui/Toaster';
 import { getServerAuthSession } from '~/server/auth';
 import SimImage from '~/components/SimImage';
 
