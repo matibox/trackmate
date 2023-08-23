@@ -10,6 +10,7 @@ import { type ReactNode } from 'react';
 import { useWelcomeForm } from '~/core/welcome/store/formStore';
 import StepOne from '~/core/welcome/components/StepOne';
 import StepTwo from '~/core/welcome/components/StepTwo';
+import StepThree from '~/core/welcome/components/StepThree';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -32,7 +33,11 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-const steps: ReactNode[] = [<StepOne key={1} />, <StepTwo key={2} />];
+const steps: ReactNode[] = [
+  <StepOne key={1} />,
+  <StepTwo key={2} />,
+  <StepThree key={3} />,
+];
 
 const Welcome: NextPage = () => {
   const stepIndex = useWelcomeForm(state => state.stepIndex);
@@ -46,7 +51,7 @@ const Welcome: NextPage = () => {
       <main className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:h-full xl:w-2/5 xl:p-16'>
         {steps[stepIndex]}
       </main>
-      <footer className='absolute bottom-0 w-full pb-4 text-center text-sm'>
+      <footer className='absolute bottom-0 z-20 w-full pb-4 text-center text-sm'>
         Step {stepIndex + 1} of 3
       </footer>
       <SimImage sources={[GT1, Rally1]} />

@@ -54,7 +54,7 @@ export default function StepOne() {
 
   function onSubmit(values: z.infer<typeof formSchema>) {
     console.log(values);
-    // nextStep();
+    nextStep();
   }
 
   return (
