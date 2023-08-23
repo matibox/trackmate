@@ -1,17 +1,41 @@
+import Logo from '/public/images/TM_Symbol_2_Text.png';
+import Rally1 from '/public/images/rally-1.png';
+import GT1 from '/public/images/gt-1.png';
+
 import { type NextPage } from 'next';
 import { MoveLeft, X } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import Link from 'next/link';
 import Image, { type StaticImageData } from 'next/image';
 import { cn } from '~/lib/utils';
-
-import Logo from '/public/images/TM_Symbol_2_Text.png';
-import Rally1 from '/public/images/rally-1.png';
-import GT1 from '/public/images/gt-1.png';
+import { signIn } from 'next-auth/react';
+import { useRouter } from 'next/router';
+import { useEffect } from 'react';
+import { useToast } from '~/components/ui/use-toast';
+import { Toaster } from '~/components/ui/toaster';
 
 const Login: NextPage = () => {
+  const router = useRouter();
+  const { error } = router.query as { error: string | undefined };
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (!error) return;
+    toast({
+      variant: 'destructive',
+      title: 'Something went wrong.',
+      description: 'Try signing in with a different account.',
+    });
+  }, [error, toast]);
+
+  async function login() {
+    if (error) await router.replace('/login', undefined, { shallow: true });
+    await signIn('discord');
+  }
+
   return (
     <div className='relative flex h-[100dvh] flex-col xl:flex-row'>
+      <Toaster />
       <header className='absolute left-0 top-0 z-10 flex w-full justify-end p-4 xl:justify-start'>
         <Button variant='ghost' size='icon' asChild aria-label='back'>
           <Link href='/'>
@@ -35,7 +59,7 @@ const Login: NextPage = () => {
         </div>
         <div className='flex flex-col items-center gap-3 xl:gap-6'>
           <span className='text-xl xl:text-2xl'>Sign in with</span>
-          <Button variant='outline'>
+          <Button variant='outline' onClick={() => void login()}>
             <Image
               src='/images/Discord.svg'
               alt='Discord logo'
