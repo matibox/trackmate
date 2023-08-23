@@ -19,8 +19,6 @@ const Login: NextPage = () => {
   const { error } = router.query as { error: string | undefined };
   const { toast } = useToast();
 
-  console.log('a');
-
   useEffect(() => {
     if (!error) return;
     toast({
