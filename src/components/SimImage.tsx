@@ -13,7 +13,7 @@ export default function SimImage({
   priority = false,
 }: BgImageProps) {
   return (
-    <div className='relative h-1/4 w-full xl:h-full xl:w-1/3'>
+    <div className='relative max-h-[25%] w-full grow xl:h-full xl:max-h-none xl:w-1/3'>
       {sources.map((source, i) => (
         <Image
           key={source.src}
