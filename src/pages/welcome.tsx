@@ -19,6 +19,7 @@ import {
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
 import { Button } from '~/components/ui/Button';
+import DynamicContainer from '~/components/DynamicContainer';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -75,61 +76,67 @@ const Welcome: NextPage = () => {
         <Image src={Logo} alt='TrackMate logo' width={45} />
       </header>
       <SimImage sources={[Rally1, GT1]} priority />
-      <main className='relative z-10 flex max-h-[100dvh] min-h-[50%] flex-col gap-10 border-y border-slate-900 bg-slate-950 p-6 transition-[max-height] sm:gap-16 xl:h-full xl:w-1/3'>
-        <div className='flex flex-col gap-0.5 text-center'>
-          <h1 className='text-3xl font-bold'>
-            Welcome to <span className='text-sky-500'>TrackMate</span>
-          </h1>
-          <p className='text-sm leading-[18px] text-slate-300'>
-            Fill in your data to continue with the app. We use your name only
-            for displaying purposes.
-          </p>
+      <DynamicContainer
+        as='main'
+        padding={48}
+        className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:w-1/3'
+      >
+        <div className='flex flex-col gap-10 sm:gap-16 xl:h-full'>
+          <div className='flex flex-col gap-0.5 text-center'>
+            <h1 className='text-3xl font-bold'>
+              Welcome to <span className='text-sky-500'>TrackMate</span>
+            </h1>
+            <p className='text-sm leading-[18px] text-slate-300'>
+              Fill in your data to continue with the app. We use your name only
+              for displaying purposes.
+            </p>
+          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+              <FormField
+                control={form.control}
+                name='username'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='firstName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>First name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='lastName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Last name</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type='submit'>Continue</Button>
+            </form>
+          </Form>
         </div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
-            <FormField
-              control={form.control}
-              name='username'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='firstName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>First name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='lastName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Last name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type='submit'>Continue</Button>
-          </form>
-        </Form>
-      </main>
+      </DynamicContainer>
       <SimImage sources={[GT1, Rally1]} />
       {/* gradient */}
       <div className='absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20' />
