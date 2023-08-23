@@ -19,7 +19,6 @@ import {
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
 import { Button } from '~/components/ui/Button';
-import DynamicContainer from '~/components/DynamicContainer';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -73,26 +72,25 @@ const Welcome: NextPage = () => {
   return (
     <div className='relative flex h-[100dvh] flex-col xl:flex-row'>
       <header className='absolute left-0 top-0 z-10 flex w-full justify-start p-3'>
-        <Image src={Logo} alt='TrackMate logo' width={45} />
+        <Image src={Logo} alt='TrackMate logo' width={36} />
       </header>
       <SimImage sources={[Rally1, GT1]} priority />
-      <DynamicContainer
-        as='main'
-        padding={48}
-        className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:w-1/3'
-      >
-        <div className='flex flex-col gap-10 sm:gap-16 xl:h-full'>
-          <div className='flex flex-col gap-0.5 text-center'>
-            <h1 className='text-3xl font-bold'>
+      <main className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:h-full xl:w-2/5 xl:p-16'>
+        <div className='flex flex-col items-center gap-9 xl:h-full xl:gap-16'>
+          <div className='flex flex-col gap-0.5 text-center sm:gap-1 lg:gap-3'>
+            <h1 className='text-3xl font-bold sm:text-4xl 2xl:text-5xl'>
               Welcome to <span className='text-sky-500'>TrackMate</span>
             </h1>
-            <p className='text-sm leading-[18px] text-slate-300'>
+            <p className='text-xs leading-[18px] text-slate-300 sm:text-sm lg:text-lg'>
               Fill in your data to continue with the app. We use your name only
               for displaying purposes.
             </p>
           </div>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-5'>
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='w-full max-w-sm space-y-5'
+            >
               <FormField
                 control={form.control}
                 name='username'
@@ -136,7 +134,7 @@ const Welcome: NextPage = () => {
             </form>
           </Form>
         </div>
-      </DynamicContainer>
+      </main>
       <SimImage sources={[GT1, Rally1]} />
       {/* gradient */}
       <div className='absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20' />
