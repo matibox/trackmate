@@ -6,14 +6,14 @@ import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { MoveLeft, X } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import Link from 'next/link';
-import Image, { type StaticImageData } from 'next/image';
-import { cn } from '~/lib/utils';
+import Image from 'next/image';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useToast } from '~/components/ui/use-toast';
 import { Toaster } from '~/components/ui/toaster';
 import { getServerAuthSession } from '~/server/auth';
+import SimImage from '~/components/SimImage';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -63,7 +63,7 @@ const Login: NextPage = () => {
           </Link>
         </Button>
       </header>
-      <BgImage sources={[Rally1, GT1]} priority />
+      <SimImage sources={[Rally1, GT1]} priority />
       <main className='relative z-10 flex h-1/2 flex-col items-center justify-between border-y border-slate-900 bg-slate-950 py-10 sm:justify-center sm:gap-16 xl:h-full xl:w-1/3'>
         <div className='flex flex-col items-center gap-2'>
           <Image
@@ -90,39 +90,11 @@ const Login: NextPage = () => {
           </Button>
         </div>
       </main>
-      <BgImage sources={[GT1, Rally1]} />
+      <SimImage sources={[GT1, Rally1]} />
       {/* gradient */}
       <div className='absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20' />
     </div>
   );
 };
-
-type BgImageProps = {
-  sources: StaticImageData[];
-  className?: string;
-  priority?: boolean;
-};
-
-function BgImage({ sources, className, priority = false }: BgImageProps) {
-  return (
-    <div className='relative h-1/4 w-full xl:h-full xl:w-1/3'>
-      {sources.map((source, i) => (
-        <Image
-          key={source.src}
-          src={source}
-          alt=''
-          className={cn(
-            'absolute left-0 top-0 h-full w-full animate-image-carousel object-cover opacity-0',
-            className
-          )}
-          style={{
-            animationDelay: `${i * 20}s`,
-          }}
-          priority={priority}
-        />
-      ))}
-    </div>
-  );
-}
 
 export default Login;
