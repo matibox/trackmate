@@ -43,7 +43,7 @@ import { Textarea } from '~/components/ui/Textarea';
 
 export const stepTwoSchema = z.object({
   country: z.string({ required_error: 'Please select a country.' }),
-  mainGame: z.string({ required_error: 'Please select a main game.' }),
+  mainGame: z.enum(games, { required_error: 'Please select a main game.' }),
   bio: z
     .string()
     .max(160, { message: "Bio can't be longer than 160 characters." })

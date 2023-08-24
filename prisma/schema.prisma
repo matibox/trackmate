@@ -9,8 +9,8 @@ datasource db {
 }
 
 enum Game {
-  ACC   @map("Assetto Corsa Competizione")
-  F1_23 @map("F1 23")
+  Assetto_Corsa_Competizione
+  F1_23
 }
 
 // Necessary for Next auth

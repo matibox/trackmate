@@ -4,6 +4,7 @@ import { stepOneSchema } from '~/core/welcome/components/StepOne';
 import { stepTwoSchema } from '~/core/welcome/components/StepTwo';
 import { stepThreeCreateTeamSchema } from '~/core/welcome/components/StepThree';
 import bcrypt from 'bcrypt';
+import { type Game } from '@prisma/client';
 
 async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -37,7 +38,15 @@ export const welcomeRouter = createTRPCRouter({
 
       await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
-        data: stepOne,
+        data: {
+          ...stepOne,
+          profile: {
+            create: {
+              ...stepTwo,
+              mainGame: stepTwo.mainGame.split(' ').join('_') as Game,
+            },
+          },
+        },
       });
 
       if (stepThreeCreateTeam) {
