@@ -8,7 +8,9 @@
     "lint": "next lint",
     "start": "next start",
     "format": "prettier --write * --ignore-unknown --no-error-on-unmatched-pattern",
-    "format:check": "prettier --check * --ignore-unknown --no-error-on-unmatched-pattern"
+    "format:check": "prettier --check * --ignore-unknown --no-error-on-unmatched-pattern",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",
@@ -32,6 +34,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.0.0",
     "cmdk": "^0.2.0",
+    "dotenv": "^16.3.1",
     "drizzle-orm": "^0.26.3",
     "lucide-react": "^0.263.1",
     "next": "^13.4.2",
@@ -56,6 +59,7 @@
     "@types/react-dom": "^18.2.4",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
+    "@vitejs/plugin-react": "^4.0.4",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.40.0",
     "eslint-config-next": "^13.4.2",
@@ -64,7 +68,9 @@
     "prettier-plugin-tailwindcss": "^0.2.8",
     "prisma": "^5.1.1",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5.0.4"
+    "typescript": "^5.0.4",
+    "vite": "^4.4.9",
+    "vitest": "^0.34.2"
   },
   "ct3aMetadata": {
     "initVersion": "7.18.0"
