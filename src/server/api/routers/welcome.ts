@@ -2,7 +2,10 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { stepOneSchema } from '~/core/welcome/components/StepOne';
 import { stepTwoSchema } from '~/core/welcome/components/StepTwo';
-import { stepThreeCreateTeamSchema } from '~/core/welcome/components/StepThree';
+import {
+  stepThreeCreateTeamSchema,
+  stepThreeJoinTeamSchema,
+} from '~/core/welcome/components/StepThree';
 import bcrypt from 'bcrypt';
 import { type $Enums } from '@prisma/client';
 
@@ -45,7 +48,7 @@ export const welcomeRouter = createTRPCRouter({
           stepOne: stepOneSchema,
           stepTwo: stepTwoSchema,
           stepThreeCreateTeam: stepThreeCreateTeamSchema.nullable(),
-          stepThreeJoinTeam: z.object({}).nullable(),
+          stepThreeJoinTeam: stepThreeJoinTeamSchema.nullable(),
         })
         .superRefine(({ stepThreeCreateTeam, stepThreeJoinTeam }, ctx) => {
           if (stepThreeCreateTeam === null && stepThreeJoinTeam === null) {

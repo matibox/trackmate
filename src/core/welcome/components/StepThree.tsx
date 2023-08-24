@@ -39,6 +39,7 @@ import {
   CommandInput,
   CommandItem,
 } from '~/components/ui/Command';
+import { useDebounce } from '~/hooks/useDebounce';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -64,9 +65,10 @@ export default function StepOne() {
     setData,
     previousStep,
   } = useWelcomeForm();
-  const [showPassword, setShowPassword] = useState(false);
-
   const router = useRouter();
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [query, setQuery] = useState('');
 
   const createTeamForm = useForm<z.infer<typeof stepThreeCreateTeamSchema>>({
     resolver: zodResolver(stepThreeCreateTeamSchema),
@@ -85,8 +87,21 @@ export default function StepOne() {
     },
   });
 
+  const utils = api.useContext();
   const checkTeamData = api.welcome.isTeamDataTaken.useMutation();
-  const teamsByQuery = api.team.byQuery.useQuery({ q: '' });
+  const checkTeamPassowrd = api.team.checkPassword.useMutation();
+  const teamsByQuery = api.team.byQuery.useQuery(
+    { q: query },
+    { enabled: Boolean(query) }
+  );
+
+  useDebounce(
+    () => {
+      void utils.team.byQuery.invalidate();
+    },
+    500,
+    [query]
+  );
 
   const submitForm = api.welcome.submitForm.useMutation({
     onError: console.log,
@@ -103,13 +118,13 @@ export default function StepOne() {
 
     if (isNameTaken) {
       createTeamForm.setError('teamName', {
-        message: 'Team name is taken',
+        message: 'Team name is taken.',
       });
     }
 
     if (isAbbreviationTaken) {
       createTeamForm.setError('abbreviation', {
-        message: 'Abbreviation is taken',
+        message: 'Abbreviation is taken.',
       });
     }
 
@@ -127,13 +142,27 @@ export default function StepOne() {
     });
   }
 
-  function onJoinTeamSubmit(values: z.infer<typeof stepThreeJoinTeamSchema>) {
-    console.log(values);
+  async function onJoinTeamSubmit(
+    values: z.infer<typeof stepThreeJoinTeamSchema>
+  ) {
+    const success = await checkTeamPassowrd.mutateAsync(values);
+
+    if (!success) {
+      return joinTeamForm.setError('password', { message: 'Wrong password.' });
+    }
+
+    setData({ step: '3-join', data: values });
+    if (!stepOne || !stepTwo) return;
+
+    await submitForm.mutateAsync({
+      stepOne,
+      stepTwo,
+      stepThreeCreateTeam: null,
+      stepThreeJoinTeam: values,
+    });
   }
 
-  // const teamName = joinTeamForm.watch('teamName');
-
-  // console.log(teamName);
+  const teamName = joinTeamForm.watch('teamName');
 
   return (
     <WelcomeLayout
@@ -271,10 +300,19 @@ export default function StepOne() {
                       <PopoverContent className='p-0'>
                         <Command>
                           <CommandInput
-                            onValueChange={q => console.log(q)}
+                            value={query}
+                            onValueChange={setQuery}
                             placeholder='Search team...'
                           />
-                          <CommandEmpty>No teams found.</CommandEmpty>
+                          <CommandEmpty>
+                            {teamsByQuery.isInitialLoading ? (
+                              <div className='mx-auto flex justify-center'>
+                                <Loader2Icon className='h-4 w-4 animate-spin' />
+                              </div>
+                            ) : (
+                              'No teams found.'
+                            )}
+                          </CommandEmpty>
                           <CommandGroup>
                             {teamsByQuery.data?.map(team => (
                               <CommandItem
@@ -303,6 +341,63 @@ export default function StepOne() {
                   </FormItem>
                 )}
               />
+              {Boolean(teamName) ? (
+                <FormField
+                  control={joinTeamForm.control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem className='relative'>
+                      <FormLabel>Password</FormLabel>
+                      <div className='relative'>
+                        <FormControl>
+                          <Input
+                            type={showPassword ? 'text' : 'password'}
+                            {...field}
+                          />
+                        </FormControl>
+                        <Button
+                          variant='ghost'
+                          size='icon'
+                          type='button'
+                          className='absolute right-0 top-1/2 -translate-y-1/2 rounded-l-none border-b border-r border-t border-slate-800 bg-slate-950'
+                          onClick={() => setShowPassword(prev => !prev)}
+                          aria-label={
+                            showPassword ? 'hide password' : 'show password'
+                          }
+                        >
+                          {showPassword ? <EyeIcon /> : <EyeOffIcon />}
+                        </Button>
+                      </div>
+                      <FormDescription>
+                        Everyone who knows this password will be able to join
+                        the team.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
+              <div className='flex w-full justify-between'>
+                <Button
+                  variant='secondary'
+                  type='button'
+                  onClick={previousStep}
+                  disabled={submitForm.isLoading}
+                >
+                  <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
+                  Previous
+                </Button>
+                <Button type='submit' disabled={submitForm.isLoading}>
+                  {submitForm.isLoading ? (
+                    <>
+                      Please wait
+                      <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
+                    </>
+                  ) : (
+                    'Submit'
+                  )}
+                </Button>
+              </div>
             </form>
           </Form>
         </TabsContent>
