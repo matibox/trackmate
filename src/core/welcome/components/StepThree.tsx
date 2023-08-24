@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useWelcomeForm } from '../store/formStore';
 import { api } from '~/utils/api';
+import { useRouter } from 'next/router';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -34,6 +35,8 @@ export default function StepOne() {
     useWelcomeForm();
   const [showPassword, setShowPassword] = useState(false);
 
+  const router = useRouter();
+
   const createTeamForm = useForm<z.infer<typeof stepThreeCreateTeamSchema>>({
     resolver: zodResolver(stepThreeCreateTeamSchema),
     defaultValues: stepThreeCreate || {
@@ -48,6 +51,9 @@ export default function StepOne() {
 
   const submitForm = api.welcome.submitForm.useMutation({
     onError: console.log,
+    onSuccess: async () => {
+      await router.push('/?message=welcome');
+    },
   });
 
   async function onCreateTeamSubmit(
@@ -75,12 +81,12 @@ export default function StepOne() {
 
     if (!stepOne || !stepTwo) return;
 
-    // await submitForm.mutateAsync({
-    //   stepOne,
-    //   stepTwo,
-    //   stepThreeCreateTeam: values,
-    //   stepThreeJoinTeam: null,
-    // });
+    await submitForm.mutateAsync({
+      stepOne,
+      stepTwo,
+      stepThreeCreateTeam: values,
+      stepThreeJoinTeam: null,
+    });
   }
 
   return (
@@ -173,8 +179,8 @@ export default function StepOne() {
                 <Button type='submit' disabled={submitForm.isLoading}>
                   {submitForm.isLoading ? (
                     <>
-                      <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />
                       Please wait
+                      <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
                     </>
                   ) : (
                     'Submit'

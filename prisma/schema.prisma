@@ -60,6 +60,7 @@ model User {
   username      String?   @unique
   firstName     String?
   lastName      String?
+  active        Boolean   @default(false)
 
   profile    Profile?
   accounts   Account[]

@@ -72,6 +72,7 @@ export const welcomeRouter = createTRPCRouter({
               mainGame: stepTwo.mainGame.replaceAll(' ', '_') as $Enums.Game,
             },
           },
+          active: true,
         },
       });
 
