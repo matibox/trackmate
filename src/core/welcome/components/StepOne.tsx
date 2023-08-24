@@ -13,6 +13,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useWelcomeForm } from '../store/formStore';
 import WelcomeLayout from './Layout';
+import { ArrowRightIcon } from 'lucide-react';
 
 const usernameError = 'Username needs to be between 2 and 20 characters';
 
@@ -95,7 +96,12 @@ export default function StepOne() {
               </FormItem>
             )}
           />
-          <Button type='submit'>Continue</Button>
+          <div className='flex w-full justify-end'>
+            <Button type='submit'>
+              Next
+              <ArrowRightIcon className='ml-1.5 h-4 w-4' />
+            </Button>
+          </div>
         </form>
       </Form>
     </WelcomeLayout>

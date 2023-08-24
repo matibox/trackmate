@@ -52,7 +52,7 @@ const Welcome: NextPage = () => {
         {steps[stepIndex]}
       </main>
       <footer className='absolute bottom-0 z-20 w-full pb-4 text-center text-sm'>
-        Step {stepIndex + 1} of 3
+        Step {stepIndex + 1} of {steps.length}
       </footer>
       <SimImage sources={[GT1, Rally1]} />
       {/* gradient */}

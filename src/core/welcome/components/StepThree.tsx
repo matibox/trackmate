@@ -15,11 +15,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import WelcomeLayout from './Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { useState } from 'react';
-import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import { useWelcomeForm } from '../store/formStore';
 
 export const stepThreeCreateTeamSchema = z.object({
-  teamName: z.string({ required_error: 'Team name is required.' }),
+  teamName: z.string().min(1, 'Team name is required.'),
   abbreviation: z
     .string({ required_error: 'Abbreviation is required.' })
     .length(3, 'Abbreviation needs to be exactly 3 characters long.'),
@@ -29,7 +29,7 @@ export const stepThreeCreateTeamSchema = z.object({
 });
 
 export default function StepOne() {
-  const { stepThreeCreate, setData } = useWelcomeForm();
+  const { stepThreeCreate, setData, previousStep } = useWelcomeForm();
   const [showPassword, setShowPassword] = useState(false);
 
   const createTeamForm = useForm<z.infer<typeof stepThreeCreateTeamSchema>>({
@@ -125,7 +125,17 @@ export default function StepOne() {
                   </FormItem>
                 )}
               />
-              <Button type='submit'>Create team</Button>
+              <div className='flex w-full justify-between'>
+                <Button
+                  variant='secondary'
+                  type='button'
+                  onClick={previousStep}
+                >
+                  <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
+                  Previous
+                </Button>
+                <Button type='submit'>Submit</Button>
+              </div>
             </form>
           </Form>
         </TabsContent>

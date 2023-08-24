@@ -18,7 +18,12 @@ import {
   PopoverTrigger,
 } from '~/components/ui/Popover';
 import { cn } from '~/lib/utils';
-import { Check, ChevronsUpDown } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  Check,
+  ChevronsUpDown,
+} from 'lucide-react';
 import {
   Command,
   CommandEmpty,
@@ -46,10 +51,11 @@ export const stepTwoSchema = z.object({
 });
 
 export default function StepOne() {
-  const { nextStep, setData } = useWelcomeForm();
+  const { nextStep, previousStep, setData, stepTwo } = useWelcomeForm();
 
   const form = useForm<z.infer<typeof stepTwoSchema>>({
     resolver: zodResolver(stepTwoSchema),
+    defaultValues: stepTwo ?? undefined,
   });
 
   function onSubmit(values: z.infer<typeof stepTwoSchema>) {
@@ -168,7 +174,16 @@ export default function StepOne() {
               </FormItem>
             )}
           />
-          <Button type='submit'>Continue</Button>
+          <div className='flex w-full justify-between'>
+            <Button variant='secondary' type='button' onClick={previousStep}>
+              <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
+              Previous
+            </Button>
+            <Button type='submit'>
+              Next
+              <ArrowRightIcon className='ml-1.5 h-4 w-4' />
+            </Button>
+          </div>
         </form>
       </Form>
     </WelcomeLayout>

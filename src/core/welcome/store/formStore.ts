@@ -24,6 +24,7 @@ type setDataType =
 export const useWelcomeForm = create<{
   stepIndex: number;
   nextStep: () => void;
+  previousStep: () => void;
   stepOne: StepOneData | null;
   stepTwo: StepTwoData | null;
   stepThreeCreate: StepThreeCreateTeamData | null;
@@ -31,6 +32,7 @@ export const useWelcomeForm = create<{
 }>(set => ({
   stepIndex: 0,
   nextStep: () => set(state => ({ stepIndex: state.stepIndex + 1 })),
+  previousStep: () => set(state => ({ stepIndex: state.stepIndex - 1 })),
   stepOne: null,
   stepTwo: null,
   stepThreeCreate: null,
