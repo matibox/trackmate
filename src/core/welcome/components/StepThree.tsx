@@ -16,8 +16,9 @@ import WelcomeLayout from './Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { useState } from 'react';
 import { EyeIcon, EyeOffIcon } from 'lucide-react';
+import { useWelcomeForm } from '../store/formStore';
 
-const createTeamSchema = z.object({
+export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string({ required_error: 'Team name is required.' }),
   abbreviation: z
     .string({ required_error: 'Abbreviation is required.' })
@@ -28,14 +29,23 @@ const createTeamSchema = z.object({
 });
 
 export default function StepOne() {
+  const { stepThreeCreate, setData } = useWelcomeForm();
   const [showPassword, setShowPassword] = useState(false);
 
-  const createTeamForm = useForm<z.infer<typeof createTeamSchema>>({
-    resolver: zodResolver(createTeamSchema),
+  const createTeamForm = useForm<z.infer<typeof stepThreeCreateTeamSchema>>({
+    resolver: zodResolver(stepThreeCreateTeamSchema),
+    defaultValues: stepThreeCreate || {
+      teamName: '',
+      abbreviation: '',
+      password: '',
+    },
   });
 
-  function onCreateTeamSubmit(values: z.infer<typeof createTeamSchema>) {
+  function onCreateTeamSubmit(
+    values: z.infer<typeof stepThreeCreateTeamSchema>
+  ) {
     console.log(values);
+    setData({ step: '3-create', data: values });
   }
 
   return (

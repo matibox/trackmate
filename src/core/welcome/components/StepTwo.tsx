@@ -36,7 +36,7 @@ import {
 } from '~/components/ui/Select';
 import { Textarea } from '~/components/ui/Textarea';
 
-const formSchema = z.object({
+export const stepTwoSchema = z.object({
   country: z.string({ required_error: 'Please select a country.' }),
   mainGame: z.string({ required_error: 'Please select a main game.' }),
   bio: z
@@ -46,14 +46,15 @@ const formSchema = z.object({
 });
 
 export default function StepOne() {
-  const nextStep = useWelcomeForm(state => state.nextStep);
+  const { nextStep, setData } = useWelcomeForm();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof stepTwoSchema>>({
+    resolver: zodResolver(stepTwoSchema),
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof stepTwoSchema>) {
     console.log(values);
+    setData({ step: '2', data: values });
     nextStep();
   }
 

@@ -16,7 +16,7 @@ import WelcomeLayout from './Layout';
 
 const usernameError = 'Username needs to be between 2 and 20 characters';
 
-const formSchema = z.object({
+export const stepOneSchema = z.object({
   username: z.string().min(2, usernameError).max(20, usernameError),
   firstName: z
     .string()
@@ -29,19 +29,20 @@ const formSchema = z.object({
 });
 
 export default function StepOne() {
-  const nextStep = useWelcomeForm(state => state.nextStep);
+  const { nextStep, setData, stepOne } = useWelcomeForm();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      username: '',
+  const form = useForm<z.infer<typeof stepOneSchema>>({
+    resolver: zodResolver(stepOneSchema),
+    defaultValues: stepOne || {
       firstName: '',
       lastName: '',
+      username: '',
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof stepOneSchema>) {
     console.log(values);
+    setData({ step: '1', data: values });
     nextStep();
   }
 
