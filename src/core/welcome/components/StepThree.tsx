@@ -100,6 +100,9 @@ export default function StepOne() {
                         type='button'
                         className='absolute right-0 top-1/2 -translate-y-1/2 rounded-l-none border-b border-r border-t border-slate-800 bg-slate-950'
                         onClick={() => setShowPassword(prev => !prev)}
+                        aria-label={
+                          showPassword ? 'hide password' : 'show password'
+                        }
                       >
                         {showPassword ? <EyeIcon /> : <EyeOffIcon />}
                       </Button>
