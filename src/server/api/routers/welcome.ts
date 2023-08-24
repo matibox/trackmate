@@ -21,6 +21,23 @@ export const welcomeRouter = createTRPCRouter({
       });
       return Boolean(foundUser);
     }),
+  isTeamDataTaken: protectedProcedure
+    .input(z.object({ teamName: z.string(), abbreviation: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { teamName, abbreviation } = input;
+
+      const foundTeamByName = await ctx.prisma.team.findUnique({
+        where: { name: teamName },
+      });
+      const foundTeamByAbbrev = await ctx.prisma.team.findUnique({
+        where: { abbreviation: abbreviation.toUpperCase() },
+      });
+
+      return {
+        isNameTaken: Boolean(foundTeamByName),
+        isAbbreviationTaken: Boolean(foundTeamByAbbrev),
+      };
+    }),
   submitForm: protectedProcedure
     .input(
       z
@@ -65,7 +82,7 @@ export const welcomeRouter = createTRPCRouter({
         await ctx.prisma.team.create({
           data: {
             name,
-            abbreviation,
+            abbreviation: abbreviation.toUpperCase(),
             password: hashedPassword,
             owners: { connect: { id: ctx.session.user.id } },
           },

@@ -43,14 +43,34 @@ export default function StepOne() {
     },
   });
 
+  const { mutateAsync: checkTeamData } =
+    api.welcome.isTeamDataTaken.useMutation();
+
   const submitForm = api.welcome.submitForm.useMutation({
     onError: console.log,
   });
 
-  function onCreateTeamSubmit(
+  async function onCreateTeamSubmit(
     values: z.infer<typeof stepThreeCreateTeamSchema>
   ) {
     console.log(values);
+
+    const { isNameTaken, isAbbreviationTaken } = await checkTeamData(values);
+
+    if (isNameTaken) {
+      createTeamForm.setError('teamName', {
+        message: 'Team name is taken',
+      });
+    }
+
+    if (isAbbreviationTaken) {
+      createTeamForm.setError('abbreviation', {
+        message: 'Abbreviation is taken',
+      });
+    }
+
+    if (isNameTaken || isAbbreviationTaken) return;
+
     setData({ step: '3-create', data: values });
 
     if (!stepOne || !stepTwo) return;
