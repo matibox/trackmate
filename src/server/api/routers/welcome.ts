@@ -8,6 +8,7 @@ import {
 } from '~/core/welcome/components/StepThree';
 import bcrypt from 'bcrypt';
 import { type $Enums } from '@prisma/client';
+import { TRPCError } from '@trpc/server';
 
 async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -48,7 +49,9 @@ export const welcomeRouter = createTRPCRouter({
           stepOne: stepOneSchema,
           stepTwo: stepTwoSchema,
           stepThreeCreateTeam: stepThreeCreateTeamSchema.nullable(),
-          stepThreeJoinTeam: stepThreeJoinTeamSchema.nullable(),
+          stepThreeJoinTeam: stepThreeJoinTeamSchema
+            .omit({ password: true })
+            .nullable(),
         })
         .superRefine(({ stepThreeCreateTeam, stepThreeJoinTeam }, ctx) => {
           if (stepThreeCreateTeam === null && stepThreeJoinTeam === null) {
@@ -88,11 +91,39 @@ export const welcomeRouter = createTRPCRouter({
             name,
             abbreviation: abbreviation.toUpperCase(),
             password: hashedPassword,
-            owners: { connect: { id: ctx.session.user.id } },
+            members: {
+              create: {
+                role: 'owner',
+                user: { connect: { id: ctx.session.user.id } },
+              },
+            },
           },
         });
       } else if (stepThreeJoinTeam) {
-        console.log('join team');
+        const { teamName: name } = stepThreeJoinTeam;
+
+        const foundTeam = await ctx.prisma.team.findUnique({
+          where: { name },
+        });
+
+        if (!foundTeam) {
+          throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'Team not found.',
+          });
+        }
+
+        await ctx.prisma.user.update({
+          where: { id: ctx.session.user.id },
+          data: {
+            teams: {
+              create: {
+                role: 'member',
+                team: { connect: { name } },
+              },
+            },
+          },
+        });
       }
     }),
 });

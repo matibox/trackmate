@@ -13,6 +13,11 @@ enum Game {
   F1_23
 }
 
+enum TeamRole {
+  owner
+  member
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -62,10 +67,10 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile    Profile?
-  accounts   Account[]
-  sessions   Session[]
-  ownedTeams Team[]    @relation(name: "team-to-owner")
+  profile  Profile?
+  accounts Account[]
+  sessions Session[]
+  teams    UsersOnTeams[]
 }
 
 model Profile {
@@ -78,14 +83,26 @@ model Profile {
   bio      String?
 }
 
+model UsersOnTeams {
+  user   User     @relation(fields: [userId], references: [id])
+  team   Team     @relation(fields: [teamId], references: [id])
+  userId String
+  teamId String
+  role   TeamRole
+
+  @@id([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
+}
+
 model Team {
   id           String @id @default(cuid())
   name         String @unique
   abbreviation String @unique @db.VarChar(3)
   password     String
 
-  owners  User[]   @relation(name: "team-to-owner")
   rosters Roster[]
+  members UsersOnTeams[]
 }
 
 model Roster {

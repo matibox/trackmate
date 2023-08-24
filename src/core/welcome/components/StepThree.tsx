@@ -382,13 +382,13 @@ export default function StepOne() {
                   variant='secondary'
                   type='button'
                   onClick={previousStep}
-                  disabled={submitForm.isLoading}
+                  disabled={submitForm.isLoading || checkTeamPassowrd.isLoading}
                 >
                   <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
                   Previous
                 </Button>
                 <Button type='submit' disabled={submitForm.isLoading}>
-                  {submitForm.isLoading ? (
+                  {submitForm.isLoading || checkTeamPassowrd.isLoading ? (
                     <>
                       Please wait
                       <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />

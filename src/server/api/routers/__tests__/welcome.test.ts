@@ -53,16 +53,17 @@ describe('mutation: submitForm', () => {
     await expect(caller.welcome.submitForm(input)).rejects.toThrowError();
   });
 
-  it('should update user, create profile and create new team', async () => {
+  it('should update user, create profile, create new team and assign owner role', async () => {
     const ctx = createInnerTRPCContext({
       session: { expires: '1000', user: { id: 'test' } },
     });
     const caller = appRouter.createCaller(ctx);
 
     await prisma.$transaction([
-      prisma.team.deleteMany({
-        where: { owners: { some: { id: ctx.session?.user.id } } },
+      prisma.usersOnTeams.deleteMany({
+        where: { userId: 'test' },
       }),
+      prisma.team.deleteMany({ where: { name: 'test' } }),
       prisma.user.deleteMany({ where: { id: 'test' } }),
       prisma.user.create({
         data: { id: 'test' },
@@ -91,18 +92,86 @@ describe('mutation: submitForm', () => {
     };
 
     await caller.welcome.submitForm(input);
-    const userWithProfile = await prisma.user.findUnique({
+    const userWithProfileAndTeamRole = await prisma.user.findUnique({
       where: { id: ctx.session?.user.id },
-      select: { profile: true },
+      select: {
+        profile: true,
+        teams: { where: { team: { name: 'test' } }, select: { role: true } },
+      },
     });
 
-    expect(userWithProfile).not.toBeNull();
-    expect(userWithProfile?.profile).toEqual({
+    expect(userWithProfileAndTeamRole).not.toBeNull();
+    expect(userWithProfileAndTeamRole?.profile).toEqual({
       ...input.stepTwo,
-      id: userWithProfile?.profile?.id,
+      id: userWithProfileAndTeamRole?.profile?.id,
       userId: ctx.session?.user.id,
       mainGame: input.stepTwo.mainGame.replaceAll(' ', '_'),
       bio: null,
     });
+    expect(userWithProfileAndTeamRole?.teams[0]?.role).toEqual('owner');
+  });
+
+  it('should update user, create profile and join existing team with member role', async () => {
+    const ctx = createInnerTRPCContext({
+      session: { expires: '1000', user: { id: 'test' } },
+    });
+    const caller = appRouter.createCaller(ctx);
+
+    await prisma.$transaction([
+      prisma.usersOnTeams.deleteMany({
+        where: { userId: 'test' },
+      }),
+      prisma.team.deleteMany({ where: { name: 'test' } }),
+      prisma.team.create({
+        data: {
+          id: 'testteam',
+          name: 'test',
+          abbreviation: 'tes',
+          password: 'test',
+        },
+      }),
+      prisma.user.deleteMany({ where: { id: 'test' } }),
+      prisma.user.create({
+        data: { id: 'test' },
+      }),
+      prisma.profile.deleteMany({
+        where: { userId: ctx.session?.user.id },
+      }),
+    ]);
+
+    const input: RouterInputs['welcome']['submitForm'] = {
+      stepOne: {
+        firstName: 'test',
+        lastName: 'test',
+        username: 'test',
+      },
+      stepTwo: {
+        country: 'test',
+        mainGame: 'Assetto Corsa Competizione',
+      },
+      stepThreeCreateTeam: null,
+      stepThreeJoinTeam: {
+        teamName: 'test',
+      },
+    };
+
+    await caller.welcome.submitForm(input);
+    const userWithProfileAndTeamRole = await prisma.user.findUnique({
+      where: { id: ctx.session?.user.id },
+      select: {
+        profile: true,
+        teams: { where: { team: { name: 'test' } }, select: { role: true } },
+      },
+    });
+
+    expect(userWithProfileAndTeamRole).not.toBeNull();
+    expect(userWithProfileAndTeamRole?.profile).toEqual({
+      ...input.stepTwo,
+      id: userWithProfileAndTeamRole?.profile?.id,
+      userId: ctx.session?.user.id,
+      mainGame: input.stepTwo.mainGame.replaceAll(' ', '_'),
+      bio: null,
+    });
+    expect(userWithProfileAndTeamRole?.teams[0]?.role).toEqual('member');
   });
 });
