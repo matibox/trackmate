@@ -61,9 +61,16 @@ model User {
   firstName     String?
   lastName      String?
 
+  profile    Profile?
   accounts   Account[]
   sessions   Session[]
   ownedTeams Team[]    @relation(name: "team-to-owner")
+}
+
+model Profile {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 }
 
 model Team {
