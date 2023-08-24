@@ -8,6 +8,11 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum Game {
+  ACC   @map("Assetto Corsa Competizione")
+  F1_23 @map("F1 23")
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -57,46 +62,25 @@ model User {
 
   accounts   Account[]
   sessions   Session[]
-  events     Event[]
-  eventParts EventPart[]
+  ownedTeams Team[]    @relation(name: "team-to-owner")
 }
 
-enum EventType {
-  sprint
-  endurance
+model Team {
+  id           String @id @default(cuid())
+  name         String @unique
+  abbreviation String @unique @db.VarChar(3)
+  password     String
+
+  owners  User[]   @relation(name: "team-to-owner")
+  rosters Roster[]
 }
 
-model Event {
-  id   String    @id @default(cuid())
-  name String?
-  type EventType
+model Roster {
+  id     String @id @default(cuid())
+  name   String
+  game   Game
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
 
-  users      User[]
-  eventParts EventPart[]
-}
-
-enum EventPartType {
-  briefing
-  practice
-  qualifying
-  race
-}
-
-model EventPart {
-  id      String        @id @default(cuid())
-  type    EventPartType
-  start   DateTime
-  end     DateTime
-  event   Event         @relation(fields: [eventId], references: [id])
-  eventId String
-
-  users User[]
-
-  @@index([eventId])
-}
-
-model Result {
-  id       String  @id @default(cuid())
-  position Int     @db.TinyInt
-  note     String?
+  @@index([teamId])
 }
