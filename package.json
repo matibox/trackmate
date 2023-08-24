@@ -10,7 +10,8 @@
     "format": "prettier --write * --ignore-unknown --no-error-on-unmatched-pattern",
     "format:check": "prettier --check * --ignore-unknown --no-error-on-unmatched-pattern",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.0",
