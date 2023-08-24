@@ -63,7 +63,7 @@ describe('mutation: submitForm', () => {
       prisma.team.deleteMany({
         where: { owners: { some: { id: ctx.session?.user.id } } },
       }),
-      prisma.user.delete({ where: { id: 'test' } }),
+      prisma.user.deleteMany({ where: { id: 'test' } }),
       prisma.user.create({
         data: { id: 'test' },
       }),

@@ -15,10 +15,30 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import WelcomeLayout from './Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { useState } from 'react';
-import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
+import {
+  ArrowLeftIcon,
+  Check,
+  ChevronsUpDown,
+  EyeIcon,
+  EyeOffIcon,
+  Loader2Icon,
+} from 'lucide-react';
 import { useWelcomeForm } from '../store/formStore';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/Popover';
+import { cn } from '~/lib/utils';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from '~/components/ui/Command';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -30,9 +50,20 @@ export const stepThreeCreateTeamSchema = z.object({
     .min(4, 'Password needs to be at least 4 characters long.'),
 });
 
+export const stepThreeJoinTeamSchema = z.object({
+  teamName: z.string({ required_error: 'Please select a team.' }),
+  password: z.string({ required_error: 'Password is required.' }),
+});
+
 export default function StepOne() {
-  const { stepOne, stepTwo, stepThreeCreate, setData, previousStep } =
-    useWelcomeForm();
+  const {
+    stepOne,
+    stepTwo,
+    stepThreeCreate,
+    stepThreeJoin,
+    setData,
+    previousStep,
+  } = useWelcomeForm();
   const [showPassword, setShowPassword] = useState(false);
 
   const router = useRouter();
@@ -46,8 +77,16 @@ export default function StepOne() {
     },
   });
 
-  const { mutateAsync: checkTeamData } =
-    api.welcome.isTeamDataTaken.useMutation();
+  const joinTeamForm = useForm<z.infer<typeof stepThreeJoinTeamSchema>>({
+    resolver: zodResolver(stepThreeJoinTeamSchema),
+    defaultValues: stepThreeJoin || {
+      teamName: '',
+      password: '',
+    },
+  });
+
+  const checkTeamData = api.welcome.isTeamDataTaken.useMutation();
+  const teamsByQuery = api.team.byQuery.useQuery({ q: '' });
 
   const submitForm = api.welcome.submitForm.useMutation({
     onError: console.log,
@@ -59,9 +98,8 @@ export default function StepOne() {
   async function onCreateTeamSubmit(
     values: z.infer<typeof stepThreeCreateTeamSchema>
   ) {
-    console.log(values);
-
-    const { isNameTaken, isAbbreviationTaken } = await checkTeamData(values);
+    const { isNameTaken, isAbbreviationTaken } =
+      await checkTeamData.mutateAsync(values);
 
     if (isNameTaken) {
       createTeamForm.setError('teamName', {
@@ -88,6 +126,14 @@ export default function StepOne() {
       stepThreeJoinTeam: null,
     });
   }
+
+  function onJoinTeamSubmit(values: z.infer<typeof stepThreeJoinTeamSchema>) {
+    console.log(values);
+  }
+
+  // const teamName = joinTeamForm.watch('teamName');
+
+  // console.log(teamName);
 
   return (
     <WelcomeLayout
@@ -191,7 +237,74 @@ export default function StepOne() {
           </Form>
         </TabsContent>
         <TabsContent value='join'>
-          <div className='text-center'>Coming soon&trade;</div>
+          <Form {...joinTeamForm}>
+            <form
+              onSubmit={joinTeamForm.handleSubmit(onJoinTeamSubmit)}
+              className='w-full max-w-sm space-y-5'
+            >
+              <FormField
+                control={joinTeamForm.control}
+                name='teamName'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Team</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild className='px-3'>
+                        <FormControl>
+                          <Button
+                            variant='outline'
+                            role='combobox'
+                            className={cn(
+                              'justify-between',
+                              !field.value && 'text-muted-foreground'
+                            )}
+                          >
+                            {field.value
+                              ? teamsByQuery.data?.find(
+                                  team => team.name === field.value
+                                )?.name
+                              : 'Select team'}
+                            <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className='p-0'>
+                        <Command>
+                          <CommandInput
+                            onValueChange={q => console.log(q)}
+                            placeholder='Search team...'
+                          />
+                          <CommandEmpty>No teams found.</CommandEmpty>
+                          <CommandGroup>
+                            {teamsByQuery.data?.map(team => (
+                              <CommandItem
+                                value={team.name}
+                                key={team.id}
+                                onSelect={() => {
+                                  joinTeamForm.setValue('teamName', team.name);
+                                }}
+                              >
+                                <Check
+                                  className={cn(
+                                    'mr-2 h-4 w-4',
+                                    team.name === field.value
+                                      ? 'opacity-100'
+                                      : 'opacity-0'
+                                  )}
+                                />
+                                {team.name}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
         </TabsContent>
       </Tabs>
     </WelcomeLayout>

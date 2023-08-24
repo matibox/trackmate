@@ -46,7 +46,6 @@ export default function StepOne() {
     api.welcome.isUsernameTaken.useMutation();
 
   async function onSubmit(values: z.infer<typeof stepOneSchema>) {
-    console.log(values);
     const isTaken = await checkUsername({ username: values.username });
 
     if (isTaken) {

@@ -59,7 +59,6 @@ export default function StepOne() {
   });
 
   function onSubmit(values: z.infer<typeof stepTwoSchema>) {
-    console.log(values);
     setData({ step: '2', data: values });
     nextStep();
   }
