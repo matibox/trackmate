@@ -4,7 +4,7 @@ import { stepOneSchema } from '~/core/welcome/components/StepOne';
 import { stepTwoSchema } from '~/core/welcome/components/StepTwo';
 import { stepThreeCreateTeamSchema } from '~/core/welcome/components/StepThree';
 import bcrypt from 'bcrypt';
-import { type Game } from '@prisma/client';
+import { type $Enums } from '@prisma/client';
 
 async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -43,7 +43,7 @@ export const welcomeRouter = createTRPCRouter({
           profile: {
             create: {
               ...stepTwo,
-              mainGame: stepTwo.mainGame.split(' ').join('_') as Game,
+              mainGame: stepTwo.mainGame.replaceAll(' ', '_') as $Enums.Game,
             },
           },
         },
