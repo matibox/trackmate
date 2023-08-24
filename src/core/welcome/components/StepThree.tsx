@@ -15,8 +15,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import WelcomeLayout from './Layout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { useState } from 'react';
-import { ArrowLeftIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
+import { ArrowLeftIcon, EyeIcon, EyeOffIcon, Loader2Icon } from 'lucide-react';
 import { useWelcomeForm } from '../store/formStore';
+import { api } from '~/utils/api';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -29,7 +30,8 @@ export const stepThreeCreateTeamSchema = z.object({
 });
 
 export default function StepOne() {
-  const { stepThreeCreate, setData, previousStep } = useWelcomeForm();
+  const { stepOne, stepTwo, stepThreeCreate, setData, previousStep } =
+    useWelcomeForm();
   const [showPassword, setShowPassword] = useState(false);
 
   const createTeamForm = useForm<z.infer<typeof stepThreeCreateTeamSchema>>({
@@ -41,11 +43,24 @@ export default function StepOne() {
     },
   });
 
+  const submitForm = api.welcome.submitForm.useMutation({
+    onError: console.log,
+  });
+
   function onCreateTeamSubmit(
     values: z.infer<typeof stepThreeCreateTeamSchema>
   ) {
     console.log(values);
     setData({ step: '3-create', data: values });
+
+    if (!stepOne || !stepTwo) return;
+
+    // await submitForm.mutateAsync({
+    //   stepOne,
+    //   stepTwo,
+    //   stepThreeCreateTeam: values,
+    //   stepThreeJoinTeam: null,
+    // });
   }
 
   return (
@@ -130,11 +145,21 @@ export default function StepOne() {
                   variant='secondary'
                   type='button'
                   onClick={previousStep}
+                  disabled={submitForm.isLoading}
                 >
                   <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
                   Previous
                 </Button>
-                <Button type='submit'>Submit</Button>
+                <Button type='submit' disabled={submitForm.isLoading}>
+                  {submitForm.isLoading ? (
+                    <>
+                      <Loader2Icon className='mr-2 h-4 w-4 animate-spin' />
+                      Please wait
+                    </>
+                  ) : (
+                    'Submit'
+                  )}
+                </Button>
               </div>
             </form>
           </Form>

@@ -14,6 +14,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useWelcomeForm } from '../store/formStore';
 import WelcomeLayout from './Layout';
 import { ArrowRightIcon } from 'lucide-react';
+import { api } from '~/utils/api';
 
 const usernameError = 'Username needs to be between 2 and 20 characters';
 
@@ -41,8 +42,17 @@ export default function StepOne() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof stepOneSchema>) {
+  const { mutateAsync: checkUsername } =
+    api.welcome.isUsernameTaken.useMutation();
+
+  async function onSubmit(values: z.infer<typeof stepOneSchema>) {
     console.log(values);
+    const isTaken = await checkUsername({ username: values.username });
+
+    if (isTaken) {
+      return form.setError('username', { message: 'Username is taken' });
+    }
+
     setData({ step: '1', data: values });
     nextStep();
   }

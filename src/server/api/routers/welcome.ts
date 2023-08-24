@@ -12,6 +12,15 @@ async function hashPassword(password: string) {
 }
 
 export const welcomeRouter = createTRPCRouter({
+  isUsernameTaken: protectedProcedure
+    .input(z.object({ username: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { username } = input;
+      const foundUser = await ctx.prisma.user.findUnique({
+        where: { username },
+      });
+      return Boolean(foundUser);
+    }),
   submitForm: protectedProcedure
     .input(
       z
