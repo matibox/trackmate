@@ -42,13 +42,12 @@ const Dashboard: NextPage = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    if (!session?.user.firstName) return;
     if (!welcome) return;
     toast({
       variant: 'default',
       title: 'Signup successful.',
-      description: `Welcome on board! Thanks for joining TrackMate${
-        session?.user.firstName ? `, ${session.user.firstName}!` : '!'
-      }`,
+      description: `Welcome on board! Thanks for joining TrackMate, ${session.user.firstName}!`,
     });
 
     const timeout = setTimeout(() => {
@@ -65,9 +64,6 @@ const Dashboard: NextPage = () => {
       <Toaster />
       <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4'>
         <span className='text-5xl font-medium'>Dashboard</span>
-        <span>
-          Welcome, {session?.user.firstName} {session?.user.lastName}
-        </span>
         {session ? <Button onClick={() => signOut()}>Sign out</Button> : null}
       </div>
     </div>
