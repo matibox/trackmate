@@ -84,7 +84,7 @@ describe('mutation: submitForm', () => {
         mainGame: 'Assetto Corsa Competizione',
       },
       stepThreeCreateTeam: {
-        abbreviation: 'aaa',
+        abbreviation: 'AAA',
         password: 'test',
         teamName: 'test',
       },
@@ -126,7 +126,7 @@ describe('mutation: submitForm', () => {
         data: {
           id: 'testteam',
           name: 'test',
-          abbreviation: 'tes',
+          abbreviation: 'AAA',
           password: 'test',
         },
       }),
