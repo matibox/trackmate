@@ -19,17 +19,25 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
 
   if (session) {
+    if (!session.user.active) {
+      return {
+        redirect: {
+          destination: '/welcome',
+          permanent: false,
+        },
+      };
+    }
+
     return {
       redirect: {
-        // TODO: set this to '/' after welcome is done
-        destination: '/welcome',
+        destination: '/dashboard',
         permanent: false,
       },
     };
   }
 
   return {
-    props: {},
+    props: { session },
   };
 }
 

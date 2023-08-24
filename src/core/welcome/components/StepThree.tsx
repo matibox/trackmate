@@ -106,7 +106,7 @@ export default function StepOne() {
   const submitForm = api.welcome.submitForm.useMutation({
     onError: console.log,
     onSuccess: async () => {
-      await router.push('/?message=welcome');
+      await router.push('/dashboard?welcome=true');
     },
   });
 

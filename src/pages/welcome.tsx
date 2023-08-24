@@ -24,7 +24,14 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  // TODO: check if user already got through get started process
+  if (session.user.active) {
+    return {
+      redirect: {
+        destination: '/dashboard',
+        permanent: false,
+      },
+    };
+  }
 
   return {
     props: {
