@@ -1,6 +1,10 @@
 import Logo from '/public/images/TM_Symbol_2_Text.png';
-import Rally1 from '/public/images/rally-1.png';
-import GT1 from '/public/images/gt-1.png';
+import ACC from '/public/images/ACC.png';
+import F1 from '/public/images/F1.jpg';
+import GT7 from '/public/images/GT7.jpg';
+import IRacing from '/public/images/iRacing.jpg';
+import Rally from '/public/images/Rally.png';
+import RF2 from '/public/images/RF2.jpg';
 
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { MoveLeft, X } from 'lucide-react';
@@ -71,7 +75,7 @@ const Login: NextPage = () => {
           </Link>
         </Button>
       </header>
-      <SimImage sources={[Rally1, GT1]} priority />
+      <SimImage images={[ACC, F1, GT7]} priority />
       <main className='relative z-10 flex h-1/2 flex-col items-center justify-between border-y border-slate-900 bg-slate-950 py-10 sm:justify-center sm:gap-16 xl:h-full xl:w-1/3'>
         <div className='flex flex-col items-center gap-2'>
           <Image
@@ -98,7 +102,7 @@ const Login: NextPage = () => {
           </Button>
         </div>
       </main>
-      <SimImage sources={[GT1, Rally1]} />
+      <SimImage images={[Rally, IRacing, RF2]} />
       {/* gradient */}
       <div className='absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20' />
     </div>

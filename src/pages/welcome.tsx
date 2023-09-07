@@ -1,5 +1,9 @@
-import Rally1 from '/public/images/rally-1.png';
-import GT1 from '/public/images/gt-1.png';
+import ACC from '/public/images/ACC.png';
+import F1 from '/public/images/F1.jpg';
+import GT7 from '/public/images/GT7.jpg';
+import IRacing from '/public/images/iRacing.jpg';
+import Rally from '/public/images/Rally.png';
+import RF2 from '/public/images/RF2.jpg';
 import Logo from '/public/images/TM_Symbol_2.png';
 
 import { type GetServerSidePropsContext, type NextPage } from 'next';
@@ -54,14 +58,14 @@ const Welcome: NextPage = () => {
       <header className='absolute left-0 top-0 z-10 flex w-full justify-start p-3'>
         <Image src={Logo} alt='TrackMate logo' width={36} />
       </header>
-      <SimImage sources={[Rally1, GT1]} priority />
+      <SimImage images={[ACC, F1, GT7]} priority />
       <main className='relative z-10 min-h-[50%] w-full border-y border-slate-900 bg-slate-950 p-6 xl:h-full xl:w-2/5 xl:p-16'>
         {steps[stepIndex]}
       </main>
       <footer className='absolute bottom-0 z-20 w-full pb-4 text-center text-sm'>
         Step {stepIndex + 1} of {steps.length}
       </footer>
-      <SimImage sources={[GT1, Rally1]} />
+      <SimImage images={[Rally, IRacing, RF2]} />
       {/* gradient */}
       <div className='absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20' />
     </div>
