@@ -175,6 +175,18 @@ export default function StepOne() {
     });
   }
 
+  async function onContinueWithoutTeam() {
+    if (!stepOne || !stepTwo) return;
+
+    await submitForm.mutateAsync({
+      stepOne,
+      stepTwo,
+      stepThreeCreateTeam: null,
+      stepThreeJoinTeam: null,
+      stepThreeSkip: true,
+    });
+  }
+
   const teamName = joinTeamForm.watch('teamName');
 
   return (
@@ -431,7 +443,9 @@ export default function StepOne() {
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction>Continue</AlertDialogAction>
+              <AlertDialogAction onClick={() => onContinueWithoutTeam()}>
+                Continue
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
