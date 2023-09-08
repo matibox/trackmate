@@ -19,8 +19,6 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
     };
   }
 
-  console.log('active', session.user.active);
-
   if (!session.user.active) {
     return {
       redirect: {
@@ -42,12 +40,11 @@ const Dashboard: NextPage = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!session?.user.firstName) return;
     if (!welcome) return;
     toast({
       variant: 'default',
       title: 'Signup successful.',
-      description: `Welcome on board! Thanks for joining TrackMate, ${session.user.firstName}!`,
+      description: `Welcome on board! Thanks for joining TrackMate!`,
     });
 
     const timeout = setTimeout(() => {
@@ -57,7 +54,7 @@ const Dashboard: NextPage = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [welcome, toast, session?.user.firstName, router]);
+  }, [welcome, toast, router]);
 
   return (
     <div className='relative h-screen'>
