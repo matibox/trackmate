@@ -1,5 +1,6 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { signOut, useSession } from 'next-auth/react';
+import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Button } from '~/components/ui/Button';
@@ -57,13 +58,16 @@ const Dashboard: NextPage = () => {
   }, [welcome, toast, router]);
 
   return (
-    <div className='relative h-screen'>
-      <Toaster />
-      <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4'>
-        <span className='text-5xl font-medium'>Dashboard</span>
-        {session ? <Button onClick={() => signOut()}>Sign out</Button> : null}
+    <>
+      <NextSeo title='Dashboard' />
+      <div className='relative h-screen'>
+        <Toaster />
+        <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4'>
+          <span className='text-5xl font-medium'>Dashboard</span>
+          {session ? <Button onClick={() => signOut()}>Sign out</Button> : null}
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
