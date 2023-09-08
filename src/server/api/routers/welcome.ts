@@ -52,23 +52,35 @@ export const welcomeRouter = createTRPCRouter({
           stepThreeJoinTeam: stepThreeJoinTeamSchema
             .omit({ password: true })
             .nullable(),
+          stepThreeSkip: z.boolean().nullable(),
         })
-        .superRefine(({ stepThreeCreateTeam, stepThreeJoinTeam }, ctx) => {
-          if (stepThreeCreateTeam === null && stepThreeJoinTeam === null) {
-            ctx.addIssue({
-              code: 'custom',
-              fatal: true,
-              message: 'Choose at least one option from step 3.',
-              path: ['stepThreeCreateTeam', 'stepThreeJoinTeam'],
-            });
+        .superRefine(
+          ({ stepThreeCreateTeam, stepThreeJoinTeam, stepThreeSkip }, ctx) => {
+            if (
+              stepThreeCreateTeam === null &&
+              stepThreeJoinTeam === null &&
+              stepThreeSkip === null
+            ) {
+              ctx.addIssue({
+                code: 'custom',
+                fatal: true,
+                message: 'Choose at least one option from step 3.',
+                path: ['stepThreeCreateTeam', 'stepThreeJoinTeam'],
+              });
+            }
           }
-        })
+        )
     )
     .mutation(async ({ ctx, input }) => {
-      const { stepOne, stepTwo, stepThreeCreateTeam, stepThreeJoinTeam } =
-        input;
+      const {
+        stepOne,
+        stepTwo,
+        stepThreeCreateTeam,
+        stepThreeJoinTeam,
+        stepThreeSkip,
+      } = input;
 
-      await ctx.prisma.user.update({
+      const user = await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
         data: {
           ...stepOne,
@@ -124,6 +136,8 @@ export const welcomeRouter = createTRPCRouter({
             },
           },
         });
+      } else if (stepThreeSkip) {
+        return user;
       }
     }),
 });
