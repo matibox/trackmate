@@ -9,11 +9,7 @@ type BgImageProps = {
   priority?: boolean;
 };
 
-export default function SimImage({
-  images,
-  className,
-  priority = false,
-}: BgImageProps) {
+export default function SimImage({ images, className }: BgImageProps) {
   const [displayedImage, setDisplayedImage] = useState(images[0]);
 
   const handleImageChange = useCallback(() => {
@@ -50,7 +46,7 @@ export default function SimImage({
               'absolute left-0 top-0 h-full w-full object-cover',
               className
             )}
-            priority={priority}
+            priority={true}
           />
         </motion.div>
       </AnimatePresence>
