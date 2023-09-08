@@ -40,6 +40,17 @@ import {
   CommandItem,
 } from '~/components/ui/Command';
 import { useDebounce } from '~/hooks/useDebounce';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '~/components/ui/AlertDialog';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -405,10 +416,29 @@ export default function StepOne() {
           <span>OR</span>
           <div className='h-px grow bg-slate-800'></div>
         </div>
-        <div className='mt-6 w-full text-center'>
-          <Button variant='ghost' size='sm'>
-            Continue without a team
-          </Button>
+        <div className='mt-6'>
+          <AlertDialog>
+            <div className='w-full text-center'>
+              <AlertDialogTrigger asChild>
+                <Button variant='ghost' className='text-center'>
+                  Continue without a team
+                </Button>
+              </AlertDialogTrigger>
+            </div>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  When continuing without a team, you won&apos;t be able to
+                  schedule events. You can always create a team later.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction>Continue</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </WelcomeLayout>
