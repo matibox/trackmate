@@ -8,6 +8,16 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum Game {
+  Assetto_Corsa_Competizione
+  F1_23
+}
+
+enum TeamRole {
+  owner
+  member
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -52,51 +62,56 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  username      String?   @unique
   firstName     String?
   lastName      String?
+  active        Boolean   @default(false)
 
-  accounts   Account[]
-  sessions   Session[]
-  events     Event[]
-  eventParts EventPart[]
+  profile  Profile?
+  accounts Account[]
+  sessions Session[]
+  teams    UsersOnTeams[]
 }
 
-enum EventType {
-  sprint
-  endurance
+model Profile {
+  id     String @id @default(cuid())
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String @unique
+
+  country  String
+  mainGame Game
+  bio      String?
 }
 
-model Event {
-  id   String    @id @default(cuid())
-  name String?
-  type EventType
+model UsersOnTeams {
+  user   User     @relation(fields: [userId], references: [id])
+  team   Team     @relation(fields: [teamId], references: [id])
+  userId String
+  teamId String
+  role   TeamRole
 
-  users      User[]
-  eventParts EventPart[]
+  @@id([userId, teamId])
+  @@index([userId])
+  @@index([teamId])
 }
 
-enum EventPartType {
-  briefing
-  practice
-  qualifying
-  race
+model Team {
+  id           String @id @default(cuid())
+  name         String @unique
+  abbreviation String @unique @db.VarChar(3)
+  password     String
+
+  rosters Roster[]
+  members UsersOnTeams[]
 }
 
-model EventPart {
-  id      String        @id @default(cuid())
-  type    EventPartType
-  start   DateTime
-  end     DateTime
-  event   Event         @relation(fields: [eventId], references: [id])
-  eventId String
+model Roster {
+  id     String @id @default(cuid())
+  team   Team   @relation(fields: [teamId], references: [id])
+  teamId String
 
-  users User[]
+  name String
+  game Game
 
-  @@index([eventId])
-}
-
-model Result {
-  id       String  @id @default(cuid())
-  position Int     @db.TinyInt
-  note     String?
+  @@index([teamId])
 }

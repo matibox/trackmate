@@ -3,11 +3,13 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
+  type DefaultUser,
 } from 'next-auth';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import DiscordProvider from 'next-auth/providers/discord';
 import { env } from '~/env.mjs';
 import { prisma } from './db';
+import { type User as PrismaUser } from '@prisma/client';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -17,17 +19,10 @@ import { prisma } from './db';
  */
 declare module 'next-auth' {
   interface Session extends DefaultSession {
-    user: {
-      id: string;
-      // ...other properties
-      // role: UserRole;
-    } & DefaultSession['user'];
+    user: DefaultSession['user'] & PrismaUser;
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User extends DefaultUser, PrismaUser {}
 }
 
 /**
@@ -37,13 +32,16 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: ({ session, user }) => {
+      if (session.user) {
+        session.user = {
+          ...user,
+          image: user.image ?? null,
+          name: user.name ?? null,
+        };
+      }
+      return session;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -61,6 +59,10 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
+  pages: {
+    signIn: '/login',
+    newUser: '/welcome',
+  },
 };
 
 /**
