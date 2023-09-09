@@ -8,6 +8,7 @@ import {
 import { useRouter } from 'next/router';
 import { cn } from '~/lib/utils';
 import Link from 'next/link';
+import { motion, type Variants } from 'framer-motion';
 
 type Path = `/${string}`;
 
@@ -41,6 +42,11 @@ export const links = [
   },
 ] as const satisfies readonly Link[];
 
+const linkVariants: Variants = {
+  inactive: { scaleX: 0 },
+  active: { scaleX: 1, transition: { duration: 0.25, ease: 'easeOut' } },
+};
+
 export default function Navbar({ disabledOn = [] }: { disabledOn?: Path[] }) {
   const router = useRouter();
 
@@ -53,34 +59,45 @@ export default function Navbar({ disabledOn = [] }: { disabledOn?: Path[] }) {
         }
       )}
     >
-      {links.map(link => (
-        <Link
-          key={link.label}
-          href={link.path}
-          className='relative flex h-[52px] w-16 flex-col items-center gap-1'
-        >
-          <div
-            className={cn(
-              'hidden h-8 w-16 items-center justify-center rounded-2xl bg-slate-800',
-              {
-                flex: router.pathname === link.path,
-              }
-            )}
-          />
-          <link.icon
-            className={cn('absolute top-1 text-slate-300', {
-              'text-sky-500': router.pathname === link.path,
-            })}
-          />
-          <span
-            className={cn('mt-auto text-xs text-slate-300', {
-              'font-medium text-sky-500': router.pathname === link.path,
-            })}
+      {links.map(link => {
+        const isActive = router.pathname === link.path;
+        return (
+          <Link
+            key={link.label}
+            href={link.path}
+            className='relative flex h-[52px] w-16 flex-col items-center gap-1'
           >
-            {link.label}
-          </span>
-        </Link>
-      ))}
+            <motion.div
+              className={cn(
+                'hidden h-8 w-16 items-center justify-center rounded-2xl bg-slate-800',
+                {
+                  flex: isActive,
+                }
+              )}
+              variants={linkVariants}
+              animate={isActive ? 'active' : 'inactive'}
+            />
+            <link.icon
+              className={cn(
+                'duration-[250ms] absolute top-1 text-slate-300 transition-colors',
+                {
+                  'text-sky-500': isActive,
+                }
+              )}
+            />
+            <span
+              className={cn(
+                'duration-[250ms] mt-auto text-xs text-slate-300 transition',
+                {
+                  'font-medium text-sky-500': isActive,
+                }
+              )}
+            >
+              {link.label}
+            </span>
+          </Link>
+        );
+      })}
     </nav>
   );
 }
