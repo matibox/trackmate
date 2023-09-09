@@ -33,7 +33,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-const Dashboard: NextPage = () => {
+const Calendar: NextPage = () => {
   const router = useRouter();
   const { welcome } = router.query as { welcome?: 'true' | undefined };
   const { toast } = useToast();
@@ -66,4 +66,4 @@ const Dashboard: NextPage = () => {
   );
 };
 
-export default Dashboard;
+export default Calendar;

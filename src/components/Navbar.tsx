@@ -77,6 +77,7 @@ export default function Navbar({ disabledOn = [] }: { disabledOn?: Path[] }) {
         alt='Trackmate logo'
         height={48}
         className='hidden lg:block'
+        priority
       />
       <div className='flex w-full items-center justify-evenly md:justify-center md:gap-14 lg:flex-col lg:gap-6'>
         {links.map(link => {
