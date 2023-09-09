@@ -40,7 +40,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         ]}
       />
       <div className='min-h-[100dvh] bg-slate-950 text-slate-50'>
-        <Navbar />
+        <Navbar disabledOn={['/', '/login', '/welcome']} />
         <Component {...pageProps} />
       </div>
     </SessionProvider>
