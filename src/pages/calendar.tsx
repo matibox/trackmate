@@ -49,7 +49,7 @@ const Dashboard: NextPage = () => {
     });
 
     const timeout = setTimeout(() => {
-      void router.push('/dashboard', undefined, { shallow: true });
+      void router.push('/calendar', undefined, { shallow: true });
     }, 5000);
 
     return () => {

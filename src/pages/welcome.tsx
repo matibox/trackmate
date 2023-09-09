@@ -32,7 +32,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   if (session.user.active) {
     return {
       redirect: {
-        destination: '/dashboard',
+        destination: '/calendar',
         permanent: false,
       },
     };

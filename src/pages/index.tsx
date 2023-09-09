@@ -10,7 +10,7 @@ const Home: NextPage = () => {
     <div className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
       {session ? (
         <Button asChild>
-          <Link href='/dashboard'>Dashboard</Link>
+          <Link href='/calendar'>Dashboard</Link>
         </Button>
       ) : (
         <Button asChild>
