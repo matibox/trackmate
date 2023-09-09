@@ -4,6 +4,7 @@ import { type AppType } from 'next/app';
 import { api } from '~/utils/api';
 import '~/styles/globals.css';
 import { DefaultSeo } from 'next-seo';
+import Navbar from '~/components/Navbar';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -39,6 +40,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         ]}
       />
       <div className='min-h-[100dvh] bg-slate-950 text-slate-50'>
+        <Navbar disabledOn={['/', '/login', '/welcome']} />
         <Component {...pageProps} />
       </div>
     </SessionProvider>
