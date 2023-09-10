@@ -66,7 +66,7 @@ export default function Navbar({ disabledOn = [] }: { disabledOn?: Path[] }) {
   return (
     <nav
       className={cn(
-        'fixed bottom-0 left-0 z-50 flex h-20 w-full items-center bg-slate-900 ring-1 ring-slate-800 lg:top-0 lg:h-full lg:w-24 lg:flex-col lg:justify-start lg:gap-12 lg:py-6',
+        'fixed bottom-0 left-0 z-50 flex h-20 w-full items-center bg-slate-900 ring-1 ring-slate-800 lg:top-0 lg:h-full lg:w-24 lg:flex-col lg:justify-start lg:gap-12 lg:bg-slate-950 lg:py-6 lg:ring-slate-900',
         {
           hidden: disabledOn.includes(router.pathname as Path),
         }
