@@ -1,12 +1,16 @@
-import { CalendarPlusIcon, FlagIcon, TrophyIcon } from 'lucide-react';
+import {
+  CalendarPlusIcon,
+  FlagIcon,
+  type LucideIcon,
+  TrophyIcon,
+} from 'lucide-react';
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
+import { type ButtonHTMLAttributes, useEffect } from 'react';
 import { Button } from '~/components/ui/Button';
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetDescription,
   SheetFooter,
@@ -17,6 +21,7 @@ import {
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
 import DashboardLayout from '~/core/dashboard/components/Layout';
+import { cn } from '~/lib/utils';
 import { getServerAuthSession } from '~/server/auth';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
@@ -92,36 +97,23 @@ const Calendar: NextPage = () => {
                 </SheetDescription>
               </SheetHeader>
               <div className='grid gap-4 py-8'>
-                <button
-                  className='flex w-full select-none flex-col justify-end rounded-md bg-gradient-to-bl from-slate-900/50 to-slate-900 p-6 no-underline outline-none focus:shadow-md'
-                  onClick={() => console.log('single event')}
-                >
-                  <FlagIcon className='h-6 w-6 text-slate-50' />
-                  <div className='mb-2 mt-4 text-lg font-medium text-slate-50'>
-                    Single event
-                  </div>
-                  <p className='text-left text-sm leading-tight text-slate-400'>
-                    Create a one-off event.
-                  </p>
-                </button>
-                <button
-                  className='flex w-full select-none flex-col justify-end rounded-md bg-gradient-to-bl from-slate-900/50 to-slate-900 p-6 no-underline outline-none focus:shadow-md'
-                  onClick={() => console.log('championship event')}
-                >
-                  <TrophyIcon className='h-6 w-6 text-slate-50' />
-                  <div className='mb-2 mt-4 text-lg font-medium text-slate-50'>
-                    Championship event
-                  </div>
-                  <p className='text-left text-sm leading-tight text-slate-400'>
-                    Create an event that is a part of a championship.
-                  </p>
-                </button>
+                <EventTypeButton
+                  icon={FlagIcon}
+                  title='Single event'
+                  label='Create a one-off event.'
+                />
+                <EventTypeButton
+                  icon={TrophyIcon}
+                  title='Championship event'
+                  label='Create an event associated with a championship.'
+                  disabled
+                />
               </div>
-              {/* <SheetFooter>
-                <SheetClose asChild>
-                  <Button type='submit'>Save changes</Button>
-                </SheetClose>
-              </SheetFooter> */}
+              <SheetFooter>
+                <Button type='submit' className='self-end'>
+                  Next
+                </Button>
+              </SheetFooter>
             </SheetContent>
           </Sheet>
         </DashboardLayout>
@@ -129,5 +121,35 @@ const Calendar: NextPage = () => {
     </>
   );
 };
+
+interface EventTypeButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  icon: LucideIcon;
+  title: string;
+  label: string;
+}
+
+function EventTypeButton({
+  icon,
+  title,
+  label,
+  className,
+  ...props
+}: EventTypeButtonProps) {
+  const Icon = icon;
+
+  return (
+    <button
+      className={cn(
+        'flex w-full select-none flex-col justify-end rounded-md bg-gradient-to-bl from-slate-900/50 to-slate-900 p-6 no-underline outline-none ring-offset-slate-950 focus:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        className
+      )}
+      {...props}
+    >
+      <Icon className='h-6 w-6 text-slate-50' />
+      <div className='mb-2 mt-4 text-lg font-medium text-slate-50'>{title}</div>
+      <p className='text-left text-sm leading-tight text-slate-400'>{label}</p>
+    </button>
+  );
+}
 
 export default Calendar;
