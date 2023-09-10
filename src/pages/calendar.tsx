@@ -1,7 +1,9 @@
+import { CalendarPlusIcon } from 'lucide-react';
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { Button } from '~/components/ui/Button';
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
 import DashboardLayout from '~/core/dashboard/components/Layout';
@@ -60,7 +62,16 @@ const Calendar: NextPage = () => {
       <NextSeo title='Calendar' />
       <div className='relative h-screen'>
         <Toaster />
-        <DashboardLayout>calendar</DashboardLayout>
+        <DashboardLayout>
+          <Button
+            variant='fab'
+            size='fab'
+            className='absolute bottom-24 right-4'
+            aria-label='Create event'
+          >
+            <CalendarPlusIcon />
+          </Button>
+        </DashboardLayout>
       </div>
     </>
   );
