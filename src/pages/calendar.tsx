@@ -4,6 +4,16 @@ import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Button } from '~/components/ui/Button';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetDescription,
+  SheetFooter,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '~/components/ui/Sheet';
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
 import DashboardLayout from '~/core/dashboard/components/Layout';
@@ -63,14 +73,32 @@ const Calendar: NextPage = () => {
       <div className='relative h-screen'>
         <Toaster />
         <DashboardLayout>
-          <Button
-            variant='fab'
-            size='fab'
-            className='absolute bottom-24 right-4'
-            aria-label='Create event'
-          >
-            <CalendarPlusIcon />
-          </Button>
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button
+                variant='fab'
+                size='fab'
+                className='absolute bottom-24 right-4'
+                aria-label='Create event'
+              >
+                <CalendarPlusIcon />
+              </Button>
+            </SheetTrigger>
+            <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
+              <SheetHeader>
+                <SheetTitle>Create event</SheetTitle>
+                <SheetDescription>
+                  Fill event details and click create when you&apos;re done.
+                </SheetDescription>
+              </SheetHeader>
+              <div className='grid gap-4 py-4'>{/* form */}</div>
+              {/* <SheetFooter>
+                <SheetClose asChild>
+                  <Button type='submit'>Save changes</Button>
+                </SheetClose>
+              </SheetFooter> */}
+            </SheetContent>
+          </Sheet>
         </DashboardLayout>
       </div>
     </>
