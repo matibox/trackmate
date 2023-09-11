@@ -208,3 +208,5 @@ export const countries = [
 ] as const;
 
 export const games = ['Assetto Corsa Competizione', 'F1 23'] as const;
+
+export const eventTypes = ['single', 'championship'] as const;
