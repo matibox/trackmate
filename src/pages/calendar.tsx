@@ -140,7 +140,7 @@ function EventTypeButton({
   return (
     <button
       className={cn(
-        'flex w-full select-none flex-col justify-end rounded-md bg-gradient-to-bl from-slate-900/50 to-slate-900 p-6 no-underline outline-none ring-offset-slate-950 focus:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+        'flex w-full select-none flex-col justify-end rounded-md bg-gradient-to-tr from-sky-700/25 via-slate-900/50 via-35% to-slate-900 bg-[length:200%_200%] bg-right-top p-6 no-underline outline-none ring-offset-slate-950 transition-[background-position] duration-500 hover:bg-left-bottom focus:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
         className
       )}
       {...props}
