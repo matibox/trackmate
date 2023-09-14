@@ -21,11 +21,15 @@ import { useNewEvent } from './newEventStore';
 import { type eventTypes } from '~/lib/constants';
 
 export default function NewEvent() {
-  const currentEventType = useNewEvent(store => store.eventType);
+  const { eventType: currentEventType, setEventType } = useNewEvent();
 
   function onSubmit() {
     if (!currentEventType) return;
     console.log(currentEventType);
+  }
+
+  function reset() {
+    setEventType(null);
   }
 
   return (
@@ -40,7 +44,10 @@ export default function NewEvent() {
           <CalendarPlusIcon />
         </Button>
       </SheetTrigger>
-      <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
+      <SheetContent
+        className='w-full border-0 ring-1 ring-slate-900'
+        onClose={reset}
+      >
         <SheetHeader>
           <SheetTitle className='text-3xl'>Create event</SheetTitle>
           <SheetDescription>
