@@ -4,8 +4,9 @@ import { CalendarPlusIcon } from 'lucide-react';
 import { type ReactNode } from 'react';
 import { useNewEvent } from './newEventStore';
 import EventType from './StepOne';
+import StepTwoSingle from './StepTwoSingle';
 
-const steps: ReactNode[] = [<EventType key={1} />];
+const steps: ReactNode[] = [<EventType key={1} />, <StepTwoSingle key={2} />];
 
 export default function NewEvent() {
   const { stepIndex } = useNewEvent();

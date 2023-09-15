@@ -1,5 +1,5 @@
 import { type z } from 'zod';
-import { type eventTypeSchema } from './StepOne';
+import { type stepOneSchema } from './StepOne';
 import { create } from 'zustand';
 
 const stepVariant = {
@@ -9,7 +9,7 @@ const stepVariant = {
   // '3-join': 'stepThreeJoin',
 };
 
-type StepOneData = z.infer<typeof eventTypeSchema>;
+type StepOneData = z.infer<typeof stepOneSchema>;
 // type StepTwoData = z.infer<typeof stepTwoSchema>;
 // type StepThreeCreateTeamData = z.infer<typeof stepThreeCreateTeamSchema>;
 // type StepThreeJoinTeamData = z.infer<typeof stepThreeJoinTeamSchema>;
@@ -23,6 +23,7 @@ export const useNewEvent = create<{
   stepIndex: number;
   nextStep: () => void;
   previousStep: () => void;
+  setStep: (stepIndex: number) => void;
   stepOne: StepOneData | null;
   // stepTwo: StepTwoData | null;
   // stepThreeCreate: StepThreeCreateTeamData | null;
@@ -32,6 +33,7 @@ export const useNewEvent = create<{
   stepIndex: 0,
   nextStep: () => set(state => ({ stepIndex: state.stepIndex + 1 })),
   previousStep: () => set(state => ({ stepIndex: state.stepIndex - 1 })),
+  setStep: stepIndex => set(() => ({ stepIndex })),
   stepOne: null,
   // stepTwo: null,
   // stepThreeCreate: null,

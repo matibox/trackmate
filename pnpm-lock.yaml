@@ -33,6 +33,8 @@ specifiers:
   class-variance-authority: ^0.7.0
   clsx: ^2.0.0
   cmdk: ^0.2.0
+  date-fns: ^2.30.0
+  dayjs: ^1.11.9
   dotenv: ^16.3.1
   eslint: ^8.40.0
   eslint-config-next: ^13.4.2
@@ -46,6 +48,7 @@ specifiers:
   prettier-plugin-tailwindcss: ^0.2.8
   prisma: ^5.1.1
   react: 18.2.0
+  react-day-picker: ^8.8.2
   react-dom: 18.2.0
   react-hook-form: ^7.45.4
   sharp: ^0.32.5
@@ -82,6 +85,8 @@ dependencies:
   class-variance-authority: 0.7.0
   clsx: 2.0.0
   cmdk: 0.2.0_qflmzdebv2ewfrqz6op6ohcc2q
+  date-fns: 2.30.0
+  dayjs: 1.11.9
   dotenv: 16.3.1
   framer-motion: 10.16.4_biqbaboplfbrettd7655fr4n2y
   lucide-react: 0.263.1_react@18.2.0
@@ -89,6 +94,7 @@ dependencies:
   next-auth: 4.22.5_7bxrc77cqw5efxjm7xsv6oi4pi
   next-seo: 6.1.0_7bxrc77cqw5efxjm7xsv6oi4pi
   react: 18.2.0
+  react-day-picker: 8.8.2_kzhlcyde2l6xjiirkbg7jzhosa
   react-dom: 18.2.0_react@18.2.0
   react-hook-form: 7.45.4_react@18.2.0
   sharp: 0.32.5
@@ -2575,6 +2581,17 @@ packages:
     resolution: {integrity: sha512-sdQSFB7+llfUcQHUQO3+B8ERRj0Oa4w9POWMI/puGtuf7gFywGmkaLCElnudfTiKZV+NvHqL0ifzdrI8Ro7ESA==}
     dev: true
 
+  /date-fns/2.30.0:
+    resolution: {integrity: sha512-fnULvOpxnC5/Vg3NCiWelDsLiUc9bRwAPs/+LfTLNvetFCtCTN+yQz15C/fs4AwX1R9K5GLtLfn8QW+dWisaAw==}
+    engines: {node: '>=0.11'}
+    dependencies:
+      '@babel/runtime': 7.22.10
+    dev: false
+
+  /dayjs/1.11.9:
+    resolution: {integrity: sha512-QvzAURSbQ0pKdIye2txOzNaHmxtUBXerpY0FJsFXUMKbIZeFm5ht1LS/jFsrncjnmtv8HsG0W2g6c0zUjZWmpA==}
+    dev: false
+
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}
     peerDependencies:
@@ -4426,6 +4443,16 @@ packages:
       ini: 1.3.8
       minimist: 1.2.8
       strip-json-comments: 2.0.1
+    dev: false
+
+  /react-day-picker/8.8.2_kzhlcyde2l6xjiirkbg7jzhosa:
+    resolution: {integrity: sha512-sK5M5PNZaLiszmACUKUpVu1eX3eFDVV+WLdWQ3BxTPbEC9jhuawmlgpbSXX5dIIQQwJpZ4wwP5+vsMVOwa1IRw==}
+    peerDependencies:
+      date-fns: ^2.28.0
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      date-fns: 2.30.0
+      react: 18.2.0
     dev: false
 
   /react-dom/18.2.0_react@18.2.0:

@@ -17,29 +17,30 @@ import { Button } from '~/components/ui/Button';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField } from '~/components/ui/Form';
+import { Form, FormField, FormMessage } from '~/components/ui/Form';
 import { useNewEvent } from './newEventStore';
 
-export const eventTypeSchema = z.object({
+export const stepOneSchema = z.object({
   eventType: z.enum(eventTypes).nullable(),
 });
 
 export default function EventType() {
-  const { setData } = useNewEvent();
+  const { setData, setStep } = useNewEvent();
 
-  const form = useForm<z.infer<typeof eventTypeSchema>>({
-    resolver: zodResolver(eventTypeSchema),
+  const form = useForm<z.infer<typeof stepOneSchema>>({
+    resolver: zodResolver(stepOneSchema),
     defaultValues: {
       eventType: null,
     },
   });
 
-  function onSubmit(values: z.infer<typeof eventTypeSchema>) {
+  function onSubmit(values: z.infer<typeof stepOneSchema>) {
     const { eventType } = values;
 
     if (!eventType) return;
 
     setData({ step: '1', data: { eventType } });
+    setStep(1);
   }
 
   return (
@@ -83,6 +84,7 @@ export default function EventType() {
                     }
                     disabled
                   />
+                  <FormMessage />
                 </>
               )}
             />
