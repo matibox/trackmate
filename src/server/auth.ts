@@ -9,7 +9,7 @@ import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import DiscordProvider from 'next-auth/providers/discord';
 import { env } from '~/env.mjs';
 import { prisma } from './db';
-import { type User as PrismaUser } from '@prisma/client';
+import { type Profile, type User as PrismaUser } from '@prisma/client';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -19,10 +19,12 @@ import { type User as PrismaUser } from '@prisma/client';
  */
 declare module 'next-auth' {
   interface Session extends DefaultSession {
-    user: DefaultSession['user'] & PrismaUser;
+    user: DefaultSession['user'] & PrismaUser & { profile: Profile | null };
   }
 
-  interface User extends DefaultUser, PrismaUser {}
+  interface User extends DefaultUser, PrismaUser {
+    profile: Profile | null;
+  }
 }
 
 /**
@@ -32,12 +34,16 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({ session, user }) => {
+    session: async ({ session, user }) => {
+      const profile = await prisma.profile.findUnique({
+        where: { userId: user.id },
+      });
       if (session.user) {
         session.user = {
           ...user,
           image: user.image ?? null,
           name: user.name ?? null,
+          profile,
         };
       }
       return session;

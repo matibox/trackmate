@@ -4,7 +4,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
-import { eventTypes } from '~/lib/constants';
+import { cars, games } from '~/lib/constants';
 import { Button } from '~/components/ui/Button';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -18,34 +18,45 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/Form';
-import { useNewEvent } from './newEventStore';
 import { Input } from '~/components/ui/Input';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/Popover';
-import { cn } from '~/lib/utils';
+import { cn, groupBy } from '~/lib/utils';
 import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
+import { useSession } from 'next-auth/react';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/Select';
 
 export const stepTwoSingleSchema = z.object({
   name: z
     .string({ required_error: 'Event name is required.' })
     .min(1, 'Event name is required.'),
   date: z.date({ required_error: 'Event date is required.' }),
-  // car: z.string(),
+  game: z.string().optional(),
+  car: z.string(),
   // track: z.string(),
 });
 
 export default function StepTwoSingle() {
-  const { setData } = useNewEvent();
+  const { data: session } = useSession();
 
   const form = useForm<z.infer<typeof stepTwoSingleSchema>>({
     resolver: zodResolver(stepTwoSingleSchema),
     defaultValues: {
       name: '',
+      game: session?.user.profile?.mainGame.replaceAll('_', ' '),
     },
   });
 
@@ -127,6 +138,83 @@ export default function StepTwoSingle() {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name='game'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Game</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select main game' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {games.map(game => (
+                        <SelectItem key={game} value={game}>
+                          {game}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {form.watch('game') !== null ? (
+              <FormField
+                control={form.control}
+                name='car'
+                render={({ field }) => {
+                  const currentGame = form.getValues(
+                    'game'
+                  ) as (typeof games)[number];
+
+                  const groupedCars = groupBy(
+                    [...cars[currentGame]],
+                    i => i.type
+                  );
+
+                  return (
+                    <FormItem className='flex flex-col'>
+                      <FormLabel>Car</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        // defaultValue={field.value.name}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder='Select a car' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className='max-h-96'>
+                          {Object.entries(groupedCars).map(
+                            ([groupName, cars]) => (
+                              <SelectGroup
+                                key={groupName}
+                                className='border-b border-slate-800 pb-2 pt-2 first:pt-0 last:border-b-0 last:pb-0'
+                              >
+                                <SelectLabel>{groupName}</SelectLabel>
+                                {cars.map(car => (
+                                  <SelectItem key={car.name} value={car.name}>
+                                    {car.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectGroup>
+                            )
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            ) : null}
             <SheetFooter>
               <Button type='submit' className='self-end'>
                 Next
