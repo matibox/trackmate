@@ -69,22 +69,34 @@ export const stepTwoSingleSchema = z
 
 export default function StepTwoSingle() {
   const { data: session } = useSession();
-  const { setStep } = useNewEvent();
+  const { setStep, setData, stepTwoSingle } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepTwoSingleSchema>>({
     resolver: zodResolver(stepTwoSingleSchema),
     defaultValues: {
-      name: '',
+      name: stepTwoSingle?.name ?? '',
+      date: stepTwoSingle?.date,
       game: session?.user.profile?.mainGame.replaceAll('_', ' ') as ReplaceAll<
         $Enums.Game,
         '_',
         ' '
       >,
+      car: stepTwoSingle
+        ? 'car' in stepTwoSingle
+          ? stepTwoSingle.car
+          : undefined
+        : undefined,
+      track: stepTwoSingle
+        ? 'track' in stepTwoSingle
+          ? stepTwoSingle.track
+          : undefined
+        : undefined,
     },
   });
 
   function onSubmit(values: z.infer<typeof stepTwoSingleSchema>) {
-    console.log(values);
+    setData({ step: '2-single', data: values });
+    setStep(2);
   }
 
   const game = form.watch('game');

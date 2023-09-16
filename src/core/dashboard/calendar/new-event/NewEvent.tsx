@@ -5,8 +5,13 @@ import { type ReactNode } from 'react';
 import { useNewEvent } from './newEventStore';
 import EventType from './StepOne';
 import StepTwoSingle from './StepTwoSingle';
+import StepThreeSingle from './StepThreeSingle';
 
-const steps: ReactNode[] = [<EventType key={1} />, <StepTwoSingle key={2} />];
+const steps: ReactNode[] = [
+  <EventType key={1} />,
+  <StepTwoSingle key={2} />,
+  <StepThreeSingle key={3} />,
+];
 
 export default function NewEvent() {
   const { stepIndex, reset } = useNewEvent();
