@@ -33,6 +33,7 @@ export const countries = [
   'Burundi',
   'Cambodia',
   'Cameroon',
+  'Canada',
   'Cape Verde',
   'Cayman Islands',
   'Chad',
@@ -265,4 +266,64 @@ export const cars = {
 } as const satisfies Record<
   (typeof games)[number],
   Readonly<Array<{ name: string; type: string }>>
+>;
+
+export const tracks = {
+  'Assetto Corsa Competizione': [
+    { name: 'Barcelona', country: 'Spain' },
+    { name: 'Bathurst Mount Panorama', country: 'Australia' },
+    { name: 'Brands Hatch', country: 'United Kingdom' },
+    { name: 'Circuit of the Americas', country: 'United States of America' },
+    { name: 'Donington Park', country: 'United Kingdom' },
+    { name: 'Hungaroring', country: 'Hungary' },
+    { name: 'Imola', country: 'Italy' },
+    { name: 'Indianapolis', country: 'United States of America' },
+    { name: 'Kyalami', country: 'South Africa' },
+    { name: 'Laguna Seca', country: 'United States of America' },
+    { name: 'Misano', country: 'Italy' },
+    { name: 'Monza', country: 'Italy' },
+    { name: 'Nürburgring', country: 'Germany' },
+    { name: 'Oulton Park', country: 'United Kingdom' },
+    { name: 'Paul Ricard', country: 'France' },
+    { name: 'Silverstone', country: 'United Kingdom' },
+    { name: 'Snetterton', country: 'United Kingdom' },
+    { name: 'Spa-Francorchamps', country: 'Belgium' },
+    { name: 'Suzuka', country: 'Japan' },
+    { name: 'Valencia', country: 'Spain' },
+    { name: 'Watkins Glen', country: 'United States of America' },
+    { name: 'Zandvoort', country: 'Netherlands' },
+    { name: 'Zolder', country: 'Belgium' },
+  ],
+  // ? Subject to change names or order of tracks
+  'F1 23': [
+    { name: 'Albert Park', country: 'Australia' },
+    { name: 'Autódromo Hermanos Rodríguez', country: 'Mexico' },
+    { name: 'Autódromo José Carlos Pace', country: 'Brazil' },
+    { name: 'Bahrain International Circuit', country: 'Bahrain' },
+    { name: 'Baku City Circuit', country: 'Azerbaijan' },
+    { name: 'Barcelona', country: 'Spain' },
+    { name: 'Circuit Gilles Villenueve', country: 'Canada' },
+    { name: 'Circuit of the Americas', country: 'United States of America' },
+    { name: 'Hungaroring', country: 'Hungary' },
+    { name: 'Imola', country: 'Italy' },
+    { name: 'Jeddah Corniche Circuit', country: 'Saudi Arabia' },
+    {
+      name: 'Las Vegas Strip Street Circuit',
+      country: 'United States of America',
+    },
+    { name: 'Losail International Circuit', country: 'Qatar' },
+    {
+      name: 'Miami International Autodrome',
+      country: 'United States of America',
+    },
+    { name: 'Monaco', country: 'Monaco' },
+    { name: 'Monza', country: 'Italy' },
+    { name: 'Singapore Marina Bay', country: 'Singapore' },
+    { name: 'Spa-Francorchamps', country: 'Belgium' },
+    { name: 'Suzuka', country: 'Japan' },
+    { name: 'Yas Marina Circuit', country: 'United Arab Emirates' },
+  ],
+} as const satisfies Record<
+  (typeof games)[number],
+  Readonly<Array<{ name: string; country: (typeof countries)[number] }>>
 >;
