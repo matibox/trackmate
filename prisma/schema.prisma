@@ -18,6 +18,11 @@ enum TeamRole {
   member
 }
 
+enum RosterRole {
+  driver
+  manager
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -67,10 +72,11 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile  Profile?
-  accounts Account[]
-  sessions Session[]
-  teams    UsersOnTeams[]
+  profile        Profile?
+  accounts       Account[]
+  sessions       Session[]
+  teams          UsersOnTeams[]
+  UsersOnRosters UsersOnRosters[]
 }
 
 model Profile {
@@ -105,13 +111,26 @@ model Team {
   members UsersOnTeams[]
 }
 
+model UsersOnRosters {
+  user     User       @relation(fields: [userId], references: [id])
+  roster   Roster     @relation(fields: [rosterId], references: [id])
+  userId   String
+  rosterId String
+  role     RosterRole
+
+  @@id([userId, rosterId])
+  @@index([userId])
+  @@index([rosterId])
+}
+
 model Roster {
   id     String @id @default(cuid())
   team   Team   @relation(fields: [teamId], references: [id])
   teamId String
 
-  name String
-  game Game
+  name    String
+  game    Game
+  members UsersOnRosters[]
 
   @@index([teamId])
 }
