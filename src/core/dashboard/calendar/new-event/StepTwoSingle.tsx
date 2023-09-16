@@ -4,7 +4,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
-import { cars, games } from '~/lib/constants';
+import { cars, games, tracks } from '~/lib/constants';
 import { Button } from '~/components/ui/Button';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
@@ -40,6 +40,7 @@ import {
 } from '~/components/ui/Select';
 import { useNewEvent } from './newEventStore';
 import { type $Enums } from '@prisma/client';
+import { useEffect } from 'react';
 
 const baseSchemaShape = z.object({
   name: z
@@ -54,10 +55,14 @@ export const stepTwoSingleSchema = z
     z.object({
       game: z.literal('Assetto Corsa Competizione'),
       car: z.string({ required_error: 'Car is required.' }),
+      track: z.string({ required_error: 'Track is required.' }),
     }),
     // F1
     z.object({
       game: z.literal('F1 23'),
+      track: z
+        .string({ required_error: 'Track is required.' })
+        .or(z.undefined()),
     }),
   ])
   .and(baseSchemaShape);
@@ -81,6 +86,13 @@ export default function StepTwoSingle() {
   function onSubmit(values: z.infer<typeof stepTwoSingleSchema>) {
     console.log(values);
   }
+
+  const game = form.watch('game');
+
+  useEffect(() => {
+    form.resetField('car');
+    form.resetField('track');
+  }, [form, game]);
 
   return (
     <>
@@ -162,10 +174,7 @@ export default function StepTwoSingle() {
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
                   <FormLabel>Game</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder='Select main game' />
@@ -200,7 +209,7 @@ export default function StepTwoSingle() {
                       <FormLabel>Car</FormLabel>
                       <Select
                         onValueChange={field.onChange}
-                        // defaultValue={field.value.name}
+                        value={field.value}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -223,6 +232,41 @@ export default function StepTwoSingle() {
                               </SelectGroup>
                             )
                           )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  );
+                }}
+              />
+            ) : null}
+            {form.watch('game') === 'Assetto Corsa Competizione' ||
+            form.watch('game') === 'F1 23' ? (
+              <FormField
+                control={form.control}
+                name='track'
+                render={({ field }) => {
+                  const currentGame = form.getValues('game');
+                  const gameTracks = tracks[currentGame];
+
+                  return (
+                    <FormItem className='flex flex-col'>
+                      <FormLabel>Track</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        value={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder='Select a track' />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className='max-h-96'>
+                          {gameTracks.map(track => (
+                            <SelectItem key={track.name} value={track.name}>
+                              {track.name}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                       <FormMessage />
