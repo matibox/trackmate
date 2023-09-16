@@ -16,3 +16,13 @@ export function groupBy<T>(arr: T[], fn: (item: T) => any) {
     return { ...prev, [groupKey]: group };
   }, {});
 }
+
+export type ReplaceAll<
+  T extends string,
+  From extends string,
+  To extends string
+> = From extends ''
+  ? T
+  : T extends `${infer L}${From}${infer R}`
+  ? `${L}${To}${ReplaceAll<R, From, To>}`
+  : T;

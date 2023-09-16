@@ -25,12 +25,12 @@ export const stepOneSchema = z.object({
 });
 
 export default function EventType() {
-  const { setData, setStep } = useNewEvent();
+  const { setData, setStep, stepOne } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepOneSchema>>({
     resolver: zodResolver(stepOneSchema),
     defaultValues: {
-      eventType: null,
+      eventType: stepOne?.eventType ?? null,
     },
   });
 

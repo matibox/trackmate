@@ -24,7 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/Popover';
-import { cn, groupBy } from '~/lib/utils';
+import { type ReplaceAll, cn, groupBy } from '~/lib/utils';
 import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
@@ -38,25 +38,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/Select';
+import { useNewEvent } from './newEventStore';
+import { type $Enums } from '@prisma/client';
 
-export const stepTwoSingleSchema = z.object({
+const baseSchemaShape = z.object({
   name: z
     .string({ required_error: 'Event name is required.' })
     .min(1, 'Event name is required.'),
   date: z.date({ required_error: 'Event date is required.' }),
-  game: z.string().optional(),
-  car: z.string(),
-  // track: z.string(),
 });
+
+export const stepTwoSingleSchema = z
+  .discriminatedUnion('game', [
+    // ACC
+    z.object({
+      game: z.literal('Assetto Corsa Competizione'),
+      car: z.string({ required_error: 'Car is required.' }),
+    }),
+    // F1
+    z.object({
+      game: z.literal('F1 23'),
+    }),
+  ])
+  .and(baseSchemaShape);
 
 export default function StepTwoSingle() {
   const { data: session } = useSession();
+  const { setStep } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepTwoSingleSchema>>({
     resolver: zodResolver(stepTwoSingleSchema),
     defaultValues: {
       name: '',
-      game: session?.user.profile?.mainGame.replaceAll('_', ' '),
+      game: session?.user.profile?.mainGame.replaceAll('_', ' ') as ReplaceAll<
+        $Enums.Game,
+        '_',
+        ' '
+      >,
     },
   });
 
@@ -165,14 +183,12 @@ export default function StepTwoSingle() {
                 </FormItem>
               )}
             />
-            {form.watch('game') !== null ? (
+            {form.watch('game') === 'Assetto Corsa Competizione' ? (
               <FormField
                 control={form.control}
                 name='car'
                 render={({ field }) => {
-                  const currentGame = form.getValues(
-                    'game'
-                  ) as (typeof games)[number];
+                  const currentGame = form.getValues('game');
 
                   const groupedCars = groupBy(
                     [...cars[currentGame]],
@@ -215,10 +231,15 @@ export default function StepTwoSingle() {
                 }}
               />
             ) : null}
-            <SheetFooter>
-              <Button type='submit' className='self-end'>
-                Next
+            <SheetFooter className='flex-row justify-between sm:justify-between'>
+              <Button
+                type='button'
+                variant='secondary'
+                onClick={() => setStep(0)}
+              >
+                Back
               </Button>
+              <Button type='submit'>Next</Button>
             </SheetFooter>
           </div>
         </form>
