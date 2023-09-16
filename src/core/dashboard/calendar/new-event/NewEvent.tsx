@@ -9,7 +9,7 @@ import StepTwoSingle from './StepTwoSingle';
 const steps: ReactNode[] = [<EventType key={1} />, <StepTwoSingle key={2} />];
 
 export default function NewEvent() {
-  const { stepIndex } = useNewEvent();
+  const { stepIndex, reset } = useNewEvent();
 
   return (
     <Sheet>
@@ -23,7 +23,10 @@ export default function NewEvent() {
           <CalendarPlusIcon />
         </Button>
       </SheetTrigger>
-      <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
+      <SheetContent
+        className='w-full border-0 ring-1 ring-slate-900'
+        onClose={reset}
+      >
         {steps[stepIndex]}
       </SheetContent>
     </Sheet>
