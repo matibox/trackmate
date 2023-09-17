@@ -8,7 +8,6 @@ import {
 } from '~/components/ui/Sheet';
 import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
-import { countries, games } from '~/lib/constants';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -34,13 +33,12 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import Image from 'next/image';
+import { CheckCircleIcon } from 'lucide-react';
+import { cn } from '~/lib/utils';
 
 export const stepThreeSingleSchema = z.object({
   teamName: z.string({ required_error: 'Team is required' }),
-  roster: z.object({ id: z.string(), name: z.string(), game: z.enum(games) }),
-  drivers: z.array(
-    z.object({ id: z.string(), name: z.string(), country: z.enum(countries) })
-  ),
+  driverIds: z.array(z.string()),
 });
 
 export default function StepThreeSingle() {
@@ -48,6 +46,9 @@ export default function StepThreeSingle() {
 
   const form = useForm<z.infer<typeof stepThreeSingleSchema>>({
     resolver: zodResolver(stepThreeSingleSchema),
+    defaultValues: {
+      driverIds: [],
+    },
   });
 
   const teamsQuery = api.team.memberOfWithMembers.useQuery();
@@ -121,38 +122,71 @@ export default function StepThreeSingle() {
             {teamName && teamsQuery.data ? (
               <FormField
                 control={form.control}
-                name='drivers'
+                name='driverIds'
                 render={({ field }) => (
                   <FormItem className='flex flex-col'>
                     <FormLabel>Drivers</FormLabel>
                     {teamsQuery.data
                       .find(t => t.name === teamName)
-                      ?.members.map(member => (
-                        <button
-                          key={member.user.id}
-                          type='button'
-                          className='flex w-full items-center gap-2 rounded-md bg-slate-900 px-3.5 py-2 ring-1 ring-slate-800'
-                        >
-                          <div className='h-[11px] w-[17px]'>
-                            <Image
-                              src={`/flags/${
-                                member.user.profile?.country ?? ''
-                              }.svg`}
-                              alt={''}
-                              width={17}
-                              height={11}
-                              className='object-cover'
+                      ?.members.map(member => {
+                        const isActive = field.value.includes(member.user.id);
+
+                        return (
+                          <button
+                            key={member.user.id}
+                            type='button'
+                            className={cn(
+                              'flex w-full items-center gap-2 rounded-md bg-slate-950 px-3.5 py-2 ring-1 ring-slate-800 transition hover:bg-slate-900 hover:ring-slate-700',
+                              {
+                                'bg-slate-900': isActive,
+                              }
+                            )}
+                            onClick={() => {
+                              const prev = form.getValues('driverIds');
+                              if (isActive) {
+                                form.setValue(
+                                  'driverIds',
+                                  prev.filter(id => id !== member.user.id)
+                                );
+                              } else {
+                                form.setValue('driverIds', [
+                                  ...prev,
+                                  member.user.id,
+                                ]);
+                              }
+                            }}
+                          >
+                            <div className='flex h-[11px] w-[17px] items-center justify-center'>
+                              <Image
+                                src={`/flags/${
+                                  member.user.profile?.country ?? ''
+                                }.svg`}
+                                alt={''}
+                                width={17}
+                                height={11}
+                                className='object-cover'
+                              />
+                            </div>
+                            <div>
+                              <span>
+                                {member.user.firstName
+                                  ?.slice(0, 1)
+                                  .toUpperCase()}
+                                .
+                              </span>
+                              <span> {member.user.lastName}</span>
+                            </div>
+                            <CheckCircleIcon
+                              className={cn(
+                                'ml-auto h-4 w-4 text-sky-500 opacity-0 transition-opacity',
+                                {
+                                  'opacity-100': isActive,
+                                }
+                              )}
                             />
-                          </div>
-                          <div>
-                            <span>
-                              {member.user.firstName?.slice(0, 1).toUpperCase()}
-                              .
-                            </span>
-                            <span> {member.user.lastName}</span>
-                          </div>
-                        </button>
-                      ))}
+                          </button>
+                        );
+                      })}
                     <FormMessage />
                   </FormItem>
                 )}
