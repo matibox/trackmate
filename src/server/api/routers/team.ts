@@ -2,6 +2,8 @@ import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
+import { games } from '~/lib/constants';
+import { type ReplaceAll } from '~/lib/utils';
 
 export const teamRouter = createTRPCRouter({
   byQuery: publicProcedure
@@ -31,27 +33,43 @@ export const teamRouter = createTRPCRouter({
 
       return await bcrypt.compare(password, foundTeam.password);
     }),
-  memberOfWithMembers: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.team.findMany({
-      where: { members: { some: { userId: ctx.session.user.id } } },
-      select: {
-        id: true,
-        abbreviation: true,
-        name: true,
-        members: {
-          select: {
-            user: {
-              select: {
-                profile: { select: { country: true } },
-                id: true,
-                username: true,
-                firstName: true,
-                lastName: true,
+  withRostersByGame: protectedProcedure
+    .input(z.object({ game: z.enum(games) }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.team.findMany({
+        where: { members: { some: { userId: ctx.session.user.id } } },
+        select: {
+          id: true,
+          abbreviation: true,
+          name: true,
+          rosters: {
+            where: {
+              game: input.game.replaceAll(' ', '_') as ReplaceAll<
+                typeof input.game,
+                ' ',
+                '_'
+              >,
+            },
+            select: {
+              id: true,
+              game: true,
+              name: true,
+              members: {
+                select: {
+                  user: {
+                    select: {
+                      profile: { select: { country: true } },
+                      id: true,
+                      username: true,
+                      firstName: true,
+                      lastName: true,
+                    },
+                  },
+                },
               },
             },
           },
         },
-      },
-    });
-  }),
+      });
+    }),
 });

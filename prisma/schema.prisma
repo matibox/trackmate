@@ -76,6 +76,7 @@ model User {
   accounts Account[]
   sessions Session[]
   teams    UsersOnTeams[]
+  rosters  RosterOnMember[]
 }
 
 model Profile {
@@ -89,8 +90,8 @@ model Profile {
 }
 
 model UsersOnTeams {
-  user   User     @relation(fields: [userId], references: [id])
-  team   Team     @relation(fields: [teamId], references: [id])
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team   Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId String
   teamId String
   role   TeamRole
@@ -107,4 +108,30 @@ model Team {
   password     String
 
   members UsersOnTeams[]
+  rosters Roster[]
+}
+
+model RosterOnMember {
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roster   Roster     @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  userId   String
+  rosterId String
+  role     RosterRole
+
+  @@id([userId, rosterId])
+  @@index([userId])
+  @@index([rosterId])
+}
+
+model Roster {
+  id     String @id @default(cuid())
+  name   String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamId String
+  game   Game
+
+  members RosterOnMember[]
+
+  @@unique([name, teamId])
+  @@index([teamId])
 }
