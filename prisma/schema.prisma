@@ -72,11 +72,10 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile        Profile?
-  accounts       Account[]
-  sessions       Session[]
-  teams          UsersOnTeams[]
-  UsersOnRosters UsersOnRosters[]
+  profile  Profile?
+  accounts Account[]
+  sessions Session[]
+  teams    UsersOnTeams[]
 }
 
 model Profile {
@@ -107,30 +106,5 @@ model Team {
   abbreviation String @unique @db.VarChar(3)
   password     String
 
-  rosters Roster[]
   members UsersOnTeams[]
-}
-
-model UsersOnRosters {
-  user     User       @relation(fields: [userId], references: [id])
-  roster   Roster     @relation(fields: [rosterId], references: [id])
-  userId   String
-  rosterId String
-  role     RosterRole
-
-  @@id([userId, rosterId])
-  @@index([userId])
-  @@index([rosterId])
-}
-
-model Roster {
-  id     String @id @default(cuid())
-  team   Team   @relation(fields: [teamId], references: [id])
-  teamId String
-
-  name    String
-  game    Game
-  members UsersOnRosters[]
-
-  @@index([teamId])
 }

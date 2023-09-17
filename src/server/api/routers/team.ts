@@ -31,10 +31,27 @@ export const teamRouter = createTRPCRouter({
 
       return await bcrypt.compare(password, foundTeam.password);
     }),
-  memberOfWithRosters: protectedProcedure.query(async ({ ctx }) => {
+  memberOfWithMembers: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.team.findMany({
       where: { members: { some: { userId: ctx.session.user.id } } },
-      include: { rosters: { select: { game: true, name: true } } },
+      select: {
+        id: true,
+        abbreviation: true,
+        name: true,
+        members: {
+          select: {
+            user: {
+              select: {
+                profile: { select: { country: true } },
+                id: true,
+                username: true,
+                firstName: true,
+                lastName: true,
+              },
+            },
+          },
+        },
+      },
     });
   }),
 });

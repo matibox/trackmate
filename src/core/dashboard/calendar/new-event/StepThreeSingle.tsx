@@ -33,13 +33,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
+import Image from 'next/image';
 
 export const stepThreeSingleSchema = z.object({
   teamName: z.string({ required_error: 'Team is required' }),
-  // roster: z.object({ id: z.string(), name: z.string(), game: z.enum(games) }),
-  // drivers: z.array(
-  //   z.object({ id: z.string(), name: z.string(), country: z.enum(countries) })
-  // ),
+  roster: z.object({ id: z.string(), name: z.string(), game: z.enum(games) }),
+  drivers: z.array(
+    z.object({ id: z.string(), name: z.string(), country: z.enum(countries) })
+  ),
 });
 
 export default function StepThreeSingle() {
@@ -49,7 +50,7 @@ export default function StepThreeSingle() {
     resolver: zodResolver(stepThreeSingleSchema),
   });
 
-  const teamsQuery = api.team.memberOfWithRosters.useQuery();
+  const teamsQuery = api.team.memberOfWithMembers.useQuery();
 
   function onSubmit(values: z.infer<typeof stepThreeSingleSchema>) {
     console.log(values);
@@ -61,12 +62,13 @@ export default function StepThreeSingle() {
   );
 
   useEffect(() => {
-    console.log('I ran');
     if (!teamSelectDisabled) return;
     const teamName = teamsQuery.data?.[0]?.name;
     if (!teamName) return;
     form.setValue('teamName', teamName);
   }, [form, teamSelectDisabled, teamsQuery.data]);
+
+  const teamName = form.watch('teamName');
 
   return (
     <>
@@ -116,6 +118,46 @@ export default function StepThreeSingle() {
                 </TooltipProvider>
               )}
             />
+            {teamName && teamsQuery.data ? (
+              <FormField
+                control={form.control}
+                name='drivers'
+                render={({ field }) => (
+                  <FormItem className='flex flex-col'>
+                    <FormLabel>Drivers</FormLabel>
+                    {teamsQuery.data
+                      .find(t => t.name === teamName)
+                      ?.members.map(member => (
+                        <button
+                          key={member.user.id}
+                          type='button'
+                          className='flex w-full items-center gap-2 rounded-md bg-slate-900 px-3.5 py-2 ring-1 ring-slate-800'
+                        >
+                          <div className='h-[11px] w-[17px]'>
+                            <Image
+                              src={`/flags/${
+                                member.user.profile?.country ?? ''
+                              }.svg`}
+                              alt={''}
+                              width={17}
+                              height={11}
+                              className='object-cover'
+                            />
+                          </div>
+                          <div>
+                            <span>
+                              {member.user.firstName?.slice(0, 1).toUpperCase()}
+                              .
+                            </span>
+                            <span> {member.user.lastName}</span>
+                          </div>
+                        </button>
+                      ))}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            ) : null}
             <SheetFooter className='flex-row justify-between sm:justify-between'>
               <Button
                 type='button'
