@@ -213,6 +213,13 @@ export const games = ['Assetto Corsa Competizione', 'F1 23'] as const;
 
 export const eventTypes = ['single', 'championship'] as const;
 
+export const sessionTypes = [
+  'briefing',
+  'practice',
+  'qualifying',
+  'race',
+] as const;
+
 export const cars = {
   'Assetto Corsa Competizione': [
     { name: 'Aston Martin V12', type: 'GT3' },

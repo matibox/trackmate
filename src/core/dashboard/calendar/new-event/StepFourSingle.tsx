@@ -7,14 +7,59 @@ import {
   SheetTitle,
 } from '~/components/ui/Sheet';
 import { useNewEvent } from './newEventStore';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { PlusIcon } from 'lucide-react';
+
+export const stepFourSingleSchema = z.object({
+  sessions: z.array(
+    z
+      .discriminatedUnion('type', [
+        // PRACTICE
+        z.object({
+          type: z.literal('practice'),
+          end: z.date({ required_error: 'End time is required.' }),
+        }),
+        // BRIEFING
+        z.object({
+          type: z.literal('briefing'),
+        }),
+        // QUALIFYING
+        z.object({
+          type: z.literal('qualifying'),
+          end: z.date({ required_error: 'End time is required.' }),
+          driverId: z.string(),
+        }),
+        // RACE
+        z.object({
+          type: z.literal('race'),
+          end: z.date({ required_error: 'End time is required.' }),
+          driverIds: z.array(z.string()),
+        }),
+      ])
+      .and(
+        z.object({
+          start: z.date({ required_error: 'Start time is required.' }),
+        })
+      )
+  ),
+});
 
 export default function StepFourSingle() {
-  const { setStep } = useNewEvent();
+  const {
+    setStep,
+    steps: { stepFourSingle },
+  } = useNewEvent();
 
-  const form = useForm();
+  const form = useForm<z.infer<typeof stepFourSingleSchema>>({
+    resolver: zodResolver(stepFourSingleSchema),
+    defaultValues: {
+      sessions: stepFourSingle?.sessions ?? [],
+    },
+  });
 
-  function onSubmit() {
-    console.log('submit');
+  function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
+    console.log(values);
   }
 
   return (
@@ -28,7 +73,14 @@ export default function StepFourSingle() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className='grid justify-center gap-4 py-8 text-slate-50'>
-            {/* form */}
+            <Button
+              type='button'
+              variant='secondary'
+              className='w-[278px] justify-between'
+            >
+              New session
+              <PlusIcon className='h-4 w-4' />
+            </Button>
             <SheetFooter className='flex-row justify-between sm:justify-between'>
               <Button
                 type='button'

@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { type stepTwoSingleSchema } from './StepTwoSingle';
 import { type stepThreeSingleSchema } from './StepThreeSingle';
 import { objKeys } from '~/lib/utils';
+import { type stepFourSingleSchema } from './StepFourSingle';
 
 const stepVariant = {
   '1': 'stepOne',
@@ -17,13 +18,13 @@ export type StepId = keyof typeof stepVariant;
 type StepOneData = z.infer<typeof stepOneSchema>;
 type StepTwoSingleData = z.infer<typeof stepTwoSingleSchema>;
 type StepThreeSingleData = z.infer<typeof stepThreeSingleSchema>;
-// type StepThreeJoinTeamData = z.infer<typeof stepThreeJoinTeamSchema>;
+type StepFourSingleData = z.infer<typeof stepFourSingleSchema>;
 
 type SetDataType =
   | { step: '1'; data: Partial<StepOneData> }
   | { step: '2-single'; data: Partial<StepTwoSingleData> }
-  | { step: '3-single'; data: Partial<StepThreeSingleData> };
-//   | { step: '3-join'; data: StepThreeJoinTeamData };
+  | { step: '3-single'; data: Partial<StepThreeSingleData> }
+  | { step: '4-single'; data: Partial<StepFourSingleData> };
 
 export const useNewEvent = create<{
   stepId: StepId;
@@ -32,7 +33,7 @@ export const useNewEvent = create<{
     stepOne: StepOneData | null;
     stepTwoSingle: StepTwoSingleData | null;
     stepThreeSingle: StepThreeSingleData | null;
-    // stepThreeJoin: StepThreeJoinTeamData | null;
+    stepFourSingle: StepFourSingleData | null;
   };
   setData: ({ step, data }: SetDataType) => void;
   reset: () => void;
@@ -43,7 +44,7 @@ export const useNewEvent = create<{
     stepOne: null,
     stepTwoSingle: null,
     stepThreeSingle: null,
-    // stepThreeJoin: null,
+    stepFourSingle: null,
   },
   setData: ({ step, data }) =>
     set(state => ({
