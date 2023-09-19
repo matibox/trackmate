@@ -76,11 +76,13 @@ export default function StepTwoSingle() {
     defaultValues: {
       name: stepTwoSingle?.name ?? '',
       date: stepTwoSingle?.date,
-      game: session?.user.profile?.mainGame.replaceAll('_', ' ') as ReplaceAll<
-        $Enums.Game,
-        '_',
-        ' '
-      >,
+      game: stepTwoSingle
+        ? stepTwoSingle.game
+        : (session?.user.profile?.mainGame.replaceAll('_', ' ') as ReplaceAll<
+            $Enums.Game,
+            '_',
+            ' '
+          >),
       car: stepTwoSingle
         ? 'car' in stepTwoSingle
           ? stepTwoSingle.car

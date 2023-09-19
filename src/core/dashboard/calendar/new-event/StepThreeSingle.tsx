@@ -43,12 +43,14 @@ export const stepThreeSingleSchema = z.object({
 });
 
 export default function StepThreeSingle() {
-  const { setStep, stepTwoSingle } = useNewEvent();
+  const { setStep, stepTwoSingle, stepThreeSingle, setData } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepThreeSingleSchema>>({
     resolver: zodResolver(stepThreeSingleSchema),
     defaultValues: {
-      driverIds: [],
+      driverIds: stepThreeSingle?.driverIds ?? [],
+      rosterId: stepThreeSingle?.rosterId,
+      teamName: stepThreeSingle?.teamName,
     },
   });
 
@@ -71,7 +73,8 @@ export default function StepThreeSingle() {
   }, [teamSelectDisabled, teamsQuery.data]);
 
   function onSubmit(values: z.infer<typeof stepThreeSingleSchema>) {
-    console.log(values);
+    setData({ step: '3-single', data: values });
+    setStep(3);
   }
 
   useEffect(() => {
