@@ -98,7 +98,7 @@ export default function StepTwoSingle() {
 
   function onSubmit(values: z.infer<typeof stepTwoSingleSchema>) {
     setData({ step: '2-single', data: values });
-    setStep(2);
+    setStep('3-single');
   }
 
   const game = form.watch('game');
@@ -293,7 +293,7 @@ export default function StepTwoSingle() {
               <Button
                 type='button'
                 variant='secondary'
-                onClick={() => setStep(0)}
+                onClick={() => setStep('1')}
               >
                 Back
               </Button>

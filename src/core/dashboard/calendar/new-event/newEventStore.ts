@@ -8,8 +8,10 @@ const stepVariant = {
   '1': 'stepOne',
   '2-single': 'stepTwoSingle',
   '3-single': 'stepThreeSingle',
-  // '3-join': 'stepThreeJoin',
+  '4-single': 'stepFourSingle',
 };
+
+export type StepId = keyof typeof stepVariant;
 
 type StepOneData = z.infer<typeof stepOneSchema>;
 type StepTwoSingleData = z.infer<typeof stepTwoSingleSchema>;
@@ -23,10 +25,8 @@ type setDataType =
 //   | { step: '3-join'; data: StepThreeJoinTeamData };
 
 export const useNewEvent = create<{
-  stepIndex: number;
-  nextStep: () => void;
-  previousStep: () => void;
-  setStep: (stepIndex: number) => void;
+  stepId: StepId;
+  setStep: (stepId: StepId) => void;
   stepOne: StepOneData | null;
   stepTwoSingle: StepTwoSingleData | null;
   stepThreeSingle: StepThreeSingleData | null;
@@ -34,10 +34,8 @@ export const useNewEvent = create<{
   setData: ({ step, data }: setDataType) => void;
   reset: () => void;
 }>((set, get) => ({
-  stepIndex: 0,
-  nextStep: () => set(state => ({ stepIndex: state.stepIndex + 1 })),
-  previousStep: () => set(state => ({ stepIndex: state.stepIndex - 1 })),
-  setStep: stepIndex => set(() => ({ stepIndex })),
+  stepId: '1',
+  setStep: stepId => set(() => ({ stepId })),
   stepOne: null,
   stepTwoSingle: null,
   stepThreeSingle: null,
@@ -49,7 +47,7 @@ export const useNewEvent = create<{
     })),
   reset: () =>
     set(() => {
-      setTimeout(() => get().setStep(0), 500);
+      setTimeout(() => get().setStep('1'), 500);
       return {
         stepOne: null,
         stepTwoSingle: null,

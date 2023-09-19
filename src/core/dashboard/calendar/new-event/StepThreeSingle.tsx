@@ -74,7 +74,7 @@ export default function StepThreeSingle() {
 
   function onSubmit(values: z.infer<typeof stepThreeSingleSchema>) {
     setData({ step: '3-single', data: values });
-    setStep(3);
+    setStep('4-single');
   }
 
   useEffect(() => {
@@ -287,7 +287,7 @@ export default function StepThreeSingle() {
                   <Button
                     type='button'
                     variant='secondary'
-                    onClick={() => setStep(1)}
+                    onClick={() => setStep('2-single')}
                   >
                     Back
                   </Button>

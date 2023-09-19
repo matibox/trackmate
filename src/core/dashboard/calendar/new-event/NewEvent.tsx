@@ -1,22 +1,22 @@
 import { Button } from '~/components/ui/Button';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/Sheet';
 import { CalendarPlusIcon } from 'lucide-react';
+import { type StepId, useNewEvent } from './newEventStore';
 import { type ReactNode } from 'react';
-import { useNewEvent } from './newEventStore';
 import EventType from './StepOne';
 import StepTwoSingle from './StepTwoSingle';
 import StepThreeSingle from './StepThreeSingle';
 import StepFourSingle from './StepFourSingle';
 
-const steps: ReactNode[] = [
-  <EventType key={1} />,
-  <StepTwoSingle key={2} />,
-  <StepThreeSingle key={3} />,
-  <StepFourSingle key={4} />,
-];
+const steps: Record<StepId, ReactNode> = {
+  '1': <EventType />,
+  '2-single': <StepTwoSingle />,
+  '3-single': <StepThreeSingle />,
+  '4-single': <StepFourSingle />,
+};
 
 export default function NewEvent() {
-  const { stepIndex, reset } = useNewEvent();
+  const { stepId, reset } = useNewEvent();
 
   return (
     <Sheet>
@@ -34,7 +34,7 @@ export default function NewEvent() {
         className='w-full border-0 ring-1 ring-slate-900'
         onClose={reset}
       >
-        {steps[stepIndex]}
+        {steps[stepId]}
       </SheetContent>
     </Sheet>
   );

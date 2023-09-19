@@ -40,7 +40,7 @@ export default function EventType() {
     if (!eventType) return;
 
     setData({ step: '1', data: { eventType } });
-    setStep(1);
+    setStep(`2-${eventType as 'single'}`);
   }
 
   return (

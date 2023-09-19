@@ -33,7 +33,7 @@ export default function StepFourSingle() {
               <Button
                 type='button'
                 variant='secondary'
-                onClick={() => setStep(2)}
+                onClick={() => setStep('3-single')}
               >
                 Back
               </Button>
