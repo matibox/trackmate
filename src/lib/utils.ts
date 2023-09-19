@@ -26,3 +26,7 @@ export type ReplaceAll<
   : T extends `${infer L}${From}${infer R}`
   ? `${L}${To}${ReplaceAll<R, From, To>}`
   : T;
+
+export function objKeys<T extends object>(obj: T) {
+  return Object.keys(obj) as Array<keyof T>;
+}

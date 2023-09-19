@@ -43,7 +43,11 @@ export const stepThreeSingleSchema = z.object({
 });
 
 export default function StepThreeSingle() {
-  const { setStep, stepTwoSingle, stepThreeSingle, setData } = useNewEvent();
+  const {
+    setStep,
+    steps: { stepTwoSingle, stepThreeSingle },
+    setData,
+  } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepThreeSingleSchema>>({
     resolver: zodResolver(stepThreeSingleSchema),
@@ -97,11 +101,16 @@ export default function StepThreeSingle() {
   useEffect(() => {
     form.resetField('rosterId');
     form.resetField('driverIds');
-  }, [form, teamName]);
+    setData({
+      step: '3-single',
+      data: { rosterId: undefined, driverIds: undefined },
+    });
+  }, [form, setData, teamName]);
 
   useEffect(() => {
     form.resetField('driverIds');
-  }, [form, rosterId]);
+    setData({ step: '3-single', data: { driverIds: undefined } });
+  }, [form, rosterId, setData]);
 
   return (
     <>

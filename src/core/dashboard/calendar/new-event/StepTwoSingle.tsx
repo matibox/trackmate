@@ -54,14 +54,19 @@ export const stepTwoSingleSchema = z
     // ACC
     z.object({
       game: z.literal('Assetto Corsa Competizione'),
-      car: z.string({ required_error: 'Car is required.' }),
-      track: z.string({ required_error: 'Track is required.' }),
+      car: z
+        .string({ required_error: 'Car is required.' })
+        .min(1, 'Car is required.'),
+      track: z
+        .string({ required_error: 'Track is required.' })
+        .min(1, 'Track is required.'),
     }),
     // F1
     z.object({
       game: z.literal('F1 23'),
       track: z
         .string({ required_error: 'Track is required.' })
+        .min(1, 'Track is required.')
         .or(z.undefined()),
     }),
   ])
@@ -69,7 +74,11 @@ export const stepTwoSingleSchema = z
 
 export default function StepTwoSingle() {
   const { data: session } = useSession();
-  const { setStep, setData, stepTwoSingle } = useNewEvent();
+  const {
+    setStep,
+    setData,
+    steps: { stepTwoSingle },
+  } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepTwoSingleSchema>>({
     resolver: zodResolver(stepTwoSingleSchema),
@@ -104,9 +113,10 @@ export default function StepTwoSingle() {
   const game = form.watch('game');
 
   useEffect(() => {
-    form.resetField('car');
-    form.resetField('track');
-  }, [form, game]);
+    form.resetField('car', { defaultValue: '' });
+    form.resetField('track', { defaultValue: '' });
+    setData({ step: '2-single', data: { car: undefined, track: undefined } });
+  }, [form, game, setData]);
 
   return (
     <>
