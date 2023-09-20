@@ -126,6 +126,7 @@ export const stepFourSingleSchema = z.object({
 export default function StepFourSingle() {
   const {
     setStep,
+    setData,
     steps: { stepFourSingle, stepThreeSingle },
   } = useNewEvent();
 
@@ -137,7 +138,7 @@ export default function StepFourSingle() {
   });
 
   function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
-    console.log(values);
+    setData({ step: '4-single', data: values });
   }
 
   const [sessionFormOpen, setSessionFormOpen] = useState(false);
