@@ -32,9 +32,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
-import Image from 'next/image';
-import { CheckCircleIcon, Loader2Icon } from 'lucide-react';
-import { cn } from '~/lib/utils';
+import { Loader2Icon } from 'lucide-react';
+import DriverButton from './components/DriverButton';
 
 export const stepThreeSingleSchema = z.object({
   teamName: z.string({ required_error: 'Team is required.' }),
@@ -232,15 +231,10 @@ export default function StepThreeSingle() {
                             );
 
                             return (
-                              <button
+                              <DriverButton
                                 key={member.user.id}
-                                type='button'
-                                className={cn(
-                                  'flex w-full items-center gap-2 rounded-md bg-slate-950 px-3.5 py-2 ring-1 ring-slate-800 transition hover:bg-slate-900 hover:ring-slate-700',
-                                  {
-                                    'bg-slate-900': isActive,
-                                  }
-                                )}
+                                driver={member.user}
+                                isActive={isActive}
                                 onClick={() => {
                                   const prev = form.getValues('driverIds');
                                   if (isActive) {
@@ -255,36 +249,7 @@ export default function StepThreeSingle() {
                                     ]);
                                   }
                                 }}
-                              >
-                                <div className='flex h-[11px] w-[17px] items-center justify-center'>
-                                  <Image
-                                    src={`/flags/${
-                                      member.user.profile?.country ?? ''
-                                    }.svg`}
-                                    alt={''}
-                                    width={17}
-                                    height={11}
-                                    className='object-cover'
-                                  />
-                                </div>
-                                <div>
-                                  <span>
-                                    {member.user.firstName
-                                      ?.slice(0, 1)
-                                      .toUpperCase()}
-                                    .
-                                  </span>
-                                  <span> {member.user.lastName}</span>
-                                </div>
-                                <CheckCircleIcon
-                                  className={cn(
-                                    'ml-auto h-4 w-4 text-sky-500 opacity-0 transition-opacity',
-                                    {
-                                      'opacity-100': isActive,
-                                    }
-                                  )}
-                                />
-                              </button>
+                              />
                             );
                           })}
                         <FormMessage />

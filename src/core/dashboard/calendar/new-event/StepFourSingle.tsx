@@ -9,7 +9,7 @@ import {
 import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircleIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import { PlusIcon, Trash2Icon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -38,7 +38,7 @@ import {
 } from '~/components/ui/Form';
 import { api } from '~/utils/api';
 import Image from 'next/image';
-import { capitalize, cn, timeStringToDate } from '~/lib/utils';
+import { capitalize, timeStringToDate } from '~/lib/utils';
 import { useState } from 'react';
 import crypto from 'crypto';
 import {
@@ -47,6 +47,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
+import DriverButton from './components/DriverButton';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -379,17 +380,11 @@ export default function StepFourSingle() {
                           <div className='flex flex-col gap-2 p-px'>
                             {driversQuery.data?.map(driver => {
                               const isActive = field.value.includes(driver.id);
-
                               return (
-                                <button
+                                <DriverButton
                                   key={driver.id}
-                                  type='button'
-                                  className={cn(
-                                    'flex w-full items-center gap-2 rounded-md bg-slate-950 px-3.5 py-2 ring-1 ring-slate-800 transition hover:bg-slate-900 hover:ring-slate-700',
-                                    {
-                                      'bg-slate-900': isActive,
-                                    }
-                                  )}
+                                  driver={driver}
+                                  isActive={isActive}
                                   onClick={() => {
                                     const prev =
                                       sessionForm.getValues('driverIds');
@@ -405,36 +400,7 @@ export default function StepFourSingle() {
                                       ]);
                                     }
                                   }}
-                                >
-                                  <div className='flex h-[11px] w-[17px] items-center justify-center'>
-                                    <Image
-                                      src={`/flags/${
-                                        driver.profile?.country ?? ''
-                                      }.svg`}
-                                      alt={''}
-                                      width={17}
-                                      height={11}
-                                      className='object-cover'
-                                    />
-                                  </div>
-                                  <div>
-                                    <span>
-                                      {driver.firstName
-                                        ?.slice(0, 1)
-                                        .toUpperCase()}
-                                      .
-                                    </span>
-                                    <span> {driver.lastName}</span>
-                                  </div>
-                                  <CheckCircleIcon
-                                    className={cn(
-                                      'ml-auto h-4 w-4 text-sky-500 opacity-0 transition-opacity',
-                                      {
-                                        'opacity-100': isActive,
-                                      }
-                                    )}
-                                  />
-                                </button>
+                                />
                               );
                             })}
                           </div>
