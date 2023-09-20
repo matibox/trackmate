@@ -1,4 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
+import dayjs from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -29,4 +30,15 @@ export type ReplaceAll<
 
 export function objKeys<T extends object>(obj: T) {
   return Object.keys(obj) as Array<keyof T>;
+}
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+export function timeStringToDate(str: string) {
+  const [hours, minutes] = str.split(':').map(Number) as [number, number];
+  return dayjs(
+    new Date(dayjs().year(), dayjs().month(), dayjs().date(), hours, minutes)
+  );
 }

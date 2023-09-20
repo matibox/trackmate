@@ -9,7 +9,7 @@ import {
 import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CheckCircleIcon, PlusIcon } from 'lucide-react';
+import { CheckCircleIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -36,11 +36,17 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/Form';
-import dayjs from 'dayjs';
 import { api } from '~/utils/api';
 import Image from 'next/image';
-import { cn } from '~/lib/utils';
-import { useEffect, useState } from 'react';
+import { capitalize, cn, timeStringToDate } from '~/lib/utils';
+import { useState } from 'react';
+import crypto from 'crypto';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '~/components/ui/Tooltip';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -97,35 +103,8 @@ const sessionSchema = z
   .superRefine((schema, ctx) => {
     if (!('end' in schema)) return;
 
-    const [startHours, startMinutes] = schema.start.split(':').map(Number) as [
-      number,
-      number
-    ];
-
-    const [endHours, endMinutes] = schema.end.split(':').map(Number) as [
-      number,
-      number
-    ];
-
-    const start = dayjs(
-      new Date(
-        dayjs().year(),
-        dayjs().month(),
-        dayjs().date(),
-        startHours,
-        startMinutes
-      )
-    );
-
-    const end = dayjs(
-      new Date(
-        dayjs().year(),
-        dayjs().month(),
-        dayjs().date(),
-        endHours,
-        endMinutes
-      )
-    );
+    const start = timeStringToDate(schema.start);
+    const end = timeStringToDate(schema.end);
 
     if (end.isBefore(start)) {
       ctx.addIssue({
@@ -138,7 +117,9 @@ const sessionSchema = z
   });
 
 export const stepFourSingleSchema = z.object({
-  sessions: z.array(sessionSchema),
+  sessions: z
+    .array(sessionSchema.and(z.object({ id: z.string() })))
+    .min(1, 'Add at least 1 session.'),
 });
 
 export default function StepFourSingle() {
@@ -174,7 +155,18 @@ export default function StepFourSingle() {
   });
 
   function onSessionSubmit(values: z.infer<typeof sessionSchema>) {
-    console.log(values);
+    const prev = form.getValues('sessions');
+    form.setValue('sessions', [
+      ...prev,
+      { id: crypto.randomBytes(4).toString('hex'), ...values },
+    ]);
+    sessionForm.reset({
+      driverId: '',
+      driverIds: [],
+      start: '',
+      end: '',
+    });
+    setSessionFormOpen(false);
   }
 
   return (
@@ -187,7 +179,67 @@ export default function StepFourSingle() {
       </SheetHeader>
       <div className='grid justify-center gap-4 py-8 text-slate-50'>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}></form>
+          <form id='main-form' onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name='sessions'
+              render={({ field }) => (
+                <FormItem>
+                  <div className='flex flex-col gap-2 p-px'>
+                    {field.value
+                      .sort((a, b) => {
+                        const startA = timeStringToDate(a.start);
+                        const startB = timeStringToDate(b.start);
+
+                        if (startA.isBefore(startB)) return -1;
+                        if (startA.isAfter(startB)) return 1;
+                        return 0;
+                      })
+                      .map(session => (
+                        <div
+                          key={session.id}
+                          className='flex w-full items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
+                        >
+                          <div className='flex flex-col gap-1.5'>
+                            <span className='font-medium leading-none'>
+                              {capitalize(session.type)}
+                            </span>
+                            <span className='text-sm leading-none text-slate-400'>
+                              {session.start}{' '}
+                              {'end' in session ? ` - ${session.end}` : ''}
+                            </span>
+                          </div>
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant='ghost'
+                                  size='sm'
+                                  aria-label='Remove session'
+                                  onClick={() => {
+                                    const prev = form.getValues('sessions');
+                                    form.setValue(
+                                      'sessions',
+                                      prev.filter(s => s.id !== session.id)
+                                    );
+                                  }}
+                                >
+                                  <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Remove {session.type}</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      ))}
+                  </div>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </form>
         </Form>
         <Dialog open={sessionFormOpen} onOpenChange={setSessionFormOpen}>
           <DialogTrigger asChild>
@@ -230,8 +282,7 @@ export default function StepFourSingle() {
                           <SelectContent className='max-h-96'>
                             {sessionTypes.map(type => (
                               <SelectItem key={type} value={type}>
-                                {type.charAt(0).toUpperCase()}
-                                {type.slice(1)}
+                                {capitalize(type)}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -409,7 +460,9 @@ export default function StepFourSingle() {
           >
             Back
           </Button>
-          <Button type='submit'>Next</Button>
+          <Button type='submit' form='main-form'>
+            Next
+          </Button>
         </SheetFooter>
       </div>
     </>
