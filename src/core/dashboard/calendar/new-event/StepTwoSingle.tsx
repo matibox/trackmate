@@ -170,6 +170,7 @@ export default function StepTwoSingle() {
                     <PopoverContent className='w-auto p-0' align='start'>
                       <Calendar
                         mode='single'
+                        weekStartsOn={1}
                         selected={field.value}
                         onSelect={field.onChange}
                         disabled={date =>

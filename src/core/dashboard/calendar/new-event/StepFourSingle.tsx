@@ -9,7 +9,7 @@ import {
 import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { PlusIcon, Trash2Icon } from 'lucide-react';
+import { CalendarIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -31,6 +31,7 @@ import { Input } from '~/components/ui/Input';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -38,7 +39,7 @@ import {
 } from '~/components/ui/Form';
 import { api } from '~/utils/api';
 import Image from 'next/image';
-import { capitalize, timeStringToDate } from '~/lib/utils';
+import { capitalize, cn, timeStringToDate } from '~/lib/utils';
 import { useState } from 'react';
 import crypto from 'crypto';
 import {
@@ -48,6 +49,14 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import DriverButton from './components/DriverButton';
+import { Checkbox } from '~/components/ui/Checkbox';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/Popover';
+import dayjs from 'dayjs';
+import { Calendar } from '~/components/ui/Calendar';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -73,6 +82,7 @@ const sessionSchema = z
         driverId: z
           .string({ required_error: 'Driver is required.' })
           .min(1, 'Driver is required.'),
+        customDay: z.date().optional(),
       }),
       // RACE
       z.object({
@@ -152,6 +162,8 @@ export default function StepFourSingle() {
     },
   });
 
+  const [isDifferentDay, setIsDifferentDay] = useState(false);
+
   const driversQuery = api.user.byId.useQuery({
     memberIds: stepThreeSingle?.driverIds,
   });
@@ -168,6 +180,7 @@ export default function StepFourSingle() {
       start: '',
       end: '',
     });
+    setIsDifferentDay(false);
     setSessionFormOpen(false);
   }
 
@@ -293,19 +306,21 @@ export default function StepFourSingle() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={sessionForm.control}
-                    name='start'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start time</FormLabel>
-                        <FormControl>
-                          <Input {...field} type='time' />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  {sessionForm.watch('type') ? (
+                    <FormField
+                      control={sessionForm.control}
+                      name='start'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start time</FormLabel>
+                          <FormControl>
+                            <Input {...field} type='time' />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : null}
                   {['practice', 'qualifying', 'race'].includes(
                     sessionForm.watch('type')
                   ) ? (
@@ -318,6 +333,79 @@ export default function StepFourSingle() {
                           <FormControl>
                             <Input {...field} type='time' />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  ) : null}
+                  {sessionForm.watch('type') === 'qualifying' ? (
+                    <div className='flex space-x-2'>
+                      <Checkbox
+                        id='different-day'
+                        checked={isDifferentDay}
+                        onCheckedChange={() => setIsDifferentDay(prev => !prev)}
+                      />
+                      <div className='grid gap-1.5 leading-none'>
+                        <label
+                          htmlFor='different-day'
+                          className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                        >
+                          Different day session
+                        </label>
+                        <p className='text-muted-foreground text-sm'>
+                          Check this if qualifying is on different day than
+                          race.
+                        </p>
+                      </div>
+                    </div>
+                  ) : null}
+                  {isDifferentDay ? (
+                    <FormField
+                      control={sessionForm.control}
+                      name='customDay'
+                      render={({ field }) => (
+                        <FormItem className='flex w-[278px] flex-col'>
+                          <FormLabel>Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={'outline'}
+                                  className={cn(
+                                    'pl-3 text-left font-normal',
+                                    !field.value && 'text-muted-foreground'
+                                  )}
+                                >
+                                  {field.value ? (
+                                    dayjs(field.value).format('MMMM DD, YYYY')
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className='w-auto p-0'
+                              align='start'
+                            >
+                              <Calendar
+                                mode='single'
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                weekStartsOn={1}
+                                disabled={date =>
+                                  date <
+                                  new Date(
+                                    dayjs().year(),
+                                    dayjs().month(),
+                                    dayjs().date()
+                                  )
+                                }
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
                           <FormMessage />
                         </FormItem>
                       )}
