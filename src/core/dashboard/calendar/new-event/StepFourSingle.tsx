@@ -137,7 +137,7 @@ export default function StepFourSingle() {
   const {
     setStep,
     setData,
-    steps: { stepFourSingle, stepThreeSingle },
+    steps: { stepTwoSingle, stepFourSingle, stepThreeSingle },
   } = useNewEvent();
 
   const form = useForm<z.infer<typeof stepFourSingleSchema>>({
@@ -169,6 +169,7 @@ export default function StepFourSingle() {
   });
 
   function onSessionSubmit(values: z.infer<typeof sessionSchema>) {
+    console.log(values);
     const prev = form.getValues('sessions');
     form.setValue('sessions', [
       ...prev,
@@ -203,8 +204,18 @@ export default function StepFourSingle() {
                   <div className='flex flex-col gap-2 p-px'>
                     {field.value
                       .sort((a, b) => {
-                        const startA = timeStringToDate(a.start);
-                        const startB = timeStringToDate(b.start);
+                        const startA = timeStringToDate(
+                          a.start,
+                          'customDay' in a
+                            ? dayjs(a.customDay)
+                            : dayjs(stepTwoSingle?.date)
+                        );
+                        const startB = timeStringToDate(
+                          b.start,
+                          'customDay' in b
+                            ? dayjs(b.customDay)
+                            : dayjs(stepTwoSingle?.date)
+                        );
 
                         if (startA.isBefore(startB)) return -1;
                         if (startA.isAfter(startB)) return 1;
@@ -218,6 +229,13 @@ export default function StepFourSingle() {
                           <div className='flex flex-col gap-1.5'>
                             <span className='font-medium leading-none'>
                               {capitalize(session.type)}
+                            </span>
+                            <span className='text-sm leading-none text-slate-400'>
+                              {dayjs(
+                                'customDay' in session
+                                  ? session.customDay
+                                  : stepTwoSingle?.date
+                              ).format('D MMM, dddd')}
                             </span>
                             <span className='text-sm leading-none text-slate-400'>
                               {session.start}{' '}
@@ -394,14 +412,8 @@ export default function StepFourSingle() {
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 weekStartsOn={1}
-                                disabled={date =>
-                                  date <
-                                  new Date(
-                                    dayjs().year(),
-                                    dayjs().month(),
-                                    dayjs().date()
-                                  )
-                                }
+                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                disabled={date => date >= stepTwoSingle!.date}
                                 initialFocus
                               />
                             </PopoverContent>

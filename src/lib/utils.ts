@@ -36,9 +36,9 @@ export function capitalize(str: string) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-export function timeStringToDate(str: string) {
+export function timeStringToDate(str: string, date = dayjs()) {
   const [hours, minutes] = str.split(':').map(Number) as [number, number];
   return dayjs(
-    new Date(dayjs().year(), dayjs().month(), dayjs().date(), hours, minutes)
+    new Date(date.year(), date.month(), date.date(), hours, minutes)
   );
 }
