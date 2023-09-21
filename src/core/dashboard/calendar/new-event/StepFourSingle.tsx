@@ -259,8 +259,8 @@ export default function StepFourSingle() {
                           date = `${day.date()} - ${nextDay.date()} ${nextDayFormat(
                             day,
                             nextDay,
-                            'MMM',
-                            'MM'
+                            'MMMM',
+                            'MMM'
                           )}, ${nextDayFormat(day, nextDay, 'dddd', 'ddd')}`;
                         }
 
