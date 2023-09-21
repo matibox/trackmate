@@ -31,7 +31,6 @@ import { Input } from '~/components/ui/Input';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -40,7 +39,7 @@ import {
 import { api } from '~/utils/api';
 import Image from 'next/image';
 import { capitalize, cn, timeStringToDate } from '~/lib/utils';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import crypto from 'crypto';
 import {
   Tooltip,
@@ -68,10 +67,12 @@ const sessionSchema = z
         end: z
           .string({ required_error: 'End time is required.' })
           .min(1, 'End time is required.'),
+        customDay: z.date().optional(),
       }),
       // BRIEFING
       z.object({
         type: z.literal('briefing'),
+        customDay: z.date().optional(),
       }),
       // QUALIFYING
       z.object({
@@ -148,6 +149,7 @@ export default function StepFourSingle() {
   });
 
   function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
+    console.log(values);
     setData({ step: '4-single', data: values });
   }
 
@@ -184,6 +186,12 @@ export default function StepFourSingle() {
     setIsDifferentDay(false);
     setSessionFormOpen(false);
   }
+
+  const sessionType = sessionForm.watch('type');
+  useEffect(() => {
+    setIsDifferentDay(false);
+    sessionForm.resetField('customDay');
+  }, [sessionType, sessionForm]);
 
   return (
     <>
@@ -324,7 +332,7 @@ export default function StepFourSingle() {
                       </FormItem>
                     )}
                   />
-                  {sessionForm.watch('type') ? (
+                  {sessionType ? (
                     <FormField
                       control={sessionForm.control}
                       name='start'
@@ -339,9 +347,7 @@ export default function StepFourSingle() {
                       )}
                     />
                   ) : null}
-                  {['practice', 'qualifying', 'race'].includes(
-                    sessionForm.watch('type')
-                  ) ? (
+                  {['practice', 'qualifying', 'race'].includes(sessionType) ? (
                     <FormField
                       control={sessionForm.control}
                       name='end'
@@ -356,7 +362,9 @@ export default function StepFourSingle() {
                       )}
                     />
                   ) : null}
-                  {sessionForm.watch('type') === 'qualifying' ? (
+                  {['briefing', 'practice', 'qualifying'].includes(
+                    sessionType
+                  ) ? (
                     <div className='flex space-x-2'>
                       <Checkbox
                         id='different-day'
@@ -371,7 +379,7 @@ export default function StepFourSingle() {
                           Different day session
                         </label>
                         <p className='text-muted-foreground text-sm'>
-                          Check this if qualifying is on different day than
+                          Check this if {sessionType} is on different day than
                           race.
                         </p>
                       </div>
@@ -423,7 +431,7 @@ export default function StepFourSingle() {
                       )}
                     />
                   ) : null}
-                  {sessionForm.watch('type') === 'qualifying' ? (
+                  {sessionType === 'qualifying' ? (
                     <FormField
                       control={sessionForm.control}
                       name='driverId'
@@ -471,7 +479,7 @@ export default function StepFourSingle() {
                       )}
                     />
                   ) : null}
-                  {sessionForm.watch('type') === 'race' ? (
+                  {sessionType === 'race' ? (
                     <FormField
                       control={sessionForm.control}
                       name='driverIds'
