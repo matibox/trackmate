@@ -31,6 +31,7 @@ import { Input } from '~/components/ui/Input';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -92,6 +93,7 @@ const sessionSchema = z
           .string({ required_error: 'End time is required.' })
           .min(1, 'End time is required.'),
         driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
+        endsNextDay: z.boolean().default(false),
       }),
     ],
     {
@@ -113,12 +115,12 @@ const sessionSchema = z
     })
   )
   .superRefine((schema, ctx) => {
-    if (!('end' in schema)) return;
+    if (!('end' in schema) || !('endsNextDay' in schema)) return;
 
     const start = timeStringToDate(schema.start);
     const end = timeStringToDate(schema.end);
 
-    if (end.isBefore(start)) {
+    if (end.isBefore(start) && !schema.endsNextDay) {
       ctx.addIssue({
         code: 'custom',
         fatal: true,
@@ -229,52 +231,82 @@ export default function StepFourSingle() {
                         if (startA.isAfter(startB)) return 1;
                         return 0;
                       })
-                      .map(session => (
-                        <div
-                          key={session.id}
-                          className='flex w-full items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
-                        >
-                          <div className='flex flex-col gap-1.5'>
-                            <span className='font-medium leading-none'>
-                              {capitalize(session.type)}
-                            </span>
-                            <span className='text-sm leading-none text-slate-400'>
-                              {dayjs(
-                                'customDay' in session
-                                  ? session.customDay
-                                  : stepTwoSingle?.date
-                              ).format('D MMM, dddd')}
-                            </span>
-                            <span className='text-sm leading-none text-slate-400'>
-                              {session.start}{' '}
-                              {'end' in session ? ` - ${session.end}` : ''}
-                            </span>
+                      .map(session => {
+                        const day = dayjs(
+                          'customDay' in session
+                            ? session.customDay
+                            : stepTwoSingle?.date
+                        );
+                        let date = day.format('D MMM, dddd');
+
+                        if ('endsNextDay' in session && session.endsNextDay) {
+                          const nextDay = day.add(1, 'day');
+
+                          const nextDayFormat = (
+                            day1: dayjs.Dayjs,
+                            day2: dayjs.Dayjs,
+                            baseTemplate: string,
+                            sameTemplate: string
+                          ) => {
+                            return day1.format(sameTemplate) ===
+                              day2.format(sameTemplate)
+                              ? day1.format(baseTemplate)
+                              : `${day1.format(sameTemplate)}/${day2.format(
+                                  sameTemplate
+                                )}`;
+                          };
+
+                          date = `${day.date()} - ${nextDay.date()} ${nextDayFormat(
+                            day,
+                            nextDay,
+                            'MMM',
+                            'MM'
+                          )}, ${nextDayFormat(day, nextDay, 'dddd', 'ddd')}`;
+                        }
+
+                        return (
+                          <div
+                            key={session.id}
+                            className='flex w-full items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
+                          >
+                            <div className='flex flex-col gap-1.5'>
+                              <span className='font-medium leading-none'>
+                                {capitalize(session.type)}
+                              </span>
+                              <span className='text-sm leading-none text-slate-400'>
+                                {date}
+                              </span>
+                              <span className='text-sm leading-none text-slate-400'>
+                                {session.start}{' '}
+                                {'end' in session ? ` - ${session.end}` : ''}
+                              </span>
+                            </div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant='ghost'
+                                    size='sm'
+                                    aria-label='Remove session'
+                                    onClick={() => {
+                                      const prev = form.getValues('sessions');
+                                      form.setValue(
+                                        'sessions',
+                                        prev.filter(s => s.id !== session.id)
+                                      );
+                                    }}
+                                  >
+                                    <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Remove {session.type}</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button
-                                  variant='ghost'
-                                  size='sm'
-                                  aria-label='Remove session'
-                                  onClick={() => {
-                                    const prev = form.getValues('sessions');
-                                    form.setValue(
-                                      'sessions',
-                                      prev.filter(s => s.id !== session.id)
-                                    );
-                                  }}
-                                >
-                                  <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Remove {session.type}</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                        </div>
-                      ))}
+                        );
+                      })}
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -362,6 +394,30 @@ export default function StepFourSingle() {
                       )}
                     />
                   ) : null}
+                  {sessionType === 'race' ? (
+                    <FormField
+                      control={sessionForm.control}
+                      name='endsNextDay'
+                      render={({ field }) => (
+                        <FormItem className='flex space-x-2 space-y-0'>
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              onCheckedChange={field.onChange}
+                            />
+                          </FormControl>
+                          <div className='grid gap-1.5'>
+                            <FormLabel className='!text-sm !leading-none'>
+                              Ends next day
+                            </FormLabel>
+                            <FormDescription className='!text-sm'>
+                              This option is useful i.e. in 24h races.
+                            </FormDescription>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  ) : null}
                   {['briefing', 'practice', 'qualifying'].includes(
                     sessionType
                   ) ? (
@@ -378,7 +434,7 @@ export default function StepFourSingle() {
                         >
                           Different day session
                         </label>
-                        <p className='text-muted-foreground text-sm'>
+                        <p className='text-sm text-slate-400'>
                           Check this if {sessionType} is on different day than
                           race.
                         </p>
@@ -513,7 +569,6 @@ export default function StepFourSingle() {
                               );
                             })}
                           </div>
-
                           <FormMessage />
                         </FormItem>
                       )}
