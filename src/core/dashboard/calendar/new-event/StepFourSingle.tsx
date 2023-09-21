@@ -264,6 +264,16 @@ export default function StepFourSingle() {
                           )}, ${nextDayFormat(day, nextDay, 'dddd', 'ddd')}`;
                         }
 
+                        const sessionsOfType = field.value.filter(
+                          s => s.type === session.type
+                        );
+                        const sessionTypeNumber =
+                          sessionsOfType.length > 1
+                            ? sessionsOfType.findIndex(
+                                s => s.id === session.id
+                              ) + 1
+                            : 0;
+
                         return (
                           <div
                             key={session.id}
@@ -271,7 +281,10 @@ export default function StepFourSingle() {
                           >
                             <div className='flex flex-col gap-1.5'>
                               <span className='font-medium leading-none'>
-                                {capitalize(session.type)}
+                                {capitalize(session.type)}{' '}
+                                {sessionTypeNumber === 0
+                                  ? ''
+                                  : sessionTypeNumber}
                               </span>
                               <span className='text-sm leading-none text-slate-400'>
                                 {date}
