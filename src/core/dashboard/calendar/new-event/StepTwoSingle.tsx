@@ -41,6 +41,7 @@ import {
 import { useNewEvent } from './newEventStore';
 import { type $Enums } from '@prisma/client';
 import { useEffect } from 'react';
+import Flag from '~/components/Flag';
 
 const baseSchemaShape = z.object({
   name: z
@@ -49,25 +50,31 @@ const baseSchemaShape = z.object({
   date: z.date({ required_error: 'Event date is required.' }),
 });
 
+const trackErrorMessage = 'Track is required.';
+const carErrorMessage = 'Car is required.';
+
 export const stepTwoSingleSchema = z
   .discriminatedUnion('game', [
     // ACC
     z.object({
       game: z.literal('Assetto Corsa Competizione'),
       car: z
-        .string({ required_error: 'Car is required.' })
-        .min(1, 'Car is required.'),
+        .string({ required_error: carErrorMessage })
+        .min(1, carErrorMessage),
       track: z
-        .string({ required_error: 'Track is required.' })
-        .min(1, 'Track is required.'),
+        .string({ required_error: trackErrorMessage })
+        .min(1, trackErrorMessage),
     }),
     // F1
     z.object({
       game: z.literal('F1 23'),
       track: z
-        .string({ required_error: 'Track is required.' })
-        .min(1, 'Track is required.')
+        .string({ required_error: trackErrorMessage })
+        .min(1, trackErrorMessage)
         .or(z.undefined()),
+      car: z
+        .string({ required_error: carErrorMessage })
+        .min(1, trackErrorMessage),
     }),
   ])
   .and(baseSchemaShape);
@@ -217,88 +224,90 @@ export default function StepTwoSingle() {
                 </FormItem>
               )}
             />
-            {form.watch('game') === 'Assetto Corsa Competizione' ? (
-              <FormField
-                control={form.control}
-                name='car'
-                render={({ field }) => {
-                  const currentGame = form.getValues('game');
+            {['Assetto Corsa Competizione', 'F1 23'].includes(game) ? (
+              <>
+                <FormField
+                  control={form.control}
+                  name='track'
+                  render={({ field }) => {
+                    const currentGame = form.getValues('game');
+                    const gameTracks = tracks[currentGame];
 
-                  const groupedCars = groupBy(
-                    [...cars[currentGame]],
-                    i => i.type
-                  );
+                    return (
+                      <FormItem className='flex flex-col'>
+                        <FormLabel>Track</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select a track' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className='max-h-96'>
+                            {gameTracks.map(track => (
+                              <SelectItem key={track.name} value={track.name}>
+                                <div className='flex items-center gap-2'>
+                                  <Flag country={track.country} />
+                                  <span>{track.name}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormField
+                  control={form.control}
+                  name='car'
+                  render={({ field }) => {
+                    const currentGame = form.getValues('game');
 
-                  return (
-                    <FormItem className='flex flex-col'>
-                      <FormLabel>Car</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select a car' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className='max-h-96'>
-                          {Object.entries(groupedCars).map(
-                            ([groupName, cars]) => (
-                              <SelectGroup
-                                key={groupName}
-                                className='border-b border-slate-800 pb-2 pt-2 first:pt-0 last:border-b-0 last:pb-0'
-                              >
-                                <SelectLabel>{groupName}</SelectLabel>
-                                {cars.map(car => (
-                                  <SelectItem key={car.name} value={car.name}>
-                                    {car.name}
-                                  </SelectItem>
-                                ))}
-                              </SelectGroup>
-                            )
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
-            ) : null}
-            {form.watch('game') === 'Assetto Corsa Competizione' ||
-            form.watch('game') === 'F1 23' ? (
-              <FormField
-                control={form.control}
-                name='track'
-                render={({ field }) => {
-                  const currentGame = form.getValues('game');
-                  const gameTracks = tracks[currentGame];
+                    const groupedCars = groupBy(
+                      [...cars[currentGame]],
+                      i => i.type
+                    );
 
-                  return (
-                    <FormItem className='flex flex-col'>
-                      <FormLabel>Track</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Select a track' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className='max-h-96'>
-                          {gameTracks.map(track => (
-                            <SelectItem key={track.name} value={track.name}>
-                              {track.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  );
-                }}
-              />
+                    return (
+                      <FormItem className='flex flex-col'>
+                        <FormLabel>Car</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder='Select a car' />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent className='max-h-96'>
+                            {Object.entries(groupedCars).map(
+                              ([groupName, cars]) => (
+                                <SelectGroup
+                                  key={groupName}
+                                  className='border-b border-slate-800 pb-2 pt-2 first:pt-0 last:border-b-0 last:pb-0'
+                                >
+                                  <SelectLabel>{groupName}</SelectLabel>
+                                  {cars.map(car => (
+                                    <SelectItem key={car.name} value={car.name}>
+                                      {car.name}
+                                    </SelectItem>
+                                  ))}
+                                </SelectGroup>
+                              )
+                            )}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+              </>
             ) : null}
             <SheetFooter className='flex-row justify-between sm:justify-between'>
               <Button

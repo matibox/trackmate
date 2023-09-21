@@ -38,7 +38,6 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { api } from '~/utils/api';
-import Image from 'next/image';
 import { capitalize, cn, timeStringToDate } from '~/lib/utils';
 import { useEffect, useState } from 'react';
 import crypto from 'crypto';
@@ -57,6 +56,7 @@ import {
 } from '~/components/ui/Popover';
 import dayjs from 'dayjs';
 import { Calendar } from '~/components/ui/Calendar';
+import Flag from '~/components/Flag';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -507,17 +507,7 @@ export default function StepFourSingle() {
                               {driversQuery.data?.map(driver => (
                                 <SelectItem key={driver.id} value={driver.id}>
                                   <div className='flex items-center gap-2'>
-                                    <div className='flex h-[11px] w-[17px] items-center justify-center'>
-                                      <Image
-                                        src={`/flags/${
-                                          driver.profile?.country ?? ''
-                                        }.svg`}
-                                        alt={''}
-                                        width={17}
-                                        height={11}
-                                        className='object-cover'
-                                      />
-                                    </div>
+                                    <Flag country={driver.profile?.country} />
                                     <span>
                                       {driver.firstName
                                         ?.charAt(0)

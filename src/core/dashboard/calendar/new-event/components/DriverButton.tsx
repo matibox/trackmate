@@ -1,6 +1,8 @@
 import { CheckCircleIcon } from 'lucide-react';
 import Image from 'next/image';
 import { type HTMLAttributes } from 'react';
+import Flag from '~/components/Flag';
+import { type countries } from '~/lib/constants';
 import { cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 
@@ -28,15 +30,7 @@ export default function DriverButton({
       )}
       {...props}
     >
-      <div className='flex h-[11px] w-[17px] items-center justify-center'>
-        <Image
-          src={`/flags/${driver.profile?.country ?? ''}.svg`}
-          alt={''}
-          width={17}
-          height={11}
-          className='object-cover'
-        />
-      </div>
+      <Flag country={driver.profile?.country as (typeof countries)[number]} />
       <div>
         <span>{driver.firstName?.slice(0, 1).toUpperCase()}.</span>
         <span> {driver.lastName}</span>
