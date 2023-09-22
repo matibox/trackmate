@@ -42,3 +42,7 @@ export function timeStringToDate(str: string, date = dayjs()) {
     new Date(date.year(), date.month(), date.date(), hours, minutes)
   );
 }
+export function timeStringToMinutes(str: string) {
+  const [hours, minutes] = str.split(':').map(Number) as [number, number];
+  return hours * 60 + minutes;
+}

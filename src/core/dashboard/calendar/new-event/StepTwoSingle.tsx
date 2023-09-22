@@ -70,8 +70,7 @@ export const stepTwoSingleSchema = z
       game: z.literal('F1 23'),
       track: z
         .string({ required_error: trackErrorMessage })
-        .min(1, trackErrorMessage)
-        .or(z.undefined()),
+        .min(1, trackErrorMessage),
       car: z
         .string({ required_error: carErrorMessage })
         .min(1, trackErrorMessage),
@@ -128,7 +127,6 @@ export default function StepTwoSingle() {
   const date = form.watch('date');
 
   useEffect(() => {
-    console.log('a');
     setData({ step: '4-single', data: { sessions: [] } });
   }, [date, setData]);
 

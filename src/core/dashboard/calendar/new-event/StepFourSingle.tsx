@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useForm } from 'react-hook-form';
 import { Button } from '~/components/ui/Button';
 import {
@@ -140,8 +141,16 @@ export default function StepFourSingle() {
   const {
     setStep,
     setData,
-    steps: { stepTwoSingle, stepFourSingle, stepThreeSingle },
+    steps: { stepOne, stepTwoSingle, stepFourSingle, stepThreeSingle },
   } = useNewEvent();
+
+  const driversQuery = api.user.byId.useQuery({
+    memberIds: stepThreeSingle?.driverIds,
+  });
+
+  const createEvent = api.event.create.useMutation({
+    onError: console.log,
+  });
 
   const form = useForm<z.infer<typeof stepFourSingleSchema>>({
     resolver: zodResolver(stepFourSingleSchema),
@@ -150,9 +159,21 @@ export default function StepFourSingle() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
+  async function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
     console.log(values);
     setData({ step: '4-single', data: values });
+
+    const eventType = stepOne!.eventType!;
+    await createEvent.mutateAsync(
+      eventType === 'single'
+        ? {
+            eventType,
+            stepTwo: stepTwoSingle!,
+            stepThree: stepThreeSingle!,
+            stepFour: values,
+          }
+        : { eventType }
+    );
   }
 
   const [sessionFormOpen, setSessionFormOpen] = useState(false);
@@ -168,12 +189,7 @@ export default function StepFourSingle() {
 
   const [isDifferentDay, setIsDifferentDay] = useState(false);
 
-  const driversQuery = api.user.byId.useQuery({
-    memberIds: stepThreeSingle?.driverIds,
-  });
-
   function onSessionSubmit(values: z.infer<typeof sessionSchema>) {
-    console.log(values);
     const prev = form.getValues('sessions');
     form.setValue('sessions', [
       ...prev,

@@ -1,5 +1,4 @@
 import { CheckCircleIcon } from 'lucide-react';
-import Image from 'next/image';
 import { type HTMLAttributes } from 'react';
 import Flag from '~/components/Flag';
 import { type countries } from '~/lib/constants';
