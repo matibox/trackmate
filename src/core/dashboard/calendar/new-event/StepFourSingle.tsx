@@ -10,7 +10,13 @@ import {
 import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { CalendarIcon, PlusIcon, Trash2Icon, UsersIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  Loader2Icon,
+  PlusIcon,
+  Trash2Icon,
+  UsersIcon,
+} from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -354,6 +360,7 @@ export default function StepFourSingle() {
                                         prev.filter(s => s.id !== session.id)
                                       );
                                     }}
+                                    disabled={createEvent.isLoading}
                                   >
                                     <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
                                   </Button>
@@ -384,6 +391,7 @@ export default function StepFourSingle() {
               type='button'
               variant='secondary'
               className='w-[278px] justify-between'
+              disabled={createEvent.isLoading}
             >
               New session
               <PlusIcon className='h-4 w-4' />
@@ -629,7 +637,9 @@ export default function StepFourSingle() {
                     />
                   ) : null}
                   <DialogFooter>
-                    <Button type='submit'>Create</Button>
+                    <Button type='submit' disabled={createEvent.isLoading}>
+                      Create
+                    </Button>
                   </DialogFooter>
                 </div>
               </form>
@@ -641,11 +651,23 @@ export default function StepFourSingle() {
             type='button'
             variant='secondary'
             onClick={() => setStep('3-single')}
+            disabled={createEvent.isLoading}
           >
             Back
           </Button>
-          <Button type='submit' form='main-form'>
-            Next
+          <Button
+            type='submit'
+            form='main-form'
+            disabled={createEvent.isLoading}
+          >
+            {createEvent.isLoading ? (
+              <>
+                Please wait
+                <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
+              </>
+            ) : (
+              'Create event'
+            )}
           </Button>
         </SheetFooter>
       </div>
