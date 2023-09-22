@@ -125,6 +125,13 @@ export default function StepTwoSingle() {
     setData({ step: '2-single', data: { car: undefined, track: undefined } });
   }, [form, game, setData]);
 
+  const date = form.watch('date');
+
+  useEffect(() => {
+    console.log('a');
+    setData({ step: '4-single', data: { sessions: [] } });
+  }, [date, setData]);
+
   return (
     <>
       <SheetHeader>
