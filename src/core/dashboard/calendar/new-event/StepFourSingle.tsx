@@ -211,7 +211,7 @@ export default function StepFourSingle() {
               name='sessions'
               render={({ field }) => (
                 <FormItem>
-                  <div className='flex flex-col gap-2 p-px'>
+                  <div className='flex flex-col gap-3.5 p-px'>
                     {field.value
                       .sort((a, b) => {
                         const startA = timeStringToDate(
@@ -343,7 +343,12 @@ export default function StepFourSingle() {
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>Remove {session.type}</p>
+                                  <p>
+                                    Remove {session.type}{' '}
+                                    {sessionTypeNumber === 0
+                                      ? ''
+                                      : sessionTypeNumber}
+                                  </p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
