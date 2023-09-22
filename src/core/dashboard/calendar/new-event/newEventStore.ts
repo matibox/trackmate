@@ -5,7 +5,6 @@ import { type stepTwoSingleSchema } from './StepTwoSingle';
 import { type stepThreeSingleSchema } from './StepThreeSingle';
 import { objKeys } from '~/lib/utils';
 import { type stepFourSingleSchema } from './StepFourSingle';
-import { Dispatch, SetStateAction } from 'react';
 
 const stepVariant = {
   '1': 'stepOne',
