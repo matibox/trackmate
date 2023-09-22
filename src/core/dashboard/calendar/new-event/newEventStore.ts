@@ -5,6 +5,7 @@ import { type stepTwoSingleSchema } from './StepTwoSingle';
 import { type stepThreeSingleSchema } from './StepThreeSingle';
 import { objKeys } from '~/lib/utils';
 import { type stepFourSingleSchema } from './StepFourSingle';
+import { Dispatch, SetStateAction } from 'react';
 
 const stepVariant = {
   '1': 'stepOne',
@@ -27,6 +28,8 @@ type SetDataType =
   | { step: '4-single'; data: Partial<StepFourSingleData> };
 
 export const useNewEvent = create<{
+  sheetOpened: boolean;
+  setSheetOpened: (opened: boolean) => void;
   stepId: StepId;
   setStep: (stepId: StepId) => void;
   steps: {
@@ -38,6 +41,8 @@ export const useNewEvent = create<{
   setData: ({ step, data }: SetDataType) => void;
   reset: () => void;
 }>((set, get) => ({
+  sheetOpened: false,
+  setSheetOpened: sheetOpened => set(() => ({ sheetOpened })),
   stepId: '1',
   setStep: stepId => set(() => ({ stepId })),
   steps: {

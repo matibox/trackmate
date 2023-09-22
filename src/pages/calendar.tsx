@@ -37,16 +37,29 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 
 const Calendar: NextPage = () => {
   const router = useRouter();
-  const { welcome } = router.query as { welcome?: 'true' | undefined };
+  const { message: toastMessage } = router.query as {
+    message?: 'welcome' | 'createdEvent' | undefined;
+  };
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!welcome) return;
-    toast({
-      variant: 'default',
-      title: 'Signup successful.',
-      description: `Welcome on board! Thanks for joining TrackMate!`,
-    });
+    if (!toastMessage) return;
+    switch (toastMessage) {
+      case 'welcome':
+        toast({
+          variant: 'default',
+          title: 'Signup successful.',
+          description: `Welcome on board! Thanks for joining TrackMate!`,
+        });
+        break;
+      case 'createdEvent':
+        toast({
+          variant: 'default',
+          title: 'Success!',
+          description: 'An event has successfully been created.',
+        });
+        break;
+    }
 
     const timeout = setTimeout(() => {
       void router.push('/calendar', undefined, { shallow: true });
@@ -55,7 +68,7 @@ const Calendar: NextPage = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [welcome, toast, router]);
+  }, [toast, router, toastMessage]);
 
   return (
     <>

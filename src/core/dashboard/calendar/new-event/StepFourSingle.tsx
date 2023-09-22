@@ -64,6 +64,7 @@ import {
 import dayjs from 'dayjs';
 import { Calendar } from '~/components/ui/Calendar';
 import Flag from '~/components/Flag';
+import { useRouter } from 'next/router';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -148,7 +149,10 @@ export default function StepFourSingle() {
     setStep,
     setData,
     steps: { stepOne, stepTwoSingle, stepFourSingle, stepThreeSingle },
+    setSheetOpened,
   } = useNewEvent();
+
+  const router = useRouter();
 
   const driversQuery = api.user.byId.useQuery({
     memberIds: stepThreeSingle?.driverIds,
@@ -156,6 +160,10 @@ export default function StepFourSingle() {
 
   const createEvent = api.event.create.useMutation({
     onError: console.log,
+    onSuccess: async () => {
+      await router.push('/calendar?message=createdEvent');
+      setSheetOpened(false);
+    },
   });
 
   const form = useForm<z.infer<typeof stepFourSingleSchema>>({

@@ -16,10 +16,10 @@ const steps: Record<StepId, ReactNode> = {
 };
 
 export default function NewEvent() {
-  const { stepId, reset } = useNewEvent();
+  const { stepId, reset, sheetOpened, setSheetOpened } = useNewEvent();
 
   return (
-    <Sheet>
+    <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
       <SheetTrigger asChild>
         <Button
           variant='fab'
