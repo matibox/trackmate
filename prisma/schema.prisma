@@ -23,6 +23,13 @@ enum RosterRole {
   manager
 }
 
+enum EventSessionType {
+  practice
+  briefing
+  qualifying
+  race
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -72,11 +79,12 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile  Profile?
-  accounts Account[]
-  sessions Session[]
-  teams    UsersOnTeams[]
-  rosters  RosterOnMember[]
+  profile       Profile?
+  accounts      Account[]
+  sessions      Session[]
+  teams         UsersOnTeams[]
+  rosters       RosterOnMember[]
+  eventSessions EventSession[]
 }
 
 model Profile {
@@ -131,7 +139,35 @@ model Roster {
   game   Game
 
   members RosterOnMember[]
+  events  Event[]
 
   @@unique([name, teamId])
   @@index([teamId])
+}
+
+model Event {
+  id       String  @id @default(cuid())
+  name     String
+  game     Game
+  track    String?
+  car      String?
+  roster   Roster  @relation(fields: [rosterId], references: [id])
+  rosterId String
+
+  sessions EventSession[]
+
+  @@index([rosterId])
+}
+
+model EventSession {
+  id      String           @id @default(cuid())
+  type    EventSessionType
+  start   DateTime
+  end     DateTime?
+  event   Event            @relation(fields: [eventId], references: [id])
+  eventId String
+
+  drivers User[]
+
+  @@index([eventId])
 }
