@@ -5,7 +5,7 @@ import { useEffect } from 'react';
 
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
-import NewEvent from '~/core/dashboard/calendar/new-event/NewEvent';
+import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
 import { getServerAuthSession } from '~/server/auth';
 

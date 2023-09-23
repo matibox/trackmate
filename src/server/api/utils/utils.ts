@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { type z } from 'zod';
-import { type stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/StepFourSingle';
+import { type stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
 import { timeStringToMinutes } from '~/lib/utils';
 
 export function getSessionTimespan({

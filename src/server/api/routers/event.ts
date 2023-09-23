@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { stepTwoSingleSchema } from '~/core/dashboard/calendar/new-event/StepTwoSingle';
-import { stepThreeSingleSchema } from '~/core/dashboard/calendar/new-event/StepThreeSingle';
-import { stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/StepFourSingle';
+import { stepTwoSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepTwoSingle';
+import { stepThreeSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepThreeSingle';
+import { stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
 import { type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { getSessionTimespan } from '../utils/utils';
