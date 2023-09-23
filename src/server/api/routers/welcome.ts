@@ -7,8 +7,8 @@ import {
   stepThreeJoinTeamSchema,
 } from '~/core/welcome/components/StepThree';
 import bcrypt from 'bcrypt';
-import { type $Enums } from '@prisma/client';
 import { TRPCError } from '@trpc/server';
+import { type ReplaceAll } from '~/lib/utils';
 
 async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -80,6 +80,12 @@ export const welcomeRouter = createTRPCRouter({
         stepThreeSkip,
       } = input;
 
+      const game = stepTwo.mainGame.replaceAll(' ', '_') as ReplaceAll<
+        typeof stepTwo.mainGame,
+        ' ',
+        '_'
+      >;
+
       const user = await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
         data: {
@@ -87,7 +93,7 @@ export const welcomeRouter = createTRPCRouter({
           profile: {
             create: {
               ...stepTwo,
-              mainGame: stepTwo.mainGame.replaceAll(' ', '_') as $Enums.Game,
+              mainGame: game,
             },
           },
           active: true,

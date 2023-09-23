@@ -1,10 +1,10 @@
 import { type z } from 'zod';
-import { type stepOneSchema } from './StepOne';
+import { type stepOneSchema } from '../components/StepOne';
 import { create } from 'zustand';
-import { type stepTwoSingleSchema } from './StepTwoSingle';
-import { type stepThreeSingleSchema } from './StepThreeSingle';
+import { type stepTwoSingleSchema } from '../components/StepTwoSingle';
+import { type stepThreeSingleSchema } from '../components/StepThreeSingle';
 import { objKeys } from '~/lib/utils';
-import { type stepFourSingleSchema } from './StepFourSingle';
+import { type stepFourSingleSchema } from '../components/StepFourSingle';
 
 const stepVariant = {
   '1': 'stepOne',

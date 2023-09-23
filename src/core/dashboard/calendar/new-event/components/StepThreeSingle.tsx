@@ -6,7 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
-import { useNewEvent } from './newEventStore';
+import { useNewEvent } from '../store/newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -33,7 +33,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import { Loader2Icon } from 'lucide-react';
-import DriverButton from './components/DriverButton';
+import DriverButton from './DriverButton';
 
 export const stepThreeSingleSchema = z.object({
   teamName: z.string({ required_error: 'Team is required.' }),

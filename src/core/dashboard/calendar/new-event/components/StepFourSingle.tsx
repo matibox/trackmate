@@ -7,7 +7,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
-import { useNewEvent } from './newEventStore';
+import { useNewEvent } from '../store/newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -54,7 +54,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
-import DriverButton from './components/DriverButton';
+import DriverButton from './DriverButton';
 import { Checkbox } from '~/components/ui/Checkbox';
 import {
   Popover,

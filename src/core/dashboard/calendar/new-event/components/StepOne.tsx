@@ -18,7 +18,7 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormMessage } from '~/components/ui/Form';
-import { useNewEvent } from './newEventStore';
+import { useNewEvent } from '../store/newEventStore';
 
 export const stepOneSchema = z.object({
   eventType: z.enum(eventTypes).nullable(),
