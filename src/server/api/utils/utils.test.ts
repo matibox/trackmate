@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { type z } from 'zod';
-import { type stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/StepFourSingle';
+import { type stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
 import { getSessionTimespan } from './utils';
 import dayjs from 'dayjs';
 
