@@ -44,3 +44,5 @@ export function getSessionTimespan({
     end: end ? raceDate.add(end, 'minutes').toDate() : undefined,
   };
 }
+
+// vercel eslint error fix?
