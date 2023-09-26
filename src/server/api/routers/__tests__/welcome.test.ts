@@ -98,23 +98,29 @@ describe('mutation: submitForm', () => {
     };
 
     await caller.welcome.submitForm(input);
-    const userWithProfileAndTeamRole = await prisma.user.findUnique({
+    const userWithProfileAndTeam = await prisma.user.findUnique({
       where: { id: ctx.session?.user.id },
       select: {
         profile: true,
-        teams: { where: { team: { name: 'test' } }, select: { role: true } },
+        teams: {
+          where: { team: { name: 'test' } },
+          select: { role: true, team: { select: { rosters: true } } },
+        },
       },
     });
 
-    expect(userWithProfileAndTeamRole).not.toBeNull();
-    expect(userWithProfileAndTeamRole?.profile).toEqual({
+    expect(userWithProfileAndTeam).not.toBeNull();
+    expect(userWithProfileAndTeam?.profile).toEqual({
       ...input.stepTwo,
-      id: userWithProfileAndTeamRole?.profile?.id,
+      id: userWithProfileAndTeam?.profile?.id,
       userId: ctx.session?.user.id,
       mainGame: input.stepTwo.mainGame.replaceAll(' ', '_'),
       bio: null,
     });
-    expect(userWithProfileAndTeamRole?.teams[0]?.role).toEqual('owner');
+    expect(userWithProfileAndTeam?.teams[0]?.role).toEqual('owner');
+    expect(
+      userWithProfileAndTeam?.teams[0]?.team.rosters.length
+    ).toBeGreaterThan(0);
   });
 
   it('should update user, create profile and join existing team with member role', async () => {

@@ -120,13 +120,13 @@ model Team {
 }
 
 model RosterOnMember {
+  id       String     @id @default(cuid())
   user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   roster   Roster     @relation(fields: [rosterId], references: [id], onDelete: Cascade)
   userId   String
   rosterId String
   role     RosterRole
 
-  @@id([userId, rosterId])
   @@index([userId])
   @@index([rosterId])
 }

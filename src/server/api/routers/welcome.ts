@@ -115,6 +115,20 @@ export const welcomeRouter = createTRPCRouter({
                 user: { connect: { id: ctx.session.user.id } },
               },
             },
+            rosters: {
+              create: {
+                name: 'Default',
+                game: game,
+                members: {
+                  createMany: {
+                    data: [
+                      { role: 'driver', userId: ctx.session.user.id },
+                      { role: 'manager', userId: ctx.session.user.id },
+                    ],
+                  },
+                },
+              },
+            },
           },
         });
       } else if (stepThreeJoinTeam) {
