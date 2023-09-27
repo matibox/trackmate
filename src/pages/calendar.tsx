@@ -8,6 +8,7 @@ import { useToast } from '~/components/ui/useToast';
 import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
 import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/utils/api';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -70,12 +71,20 @@ const Calendar: NextPage = () => {
     };
   }, [toast, router, toastMessage]);
 
+  const eventsQuery = api.event.get.useQuery();
+
+  console.log(eventsQuery.data);
+
   return (
     <>
       <NextSeo title='Calendar' />
       <div className='relative h-screen'>
         <Toaster />
         <DashboardLayout>
+          temporary event name list:
+          {eventsQuery.data?.map(event => (
+            <div key={event.id}>{event.name}</div>
+          ))}
           <NewEvent />
         </DashboardLayout>
       </div>

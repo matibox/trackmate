@@ -27,7 +27,7 @@ export function getSessionTimespan({
     };
   }
 
-  if ('endsNextDay' in session && 'end' in session) {
+  if ('endsNextDay' in session && session.endsNextDay && 'end' in session) {
     const startDate = dayjs(raceDate).add(start, 'minutes');
     const endDate = dayjs(raceDate)
       .add(timeStringToMinutes(session.end), 'minutes')

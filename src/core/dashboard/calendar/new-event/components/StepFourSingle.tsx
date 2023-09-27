@@ -158,10 +158,12 @@ export default function StepFourSingle() {
     memberIds: stepThreeSingle?.driverIds,
   });
 
+  const utils = api.useContext();
   const createEvent = api.event.create.useMutation({
     onError: console.log,
     onSuccess: async () => {
       await router.push('/calendar?message=createdEvent');
+      await utils.event.get.invalidate();
       setSheetOpened(false);
     },
   });

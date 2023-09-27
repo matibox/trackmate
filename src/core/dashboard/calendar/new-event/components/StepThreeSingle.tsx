@@ -66,8 +66,7 @@ export default function StepThreeSingle() {
 
   const teamsQuery = api.team.withRostersByGame.useQuery(
     {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      game: stepTwoSingle!.game,
+      game: stepTwoSingle?.game ?? 'Assetto Corsa Competizione',
     },
     { enabled: Boolean(stepTwoSingle?.game) }
   );
@@ -106,14 +105,14 @@ export default function StepThreeSingle() {
   const rosterId = form.watch('rosterId');
 
   useEffect(() => {
-    if (!teamName || firstRender) return;
+    if (!teamName || firstRender || teamSelectDisabled) return;
     form.resetField('rosterId', { defaultValue: '' });
     form.resetField('driverIds', { defaultValue: [] });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, teamName]);
 
   useEffect(() => {
-    if (!rosterId || firstRender) return;
+    if (!rosterId || firstRender || rosterSelectDisabled) return;
     form.resetField('driverIds', { defaultValue: [] });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, rosterId]);
