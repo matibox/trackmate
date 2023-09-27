@@ -2,7 +2,7 @@ import { CheckCircleIcon } from 'lucide-react';
 import { type HTMLAttributes } from 'react';
 import Flag from '~/components/Flag';
 import { type countries } from '~/lib/constants';
-import { cn } from '~/lib/utils';
+import { capitalize, cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 
 interface DriverButtonProps extends HTMLAttributes<HTMLButtonElement> {
@@ -32,7 +32,7 @@ export default function DriverButton({
       <Flag country={driver.profile?.country as (typeof countries)[number]} />
       <div>
         <span>{driver.firstName?.slice(0, 1).toUpperCase()}.</span>
-        <span> {driver.lastName}</span>
+        <span> {capitalize(driver.lastName ?? '')}</span>
       </div>
       <CheckCircleIcon
         className={cn(

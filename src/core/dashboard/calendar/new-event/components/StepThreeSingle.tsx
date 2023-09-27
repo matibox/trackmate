@@ -34,10 +34,15 @@ import {
 } from '~/components/ui/Tooltip';
 import { Loader2Icon } from 'lucide-react';
 import DriverButton from './DriverButton';
+import { useFirstRender } from '~/hooks/useFirstRender';
 
 export const stepThreeSingleSchema = z.object({
-  teamName: z.string({ required_error: 'Team is required.' }),
-  rosterId: z.string({ required_error: 'Roster is required.' }),
+  teamName: z
+    .string({ required_error: 'Please select a team.' })
+    .min(1, 'Please select a team.'),
+  rosterId: z
+    .string({ required_error: 'Please select a roster.' })
+    .min(1, 'Please select a roster.'),
   driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
 });
 
@@ -48,18 +53,21 @@ export default function StepThreeSingle() {
     setData,
   } = useNewEvent();
 
+  const firstRender = useFirstRender();
+
   const form = useForm<z.infer<typeof stepThreeSingleSchema>>({
     resolver: zodResolver(stepThreeSingleSchema),
     defaultValues: {
-      driverIds: stepThreeSingle?.driverIds ?? [],
-      rosterId: stepThreeSingle?.rosterId,
       teamName: stepThreeSingle?.teamName,
+      rosterId: stepThreeSingle?.rosterId,
+      driverIds: stepThreeSingle?.driverIds ?? [],
     },
   });
 
   const teamsQuery = api.team.withRostersByGame.useQuery(
     {
-      game: stepTwoSingle?.game || 'Assetto Corsa Competizione',
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      game: stepTwoSingle!.game,
     },
     { enabled: Boolean(stepTwoSingle?.game) }
   );
@@ -98,18 +106,17 @@ export default function StepThreeSingle() {
   const rosterId = form.watch('rosterId');
 
   useEffect(() => {
-    form.resetField('rosterId');
-    form.resetField('driverIds');
-    setData({
-      step: '3-single',
-      data: { rosterId: undefined, driverIds: undefined },
-    });
-  }, [form, setData, teamName]);
+    if (!teamName || firstRender) return;
+    form.resetField('rosterId', { defaultValue: '' });
+    form.resetField('driverIds', { defaultValue: [] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, teamName]);
 
   useEffect(() => {
-    form.resetField('driverIds');
-    setData({ step: '3-single', data: { driverIds: undefined } });
-  }, [form, rosterId, setData]);
+    if (!rosterId || firstRender) return;
+    form.resetField('driverIds', { defaultValue: [] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, rosterId]);
 
   return (
     <>
@@ -168,7 +175,7 @@ export default function StepThreeSingle() {
                     </TooltipProvider>
                   )}
                 />
-                {teamName && teamsQuery.data && !rosterSelectDisabled ? (
+                {teamName && teamsQuery.data ? (
                   <FormField
                     control={form.control}
                     name='rosterId'

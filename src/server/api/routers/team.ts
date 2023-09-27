@@ -55,6 +55,7 @@ export const teamRouter = createTRPCRouter({
               game: true,
               name: true,
               members: {
+                where: { role: 'driver' },
                 select: {
                   user: {
                     select: {

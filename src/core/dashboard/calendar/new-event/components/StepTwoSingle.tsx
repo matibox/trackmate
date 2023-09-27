@@ -42,6 +42,7 @@ import { useNewEvent } from '../store/newEventStore';
 import { type $Enums } from '@prisma/client';
 import { useEffect } from 'react';
 import Flag from '~/components/Flag';
+import { useFirstRender } from '~/hooks/useFirstRender';
 
 const baseSchemaShape = z.object({
   name: z
@@ -86,6 +87,8 @@ export default function StepTwoSingle() {
     steps: { stepTwoSingle },
   } = useNewEvent();
 
+  const firstRender = useFirstRender();
+
   const form = useForm<z.infer<typeof stepTwoSingleSchema>>({
     resolver: zodResolver(stepTwoSingleSchema),
     defaultValues: {
@@ -119,9 +122,10 @@ export default function StepTwoSingle() {
   const game = form.watch('game');
 
   useEffect(() => {
+    if (firstRender) return;
     form.resetField('car', { defaultValue: '' });
     form.resetField('track', { defaultValue: '' });
-    setData({ step: '2-single', data: { car: undefined, track: undefined } });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, game, setData]);
 
   const date = form.watch('date');
