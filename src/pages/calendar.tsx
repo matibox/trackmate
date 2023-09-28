@@ -73,8 +73,6 @@ const Calendar: NextPage = () => {
 
   const eventsQuery = api.event.get.useQuery();
 
-  console.log(eventsQuery.data);
-
   return (
     <>
       <NextSeo title='Calendar' />

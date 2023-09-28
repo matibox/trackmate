@@ -176,7 +176,6 @@ export default function StepFourSingle() {
   });
 
   async function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
-    console.log(values);
     setData({ step: '4-single', data: values });
 
     const eventType = stepOne!.eventType!;

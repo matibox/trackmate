@@ -52,8 +52,6 @@ export default function EventType() {
     setStep(`2-${eventType as 'single'}`);
   }
 
-  console.log(data);
-
   return (
     <>
       <>
