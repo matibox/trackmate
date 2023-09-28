@@ -3,6 +3,7 @@ import {
   FlagIcon,
   type LucideIcon,
   TrophyIcon,
+  Loader2Icon,
 } from 'lucide-react';
 import { type ButtonHTMLAttributes } from 'react';
 import {
@@ -19,6 +20,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormMessage } from '~/components/ui/Form';
 import { useNewEvent } from '../store/newEventStore';
+import { api } from '~/utils/api';
 
 export const stepOneSchema = z.object({
   eventType: z.enum(eventTypes).nullable(),
@@ -29,7 +31,10 @@ export default function EventType() {
     setData,
     setStep,
     steps: { stepOne },
+    setSheetOpened,
   } = useNewEvent();
+
+  const { data, isLoading } = api.user.isInTeamOrRoster.useQuery();
 
   const form = useForm<z.infer<typeof stepOneSchema>>({
     resolver: zodResolver(stepOneSchema),
@@ -47,63 +52,103 @@ export default function EventType() {
     setStep(`2-${eventType as 'single'}`);
   }
 
+  console.log(data);
+
   return (
     <>
-      <SheetHeader>
-        <SheetTitle className='text-3xl'>Create event</SheetTitle>
-        <SheetDescription>
-          Select event type first, click next when you&apos;re ready.
-        </SheetDescription>
-      </SheetHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <div className='grid gap-4 py-8'>
-            <FormField
-              control={form.control}
-              name='eventType'
-              render={({ field }) => (
-                <>
-                  <EventTypeButton
-                    icon={FlagIcon}
-                    title='Single event'
-                    label='Create a one-off event.'
-                    isActive={field.value === 'single'}
-                    onClick={() =>
-                      form.setValue(
-                        'eventType',
-                        field.value === 'single' ? null : 'single'
-                      )
-                    }
-                  />
-                  <EventTypeButton
-                    icon={TrophyIcon}
-                    title='Championship event'
-                    label='Create an event associated with a championship.'
-                    isActive={field.value === 'championship'}
-                    onClick={() =>
-                      form.setValue(
-                        'eventType',
-                        field.value === 'championship' ? null : 'championship'
-                      )
-                    }
-                    disabled
-                  />
-                  <FormMessage />
-                </>
-              )}
-            />
-            <SheetFooter>
-              <Button
-                type='submit'
-                className='self-end'
-                disabled={form.watch('eventType') === null}
-              >
-                Next
-              </Button>
-            </SheetFooter>
+      <>
+        {data?.isInRoster && data?.isInTeam ? (
+          <SheetHeader>
+            <SheetTitle className='text-3xl'>Create event</SheetTitle>
+            <SheetDescription>
+              Select event type first, click next when you&apos;re ready.
+            </SheetDescription>
+          </SheetHeader>
+        ) : null}
+        {isLoading ? (
+          <div className='flex h-full items-center justify-center'>
+            <Loader2Icon className='h-4 w-4 animate-spin text-slate-50' />
           </div>
-        </form>
-      </Form>
+        ) : null}
+        {data?.isInRoster && data?.isInTeam ? (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)}>
+              <div className='grid gap-4 py-8'>
+                <FormField
+                  control={form.control}
+                  name='eventType'
+                  render={({ field }) => (
+                    <>
+                      <EventTypeButton
+                        icon={FlagIcon}
+                        title='Single event'
+                        label='Create a one-off event.'
+                        isActive={field.value === 'single'}
+                        onClick={() =>
+                          form.setValue(
+                            'eventType',
+                            field.value === 'single' ? null : 'single'
+                          )
+                        }
+                      />
+                      <EventTypeButton
+                        icon={TrophyIcon}
+                        title='Championship event'
+                        label='Create an event associated with a championship.'
+                        isActive={field.value === 'championship'}
+                        onClick={() =>
+                          form.setValue(
+                            'eventType',
+                            field.value === 'championship'
+                              ? null
+                              : 'championship'
+                          )
+                        }
+                        disabled
+                      />
+                      <FormMessage />
+                    </>
+                  )}
+                />
+                <SheetFooter>
+                  <Button
+                    type='submit'
+                    className='self-end'
+                    disabled={form.watch('eventType') === null}
+                  >
+                    Next
+                  </Button>
+                </SheetFooter>
+              </div>
+            </form>
+          </Form>
+        ) : (
+          <div className='flex h-full -translate-y-8 items-center justify-center text-slate-50'>
+            <div className='flex flex-col items-center justify-center gap-4 text-center'>
+              {!data?.isInRoster ? (
+                <>
+                  <div className='space-y-2'>
+                    <h2 className='text-lg font-medium leading-none'>
+                      You are not part of any{' '}
+                      {!data?.isInTeam ? 'team' : 'roster'}
+                    </h2>
+                    <p className='text-slate-400'>
+                      Please create or join a{' '}
+                      {!data?.isInTeam ? 'team' : 'roster'} to create events.
+                    </p>
+                  </div>
+                  <Button
+                    variant='primary'
+                    onClick={() => setSheetOpened(false)}
+                  >
+                    Go to teams tab
+                  </Button>
+                </>
+              ) : null}
+            </div>
+          </div>
+        )}
+      </>
     </>
   );
 }

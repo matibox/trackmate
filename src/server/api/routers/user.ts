@@ -21,4 +21,20 @@ export const userRouter = createTRPCRouter({
         },
       });
     }),
+  isInTeamOrRoster: protectedProcedure.query(async ({ ctx }) => {
+    const userTeams = await ctx.prisma.team.findMany({
+      where: { members: { some: { userId: ctx.session.user.id } } },
+      select: { id: true },
+    });
+
+    const userRosters = await ctx.prisma.roster.findMany({
+      where: { members: { some: { userId: ctx.session.user.id } } },
+      select: { id: true },
+    });
+
+    return {
+      isInTeam: userTeams.length > 0,
+      isInRoster: userTeams.length > 0 && userRosters.length > 0,
+    };
+  }),
 });
