@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+input[type='time']::-webkit-calendar-picker-indicator {
+  /* convert input type=time clock from black to slate-50 */
+  filter: invert(100%) sepia(39%) saturate(255%) hue-rotate(174deg)
+    brightness(100%) contrast(98%);
+}

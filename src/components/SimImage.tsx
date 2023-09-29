@@ -22,7 +22,7 @@ export default function SimImage({ images, className }: BgImageProps) {
   }, [setDisplayedImage, images]);
 
   useEffect(() => {
-    const interval = setInterval(handleImageChange, 5000);
+    const interval = setInterval(handleImageChange, 10000);
 
     return () => {
       clearInterval(interval);

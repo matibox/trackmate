@@ -18,6 +18,18 @@ enum TeamRole {
   member
 }
 
+enum RosterRole {
+  driver
+  manager
+}
+
+enum EventSessionType {
+  practice
+  briefing
+  qualifying
+  race
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -67,10 +79,12 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile  Profile?
-  accounts Account[]
-  sessions Session[]
-  teams    UsersOnTeams[]
+  profile       Profile?
+  accounts      Account[]
+  sessions      Session[]
+  teams         UsersOnTeams[]
+  rosters       RosterOnMember[]
+  eventSessions EventSession[]
 }
 
 model Profile {
@@ -84,8 +98,8 @@ model Profile {
 }
 
 model UsersOnTeams {
-  user   User     @relation(fields: [userId], references: [id])
-  team   Team     @relation(fields: [teamId], references: [id])
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  team   Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   userId String
   teamId String
   role   TeamRole
@@ -101,17 +115,59 @@ model Team {
   abbreviation String @unique @db.VarChar(3)
   password     String
 
-  rosters Roster[]
   members UsersOnTeams[]
+  rosters Roster[]
+}
+
+model RosterOnMember {
+  id       String     @id @default(cuid())
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roster   Roster     @relation(fields: [rosterId], references: [id], onDelete: Cascade)
+  userId   String
+  rosterId String
+  role     RosterRole
+
+  @@index([userId])
+  @@index([rosterId])
 }
 
 model Roster {
   id     String @id @default(cuid())
-  team   Team   @relation(fields: [teamId], references: [id])
+  name   String
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
   teamId String
+  game   Game
 
-  name String
-  game Game
+  members RosterOnMember[]
+  events  Event[]
 
+  @@unique([name, teamId])
   @@index([teamId])
+}
+
+model Event {
+  id       String  @id @default(cuid())
+  name     String
+  game     Game
+  track    String?
+  car      String?
+  roster   Roster  @relation(fields: [rosterId], references: [id])
+  rosterId String
+
+  sessions EventSession[]
+
+  @@index([rosterId])
+}
+
+model EventSession {
+  id      String           @id @default(cuid())
+  type    EventSessionType
+  start   DateTime
+  end     DateTime?
+  event   Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId String
+
+  drivers User[]
+
+  @@index([eventId])
 }

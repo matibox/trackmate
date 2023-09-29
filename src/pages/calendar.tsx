@@ -1,12 +1,14 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
-import { signOut, useSession } from 'next-auth/react';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { Button } from '~/components/ui/Button';
+
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
+import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
+import DashboardLayout from '~/core/dashboard/components/Layout';
 import { getServerAuthSession } from '~/server/auth';
+import { api } from '~/utils/api';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -34,19 +36,31 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   };
 }
 
-const Dashboard: NextPage = () => {
-  const { data: session } = useSession();
+const Calendar: NextPage = () => {
   const router = useRouter();
-  const { welcome } = router.query as { welcome?: 'true' | undefined };
+  const { message: toastMessage } = router.query as {
+    message?: 'welcome' | 'createdEvent' | undefined;
+  };
   const { toast } = useToast();
 
   useEffect(() => {
-    if (!welcome) return;
-    toast({
-      variant: 'default',
-      title: 'Signup successful.',
-      description: `Welcome on board! Thanks for joining TrackMate!`,
-    });
+    if (!toastMessage) return;
+    switch (toastMessage) {
+      case 'welcome':
+        toast({
+          variant: 'default',
+          title: 'Signup successful.',
+          description: `Welcome on board! Thanks for joining TrackMate!`,
+        });
+        break;
+      case 'createdEvent':
+        toast({
+          variant: 'default',
+          title: 'Success!',
+          description: 'An event has successfully been created.',
+        });
+        break;
+    }
 
     const timeout = setTimeout(() => {
       void router.push('/calendar', undefined, { shallow: true });
@@ -55,20 +69,25 @@ const Dashboard: NextPage = () => {
     return () => {
       clearTimeout(timeout);
     };
-  }, [welcome, toast, router]);
+  }, [toast, router, toastMessage]);
+
+  const eventsQuery = api.event.get.useQuery();
 
   return (
     <>
       <NextSeo title='Calendar' />
       <div className='relative h-screen'>
         <Toaster />
-        <div className='absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-4'>
-          <span className='text-5xl font-medium'>Dashboard</span>
-          {session ? <Button onClick={() => signOut()}>Sign out</Button> : null}
-        </div>
+        <DashboardLayout>
+          temporary event name list:
+          {eventsQuery.data?.map(event => (
+            <div key={event.id}>{event.name}</div>
+          ))}
+          <NewEvent />
+        </DashboardLayout>
       </div>
     </>
   );
 };
 
-export default Dashboard;
+export default Calendar;

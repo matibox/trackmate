@@ -21,12 +21,14 @@ const buttonVariants = cva(
           'border border-slate-800 hover:border-slate-700 hover:bg-slate-800',
         ghost: 'hover:bg-slate-800',
         link: 'underline-offset-4 hover:underline',
+        fab: 'bg-sky-500 hover:bg-sky-400 shadow-lg shadow-black/25',
       },
       size: {
         default: 'h-10 px-4 py-2',
         sm: 'h-9 rounded-md px-3',
         lg: 'h-11 rounded-md px-8',
         icon: 'h-10 w-10',
+        fab: 'h-14 w-14 rounded-2xl',
       },
     },
     defaultVariants: {
