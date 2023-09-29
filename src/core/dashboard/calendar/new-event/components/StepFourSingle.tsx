@@ -65,6 +65,7 @@ import dayjs from 'dayjs';
 import { Calendar } from '~/components/ui/Calendar';
 import Flag from '~/components/Flag';
 import { useRouter } from 'next/router';
+import { useToast } from '~/components/ui/useToast';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -152,6 +153,7 @@ export default function StepFourSingle() {
     setSheetOpened,
   } = useNewEvent();
 
+  const { toast } = useToast();
   const router = useRouter();
 
   const driversQuery = api.user.byId.useQuery({
@@ -160,7 +162,12 @@ export default function StepFourSingle() {
 
   const utils = api.useContext();
   const createEvent = api.event.create.useMutation({
-    onError: console.log,
+    onError: err =>
+      toast({
+        variant: 'destructive',
+        title: 'An error occured',
+        description: err.message,
+      }),
     onSuccess: async () => {
       await router.push('/calendar?message=createdEvent');
       await utils.event.get.invalidate();

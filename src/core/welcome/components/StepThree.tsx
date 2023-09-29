@@ -51,6 +51,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '~/components/ui/AlertDialog';
+import { useToast } from '~/components/ui/useToast';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -76,7 +77,9 @@ export default function StepOne() {
     setData,
     previousStep,
   } = useWelcomeForm();
+
   const router = useRouter();
+  const { toast } = useToast();
 
   const [showPassword, setShowPassword] = useState(false);
   const [query, setQuery] = useState('');
@@ -115,7 +118,12 @@ export default function StepOne() {
   );
 
   const submitForm = api.welcome.submitForm.useMutation({
-    onError: console.log,
+    onError: err =>
+      toast({
+        title: 'An error occured',
+        variant: 'destructive',
+        description: err.message,
+      }),
     onSuccess: async () => {
       await router.push('/calendar?message=welcome');
     },
