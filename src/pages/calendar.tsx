@@ -1,7 +1,9 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
+import { useSession } from 'next-auth/react';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/Avatar';
 
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
@@ -43,6 +45,8 @@ const Calendar: NextPage = () => {
   };
   const { toast } = useToast();
 
+  const { data: session } = useSession();
+
   useEffect(() => {
     if (!toastMessage) return;
     switch (toastMessage) {
@@ -79,6 +83,21 @@ const Calendar: NextPage = () => {
       <div className='relative h-screen'>
         <Toaster />
         <DashboardLayout>
+          {/* profile component */}
+          <div className='flex w-full max-w-lg items-center justify-between rounded-md bg-slate-900 px-4 py-2 ring-1 ring-slate-800'>
+            <div>
+              <Avatar>
+                <AvatarImage
+                  src={session?.user.image ?? ''}
+                  alt={`@${session?.user.username ?? ''}`}
+                />
+                <AvatarFallback>
+                  {session?.user.firstName?.charAt(0).toUpperCase()}
+                  {session?.user.lastName?.charAt(0).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+            </div>
+          </div>
           temporary event name list:
           {eventsQuery.data?.map(event => (
             <div key={event.id}>{event.name}</div>
