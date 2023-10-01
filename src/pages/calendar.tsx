@@ -100,11 +100,11 @@ const Calendar: NextPage = () => {
                 </AvatarFallback>
               </Avatar>
               <div className='flex flex-col justify-center gap-0.5'>
-                <span className='font-medium leading-none'>
+                <span className='font-medium !leading-none lg:text-lg'>
                   {capitalize(session?.user.firstName ?? '')}{' '}
                   {capitalize(session?.user.lastName ?? '')}
                 </span>
-                <span className='text-sm leading-none text-slate-400'>
+                <span className='text-sm !leading-none text-slate-400'>
                   {`@${session?.user.username ?? ''}`}
                 </span>
               </div>
