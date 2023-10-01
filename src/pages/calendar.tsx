@@ -1,9 +1,11 @@
+import { Share2Icon } from 'lucide-react';
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { useSession } from 'next-auth/react';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/Avatar';
+import { Button } from '~/components/ui/Button';
 
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
@@ -85,7 +87,7 @@ const Calendar: NextPage = () => {
         <DashboardLayout>
           {/* profile component */}
           <div className='flex w-full max-w-lg items-center justify-between rounded-md bg-slate-900 px-4 py-2 ring-1 ring-slate-800'>
-            <div>
+            <div className='flex gap-3'>
               <Avatar>
                 <AvatarImage
                   src={session?.user.image ?? ''}
@@ -96,7 +98,21 @@ const Calendar: NextPage = () => {
                   {session?.user.lastName?.charAt(0).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
+              <div className='flex flex-col justify-center gap-0.5'>
+                <span className='font-medium leading-none'>Mateusz Hladky</span>
+                <span className='text-sm leading-none text-slate-400'>
+                  @m4t1box
+                </span>
+              </div>
             </div>
+            <Button
+              variant='outline'
+              size='icon'
+              aria-label='Share calendar'
+              disabled
+            >
+              <Share2Icon className='h-5 w-5' />
+            </Button>
           </div>
           temporary event name list:
           {eventsQuery.data?.map(event => (
