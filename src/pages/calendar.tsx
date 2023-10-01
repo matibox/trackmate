@@ -11,6 +11,7 @@ import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
 import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
+import { capitalize } from '~/lib/utils';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/utils/api';
 
@@ -99,9 +100,12 @@ const Calendar: NextPage = () => {
                 </AvatarFallback>
               </Avatar>
               <div className='flex flex-col justify-center gap-0.5'>
-                <span className='font-medium leading-none'>Mateusz Hladky</span>
+                <span className='font-medium leading-none'>
+                  {capitalize(session?.user.firstName ?? '')}{' '}
+                  {capitalize(session?.user.lastName ?? '')}
+                </span>
                 <span className='text-sm leading-none text-slate-400'>
-                  @m4t1box
+                  {`@${session?.user.username ?? ''}`}
                 </span>
               </div>
             </div>
