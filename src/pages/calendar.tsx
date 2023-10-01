@@ -1,6 +1,6 @@
 import { Share2Icon } from 'lucide-react';
 import { type GetServerSidePropsContext, type NextPage } from 'next';
-import { signOut, useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
@@ -18,24 +18,6 @@ import { api } from '~/utils/api';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
-
-  // if (!session) {
-  //   return {
-  //     redirect: {
-  //       destination: '/login',
-  //       permanent: false,
-  //     },
-  //   };
-  // }
-
-  // if (!session.user.active) {
-  //   return {
-  //     redirect: {
-  //       destination: '/welcome',
-  //       permanent: false,
-  //     },
-  //   };
-  // }
 
   return {
     props: { session },
@@ -121,7 +103,6 @@ const Calendar: NextPage = () => {
               <Share2Icon className='h-5 w-5' />
             </Button>
           </div>
-          <button onClick={() => void signOut()}>sign out</button>
           temporary event name list:
           {eventsQuery.data?.map(event => (
             <div key={event.id}>{event.name}</div>

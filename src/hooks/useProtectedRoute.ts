@@ -8,7 +8,7 @@ export function useProtectedRoute(destination: `/${string}` = '/login') {
   if (typeof window === 'undefined') return;
 
   if (!session) {
-    return void router.push(`${destination}?redirect=${router.pathname}`);
+    return void router.push(destination);
   }
 
   if (!session.user.active) void router.push('/welcome');
