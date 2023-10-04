@@ -6,8 +6,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function groupBy<T>(arr: T[], fn: (item: T) => any) {
+export function groupBy<T>(arr: T[], fn: (item: T) => string | number) {
   return arr.reduce<Record<string, T[]>>((prev, curr) => {
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const groupKey = fn(curr);

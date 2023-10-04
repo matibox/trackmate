@@ -2,7 +2,6 @@ import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-
 import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
 import Profile from '~/core/dashboard/calendar/Profile';
@@ -11,6 +10,7 @@ import DashboardLayout from '~/core/dashboard/components/Layout';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/utils/api';
+import CalendarComp from '~/core/dashboard/calendar/Calendar';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -66,6 +66,7 @@ const Calendar: NextPage = () => {
         <Toaster />
         <DashboardLayout>
           <Profile />
+          <CalendarComp />
           temporary event name list:
           {eventsQuery.data?.map(event => (
             <div key={event.id}>{event.name}</div>
