@@ -11,30 +11,13 @@ import { Toaster } from '~/components/ui/Toaster';
 import { useToast } from '~/components/ui/useToast';
 import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
+import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { capitalize } from '~/lib/utils';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/utils/api';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
-
-  if (!session) {
-    return {
-      redirect: {
-        destination: '/login',
-        permanent: false,
-      },
-    };
-  }
-
-  if (!session.user.active) {
-    return {
-      redirect: {
-        destination: '/welcome',
-        permanent: false,
-      },
-    };
-  }
 
   return {
     props: { session },
@@ -79,6 +62,8 @@ const Calendar: NextPage = () => {
   }, [toast, router, toastMessage]);
 
   const eventsQuery = api.event.get.useQuery();
+
+  useProtectedRoute();
 
   return (
     <>
