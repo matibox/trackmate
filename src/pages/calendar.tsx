@@ -65,8 +65,11 @@ const Calendar: NextPage = () => {
       <div className='relative h-screen'>
         <Toaster />
         <DashboardLayout>
-          <Profile />
-          <CalendarComp />
+          {/* temporary container */}
+          <div className='flex flex-col gap-4'>
+            <Profile />
+            <CalendarComp />
+          </div>
           temporary event name list:
           {eventsQuery.data?.map(event => (
             <div key={event.id}>{event.name}</div>
