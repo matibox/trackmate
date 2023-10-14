@@ -16,63 +16,70 @@ export default function Calendar() {
   const dayGrid = generateDayGrid(currentDay.month(), currentDay.year());
 
   return (
-    <section className='w-full max-w-lg rounded-md bg-slate-900 ring-1 ring-slate-800'>
-      <header className='flex w-full items-center justify-between border-b border-slate-800 p-4'>
-        <Button
-          aria-label='previous month'
-          variant='outline'
-          className='h-8 w-8 bg-transparent p-0'
-          onClick={prevMonth}
+    <>
+      <section className='w-full max-w-lg rounded-md bg-slate-900 ring-1 ring-slate-800'>
+        <header className='flex w-full items-center justify-between border-b border-slate-800 p-4'>
+          <Button
+            aria-label='previous month'
+            variant='outline'
+            className='h-8 w-8 bg-transparent p-0'
+            onClick={prevMonth}
+          >
+            <ChevronLeftIcon className='h-5 w-5' />
+          </Button>
+          <h1 className='text-xl'>{currentDay.format('MMMM, YYYY')}</h1>
+          <Button
+            aria-label='next month'
+            variant='outline'
+            className='h-8 w-8 bg-transparent p-0'
+            onClick={nextMonth}
+          >
+            <ChevronRightIcon className='h-5 w-5' />
+          </Button>
+        </header>
+        <a
+          href='#calendar-skip'
+          className='absolute -left-[10000px] focus:left-6 focus:mt-2 focus:bg-slate-950 focus:px-2'
         >
-          <ChevronLeftIcon className='h-5 w-5' />
-        </Button>
-        <h1 className='text-xl'>{currentDay.format('MMMM, YYYY')}</h1>
-        <Button
-          aria-label='next month'
-          variant='outline'
-          className='h-8 w-8 bg-transparent p-0'
-          onClick={nextMonth}
-        >
-          <ChevronRightIcon className='h-5 w-5' />
-        </Button>
-      </header>
-
-      <div className='flex w-full flex-col items-center gap-3 px-4 py-2'>
-        <div className='flex gap-3'>
-          {dayGrid[0]?.map((day, i) => (
-            <span
-              key={i}
-              className='flex h-[37px] w-[37px] items-center justify-center text-sm font-medium text-slate-300'
-            >
-              {dayjs(day).format('dd')}
-            </span>
+          Skip calendar content
+        </a>
+        <div className='flex w-full flex-col items-center gap-3 px-4 py-2'>
+          <div className='flex gap-3'>
+            {dayGrid[0]?.map((day, i) => (
+              <span
+                key={i}
+                className='flex h-[37px] w-[37px] items-center justify-center text-sm font-medium text-slate-300'
+              >
+                {dayjs(day).format('dd')}
+              </span>
+            ))}
+          </div>
+          {dayGrid.map((row, i) => (
+            <div key={i} className='relative flex gap-3'>
+              {row.map((day, i) => (
+                <Day
+                  key={i}
+                  day={day}
+                  activeWeek={currentDay.week() === row[0]?.week()}
+                  differentMonth={
+                    !day.isBetween(
+                      currentDay.date(0),
+                      currentDay.date(currentDay.daysInMonth() + 1)
+                    )
+                  }
+                />
+              ))}
+              <div
+                className={cn('absolute top-0 h-full rounded-md', {
+                  'bg-slate-800': currentDay.week() === row[0]?.week(),
+                })}
+                style={getCalendarRowStyles({ row, currentDay })}
+              />
+            </div>
           ))}
         </div>
-        {dayGrid.map((row, i) => (
-          <div key={i} className='relative flex gap-3'>
-            {row.map((day, i) => (
-              <Day
-                key={i}
-                day={day}
-                activeWeek={currentDay.week() === row[0]?.week()}
-                differentMonth={
-                  !day.isBetween(
-                    currentDay.date(0),
-                    currentDay.date(currentDay.daysInMonth() + 1)
-                  )
-                }
-              />
-            ))}
-            <div
-              className={cn('absolute top-0 h-full rounded-md', {
-                'bg-slate-800': currentDay.week() === row[0]?.week(),
-              })}
-              style={getCalendarRowStyles({ row, currentDay })}
-            />
-          </div>
-        ))}
-      </div>
-    </section>
+      </section>
+    </>
   );
 }
 

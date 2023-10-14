@@ -69,6 +69,7 @@ const Calendar: NextPage = () => {
           <div className='flex flex-col gap-4'>
             <Profile />
             <CalendarComp />
+            <div id='calendar-skip' />
           </div>
           temporary event name list:
           {eventsQuery.data?.map(event => (
