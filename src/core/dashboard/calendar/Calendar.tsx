@@ -3,16 +3,17 @@ import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import { generateDayGrid } from '~/lib/dates';
 import { useCalendar } from './store';
-import { cn } from '~/lib/utils';
+import { cn, getCalendarRowStyles } from '~/lib/utils';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
+import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(weekOfYear);
+dayjs.extend(isBetween);
 
 export default function Calendar() {
-  const { getCurrentMonthIndex, currentDay, nextMonth, prevMonth } =
-    useCalendar();
+  const { currentDay, nextMonth, prevMonth } = useCalendar();
 
-  const dayGrid = generateDayGrid(getCurrentMonthIndex());
+  const dayGrid = generateDayGrid(currentDay.month(), currentDay.year());
 
   return (
     <section className='w-full max-w-lg rounded-md bg-slate-900 ring-1 ring-slate-800'>
@@ -48,19 +49,26 @@ export default function Calendar() {
           ))}
         </div>
         {dayGrid.map((row, i) => (
-          <div
-            key={i}
-            className={cn('flex gap-3 rounded-md', {
-              'bg-slate-800': currentDay.week() === row[0]?.week(),
-            })}
-          >
+          <div key={i} className='relative flex gap-3'>
             {row.map((day, i) => (
               <Day
                 key={i}
                 day={day}
                 activeWeek={currentDay.week() === row[0]?.week()}
+                differentMonth={
+                  !day.isBetween(
+                    currentDay.date(0),
+                    currentDay.date(currentDay.daysInMonth() + 1)
+                  )
+                }
               />
             ))}
+            <div
+              className={cn('absolute top-0 h-full rounded-md', {
+                'bg-slate-800': currentDay.week() === row[0]?.week(),
+              })}
+              style={getCalendarRowStyles({ row, currentDay })}
+            />
           </div>
         ))}
       </div>
@@ -71,22 +79,26 @@ export default function Calendar() {
 function Day({
   day,
   activeWeek = false,
+  differentMonth = false,
 }: {
   day: dayjs.Dayjs;
   activeWeek?: boolean;
+  differentMonth?: boolean;
 }) {
-  const { currentDay } = useCalendar();
+  const { currentDay, selectDay } = useCalendar();
 
   return (
     <button
       className={cn(
-        'flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800',
+        'z-10 flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800',
         {
           'hover:bg-slate-700': activeWeek,
           'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500':
             currentDay.isSame(day),
+          'text-slate-400 opacity-50': differentMonth,
         }
       )}
+      onClick={() => selectDay({ day })}
     >
       {day.date()}
     </button>

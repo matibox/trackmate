@@ -1,5 +1,5 @@
 import { clsx, type ClassValue } from 'clsx';
-import dayjs from 'dayjs';
+import dayjs, { type Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 
 export function cn(...inputs: ClassValue[]) {
@@ -41,7 +41,42 @@ export function timeStringToDate(str: string, date = dayjs()) {
     new Date(date.year(), date.month(), date.date(), hours, minutes)
   );
 }
+
 export function timeStringToMinutes(str: string) {
   const [hours, minutes] = str.split(':').map(Number) as [number, number];
   return hours * 60 + minutes;
+}
+
+export function getCalendarRowStyles({
+  row,
+  currentDay,
+}: {
+  row: Dayjs[];
+  currentDay: Dayjs;
+}) {
+  let counter = 0;
+
+  for (const day of row) {
+    if (
+      !day.isBetween(
+        currentDay.date(0),
+        currentDay.date(currentDay.daysInMonth() + 1)
+      )
+    ) {
+      counter++;
+    }
+  }
+
+  const direction =
+    currentDay.week() === currentDay.date(currentDay.daysInMonth() + 1).week()
+      ? 'right'
+      : 'left';
+
+  const offset = `calc(${counter * 37}px + ${counter * 0.75}rem)`;
+  const width = `calc(${(7 - counter) * 37}px + ${(6 - counter) * 0.75}rem)`;
+
+  return {
+    [direction]: offset,
+    width: counter > 0 ? width : '100%',
+  };
 }
