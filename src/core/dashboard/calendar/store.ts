@@ -11,7 +11,9 @@ type CalendarStore = {
 
 export const useCalendar = create<CalendarStore>()(
   subscribeWithSelector((set, get) => ({
-    currentDay: dayjs(),
+    currentDay: dayjs(
+      new Date(dayjs().year(), dayjs().month(), dayjs().date())
+    ),
     getCurrentMonthIndex: () => get().currentDay.month(),
     nextMonth: () =>
       set(state => ({ currentDay: state.currentDay.add(1, 'month') })),
