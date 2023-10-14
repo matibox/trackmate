@@ -18,7 +18,7 @@ export default function Calendar() {
   return (
     <>
       <section className='w-full max-w-lg rounded-md bg-slate-900 ring-1 ring-slate-800'>
-        <header className='flex w-full items-center justify-between border-b border-slate-800 p-4'>
+        <header className='flex w-full items-center justify-between border-b border-slate-800 px-4 py-2'>
           <Button
             aria-label='previous month'
             variant='outline'
@@ -27,7 +27,7 @@ export default function Calendar() {
           >
             <ChevronLeftIcon className='h-5 w-5' />
           </Button>
-          <h1 className='text-xl'>{currentDay.format('MMMM, YYYY')}</h1>
+          <h1 className='text-lg'>{currentDay.format('MMMM, YYYY')}</h1>
           <Button
             aria-label='next month'
             variant='outline'
@@ -43,7 +43,7 @@ export default function Calendar() {
         >
           Skip calendar content
         </a>
-        <div className='flex w-full flex-col items-center gap-3 px-4 py-2'>
+        <div className='flex w-full flex-col items-center gap-3 px-4'>
           <div className='flex gap-3'>
             {dayGrid[0]?.map((day, i) => (
               <span
