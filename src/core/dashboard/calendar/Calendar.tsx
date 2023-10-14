@@ -103,6 +103,8 @@ function Day({
           'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500':
             currentDay.isSame(day),
           'text-slate-400 opacity-50': differentMonth,
+          'ring-1 ring-slate-300':
+            day.format('DDMMYYYY') === dayjs().format('DDMMYYYY'),
         }
       )}
       onClick={() => selectDay({ day })}
