@@ -43,7 +43,7 @@ export default function Calendar() {
         >
           Skip calendar content
         </a>
-        <div className='flex w-full flex-col items-center gap-3 px-4'>
+        <div className='flex w-full flex-col items-center gap-0.5 px-4'>
           <div className='flex gap-3'>
             {dayGrid[0]?.map((day, i) => (
               <span
@@ -54,29 +54,31 @@ export default function Calendar() {
               </span>
             ))}
           </div>
-          {dayGrid.map((row, i) => (
-            <div key={i} className='relative flex gap-3'>
-              {row.map((day, i) => (
-                <Day
-                  key={i}
-                  day={day}
-                  activeWeek={currentDay.week() === row[0]?.week()}
-                  differentMonth={
-                    !day.isBetween(
-                      currentDay.date(0),
-                      currentDay.date(currentDay.daysInMonth() + 1)
-                    )
-                  }
+          <div className='flex flex-col items-center gap-3'>
+            {dayGrid.map((row, i) => (
+              <div key={i} className='relative flex gap-3'>
+                {row.map((day, i) => (
+                  <Day
+                    key={i}
+                    day={day}
+                    activeWeek={currentDay.week() === row[0]?.week()}
+                    differentMonth={
+                      !day.isBetween(
+                        currentDay.date(0),
+                        currentDay.date(currentDay.daysInMonth() + 1)
+                      )
+                    }
+                  />
+                ))}
+                <div
+                  className={cn('absolute top-0 h-full rounded-md', {
+                    'bg-slate-800': currentDay.week() === row[0]?.week(),
+                  })}
+                  style={getCalendarRowStyles({ row, currentDay })}
                 />
-              ))}
-              <div
-                className={cn('absolute top-0 h-full rounded-md', {
-                  'bg-slate-800': currentDay.week() === row[0]?.week(),
-                })}
-                style={getCalendarRowStyles({ row, currentDay })}
-              />
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </>
