@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
-import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
+import { ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import { generateDayGrid } from '~/lib/dates';
 import { useCalendar } from './store';
 import { cn, getCalendarRowStyles } from '~/lib/utils';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import isBetween from 'dayjs/plugin/isBetween';
+import { useState } from 'react';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -15,9 +16,11 @@ export default function Calendar() {
 
   const dayGrid = generateDayGrid(currentDay.month(), currentDay.year());
 
+  const [isOpened, setIsOpened] = useState(true);
+
   return (
     <>
-      <section className='w-full max-w-lg rounded-md bg-slate-900 ring-1 ring-slate-800'>
+      <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800'>
         <header className='flex w-full items-center justify-between border-b border-slate-800 px-4 py-2'>
           <Button
             aria-label='previous month'
@@ -43,7 +46,7 @@ export default function Calendar() {
         >
           Skip calendar content
         </a>
-        <div className='flex w-full flex-col items-center gap-0.5 px-4'>
+        <div className='flex w-full flex-col items-center gap-0.5 px-4 pb-1'>
           <div className='flex gap-3'>
             {dayGrid[0]?.map((day, i) => (
               <span
@@ -80,6 +83,17 @@ export default function Calendar() {
             ))}
           </div>
         </div>
+        <Button
+          variant='ghost'
+          className='h-5 w-full rounded-t-none hover:text-sky-500'
+          aria-label={`${isOpened ? 'collapse' : 'open'} calendar`}
+          onClick={() => setIsOpened(prev => !prev)}
+        >
+          <ChevronUpIcon
+            className='h-5 w-5 transition-[rotate]'
+            style={{ rotate: isOpened ? '0deg' : '180deg' }}
+          />
+        </Button>
       </section>
     </>
   );
