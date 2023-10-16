@@ -7,6 +7,11 @@ import { cn, getCalendarRowStyles } from '~/lib/utils';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import isBetween from 'dayjs/plugin/isBetween';
 import { useState } from 'react';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/components/ui/Collapsible';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -40,60 +45,69 @@ export default function Calendar() {
             <ChevronRightIcon className='h-5 w-5' />
           </Button>
         </header>
-        <a
-          href='#calendar-skip'
-          className='absolute -left-[10000px] focus:left-6 focus:mt-2 focus:bg-slate-950 focus:px-2'
+        <Collapsible
+          open={isOpened}
+          onOpenChange={setIsOpened}
+          className='flex flex-col justify-between'
         >
-          Skip calendar content
-        </a>
-        <div className='flex w-full flex-col items-center gap-0.5 px-4 pb-1'>
-          <div className='flex gap-3'>
-            {dayGrid[0]?.map((day, i) => (
-              <span
-                key={i}
-                className='flex h-[37px] w-[37px] items-center justify-center text-sm font-medium text-slate-300'
-              >
-                {dayjs(day).format('dd')}
-              </span>
-            ))}
-          </div>
-          <div className='flex flex-col items-center gap-3'>
-            {dayGrid.map((row, i) => (
-              <div key={i} className='relative flex gap-3'>
-                {row.map((day, i) => (
-                  <Day
+          <CollapsibleContent className='CollapsibleContent'>
+            <a
+              href='#calendar-skip'
+              className='absolute -left-[10000px] focus:left-6 focus:mt-2 focus:bg-slate-950 focus:px-2'
+            >
+              Skip calendar content
+            </a>
+            <div className='flex w-full flex-col items-center gap-0.5 px-4 pb-1'>
+              <div className='flex gap-3'>
+                {dayGrid[0]?.map((day, i) => (
+                  <span
                     key={i}
-                    day={day}
-                    activeWeek={currentDay.week() === row[0]?.week()}
-                    differentMonth={
-                      !day.isBetween(
-                        currentDay.date(0),
-                        currentDay.date(currentDay.daysInMonth() + 1)
-                      )
-                    }
-                  />
+                    className='flex h-[37px] w-[37px] items-center justify-center text-sm font-medium text-slate-300'
+                  >
+                    {dayjs(day).format('dd')}
+                  </span>
                 ))}
-                <div
-                  className={cn('absolute top-0 h-full rounded-md', {
-                    'bg-slate-800': currentDay.week() === row[0]?.week(),
-                  })}
-                  style={getCalendarRowStyles({ row, currentDay })}
-                />
               </div>
-            ))}
-          </div>
-        </div>
-        <Button
-          variant='ghost'
-          className='h-5 w-full rounded-t-none hover:text-sky-500'
-          aria-label={`${isOpened ? 'collapse' : 'open'} calendar`}
-          onClick={() => setIsOpened(prev => !prev)}
-        >
-          <ChevronUpIcon
-            className='h-5 w-5 transition-[rotate]'
-            style={{ rotate: isOpened ? '0deg' : '180deg' }}
-          />
-        </Button>
+              <div className='flex flex-col items-center gap-3'>
+                {dayGrid.map((row, i) => (
+                  <div key={i} className='relative flex gap-3'>
+                    {row.map((day, i) => (
+                      <Day
+                        key={i}
+                        day={day}
+                        activeWeek={currentDay.week() === row[0]?.week()}
+                        differentMonth={
+                          !day.isBetween(
+                            currentDay.date(0),
+                            currentDay.date(currentDay.daysInMonth() + 1)
+                          )
+                        }
+                      />
+                    ))}
+                    <div
+                      className={cn('absolute top-0 h-full rounded-md', {
+                        'bg-slate-800': currentDay.week() === row[0]?.week(),
+                      })}
+                      style={getCalendarRowStyles({ row, currentDay })}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </CollapsibleContent>
+          <CollapsibleTrigger asChild>
+            <Button
+              variant='ghost'
+              className='h-auto w-full rounded-t-none p-0 py-1 hover:text-sky-500'
+              aria-label={`${isOpened ? 'collapse' : 'open'} calendar`}
+            >
+              <ChevronUpIcon
+                className='h-5 w-5 transition-[rotate]'
+                style={{ rotate: isOpened ? '0deg' : '180deg' }}
+              />
+            </Button>
+          </CollapsibleTrigger>
+        </Collapsible>
       </section>
     </>
   );
