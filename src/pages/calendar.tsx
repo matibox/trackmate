@@ -11,6 +11,7 @@ import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 import { api } from '~/utils/api';
 import CalendarComp from '~/core/dashboard/calendar/Calendar';
+import dayjs from 'dayjs';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -73,7 +74,10 @@ const Calendar: NextPage = () => {
           </div>
           temporary event name list:
           {eventsQuery.data?.map(event => (
-            <div key={event.id}>{event.name}</div>
+            <div key={event.id}>
+              {event.name} -{' '}
+              {dayjs(event.sessions[0]?.start).format('DD/MM HH:mm')}
+            </div>
           ))}
           <NewEvent />
         </DashboardLayout>

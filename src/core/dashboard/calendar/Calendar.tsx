@@ -12,6 +12,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
+import { api } from '~/utils/api';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -22,6 +23,16 @@ export default function Calendar() {
   const dayGrid = generateDayGrid(currentDay.month(), currentDay.year());
 
   const [isOpened, setIsOpened] = useState(true);
+
+  const { data: events } = api.event.getBetweenDates.useQuery(
+    {
+      from: currentDay.date(1).toDate(),
+      to: currentDay.date(currentDay.daysInMonth()).toDate(),
+    },
+    {
+      enabled: isOpened,
+    }
+  );
 
   return (
     <>
@@ -109,6 +120,15 @@ export default function Calendar() {
           </CollapsibleTrigger>
         </Collapsible>
       </section>
+      <div>
+        currently selected month events:
+        {events?.map(event => (
+          <div key={event.id}>
+            {event.name} -{' '}
+            {dayjs(event.sessions[0]?.start).format('DD/MM HH:mm')}
+          </div>
+        ))}
+      </div>
     </>
   );
 }
