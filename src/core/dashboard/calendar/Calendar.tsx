@@ -6,13 +6,13 @@ import { useCalendar } from './store';
 import { cn, getCalendarRowStyles } from '~/lib/utils';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import isBetween from 'dayjs/plugin/isBetween';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -24,7 +24,7 @@ export default function Calendar() {
 
   const [isOpened, setIsOpened] = useState(true);
 
-  const { data: events } = api.event.getBetweenDates.useQuery(
+  const { data: dots } = api.event.getCalendarData.useQuery(
     {
       from: currentDay.date(1).toDate(),
       to: currentDay.date(currentDay.daysInMonth()).toDate(),
@@ -86,6 +86,11 @@ export default function Calendar() {
                       <Day
                         key={i}
                         day={day}
+                        dots={dots?.filter(
+                          d =>
+                            dayjs(d.start).format('DD MM YYYY') ===
+                            day.format('DD MM YYYY')
+                        )}
                         activeWeek={currentDay.week() === row[0]?.week()}
                         differentMonth={
                           !day.isBetween(
@@ -96,9 +101,12 @@ export default function Calendar() {
                       />
                     ))}
                     <div
-                      className={cn('absolute top-0 h-full rounded-md', {
-                        'bg-slate-800': currentDay.week() === row[0]?.week(),
-                      })}
+                      className={cn(
+                        'absolute top-0 h-full rounded-md transition',
+                        {
+                          'bg-slate-800': currentDay.week() === row[0]?.week(),
+                        }
+                      )}
                       style={getCalendarRowStyles({ row, currentDay })}
                     />
                   </div>
@@ -120,38 +128,32 @@ export default function Calendar() {
           </CollapsibleTrigger>
         </Collapsible>
       </section>
-      <div>
-        currently selected month events:
-        {events?.map(event => (
-          <div key={event.id}>
-            {event.name} -{' '}
-            {dayjs(event.sessions[0]?.start).format('DD/MM HH:mm')}
-          </div>
-        ))}
-      </div>
     </>
   );
 }
 
 function Day({
   day,
+  dots,
   activeWeek = false,
   differentMonth = false,
 }: {
   day: dayjs.Dayjs;
+  dots: RouterOutputs['event']['getCalendarData'] | undefined;
   activeWeek?: boolean;
   differentMonth?: boolean;
 }) {
   const { currentDay, selectDay } = useCalendar();
 
+  const isSelected = useMemo(() => currentDay.isSame(day), [currentDay, day]);
+
   return (
     <button
       className={cn(
-        'z-10 flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800',
+        'relative z-10 flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800',
         {
           'hover:bg-slate-700': activeWeek,
-          'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500':
-            currentDay.isSame(day),
+          'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500': isSelected,
           'text-slate-400 opacity-50': differentMonth,
           'ring-1 ring-slate-300':
             day.format('DDMMYYYY') === dayjs().format('DDMMYYYY'),
@@ -160,6 +162,17 @@ function Day({
       onClick={() => selectDay({ day })}
     >
       {day.date()}
+      <div className='absolute bottom-[5px] left-1/2 flex w-full -translate-x-1/2 justify-center gap-0.5'>
+        {dots?.slice(0, 4).map(session => (
+          <div
+            key={session.id}
+            className={cn('h-[4px] w-[4px] rounded-full', {
+              'bg-slate-50': isSelected,
+              'bg-sky-500': !isSelected,
+            })}
+          />
+        ))}
+      </div>
     </button>
   );
 }

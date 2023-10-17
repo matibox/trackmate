@@ -98,16 +98,19 @@ export const eventRouter = createTRPCRouter({
       },
     });
   }),
-  getBetweenDates: protectedProcedure
+  getCalendarData: protectedProcedure
     .input(z.object({ from: z.date(), to: z.date() }))
     .query(async ({ ctx, input }) => {
       const { from, to } = input;
-      return await ctx.prisma.event.findMany({
+      return await ctx.prisma.eventSession.findMany({
         where: {
-          roster: { members: { some: { userId: ctx.session.user.id } } },
-          sessions: { some: { start: { gte: from }, end: { lte: to } } },
+          event: {
+            roster: { members: { some: { userId: ctx.session.user.id } } },
+          },
+          start: { gte: from, lte: to },
         },
-        include: { sessions: true },
+        select: { id: true, type: true, start: true },
       });
     }),
+  // get event/session data
 });
