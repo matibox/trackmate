@@ -151,6 +151,7 @@ export default function StepFourSingle() {
     setData,
     steps: { stepOne, stepTwoSingle, stepFourSingle, stepThreeSingle },
     setSheetOpened,
+    reset,
   } = useNewEvent();
 
   const { toast } = useToast();
@@ -170,8 +171,9 @@ export default function StepFourSingle() {
       }),
     onSuccess: async () => {
       await router.push('/calendar?message=createdEvent');
-      await utils.event.get.invalidate();
+      await utils.event.getCalendarData.invalidate();
       setSheetOpened(false);
+      reset();
     },
   });
 
