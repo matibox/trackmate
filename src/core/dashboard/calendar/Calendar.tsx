@@ -12,7 +12,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
-import { type RouterOutputs, api } from '~/utils/api';
+import { api } from '~/utils/api';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -86,11 +86,13 @@ export default function Calendar() {
                       <Day
                         key={i}
                         day={day}
-                        dots={dots?.filter(
-                          d =>
-                            dayjs(d.start).format('DD MM YYYY') ===
-                            day.format('DD MM YYYY')
-                        )}
+                        hasEvent={
+                          dots?.filter(
+                            d =>
+                              dayjs(d.start).format('DD MM YYYY') ===
+                              day.format('DD MM YYYY')
+                          )?.length !== 0
+                        }
                         activeWeek={currentDay.week() === row[0]?.week()}
                         differentMonth={
                           !day.isBetween(
@@ -134,12 +136,12 @@ export default function Calendar() {
 
 function Day({
   day,
-  dots,
+  hasEvent = false,
   activeWeek = false,
   differentMonth = false,
 }: {
   day: dayjs.Dayjs;
-  dots: RouterOutputs['event']['getCalendarData'] | undefined;
+  hasEvent: boolean;
   activeWeek?: boolean;
   differentMonth?: boolean;
 }) {
@@ -162,17 +164,16 @@ function Day({
       onClick={() => selectDay({ day })}
     >
       {day.date()}
-      <div className='absolute bottom-[5px] left-1/2 flex w-full -translate-x-1/2 justify-center gap-0.5'>
-        {dots?.slice(0, 4).map(session => (
+      {hasEvent ? (
+        <div className='absolute bottom-[5px] left-1/2 flex w-full -translate-x-1/2 justify-center gap-0.5'>
           <div
-            key={session.id}
             className={cn('h-[4px] w-[4px] rounded-full', {
               'bg-slate-50': isSelected,
               'bg-sky-500': !isSelected,
             })}
           />
-        ))}
-      </div>
+        </div>
+      ) : null}
     </button>
   );
 }
