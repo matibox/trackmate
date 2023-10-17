@@ -109,7 +109,7 @@ export const eventRouter = createTRPCRouter({
           },
           start: { gte: from, lte: to },
         },
-        select: { id: true, type: true, start: true },
+        select: { start: true },
       });
     }),
   // get event/session data
