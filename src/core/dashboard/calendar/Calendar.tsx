@@ -36,17 +36,19 @@ export default function Calendar() {
 
   return (
     <>
-      <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800'>
-        <header className='flex w-full items-center justify-between border-b border-slate-800 px-4 py-2'>
+      <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800 md:gap-4'>
+        <header className='flex w-full items-center justify-between border-b border-slate-800 px-4 py-2 md:gap-2 md:border-b-0 md:pb-0'>
           <Button
             aria-label='previous month'
             variant='outline'
-            className='h-8 w-8 bg-transparent p-0'
+            className='h-8 w-8 bg-transparent p-0 md:ml-auto'
             onClick={prevMonth}
           >
             <ChevronLeftIcon className='h-5 w-5' />
           </Button>
-          <h1 className='text-lg'>{currentDay.format('MMMM, YYYY')}</h1>
+          <h1 className='text-lg md:-order-1 md:text-2xl'>
+            {currentDay.format('MMMM, YYYY')}
+          </h1>
           <Button
             aria-label='next month'
             variant='outline'
@@ -59,12 +61,12 @@ export default function Calendar() {
         <Collapsible
           open={isOpened}
           onOpenChange={setIsOpened}
-          className='flex flex-col justify-between'
+          className='relative flex flex-col justify-between'
         >
-          <CollapsibleContent className='CollapsibleContent'>
+          <CollapsibleContent className='CollapsibleContent md:pb-1'>
             <a
               href='#calendar-skip'
-              className='absolute -left-[10000px] focus:left-6 focus:mt-2 focus:bg-slate-950 focus:px-2'
+              className='absolute -left-[10000px] focus:left-4 focus:mt-2 focus:bg-slate-950 focus:px-2'
             >
               Skip calendar content
             </a>
@@ -121,6 +123,9 @@ export default function Calendar() {
               variant='ghost'
               className='h-auto w-full rounded-t-none p-0 py-1 hover:text-sky-500'
               aria-label={`${isOpened ? 'collapse' : 'open'} calendar`}
+              style={{
+                borderTop: isOpened ? '' : '1px solid #1e293b',
+              }}
             >
               <ChevronUpIcon
                 className='h-5 w-5 transition-[rotate]'

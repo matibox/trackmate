@@ -9,9 +9,7 @@ import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
-import { api } from '~/utils/api';
 import CalendarComp from '~/core/dashboard/calendar/Calendar';
-import dayjs from 'dayjs';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -56,8 +54,6 @@ const Calendar: NextPage = () => {
     };
   }, [toast, router, toastMessage]);
 
-  const eventsQuery = api.event.get.useQuery();
-
   useProtectedRoute();
 
   return (
@@ -66,19 +62,11 @@ const Calendar: NextPage = () => {
       <div className='relative h-screen'>
         <Toaster />
         <DashboardLayout>
-          {/* temporary container */}
-          <div className='flex flex-col gap-4'>
+          <div className='grid grid-cols-[min(100%,_370px)] gap-4'>
             <Profile />
             <CalendarComp />
-            <div id='calendar-skip' />
+            <div className='invisible' id='calendar-skip' />
           </div>
-          temporary event name list:
-          {eventsQuery.data?.map(event => (
-            <div key={event.id}>
-              {event.name} -{' '}
-              {dayjs(event.sessions[0]?.start).format('DD/MM HH:mm')}
-            </div>
-          ))}
           <NewEvent />
         </DashboardLayout>
       </div>

@@ -76,28 +76,6 @@ export const eventRouter = createTRPCRouter({
         }
       }
     }),
-  get: protectedProcedure.query(async ({ ctx }) => {
-    return await ctx.prisma.event.findMany({
-      where: {
-        sessions: { some: { drivers: { some: { id: ctx.session.user.id } } } },
-      },
-      include: {
-        sessions: {
-          include: {
-            drivers: {
-              select: {
-                profile: { select: { country: true } },
-                id: true,
-                username: true,
-                firstName: true,
-                lastName: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  }),
   getCalendarData: protectedProcedure
     .input(z.object({ from: z.date(), to: z.date() }))
     .query(async ({ ctx, input }) => {
