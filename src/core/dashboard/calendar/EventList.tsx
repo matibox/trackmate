@@ -1,8 +1,8 @@
 import { api } from '~/utils/api';
 import { useCalendar } from './store';
 import dayjs from 'dayjs';
-import { groupBy } from '~/lib/utils';
-import { Fragment } from 'react';
+import { cn, groupBy } from '~/lib/utils';
+import { addOrdinal } from '~/lib/dates';
 
 export default function EventList() {
   const currentDay = useCalendar(s => s.currentDay);
@@ -19,17 +19,38 @@ export default function EventList() {
     );
 
     return (
-      <section>
-        {Object.entries(sessionsByDay).map(([key, data]) => (
-          <Fragment key={key}>
-            {dayjs(key).format('dddd')}
-            {data.map(session => (
-              <div key={session.id}>
-                {dayjs(session.start).format('DD/MM/YYYY HH:mm')}
+      <section className='flex flex-col gap-8'>
+        {sessions.length > 0 ? (
+          Object.entries(sessionsByDay).map(([day, data]) => {
+            const isSelected = dayjs(day).isSame(currentDay);
+            const formattedDay = `${dayjs(day).format('dddd')}, ${addOrdinal(
+              dayjs(day).date()
+            )}`;
+
+            return (
+              <div key={day} className='flex flex-col gap-3'>
+                <span
+                  className={cn('text-xl transition-colors', {
+                    'text-sky-500': isSelected,
+                  })}
+                >
+                  {formattedDay}
+                </span>
+                <div className='flex flex-col gap-4'>
+                  {data.map(session => (
+                    <div key={session.id}>
+                      {dayjs(session.start).format('DD/MM/YYYY HH:mm')}
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </Fragment>
-        ))}
+            );
+          })
+        ) : (
+          <div className='text-center text-slate-300'>
+            There are no scheduled events for this week.
+          </div>
+        )}
       </section>
     );
   }
