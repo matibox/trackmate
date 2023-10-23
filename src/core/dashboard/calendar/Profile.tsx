@@ -7,7 +7,7 @@ import { capitalize } from '~/lib/utils';
 export default function Profile() {
   const { data: session } = useSession();
   return (
-    <div className='flex w-full max-w-lg items-center justify-between rounded-md bg-slate-900 px-4 py-2 ring-1 ring-slate-800'>
+    <section className='flex w-full max-w-lg items-center justify-between rounded-md bg-slate-900 px-4 py-2 ring-1 ring-slate-800'>
       <div className='flex gap-3'>
         <Avatar>
           <AvatarImage
@@ -37,6 +37,6 @@ export default function Profile() {
       >
         <Share2Icon className='h-5 w-5' />
       </Button>
-    </div>
+    </section>
   );
 }

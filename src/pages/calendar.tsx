@@ -10,6 +10,7 @@ import DashboardLayout from '~/core/dashboard/components/Layout';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 import CalendarComp from '~/core/dashboard/calendar/Calendar';
+import EventList from '~/core/dashboard/calendar/EventList';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -65,7 +66,7 @@ const Calendar: NextPage = () => {
           <div className='grid grid-cols-[min(100%,_370px)] gap-4'>
             <Profile />
             <CalendarComp />
-            <div className='invisible' id='calendar-skip' />
+            <EventList />
           </div>
           <NewEvent />
         </DashboardLayout>
