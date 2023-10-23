@@ -153,6 +153,19 @@ function Day({
 
   const isSelected = useMemo(() => currentDay.isSame(day), [currentDay, day]);
 
+  const utils = api.useContext();
+
+  async function changeDay() {
+    const weekStart = currentDay.set('day', 1);
+    const weekEnd = currentDay.set('day', 7);
+
+    if (day.isBefore(weekStart) || day.isAfter(weekEnd)) {
+      await utils.event.fromTo.invalidate();
+    }
+
+    selectDay({ day });
+  }
+
   return (
     <button
       className={cn(
@@ -165,7 +178,7 @@ function Day({
             day.format('DDMMYYYY') === dayjs().format('DDMMYYYY'),
         }
       )}
-      onClick={() => selectDay({ day })}
+      onClick={changeDay}
     >
       {day.date()}
       {hasEvent ? (
