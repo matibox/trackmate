@@ -6,15 +6,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function groupBy<T>(arr: T[], fn: (item: T) => string | number) {
-  return arr.reduce<Record<string, T[]>>((prev, curr) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const groupKey = fn(curr);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const group = prev[groupKey] || [];
-    group.push(curr);
-    return { ...prev, [groupKey]: group };
-  }, {});
+export function groupBy<T, K extends string | number>(
+  array: T[],
+  property: (item: T) => K
+): Record<string, T[]> {
+  return array.reduce((acc, item) => {
+    const key = property(item).toString();
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+
+    (acc[key] as T[]).push(item);
+
+    return acc;
+  }, {} as Record<string, T[]>);
 }
 
 export type ReplaceAll<
