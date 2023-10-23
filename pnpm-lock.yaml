@@ -8,6 +8,7 @@ specifiers:
   '@radix-ui/react-aspect-ratio': ^1.0.3
   '@radix-ui/react-avatar': ^1.0.4
   '@radix-ui/react-checkbox': ^1.0.4
+  '@radix-ui/react-collapsible': ^1.0.3
   '@radix-ui/react-dialog': ^1.0.4
   '@radix-ui/react-label': ^2.0.2
   '@radix-ui/react-popover': ^1.0.6
@@ -75,6 +76,7 @@ dependencies:
   '@radix-ui/react-aspect-ratio': 1.0.3_gltvt74xzh7f5lvw2hzxriz5bu
   '@radix-ui/react-avatar': 1.0.4_gltvt74xzh7f5lvw2hzxriz5bu
   '@radix-ui/react-checkbox': 1.0.4_gltvt74xzh7f5lvw2hzxriz5bu
+  '@radix-ui/react-collapsible': 1.0.3_gltvt74xzh7f5lvw2hzxriz5bu
   '@radix-ui/react-dialog': 1.0.4_gltvt74xzh7f5lvw2hzxriz5bu
   '@radix-ui/react-label': 2.0.2_gltvt74xzh7f5lvw2hzxriz5bu
   '@radix-ui/react-popover': 1.0.6_gltvt74xzh7f5lvw2hzxriz5bu
@@ -1008,6 +1010,34 @@ packages:
       '@radix-ui/react-use-controllable-state': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
       '@radix-ui/react-use-previous': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
       '@radix-ui/react-use-size': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
+      '@types/react': 18.2.20
+      '@types/react-dom': 18.2.7
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /@radix-ui/react-collapsible/1.0.3_gltvt74xzh7f5lvw2hzxriz5bu:
+    resolution: {integrity: sha512-UBmVDkmR6IvDsloHVN+3rtx4Mi5TFvylYXpluuv0f37dtaz3H99bp8No0LGXRigVpl3UAT4l9j6bIchh42S/Gg==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.22.10
+      '@radix-ui/primitive': 1.0.1
+      '@radix-ui/react-compose-refs': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
+      '@radix-ui/react-context': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
+      '@radix-ui/react-id': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
+      '@radix-ui/react-presence': 1.0.1_gltvt74xzh7f5lvw2hzxriz5bu
+      '@radix-ui/react-primitive': 1.0.3_gltvt74xzh7f5lvw2hzxriz5bu
+      '@radix-ui/react-use-controllable-state': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
+      '@radix-ui/react-use-layout-effect': 1.0.1_j3ahe22lw6ac2w6qvqp4kjqnqy
       '@types/react': 18.2.20
       '@types/react-dom': 18.2.7
       react: 18.2.0

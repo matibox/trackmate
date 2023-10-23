@@ -7,3 +7,31 @@ input[type='time']::-webkit-calendar-picker-indicator {
   filter: invert(100%) sepia(39%) saturate(255%) hue-rotate(174deg)
     brightness(100%) contrast(98%);
 }
+
+.CollapsibleContent {
+  overflow: hidden;
+}
+.CollapsibleContent[data-state='open'] {
+  animation: slideDown 200ms ease-in-out;
+}
+.CollapsibleContent[data-state='closed'] {
+  animation: slideUp 200ms ease-in-out;
+}
+
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}

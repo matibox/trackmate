@@ -2,6 +2,7 @@ import { type Config } from 'tailwindcss';
 
 export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
+  future: { hoverOnlyWhenSupported: true },
   theme: {
     extend: {
       keyframes: {
@@ -18,6 +19,14 @@ export default {
           '3.5%': { opacity: '0.1' },
           '33%': { opacity: '0.1' },
           '36.5%': { opacity: '0' },
+        },
+        slideDown: {
+          from: { height: '0' },
+          to: { height: 'var(--radix-collapsible-content-height)' },
+        },
+        slideUp: {
+          from: { height: 'var(--radix-collapsible-content-height)' },
+          to: { height: '0' },
         },
       },
       animation: {
