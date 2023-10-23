@@ -124,7 +124,7 @@ export default function Calendar() {
               className='h-auto w-full rounded-t-none p-0 py-1 hover:text-sky-500'
               aria-label={`${isOpened ? 'collapse' : 'open'} calendar`}
               style={{
-                borderTop: isOpened ? '' : '1px solid #1e293b',
+                borderTop: isOpened ? ' ' : '1px solid #1e293b',
               }}
             >
               <ChevronUpIcon
