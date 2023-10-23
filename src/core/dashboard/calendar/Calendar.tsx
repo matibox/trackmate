@@ -117,6 +117,7 @@ export default function Calendar() {
             </div>
           </div>
         </CollapsibleContent>
+        <div className='invisible' id='calendar-skip' />
         <CollapsibleTrigger asChild>
           <Button
             variant='ghost'
@@ -133,7 +134,6 @@ export default function Calendar() {
           </Button>
         </CollapsibleTrigger>
       </Collapsible>
-      <div className='invisible' id='calendar-skip' />
     </section>
   );
 }
