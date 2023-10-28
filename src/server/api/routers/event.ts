@@ -106,9 +106,19 @@ export const eventRouter = createTRPCRouter({
         select: {
           event: {
             select: {
+              id: true,
               name: true,
               track: true,
               car: true,
+              sessions: {
+                orderBy: { start: 'asc' },
+                select: {
+                  id: true,
+                  type: true,
+                  start: true,
+                  end: true,
+                },
+              },
             },
           },
           id: true,

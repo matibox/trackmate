@@ -1,6 +1,8 @@
+import dayjs from 'dayjs';
 import { ChevronDown } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Collapsible, CollapsibleTrigger } from '~/components/ui/Collapsible';
+import { cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 
 export default function Event({
@@ -9,6 +11,17 @@ export default function Event({
   session: RouterOutputs['event']['fromTo'][number];
 }) {
   const [isOpened, setIsOpened] = useState(false);
+
+  const nextSessionIdx =
+    session.event.sessions.length <= 2
+      ? 0
+      : session.event.sessions.findIndex(s => dayjs().isBefore(dayjs(s.start)));
+
+  const sessionOverviews = session.event.sessions
+    .filter(s => dayjs(s.start).date() === dayjs(session.start).date())
+    .slice(nextSessionIdx);
+
+  console.log(session.event.name, sessionOverviews);
 
   return (
     <Collapsible
@@ -28,10 +41,45 @@ export default function Event({
           </span>
         </div>
         <div className='ml-auto flex flex-col items-end gap-0.5'>
-          <span className='leading-none'>Q 20:00</span>
-          <span className='leading-none'>R 20:15</span>
+          {sessionOverviews.map(session => (
+            <SessionOverview
+              key={`s-${session.id}`}
+              session={session}
+              length={sessionOverviews.length}
+            />
+          ))}
         </div>
       </CollapsibleTrigger>
     </Collapsible>
+  );
+}
+
+function SessionOverview({
+  session: { start, end, type },
+  length,
+}: {
+  session: RouterOutputs['event']['fromTo'][number]['event']['sessions'][number];
+  length: number;
+}) {
+  const status = useMemo(() => {
+    if (dayjs().isBetween(dayjs(start), dayjs(end))) return 'running';
+    if (dayjs(start).isBefore(dayjs())) return 'finished';
+    return 'upcoming';
+  }, [end, start]);
+
+  return (
+    <span
+      className={cn(
+        {
+          'text-xs text-slate-500': status === 'finished',
+          'text-sm font-semibold text-sky-500': status === 'running',
+          'text-sm text-slate-50': status === 'upcoming',
+          'text-sm': length === 1,
+        },
+        'leading-none'
+      )}
+    >
+      {type.charAt(0).toUpperCase()} {dayjs(start).format('HH:mm')}
+    </span>
   );
 }

@@ -46,6 +46,12 @@ export default function EventList() {
               dayjs(day).date()
             )}`;
 
+            const uniqueSessionsByEventIdAndDate = [
+              ...new Map(
+                data.map(s => [`${s.event.id}${day}`, { ...s }])
+              ).values(),
+            ];
+
             return (
               <div key={day} className='flex flex-col gap-3'>
                 <span
@@ -56,7 +62,7 @@ export default function EventList() {
                   {formattedDay}
                 </span>
                 <div className='flex flex-col gap-4'>
-                  {data.map(session => (
+                  {uniqueSessionsByEventIdAndDate.map(session => (
                     <Event key={session.id} session={session} />
                   ))}
                 </div>
