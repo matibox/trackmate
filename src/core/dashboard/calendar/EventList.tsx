@@ -3,6 +3,7 @@ import { useCalendar } from './store';
 import dayjs from 'dayjs';
 import { cn, groupBy } from '~/lib/utils';
 import { addOrdinal } from '~/lib/dates';
+import { Loader2 } from 'lucide-react';
 
 export default function EventList() {
   const currentDay = useCalendar(s => s.currentDay);
@@ -51,6 +52,14 @@ export default function EventList() {
             There are no scheduled events for this week.
           </div>
         )}
+      </section>
+    );
+  }
+
+  if (status === 'loading') {
+    return (
+      <section className='flex flex-col items-center justify-center'>
+        <Loader2 className='h-4 w-4 animate-spin' />
       </section>
     );
   }
