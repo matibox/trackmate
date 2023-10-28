@@ -60,8 +60,8 @@ export default function Event({
           ))}
         </div>
       </CollapsibleTrigger>
-      <CollapsibleContent className='CollapsibleContent p-4'>
-        content
+      <CollapsibleContent className='CollapsibleContent'>
+        <div className='h-full w-full p-4'>content</div>
       </CollapsibleContent>
     </Collapsible>
   );
