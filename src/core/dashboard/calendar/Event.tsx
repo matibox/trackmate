@@ -12,16 +12,17 @@ export default function Event({
 }) {
   const [isOpened, setIsOpened] = useState(false);
 
-  const nextSessionIdx =
-    session.event.sessions.length <= 2
+  const nextSessionIdx = useMemo(() => {
+    return session.event.sessions.length <= 2
       ? 0
       : session.event.sessions.findIndex(s => dayjs().isBefore(dayjs(s.start)));
+  }, [session.event.sessions]);
 
-  const sessionOverviews = session.event.sessions
-    .filter(s => dayjs(s.start).date() === dayjs(session.start).date())
-    .slice(nextSessionIdx);
-
-  console.log(session.event.name, sessionOverviews);
+  const sessionOverviews = useMemo(() => {
+    return session.event.sessions
+      .filter(s => dayjs(s.start).date() === dayjs(session.start).date())
+      .slice(nextSessionIdx);
+  }, [nextSessionIdx, session.event.sessions, session.start]);
 
   return (
     <Collapsible
