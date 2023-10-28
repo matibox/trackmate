@@ -4,14 +4,31 @@ import dayjs from 'dayjs';
 import { cn, groupBy } from '~/lib/utils';
 import { addOrdinal } from '~/lib/dates';
 import { Loader2 } from 'lucide-react';
+import { useToast } from '~/components/ui/useToast';
+import { useEffect } from 'react';
 
 export default function EventList() {
   const currentDay = useCalendar(s => s.currentDay);
 
-  const { data: sessions, status } = api.event.fromTo.useQuery({
+  const {
+    data: sessions,
+    status,
+    error,
+  } = api.event.fromTo.useQuery({
     from: currentDay.set('day', 1).toDate(),
     to: currentDay.set('day', 7).toDate(),
   });
+
+  const { toast } = useToast();
+
+  useEffect(() => {
+    if (status !== 'error') return;
+    toast({
+      variant: 'destructive',
+      title: 'An error occured',
+      description: error.message,
+    });
+  }, [error?.message, status, toast]);
 
   if (status === 'success') {
     const sessionsByDay = groupBy(
@@ -58,8 +75,18 @@ export default function EventList() {
 
   if (status === 'loading') {
     return (
-      <section className='flex flex-col items-center justify-center'>
+      <section className='flex flex-col items-center'>
         <Loader2 className='h-4 w-4 animate-spin' />
+      </section>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <section className='flex flex-col items-center'>
+        <p className='text-slate-300'>
+          An error occured, try refreshing the page.
+        </p>
       </section>
     );
   }
