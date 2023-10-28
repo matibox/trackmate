@@ -6,6 +6,7 @@ import { addOrdinal } from '~/lib/dates';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '~/components/ui/useToast';
 import { useEffect } from 'react';
+import Event from './Event';
 
 export default function EventList() {
   const currentDay = useCalendar(s => s.currentDay);
@@ -56,9 +57,7 @@ export default function EventList() {
                 </span>
                 <div className='flex flex-col gap-4'>
                   {data.map(session => (
-                    <div key={session.id}>
-                      {dayjs(session.start).format('DD/MM/YYYY HH:mm')}
-                    </div>
+                    <Event key={session.id} session={session} />
                   ))}
                 </div>
               </div>
