@@ -1,7 +1,11 @@
 import dayjs from 'dayjs';
 import { ChevronDown } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { Collapsible, CollapsibleTrigger } from '~/components/ui/Collapsible';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/components/ui/Collapsible';
 import { cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 
@@ -30,7 +34,12 @@ export default function Event({
       onOpenChange={setIsOpened}
       className='w-full rounded-md bg-slate-900 ring-1 ring-slate-800'
     >
-      <CollapsibleTrigger className='flex w-full items-center gap-2.5 py-4 pl-2.5 pr-4'>
+      <CollapsibleTrigger
+        className='flex w-full items-center gap-2.5 py-4 pl-2.5 pr-4'
+        style={{
+          borderBottom: isOpened ? '1px solid #1e293b' : ' ',
+        }}
+      >
         <ChevronDown
           className='transition-[rotate]'
           style={{ rotate: isOpened ? '180deg' : '0deg' }}
@@ -51,6 +60,9 @@ export default function Event({
           ))}
         </div>
       </CollapsibleTrigger>
+      <CollapsibleContent className='CollapsibleContent p-4'>
+        content
+      </CollapsibleContent>
     </Collapsible>
   );
 }
