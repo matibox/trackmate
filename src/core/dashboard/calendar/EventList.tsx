@@ -54,13 +54,25 @@ export default function EventList() {
 
             return (
               <div key={day} className='flex flex-col gap-3'>
-                <span
-                  className={cn('text-xl transition-colors', {
+                <div
+                  className={cn('flex items-center text-xl transition-colors', {
                     'text-sky-500': isSelected,
                   })}
                 >
-                  {formattedDay}
-                </span>
+                  {dayjs(day).date() === dayjs().date() ? (
+                    <div
+                      className={cn(
+                        'mr-2 flex items-center rounded-md bg-slate-900 px-2 py-1 text-xs font-semibold leading-none tracking-wide text-slate-200 transition',
+                        {
+                          'bg-sky-700 text-slate-50': isSelected,
+                        }
+                      )}
+                    >
+                      TODAY
+                    </div>
+                  ) : null}
+                  <span className='leading-none'>{formattedDay}</span>
+                </div>
                 <div className='flex flex-col gap-4'>
                   {uniqueSessionsByEventIdAndDate.map(session => (
                     <Event key={session.id} session={session} />
