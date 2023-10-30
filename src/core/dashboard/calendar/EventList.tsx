@@ -62,13 +62,13 @@ export default function EventList() {
                   {dayjs(day).date() === dayjs().date() ? (
                     <div
                       className={cn(
-                        'mr-2 flex items-center rounded-md bg-slate-900 px-2 py-1 text-xs font-semibold leading-none tracking-wide text-slate-200 transition',
+                        'mr-2 flex items-center rounded-md bg-slate-900 px-2 py-1 text-xs font-semibold uppercase leading-none tracking-wide text-slate-200 transition',
                         {
                           'bg-sky-700 text-slate-50': isSelected,
                         }
                       )}
                     >
-                      TODAY
+                      today
                     </div>
                   ) : null}
                   <span className='leading-none'>{formattedDay}</span>

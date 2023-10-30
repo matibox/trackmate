@@ -82,7 +82,7 @@ export default function Event({
       </div>
       <CollapsibleContent className='CollapsibleContent'>
         <div className='flex h-full w-full flex-col gap-4 p-4'>
-          <div className='flex w-full flex-col gap-2'>
+          <div className='flex w-full flex-col gap-2.5'>
             {sessionOverviews.map(session => {
               const sessionsOfType = sessionOverviews.filter(
                 s => s.type === session.type
@@ -154,24 +154,32 @@ function SessionDetails({
   const status = useSessionStatus({ session: { start, end } });
 
   return (
-    <div
-      key={id}
-      className={cn('flex w-full items-center justify-between', {
-        'text-slate-300': status === 'finished',
-        'text-sky-500': status === 'running',
-        'text-slate-50': status === 'upcoming',
-      })}
-    >
+    <div key={id} className='flex w-full items-center gap-2'>
       <Button
         variant='link'
-        className={cn('h-auto p-0 font-normal leading-none text-inherit', {
+        className={cn('h-auto p-0 font-normal leading-none', {
           underline: isActive,
         })}
         onClick={() => setCurrentSessionId(id)}
       >
-        {capitalize(type)} {sessionTypeNumber === 0 ? '' : sessionTypeNumber}
+        <span>
+          {capitalize(type)} {sessionTypeNumber === 0 ? '' : sessionTypeNumber}
+        </span>
       </Button>
-      <span className='text-sm leading-none'>
+      {status === 'running' || status === 'upcoming' ? (
+        <div
+          className={cn(
+            'mr-2 flex items-center rounded-md px-2 py-1 text-xs font-semibold uppercase leading-none tracking-wide transition',
+            {
+              'bg-sky-700 text-slate-50': status === 'running',
+              'bg-slate-800 text-slate-200': status === 'upcoming',
+            }
+          )}
+        >
+          {status === 'running' ? 'now' : 'next'}
+        </div>
+      ) : null}
+      <span className='ml-auto text-sm leading-none'>
         {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
       </span>
     </div>
