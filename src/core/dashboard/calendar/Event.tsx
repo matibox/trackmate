@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, MenuIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
+import { Button } from '~/components/ui/Button';
 import {
   Collapsible,
   CollapsibleContent,
@@ -34,32 +35,46 @@ export default function Event({
       onOpenChange={setIsOpened}
       className='w-full rounded-md bg-slate-900 ring-1 ring-slate-800'
     >
-      <CollapsibleTrigger
-        className='flex w-full items-center gap-2.5 py-4 pl-2.5 pr-4'
+      <div
+        className='flex w-full items-center justify-between py-4 pl-2.5 pr-4'
         style={{
           borderBottom: isOpened ? '1px solid #1e293b' : ' ',
         }}
       >
-        <ChevronDown
-          className='transition-[rotate]'
-          style={{ rotate: isOpened ? '180deg' : '0deg' }}
-        />
-        <div className='flex flex-col items-start gap-0.5'>
-          <span className='leading-none'>{session.event.name}</span>
-          <span className='text-sm leading-none text-slate-300'>
-            {session.event.track}
-          </span>
-        </div>
-        <div className='ml-auto flex flex-col items-end gap-0.5'>
-          {sessionOverviews.map(session => (
-            <SessionOverview
-              key={`s-${session.id}`}
-              session={session}
-              length={sessionOverviews.length}
-            />
-          ))}
-        </div>
-      </CollapsibleTrigger>
+        <CollapsibleTrigger className='flex grow items-center gap-2.5'>
+          <ChevronDown
+            className='transition-[rotate]'
+            style={{ rotate: isOpened ? '180deg' : '0deg' }}
+          />
+          <div className='flex flex-col items-start gap-0.5'>
+            <span className='leading-none'>{session.event.name}</span>
+            <span className='text-sm leading-none text-slate-300'>
+              {session.event.track}
+            </span>
+          </div>
+        </CollapsibleTrigger>
+        {!isOpened ? (
+          <div className='flex flex-col items-end gap-0.5'>
+            {sessionOverviews.map(session => (
+              <SessionOverview
+                key={`s-${session.id}`}
+                session={session}
+                length={sessionOverviews.length}
+              />
+            ))}
+          </div>
+        ) : (
+          <Button
+            variant='ghost'
+            className='h-8 w-8 px-0'
+            //!
+            aria-label='open/close menu'
+            disabled
+          >
+            <MenuIcon className='h-5 w-5' />
+          </Button>
+        )}
+      </div>
       <CollapsibleContent className='CollapsibleContent'>
         <div className='h-full w-full p-4'>content</div>
       </CollapsibleContent>
