@@ -158,7 +158,7 @@ function SessionDetails({
       value={id}
       className='border-slate-800 py-1 last:border-b-0'
     >
-      <AccordionTrigger className='group flex w-full items-center gap-2 py-0 hover:no-underline [&>svg]:order-1'>
+      <AccordionTrigger className='group flex w-full items-center gap-2 py-0 hover:no-underline'>
         <span className='group-hover:underline'>
           {capitalize(type)} {sessionTypeNumber === 0 ? '' : sessionTypeNumber}
         </span>
@@ -175,7 +175,7 @@ function SessionDetails({
             {status === 'running' ? 'now' : 'next'}
           </div>
         ) : null}
-        <span className='ml-auto text-sm leading-none'>
+        <span className='ml-auto text-sm font-normal leading-none'>
           {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
         </span>
       </AccordionTrigger>
