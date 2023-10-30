@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { ChevronDown, MenuIcon } from 'lucide-react';
-import { type Dispatch, type SetStateAction, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import {
   Collapsible,
@@ -10,6 +10,12 @@ import {
 import { capitalize, cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 import { useSessionStatus } from './useSessionStatus';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '~/components/ui/Accordion';
 
 export default function Event({
   session,
@@ -29,10 +35,6 @@ export default function Event({
       s => dayjs(s.start).date() === dayjs(session.start).date()
     );
   }, [session.event.sessions, session.start]);
-
-  const [currentSessionId, setCurrentSessionId] = useState(
-    sessionOverviews[0]?.id
-  );
 
   return (
     <Collapsible
@@ -82,7 +84,11 @@ export default function Event({
       </div>
       <CollapsibleContent className='CollapsibleContent'>
         <div className='flex h-full w-full flex-col gap-4 p-4'>
-          <div className='flex w-full flex-col gap-2.5'>
+          <Accordion
+            type='single'
+            collapsible
+            defaultValue={sessionOverviews[0]?.id}
+          >
             {sessionOverviews.map(session => {
               const sessionsOfType = sessionOverviews.filter(
                 s => s.type === session.type
@@ -96,13 +102,11 @@ export default function Event({
                 <SessionDetails
                   key={session.id}
                   session={session}
-                  currentSessionId={currentSessionId}
-                  setCurrentSessionId={setCurrentSessionId}
                   sessionTypeNumber={sessionTypeNumber}
                 />
               );
             })}
-          </div>
+          </Accordion>
         </div>
       </CollapsibleContent>
     </Collapsible>
@@ -141,47 +145,45 @@ function SessionOverview({
 
 function SessionDetails({
   session: { id, type, start, end },
-  currentSessionId,
-  setCurrentSessionId,
   sessionTypeNumber,
 }: {
   session: Session;
-  currentSessionId: string | undefined;
-  setCurrentSessionId: Dispatch<SetStateAction<string | undefined>>;
   sessionTypeNumber: number;
 }) {
-  const isActive = currentSessionId === id;
   const status = useSessionStatus({ session: { start, end } });
 
   return (
-    <div key={id} className='flex w-full items-center gap-2'>
-      <Button
-        variant='link'
-        className={cn('h-auto p-0 font-normal leading-none', {
-          underline: isActive,
-        })}
-        onClick={() => setCurrentSessionId(id)}
-      >
-        <span>
+    <AccordionItem
+      key={id}
+      value={id}
+      className='border-slate-800 py-1 last:border-b-0'
+    >
+      <AccordionTrigger className='group flex w-full items-center gap-2 py-0 hover:no-underline [&>svg]:order-1'>
+        <span className='group-hover:underline'>
           {capitalize(type)} {sessionTypeNumber === 0 ? '' : sessionTypeNumber}
         </span>
-      </Button>
-      {status === 'running' || status === 'upcoming' ? (
-        <div
-          className={cn(
-            'mr-2 flex items-center rounded-md px-2 py-1 text-xs font-semibold uppercase leading-none tracking-wide transition',
-            {
-              'bg-sky-700 text-slate-50': status === 'running',
-              'bg-slate-800 text-slate-200': status === 'upcoming',
-            }
-          )}
-        >
-          {status === 'running' ? 'now' : 'next'}
+        {status === 'running' || status === 'upcoming' ? (
+          <div
+            className={cn(
+              'ml-1 flex items-center rounded-md px-2 py-1 text-xs font-semibold uppercase leading-none tracking-wide transition',
+              {
+                'bg-sky-700 text-slate-50': status === 'running',
+                'bg-slate-800 text-slate-200': status === 'upcoming',
+              }
+            )}
+          >
+            {status === 'running' ? 'now' : 'next'}
+          </div>
+        ) : null}
+        <span className='ml-auto text-sm leading-none'>
+          {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
+        </span>
+      </AccordionTrigger>
+      <AccordionContent>
+        <div className='py-1'>
+          <span>content</span>
         </div>
-      ) : null}
-      <span className='ml-auto text-sm leading-none'>
-        {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
-      </span>
-    </div>
+      </AccordionContent>
+    </AccordionItem>
   );
 }
