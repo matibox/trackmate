@@ -7,7 +7,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
-import { cn } from '~/lib/utils';
+import { capitalize, cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 
 export default function Event({
@@ -24,10 +24,14 @@ export default function Event({
   }, [session.event.sessions]);
 
   const sessionOverviews = useMemo(() => {
-    return session.event.sessions
-      .filter(s => dayjs(s.start).date() === dayjs(session.start).date())
-      .slice(nextSessionIdx);
-  }, [nextSessionIdx, session.event.sessions, session.start]);
+    return session.event.sessions.filter(
+      s => dayjs(s.start).date() === dayjs(session.start).date()
+    );
+  }, [session.event.sessions, session.start]);
+
+  const [currentSessionId, setCurrentSessionId] = useState(
+    sessionOverviews[0]?.id
+  );
 
   return (
     <Collapsible
@@ -55,7 +59,7 @@ export default function Event({
         </CollapsibleTrigger>
         {!isOpened ? (
           <div className='flex flex-col items-end gap-0.5'>
-            {sessionOverviews.map(session => (
+            {sessionOverviews.slice(nextSessionIdx).map(session => (
               <SessionOverview
                 key={`s-${session.id}`}
                 session={session}
@@ -76,7 +80,33 @@ export default function Event({
         )}
       </div>
       <CollapsibleContent className='CollapsibleContent'>
-        <div className='h-full w-full p-4'>content</div>
+        <div className='flex h-full w-full flex-col gap-4 p-4'>
+          <div className='flex w-full flex-col gap-2'>
+            {sessionOverviews.map(({ id, type, start, end }) => {
+              const isActive = currentSessionId === id;
+              return (
+                <div
+                  key={id}
+                  className='flex w-full items-center justify-between'
+                >
+                  <Button
+                    variant='link'
+                    className={cn('h-auto p-0 font-normal leading-none', {
+                      underline: isActive,
+                    })}
+                    onClick={() => setCurrentSessionId(id)}
+                  >
+                    {capitalize(type)}
+                  </Button>
+                  <span className='text-sm leading-none'>
+                    {dayjs(start).format('HH:mm')} -{' '}
+                    {dayjs(end).format('HH:mm')}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </CollapsibleContent>
     </Collapsible>
   );
