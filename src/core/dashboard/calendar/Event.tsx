@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import { ChevronDown, MenuIcon } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { type Dispatch, type SetStateAction, useMemo, useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import {
   Collapsible,
@@ -9,6 +9,7 @@ import {
 } from '~/components/ui/Collapsible';
 import { capitalize, cn } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
+import { useSessionStatus } from './useSessionStatus';
 
 export default function Event({
   session,
@@ -82,27 +83,23 @@ export default function Event({
       <CollapsibleContent className='CollapsibleContent'>
         <div className='flex h-full w-full flex-col gap-4 p-4'>
           <div className='flex w-full flex-col gap-2'>
-            {sessionOverviews.map(({ id, type, start, end }) => {
-              const isActive = currentSessionId === id;
+            {sessionOverviews.map(session => {
+              const sessionsOfType = sessionOverviews.filter(
+                s => s.type === session.type
+              );
+              const sessionTypeNumber =
+                sessionsOfType.length > 1
+                  ? sessionsOfType.findIndex(s => s.id === session.id) + 1
+                  : 0;
+
               return (
-                <div
-                  key={id}
-                  className='flex w-full items-center justify-between'
-                >
-                  <Button
-                    variant='link'
-                    className={cn('h-auto p-0 font-normal leading-none', {
-                      underline: isActive,
-                    })}
-                    onClick={() => setCurrentSessionId(id)}
-                  >
-                    {capitalize(type)}
-                  </Button>
-                  <span className='text-sm leading-none'>
-                    {dayjs(start).format('HH:mm')} -{' '}
-                    {dayjs(end).format('HH:mm')}
-                  </span>
-                </div>
+                <SessionDetails
+                  key={session.id}
+                  session={session}
+                  currentSessionId={currentSessionId}
+                  setCurrentSessionId={setCurrentSessionId}
+                  sessionTypeNumber={sessionTypeNumber}
+                />
               );
             })}
           </div>
@@ -112,18 +109,17 @@ export default function Event({
   );
 }
 
+type Session =
+  RouterOutputs['event']['fromTo'][number]['event']['sessions'][number];
+
 function SessionOverview({
-  session: { start, end, type },
+  session,
   length,
 }: {
-  session: RouterOutputs['event']['fromTo'][number]['event']['sessions'][number];
+  session: Session;
   length: number;
 }) {
-  const status = useMemo(() => {
-    if (dayjs().isBetween(dayjs(start), dayjs(end))) return 'running';
-    if (dayjs(start).isBefore(dayjs())) return 'finished';
-    return 'upcoming';
-  }, [end, start]);
+  const status = useSessionStatus({ session });
 
   return (
     <span
@@ -137,7 +133,47 @@ function SessionOverview({
         'leading-none'
       )}
     >
-      {type.charAt(0).toUpperCase()} {dayjs(start).format('HH:mm')}
+      {session.type.charAt(0).toUpperCase()}{' '}
+      {dayjs(session.start).format('HH:mm')}
     </span>
+  );
+}
+
+function SessionDetails({
+  session: { id, type, start, end },
+  currentSessionId,
+  setCurrentSessionId,
+  sessionTypeNumber,
+}: {
+  session: Session;
+  currentSessionId: string | undefined;
+  setCurrentSessionId: Dispatch<SetStateAction<string | undefined>>;
+  sessionTypeNumber: number;
+}) {
+  const isActive = currentSessionId === id;
+  const status = useSessionStatus({ session: { start, end } });
+
+  return (
+    <div
+      key={id}
+      className={cn('flex w-full items-center justify-between', {
+        'text-slate-300': status === 'finished',
+        'text-sky-500': status === 'running',
+        'text-slate-50': status === 'upcoming',
+      })}
+    >
+      <Button
+        variant='link'
+        className={cn('h-auto p-0 font-normal leading-none text-inherit', {
+          underline: isActive,
+        })}
+        onClick={() => setCurrentSessionId(id)}
+      >
+        {capitalize(type)} {sessionTypeNumber === 0 ? '' : sessionTypeNumber}
+      </Button>
+      <span className='text-sm leading-none'>
+        {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
+      </span>
+    </div>
   );
 }
