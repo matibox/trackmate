@@ -1,5 +1,13 @@
 import dayjs from 'dayjs';
-import { ChevronDown, MenuIcon } from 'lucide-react';
+import {
+  CarIcon,
+  ChevronDown,
+  ClockIcon,
+  MapPinIcon,
+  MenuIcon,
+  UserIcon,
+  UsersIcon,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import {
@@ -89,19 +97,20 @@ export default function Event({
             collapsible
             defaultValue={sessionOverviews[0]?.id}
           >
-            {sessionOverviews.map(session => {
+            {sessionOverviews.map(sessionOverview => {
               const sessionsOfType = sessionOverviews.filter(
-                s => s.type === session.type
+                s => s.type === sessionOverview.type
               );
               const sessionTypeNumber =
                 sessionsOfType.length > 1
-                  ? sessionsOfType.findIndex(s => s.id === session.id) + 1
+                  ? sessionsOfType.findIndex(s => s.id === sessionOverview.id) +
+                    1
                   : 0;
 
               return (
                 <SessionDetails
-                  key={session.id}
-                  session={session}
+                  key={sessionOverview.id}
+                  session={{ ...sessionOverview, event: session.event }}
                   sessionTypeNumber={sessionTypeNumber}
                 />
               );
@@ -143,11 +152,22 @@ function SessionOverview({
   );
 }
 
+type SessionDetails = Session & {
+  event: RouterOutputs['event']['fromTo'][number]['event'];
+};
+
 function SessionDetails({
-  session: { id, type, start, end },
+  session: {
+    id,
+    type,
+    start,
+    end,
+    drivers,
+    event: { car, track },
+  },
   sessionTypeNumber,
 }: {
-  session: Session;
+  session: SessionDetails;
   sessionTypeNumber: number;
 }) {
   const status = useSessionStatus({ session: { start, end } });
@@ -180,8 +200,39 @@ function SessionDetails({
         </span>
       </AccordionTrigger>
       <AccordionContent>
-        <div className='py-1'>
-          <span>content</span>
+        <div className='flex flex-col gap-1 py-2'>
+          <div className='flex items-center gap-1.5'>
+            <ClockIcon className='h-[18px] w-[18px] text-slate-300' />
+            <span className='leading-none'>
+              {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
+            </span>
+          </div>
+          <div className='flex items-center gap-1.5'>
+            <CarIcon className='h-[18px] w-[18px] text-slate-300' />
+            <span className='leading-none'>{car}</span>
+          </div>
+          <div className='flex items-center gap-1.5'>
+            <MapPinIcon className='h-[18px] w-[18px] text-slate-300' />
+            <span className='leading-none'>{track}</span>
+          </div>
+          {drivers.length > 0 ? (
+            <div className='flex items-center gap-1.5'>
+              {drivers.length > 1 ? (
+                <UsersIcon className='h-[18px] w-[18px] text-slate-300' />
+              ) : (
+                <UserIcon className='h-[18px] w-[18px] text-slate-300' />
+              )}
+              <span className='leading-none'>
+                {drivers
+                  .map(
+                    d =>
+                      `${d.firstName?.charAt(0).toUpperCase() ?? ''}.
+                    ${d.lastName ?? ''}`
+                  )
+                  .join(', ')}
+              </span>
+            </div>
+          ) : null}
         </div>
       </AccordionContent>
     </AccordionItem>
