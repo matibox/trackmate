@@ -63,7 +63,7 @@ const Calendar: NextPage = () => {
       <div className='relative h-screen'>
         <Toaster />
         <DashboardLayout>
-          <div className='grid grid-cols-[min(100%,_370px)] gap-4'>
+          <div className='grid grid-cols-[min(100%,_370px)] gap-4 md:grid-cols-2'>
             <Profile />
             <CalendarComp />
             <EventList />

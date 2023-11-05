@@ -38,7 +38,7 @@ export default function EventList() {
     );
 
     return (
-      <section className='flex flex-col gap-8'>
+      <section className='flex flex-col gap-8 md:sticky md:col-start-2 md:row-span-3 md:row-start-1'>
         {sessions.length > 0 ? (
           Object.entries(sessionsByDay).map(([day, data]) => {
             const isSelected = dayjs(day).isSame(currentDay);
@@ -92,7 +92,7 @@ export default function EventList() {
 
   if (status === 'loading') {
     return (
-      <section className='flex flex-col items-center'>
+      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1'>
         <Loader2 className='h-4 w-4 animate-spin' />
       </section>
     );
@@ -100,7 +100,7 @@ export default function EventList() {
 
   if (status === 'error') {
     return (
-      <section className='flex flex-col items-center'>
+      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1'>
         <p className='text-slate-300'>
           An error occured, try refreshing the page.
         </p>
