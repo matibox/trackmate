@@ -16,8 +16,8 @@ export default function EventList() {
     status,
     error,
   } = api.event.fromTo.useQuery({
-    from: currentDay.set('day', 1).toDate(),
-    to: currentDay.set('day', 7).toDate(),
+    from: currentDay.startOf('week').toDate(),
+    to: currentDay.endOf('week').toDate(),
   });
 
   const { toast } = useToast();
