@@ -176,7 +176,7 @@ function SessionDetails({
     <AccordionItem
       key={id}
       value={id}
-      className='border-slate-800 py-1 last:border-b-0'
+      className='border-slate-800 py-1 last:border-b-0 last:pb-0'
     >
       <AccordionTrigger className='group flex w-full items-center gap-2 py-0 hover:no-underline'>
         <span className='group-hover:underline'>
