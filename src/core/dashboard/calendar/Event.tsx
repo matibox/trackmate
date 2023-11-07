@@ -25,8 +25,6 @@ import {
   AccordionTrigger,
 } from '~/components/ui/Accordion';
 
-//TODO: 2xl: breakpoint responsive event
-
 export default function Event({
   session,
 }: {
@@ -47,80 +45,111 @@ export default function Event({
   }, [session.event.sessions, session.start]);
 
   return (
-    <Collapsible
-      open={isOpened}
-      onOpenChange={setIsOpened}
-      className='w-full rounded-md bg-slate-900 ring-1 ring-slate-800'
-    >
-      <div
-        className='flex w-full items-center justify-between py-4 pl-2.5 pr-4'
-        style={{
-          borderBottom: isOpened ? '1px solid #1e293b' : ' ',
-        }}
+    <>
+      {/* < 2xl: */}
+      <Collapsible
+        open={isOpened}
+        onOpenChange={setIsOpened}
+        className='w-full rounded-md bg-slate-900 ring-1 ring-slate-800 2xl:hidden'
       >
-        <CollapsibleTrigger className='flex grow items-center gap-2.5'>
-          <ChevronDown
-            className='transition-[rotate]'
-            style={{ rotate: isOpened ? '180deg' : '0deg' }}
-          />
-          <div className='flex flex-col items-start gap-0.5'>
+        <div
+          className='flex w-full items-center justify-between py-4 pl-2.5 pr-4'
+          style={{
+            borderBottom: isOpened ? '1px solid #1e293b' : ' ',
+          }}
+        >
+          <CollapsibleTrigger className='flex grow items-center gap-2.5'>
+            <ChevronDown
+              className='transition-[rotate]'
+              style={{ rotate: isOpened ? '180deg' : '0deg' }}
+            />
+            <div className='flex flex-col items-start gap-0.5'>
+              <span className='leading-none'>{session.event.name}</span>
+              <span className='text-sm leading-none text-slate-300'>
+                {session.event.track}
+              </span>
+            </div>
+          </CollapsibleTrigger>
+          {!isOpened ? (
+            <div className='flex flex-col items-end gap-0.5'>
+              {sessionOverviews.slice(nextSessionIdx).map(session => (
+                <SessionOverview
+                  key={`s-${session.id}`}
+                  session={session}
+                  length={sessionOverviews.length}
+                />
+              ))}
+            </div>
+          ) : (
+            <Menu />
+          )}
+        </div>
+        <CollapsibleContent className='CollapsibleContent'>
+          <div className='flex h-full w-full flex-col gap-4 p-4'>
+            <Accordion
+              type='single'
+              collapsible
+              defaultValue={sessionOverviews[0]?.id}
+            >
+              {sessionOverviews.map(sessionOverview => {
+                const sessionsOfType = sessionOverviews.filter(
+                  s => s.type === sessionOverview.type
+                );
+                const sessionTypeNumber =
+                  sessionsOfType.length > 1
+                    ? sessionsOfType.findIndex(
+                        s => s.id === sessionOverview.id
+                      ) + 1
+                    : 0;
+
+                return (
+                  <SessionDetails
+                    key={sessionOverview.id}
+                    session={{ ...sessionOverview, event: session.event }}
+                    sessionTypeNumber={sessionTypeNumber}
+                  />
+                );
+              })}
+            </Accordion>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
+      {/* 2xl: */}
+      <div className='hidden 2xl:block 2xl:h-full 2xl:w-[320px] 2xl:rounded-md 2xl:bg-slate-900 2xl:p-6 2xl:ring-1 2xl:ring-slate-800'>
+        <div className='flex w-full items-center'>
+          <div className='flex flex-col items-center font-bold'>
+            <span className='text-xl leading-none'>
+              {dayjs(session.start).format('ddd')}
+            </span>
+            <span className='text-4xl leading-none'>
+              {dayjs(session.start).format('DD')}
+            </span>
+          </div>
+          <div className='mx-6 h-12 w-px bg-slate-800' />
+          <div className='flex flex-col'>
             <span className='leading-none'>{session.event.name}</span>
             <span className='text-sm leading-none text-slate-300'>
               {session.event.track}
             </span>
           </div>
-        </CollapsibleTrigger>
-        {!isOpened ? (
-          <div className='flex flex-col items-end gap-0.5'>
-            {sessionOverviews.slice(nextSessionIdx).map(session => (
-              <SessionOverview
-                key={`s-${session.id}`}
-                session={session}
-                length={sessionOverviews.length}
-              />
-            ))}
-          </div>
-        ) : (
-          <Button
-            variant='ghost'
-            className='h-8 w-8 px-0'
-            //!
-            aria-label='open/close menu'
-            disabled
-          >
-            <MenuIcon className='h-5 w-5' />
-          </Button>
-        )}
-      </div>
-      <CollapsibleContent className='CollapsibleContent'>
-        <div className='flex h-full w-full flex-col gap-4 p-4'>
-          <Accordion
-            type='single'
-            collapsible
-            defaultValue={sessionOverviews[0]?.id}
-          >
-            {sessionOverviews.map(sessionOverview => {
-              const sessionsOfType = sessionOverviews.filter(
-                s => s.type === sessionOverview.type
-              );
-              const sessionTypeNumber =
-                sessionsOfType.length > 1
-                  ? sessionsOfType.findIndex(s => s.id === sessionOverview.id) +
-                    1
-                  : 0;
-
-              return (
-                <SessionDetails
-                  key={sessionOverview.id}
-                  session={{ ...sessionOverview, event: session.event }}
-                  sessionTypeNumber={sessionTypeNumber}
-                />
-              );
-            })}
-          </Accordion>
+          <Menu className='ml-auto' />
         </div>
-      </CollapsibleContent>
-    </Collapsible>
+      </div>
+    </>
+  );
+}
+
+function Menu({ className }: { className?: string }) {
+  return (
+    <Button
+      variant='ghost'
+      className={cn('h-8 w-8 px-0', className)}
+      //!
+      aria-label='open/close menu'
+      disabled
+    >
+      <MenuIcon className='h-5 w-5' />
+    </Button>
   );
 }
 
