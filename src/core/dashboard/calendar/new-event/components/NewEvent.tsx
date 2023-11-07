@@ -20,7 +20,7 @@ export default function NewEvent() {
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
-      <SheetTrigger asChild>
+      <SheetTrigger asChild className='lg:hidden'>
         <Button
           variant='fab'
           size='fab'

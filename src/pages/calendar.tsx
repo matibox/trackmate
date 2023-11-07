@@ -12,6 +12,7 @@ import { getServerAuthSession } from '~/server/auth';
 import CalendarComp from '~/core/dashboard/calendar/Calendar';
 import EventList from '~/core/dashboard/calendar/EventList';
 import { Button } from '~/components/ui/Button';
+import { useNewEvent } from '~/core/dashboard/calendar/new-event/store/newEventStore';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -56,6 +57,8 @@ const Calendar: NextPage = () => {
     };
   }, [toast, router, toastMessage]);
 
+  const setNewEventFormOpened = useNewEvent(s => s.setSheetOpened);
+
   useProtectedRoute();
 
   return (
@@ -72,7 +75,12 @@ const Calendar: NextPage = () => {
                   Schedule your races and see their details.
                 </span>
               </div>
-              <Button variant='primary'>New event</Button>
+              <Button
+                variant='primary'
+                onClick={() => setNewEventFormOpened(true)}
+              >
+                New event
+              </Button>
             </div>
             <Profile />
             <CalendarComp />

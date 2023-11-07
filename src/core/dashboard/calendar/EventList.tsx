@@ -7,9 +7,12 @@ import { Loader2 } from 'lucide-react';
 import { useToast } from '~/components/ui/useToast';
 import { useEffect } from 'react';
 import Event from './Event';
+import { Button } from '~/components/ui/Button';
+import { useNewEvent } from './new-event/store/newEventStore';
 
 export default function EventList() {
   const currentDay = useCalendar(s => s.currentDay);
+  const setNewEventFormOpened = useNewEvent(s => s.setSheetOpened);
 
   const {
     data: sessions,
@@ -82,8 +85,16 @@ export default function EventList() {
             );
           })
         ) : (
-          <div className='text-center text-slate-300'>
-            There are no scheduled events for this week.
+          <div className='text-center text-slate-300 lg:my-auto'>
+            <div className='flex flex-col items-center gap-1'>
+              <span>There are no scheduled events for this week.</span>
+              <Button
+                variant='ghost'
+                onClick={() => setNewEventFormOpened(true)}
+              >
+                Create a new event
+              </Button>
+            </div>
           </div>
         )}
       </section>
@@ -92,7 +103,7 @@ export default function EventList() {
 
   if (status === 'loading') {
     return (
-      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 lg:row-start-2'>
+      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 lg:row-start-2 lg:my-auto'>
         <Loader2 className='h-4 w-4 animate-spin' />
       </section>
     );
@@ -100,7 +111,7 @@ export default function EventList() {
 
   if (status === 'error') {
     return (
-      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 lg:row-start-2'>
+      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 lg:row-start-2 lg:my-auto'>
         <p className='text-slate-300'>
           An error occured, try refreshing the page.
         </p>
