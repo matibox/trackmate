@@ -35,7 +35,7 @@ export default function Calendar() {
   );
 
   return (
-    <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800 md:sticky md:left-0 md:top-[5.5rem] md:col-start-1 md:gap-4'>
+    <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800 md:sticky md:left-0 md:top-[5.5rem] md:col-start-1 md:gap-4 xl:static'>
       <header className='flex w-full items-center justify-between px-4 py-2 md:gap-2 md:pb-0'>
         <Button
           aria-label='previous month'
@@ -45,7 +45,7 @@ export default function Calendar() {
         >
           <ChevronLeftIcon className='h-5 w-5' />
         </Button>
-        <h1 className='text-lg md:-order-1 md:text-2xl'>
+        <h1 className='text-lg leading-none md:-order-1 md:text-2xl lg:text-3xl'>
           {currentDay.format('MMMM, YYYY')}
         </h1>
         <Button
@@ -74,7 +74,7 @@ export default function Calendar() {
               {dayGrid[0]?.map((day, i) => (
                 <span
                   key={i}
-                  className='flex h-[37px] w-[37px] items-center justify-center text-sm font-medium text-slate-300'
+                  className='flex h-[37px] w-[37px] items-center justify-center text-sm font-medium text-slate-300 lg:h-[45px] lg:w-[45px] lg:text-base'
                 >
                   {dayjs(day).format('dd')}
                 </span>
@@ -169,7 +169,7 @@ function Day({
   return (
     <button
       className={cn(
-        'relative z-10 flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800',
+        'relative z-10 flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800 lg:h-[45px] lg:w-[45px]',
         {
           'hover:bg-slate-700': activeWeek,
           'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500': isSelected,
@@ -182,7 +182,7 @@ function Day({
     >
       {day.date()}
       {hasEvent ? (
-        <div className='absolute bottom-[5px] left-1/2 flex w-full -translate-x-1/2 justify-center gap-0.5'>
+        <div className='absolute bottom-[5px] left-1/2 flex w-full -translate-x-1/2 justify-center gap-0.5 lg:bottom-[6px]'>
           <div
             className={cn('h-[4px] w-[4px] rounded-full', {
               'bg-slate-50': isSelected,

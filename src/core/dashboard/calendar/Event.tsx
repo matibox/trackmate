@@ -25,6 +25,8 @@ import {
   AccordionTrigger,
 } from '~/components/ui/Accordion';
 
+//TODO: 2xl: breakpoint responsive event
+
 export default function Event({
   session,
 }: {

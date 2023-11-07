@@ -6,8 +6,9 @@ import { capitalize } from '~/lib/utils';
 
 export default function Profile() {
   const { data: session } = useSession();
+
   return (
-    <section className='flex w-full max-w-lg items-center justify-between rounded-md bg-slate-900 px-4 py-2 ring-1 ring-slate-800 md:sticky md:left-0 md:top-4'>
+    <section className='flex w-full max-w-lg items-center justify-between rounded-md bg-slate-900 px-4 py-2 ring-1 ring-slate-800 md:sticky md:left-0 md:top-4 xl:static'>
       <div className='flex gap-3'>
         <Avatar>
           <AvatarImage

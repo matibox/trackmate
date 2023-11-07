@@ -78,8 +78,13 @@ export function getCalendarRowStyles({
       ? 'right'
       : 'left';
 
-  const offset = `calc(${counter * 37}px + ${counter * 0.75}rem)`;
-  const width = `calc(${(7 - counter) * 37}px + ${(6 - counter) * 0.75}rem)`;
+  const multiplicator =
+    typeof window !== 'undefined' && window.innerWidth > 1024 ? 45 : 37;
+
+  const offset = `calc(${counter * multiplicator}px + ${counter * 0.75}rem)`;
+  const width = `calc(${(7 - counter) * multiplicator}px + ${
+    (6 - counter) * 0.75
+  }rem)`;
 
   return {
     [direction]: offset,
