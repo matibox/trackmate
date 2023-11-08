@@ -117,7 +117,15 @@ export const eventRouter = createTRPCRouter({
                   type: true,
                   start: true,
                   end: true,
-                  drivers: { select: { firstName: true, lastName: true } },
+                  drivers: {
+                    select: {
+                      id: true,
+                      image: true,
+                      firstName: true,
+                      lastName: true,
+                      username: true,
+                    },
+                  },
                 },
               },
             },
