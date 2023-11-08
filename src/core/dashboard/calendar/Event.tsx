@@ -115,7 +115,7 @@ export default function Event({
         </CollapsibleContent>
       </Collapsible>
       {/* 2xl: */}
-      <div className='hidden 2xl:block 2xl:h-full 2xl:w-[320px] 2xl:rounded-md 2xl:bg-slate-900 2xl:p-6 2xl:ring-1 2xl:ring-slate-800'>
+      <div className='hidden 2xl:block 2xl:h-full 2xl:w-[320px] 2xl:rounded-md 2xl:bg-slate-900 2xl:p-4 2xl:ring-1 2xl:ring-slate-800'>
         <div className='flex w-full items-center'>
           <div className='flex flex-col items-center font-bold'>
             <span className='text-xl leading-none'>
@@ -125,7 +125,7 @@ export default function Event({
               {dayjs(session.start).format('DD')}
             </span>
           </div>
-          <div className='mx-6 h-12 w-px bg-slate-800' />
+          <div className='mx-4 h-12 w-px bg-slate-800' />
           <div className='flex flex-col'>
             <span className='leading-none'>{session.event.name}</span>
             <span className='text-sm leading-none text-slate-300'>
