@@ -45,6 +45,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '~/components/ui/Dialog';
+import { useCalendar } from './store';
 
 export default function Event({
   session,
@@ -52,6 +53,7 @@ export default function Event({
   session: RouterOutputs['event']['fromTo'][number];
 }) {
   const [isOpened, setIsOpened] = useState(false);
+  const currentDay = useCalendar(s => s.currentDay);
 
   const nextSessionIdx = useMemo(() => {
     return session.event.sessions.length <= 2
@@ -138,7 +140,16 @@ export default function Event({
       {/* 2xl: */}
       <div className='hidden 2xl:flex 2xl:h-full 2xl:w-[320px] 2xl:flex-col 2xl:gap-4 2xl:rounded-md 2xl:bg-slate-900 2xl:p-4 2xl:ring-1 2xl:ring-slate-800'>
         <div className='flex w-full items-center'>
-          <div className='flex flex-col items-center font-bold'>
+          <div
+            className={cn(
+              'flex flex-col items-center font-bold transition-colors',
+              {
+                'text-sky-500':
+                  currentDay.format('DDMMYYYY') ===
+                  dayjs(session.start).format('DDMMYYYY'),
+              }
+            )}
+          >
             <span className='text-xl leading-none'>
               {dayjs(session.start).format('ddd')}
             </span>
@@ -216,7 +227,7 @@ function Menu({ eventId, className }: { eventId: string; className?: string }) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56'>
-          <DropdownMenuLabel>Manage event</DropdownMenuLabel>
+          <DropdownMenuLabel>Event options</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DialogTrigger asChild>
