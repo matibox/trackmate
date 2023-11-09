@@ -5,6 +5,7 @@ import {
   ClockIcon,
   MapPinIcon,
   MenuIcon,
+  TrashIcon,
   UserIcon,
   UsersIcon,
 } from 'lucide-react';
@@ -25,6 +26,15 @@ import {
   AccordionTrigger,
 } from '~/components/ui/Accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/Avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '~/components/ui/DropdownMenu';
 
 export default function Event({
   session,
@@ -167,16 +177,35 @@ export default function Event({
 }
 
 function Menu({ className }: { className?: string }) {
+  const [menuOpened, setMenuOpened] = useState(false);
+
   return (
-    <Button
-      variant='ghost'
-      className={cn('h-8 w-8 px-0', className)}
-      //!
-      aria-label='open/close menu'
-      disabled
-    >
-      <MenuIcon className='h-5 w-5' />
-    </Button>
+    <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened}>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant='ghost'
+          className={cn('h-8 w-8 px-0', className)}
+          aria-label={`${menuOpened ? 'close' : 'open'} the menu`}
+        >
+          <MenuIcon className='h-5 w-5' />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className='w-56'>
+        <DropdownMenuLabel>Manage event</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
+          <DropdownMenuItem asChild>
+            <button
+              className='w-full text-red-500 focus:text-red-500'
+              onClick={() => console.log('delete event')}
+            >
+              <TrashIcon className='mr-2 h-4 w-4' />
+              <span>Delete event</span>
+            </button>
+          </DropdownMenuItem>
+        </DropdownMenuGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
