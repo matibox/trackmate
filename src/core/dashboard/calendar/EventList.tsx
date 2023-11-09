@@ -3,9 +3,9 @@ import { useCalendar } from './store';
 import dayjs from 'dayjs';
 import { cn, groupBy } from '~/lib/utils';
 import { addOrdinal } from '~/lib/dates';
-import { Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useToast } from '~/components/ui/useToast';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Event from './Event';
 import { Button } from '~/components/ui/Button';
 import { useNewEvent } from './new-event/store/newEventStore';
@@ -34,6 +34,13 @@ export default function EventList() {
     });
   }, [error?.message, status, toast]);
 
+  const scrollElRef = useRef<HTMLElement>(null);
+
+  function scrollEventList(offset: number) {
+    if (scrollElRef.current?.scrollLeft === undefined) return;
+    scrollElRef.current.scrollLeft += offset;
+  }
+
   if (status === 'success') {
     const sessionsByDay = groupBy(
       sessions,
@@ -41,8 +48,21 @@ export default function EventList() {
     );
 
     return (
-      <section className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:py-px 2xl:scrollbar-none'>
-        <div className='hidden 2xl:sticky 2xl:left-0 2xl:top-0 2xl:z-10 2xl:-mr-8 2xl:block 2xl:h-full 2xl:min-w-[64px] 2xl:bg-gradient-to-r 2xl:from-slate-950' />
+      <section
+        ref={scrollElRef}
+        className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:scroll-smooth 2xl:py-px 2xl:scrollbar-none'
+      >
+        {sessions.length > 0 ? (
+          <div className='hidden 2xl:sticky 2xl:left-0 2xl:top-0 2xl:z-10 2xl:-mr-8 2xl:flex 2xl:h-full 2xl:min-w-[64px] 2xl:items-center 2xl:justify-center 2xl:bg-gradient-to-r 2xl:from-slate-950'>
+            <Button
+              variant='ghost'
+              className='h-8 w-8 p-0'
+              onClick={() => scrollEventList(-320)}
+            >
+              <ChevronLeft className='h-5 w-5' />
+            </Button>
+          </div>
+        ) : null}
         {sessions.length > 0 ? (
           Object.entries(sessionsByDay).map(([day, data]) => {
             const isSelected = dayjs(day).isSame(currentDay);
@@ -103,7 +123,17 @@ export default function EventList() {
             </div>
           </div>
         )}
-        <div className='hidden 2xl:sticky 2xl:right-0 2xl:top-0 2xl:z-10 2xl:-mr-8 2xl:block 2xl:h-full 2xl:min-w-[64px] 2xl:bg-gradient-to-l 2xl:from-slate-950' />
+        {sessions.length > 0 ? (
+          <div className='hidden 2xl:sticky 2xl:right-0 2xl:top-0 2xl:z-10 2xl:ml-auto 2xl:flex 2xl:h-full 2xl:min-w-[64px] 2xl:items-center 2xl:justify-center 2xl:bg-gradient-to-l 2xl:from-slate-950'>
+            <Button
+              variant='ghost'
+              className='h-8 w-8 p-0'
+              onClick={() => scrollEventList(320)}
+            >
+              <ChevronRight className='h-5 w-5' />
+            </Button>
+          </div>
+        ) : null}
       </section>
     );
   }
