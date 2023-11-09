@@ -6,13 +6,13 @@ import { useCalendar } from './store';
 import { cn, getCalendarRowStyles } from '~/lib/utils';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import isBetween from 'dayjs/plugin/isBetween';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -82,37 +82,7 @@ export default function Calendar() {
             </div>
             <div className='flex flex-col items-center gap-3'>
               {dayGrid.map((row, i) => (
-                <div key={i} className='relative flex gap-3'>
-                  {row.map((day, i) => (
-                    <Day
-                      key={i}
-                      day={day}
-                      hasEvent={
-                        dots?.filter(
-                          d =>
-                            dayjs(d.start).format('DD MM YYYY') ===
-                            day.format('DD MM YYYY')
-                        )?.length !== 0
-                      }
-                      activeWeek={currentDay.week() === row[0]?.week()}
-                      differentMonth={
-                        !day.isBetween(
-                          currentDay.date(0),
-                          currentDay.date(currentDay.daysInMonth() + 1)
-                        )
-                      }
-                    />
-                  ))}
-                  <div
-                    className={cn(
-                      'absolute top-0 h-full rounded-md transition',
-                      {
-                        'bg-slate-800': currentDay.week() === row[0]?.week(),
-                      }
-                    )}
-                    style={getCalendarRowStyles({ row, currentDay })}
-                  />
-                </div>
+                <Row key={i} row={row} dots={dots} />
               ))}
             </div>
           </div>
@@ -138,6 +108,54 @@ export default function Calendar() {
   );
 }
 
+function Row({
+  row,
+  dots,
+}: {
+  row: dayjs.Dayjs[];
+  dots: RouterOutputs['event']['getCalendarData'] | undefined;
+}) {
+  const { currentDay } = useCalendar();
+
+  const [rowStyles, setRowStyles] =
+    useState<ReturnType<typeof getCalendarRowStyles>>();
+
+  useEffect(() => {
+    if (typeof window === undefined) return;
+    setRowStyles(getCalendarRowStyles({ row, currentDay }));
+  }, [currentDay, row]);
+
+  return (
+    <div className='relative flex gap-3'>
+      {row.map((day, i) => (
+        <Day
+          key={i}
+          day={day}
+          hasEvent={
+            dots?.filter(
+              d =>
+                dayjs(d.start).format('DD MM YYYY') === day.format('DD MM YYYY')
+            )?.length !== 0
+          }
+          activeWeek={currentDay.week() === row[0]?.week()}
+          differentMonth={
+            !day.isBetween(
+              currentDay.date(0),
+              currentDay.date(currentDay.daysInMonth() + 1)
+            )
+          }
+        />
+      ))}
+      <div
+        className={cn('absolute top-0 h-full rounded-md transition', {
+          'bg-slate-800': currentDay.week() === row[0]?.week(),
+        })}
+        style={rowStyles}
+      />
+    </div>
+  );
+}
+
 function Day({
   day,
   hasEvent = false,
@@ -153,19 +171,6 @@ function Day({
 
   const isSelected = useMemo(() => currentDay.isSame(day), [currentDay, day]);
 
-  const utils = api.useContext();
-
-  async function changeDay() {
-    const weekStart = currentDay.set('day', 1);
-    const weekEnd = currentDay.set('day', 7);
-
-    if (day.isBefore(weekStart) || day.isAfter(weekEnd)) {
-      await utils.event.fromTo.invalidate();
-    }
-
-    selectDay({ day });
-  }
-
   return (
     <button
       className={cn(
@@ -178,7 +183,7 @@ function Day({
             day.format('DDMMYYYY') === dayjs().format('DDMMYYYY'),
         }
       )}
-      onClick={changeDay}
+      onClick={() => selectDay({ day })}
     >
       {day.date()}
       {hasEvent ? (
