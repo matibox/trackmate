@@ -71,7 +71,7 @@ export default function Event({
       <Collapsible
         open={isOpened}
         onOpenChange={setIsOpened}
-        className='w-full rounded-md bg-slate-900 ring-1 ring-slate-800 2xl:hidden'
+        className='w-full rounded-md border border-slate-800 bg-slate-900 2xl:hidden'
       >
         <div
           className='flex w-full items-center justify-between py-4 pl-2.5 pr-4'

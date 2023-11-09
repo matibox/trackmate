@@ -41,7 +41,8 @@ export default function EventList() {
     );
 
     return (
-      <section className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:p-px 2xl:scrollbar-none'>
+      <section className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:py-px 2xl:scrollbar-none'>
+        <div className='hidden 2xl:sticky 2xl:left-0 2xl:top-0 2xl:z-10 2xl:-mr-8 2xl:block 2xl:h-full 2xl:min-w-[64px] 2xl:bg-gradient-to-r 2xl:from-slate-950' />
         {sessions.length > 0 ? (
           Object.entries(sessionsByDay).map(([day, data]) => {
             const isSelected = dayjs(day).isSame(currentDay);
@@ -102,6 +103,7 @@ export default function EventList() {
             </div>
           </div>
         )}
+        <div className='hidden 2xl:sticky 2xl:right-0 2xl:top-0 2xl:z-10 2xl:-mr-8 2xl:block 2xl:h-full 2xl:min-w-[64px] 2xl:bg-gradient-to-l 2xl:from-slate-950' />
       </section>
     );
   }
