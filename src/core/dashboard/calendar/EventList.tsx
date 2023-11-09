@@ -41,7 +41,7 @@ export default function EventList() {
     );
 
     return (
-      <section className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:h-full 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:p-px 2xl:scrollbar-none'>
+      <section className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:p-px 2xl:scrollbar-none'>
         {sessions.length > 0 ? (
           Object.entries(sessionsByDay).map(([day, data]) => {
             const isSelected = dayjs(day).isSame(currentDay);
@@ -81,7 +81,7 @@ export default function EventList() {
                     {formattedDay}
                   </span>
                 </div>
-                <div className='flex flex-col gap-4 2xl:flex-row 2xl:gap-0'>
+                <div className='flex flex-col gap-4 2xl:flex-row'>
                   {uniqueSessionsByEventIdAndDate.map(session => (
                     <Event key={session.id} session={session} />
                   ))}

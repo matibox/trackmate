@@ -35,7 +35,7 @@ export default function Calendar() {
   );
 
   return (
-    <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800 md:sticky md:left-0 md:top-[5.5rem] md:col-start-1 md:gap-4 2xl:static'>
+    <section className='flex w-full max-w-lg flex-col rounded-md bg-slate-900 ring-1 ring-slate-800 md:sticky md:left-0 md:top-[5.5rem] md:col-start-1 md:gap-4 2xl:static 2xl:h-min'>
       <header className='flex w-full items-center justify-between px-4 py-2 md:gap-2 md:pb-0'>
         <Button
           aria-label='previous month'
