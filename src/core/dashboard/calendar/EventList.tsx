@@ -81,7 +81,7 @@ export default function EventList() {
                     {formattedDay}
                   </span>
                 </div>
-                <div className='flex flex-col gap-4 2xl:flex-row'>
+                <div className='flex flex-col gap-4 2xl:flex-row 2xl:gap-8'>
                   {uniqueSessionsByEventIdAndDate.map(session => (
                     <Event key={session.id} session={session} />
                   ))}
