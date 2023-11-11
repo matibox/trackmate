@@ -151,7 +151,7 @@ export default function EventList() {
 
   if (status === 'loading') {
     return (
-      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 lg:row-start-2 lg:my-auto'>
+      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 md:my-auto lg:row-start-2'>
         <Loader2 className='h-4 w-4 animate-spin' />
       </section>
     );
@@ -159,7 +159,7 @@ export default function EventList() {
 
   if (status === 'error') {
     return (
-      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 lg:row-start-2 lg:my-auto'>
+      <section className='flex flex-col items-center md:col-start-2 md:row-span-2 md:row-start-1 md:my-auto lg:row-start-2'>
         <p className='text-slate-300'>
           An error occured, try refreshing the page.
         </p>
