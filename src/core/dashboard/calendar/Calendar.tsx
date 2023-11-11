@@ -24,7 +24,7 @@ export default function Calendar() {
 
   const [isOpened, setIsOpened] = useState(true);
 
-  const { data: dots } = api.event.getCalendarData.useQuery(
+  const { data: dots, isLoading } = api.event.getCalendarData.useQuery(
     {
       from: currentDay.date(1).toDate(),
       to: currentDay.date(currentDay.daysInMonth()).toDate(),
@@ -82,7 +82,7 @@ export default function Calendar() {
             </div>
             <div className='flex flex-col items-center gap-3'>
               {dayGrid.map((row, i) => (
-                <Row key={i} row={row} dots={dots} />
+                <Row key={i} row={row} dots={dots} isLoading={isLoading} />
               ))}
             </div>
           </div>
@@ -111,9 +111,11 @@ export default function Calendar() {
 function Row({
   row,
   dots,
+  isLoading = false,
 }: {
   row: dayjs.Dayjs[];
   dots: RouterOutputs['event']['getCalendarData'] | undefined;
+  isLoading?: boolean;
 }) {
   const { currentDay } = useCalendar();
 
@@ -132,6 +134,7 @@ function Row({
           key={i}
           day={day}
           hasEvent={
+            !isLoading &&
             dots?.filter(
               d =>
                 dayjs(d.start).format('DD MM YYYY') === day.format('DD MM YYYY')
@@ -189,7 +192,7 @@ function Day({
       {hasEvent ? (
         <div className='absolute bottom-[5px] left-1/2 flex w-full -translate-x-1/2 justify-center gap-0.5 lg:bottom-[6px]'>
           <div
-            className={cn('h-[4px] w-[4px] rounded-full', {
+            className={cn('h-1 w-1 rounded-full', {
               'bg-slate-50': isSelected,
               'bg-sky-500': !isSelected,
             })}
