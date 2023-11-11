@@ -5,10 +5,11 @@ import { cn, groupBy } from '~/lib/utils';
 import { addOrdinal } from '~/lib/dates';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useToast } from '~/components/ui/useToast';
-import { useEffect, useRef } from 'react';
+import { type RefObject, useEffect } from 'react';
 import Event from './Event';
 import { Button } from '~/components/ui/Button';
 import { useNewEvent } from './new-event/store/newEventStore';
+import { useDragScroll } from './useDragScroll';
 
 export default function EventList() {
   const currentDay = useCalendar(s => s.currentDay);
@@ -34,12 +35,18 @@ export default function EventList() {
     });
   }, [error?.message, status, toast]);
 
-  const scrollElRef = useRef<HTMLElement>(null);
-
-  function scrollEventList(offset: number) {
-    if (scrollElRef.current?.scrollLeft === undefined) return;
-    scrollElRef.current.scrollLeft += offset;
+  function scrollEventList({
+    ref,
+    offset,
+  }: {
+    ref: RefObject<HTMLElement>;
+    offset: number;
+  }) {
+    if (ref.current?.scrollLeft === undefined) return;
+    ref.current.scrollLeft += offset;
   }
+
+  const dragScroll = useDragScroll({ smooth: true });
 
   if (status === 'success') {
     const sessionsByDay = groupBy(
@@ -49,15 +56,17 @@ export default function EventList() {
 
     return (
       <section
-        ref={scrollElRef}
-        className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:flex-row 2xl:overflow-x-scroll 2xl:scroll-smooth 2xl:py-px 2xl:scrollbar-none'
+        className='flex flex-col gap-8 md:col-start-2 md:row-span-3 md:row-start-1 lg:row-start-2 2xl:relative 2xl:row-start-2 2xl:row-end-4 2xl:max-w-full 2xl:select-none 2xl:flex-row 2xl:overflow-x-scroll 2xl:py-px 2xl:scrollbar-none'
+        {...dragScroll}
       >
         {sessions.length > 0 ? (
           <div className='hidden 2xl:sticky 2xl:left-0 2xl:top-0 2xl:z-10 2xl:-mr-8 2xl:flex 2xl:h-full 2xl:min-w-[64px] 2xl:items-center 2xl:justify-center 2xl:bg-gradient-to-r 2xl:from-slate-950'>
             <Button
               variant='ghost'
               className='h-8 w-8 p-0'
-              onClick={() => scrollEventList(-320)}
+              onClick={() =>
+                scrollEventList({ ref: dragScroll.ref, offset: -320 })
+              }
             >
               <ChevronLeft className='h-5 w-5' />
             </Button>
@@ -128,7 +137,9 @@ export default function EventList() {
             <Button
               variant='ghost'
               className='h-8 w-8 p-0'
-              onClick={() => scrollEventList(320)}
+              onClick={() =>
+                scrollEventList({ ref: dragScroll.ref, offset: 320 })
+              }
             >
               <ChevronRight className='h-5 w-5' />
             </Button>
