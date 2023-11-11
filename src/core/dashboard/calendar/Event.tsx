@@ -205,8 +205,7 @@ function Menu({ eventId, className }: { eventId: string; className?: string }) {
   const { mutateAsync: deleteEvent, isLoading: isDeleteLoading } =
     api.event.delete.useMutation({
       onSuccess: async () => {
-        await utils.event.getCalendarData.invalidate();
-        await utils.event.fromTo.invalidate();
+        await utils.event.invalidate();
       },
     });
 
