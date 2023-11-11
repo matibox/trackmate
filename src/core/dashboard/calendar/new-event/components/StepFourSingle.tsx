@@ -171,7 +171,7 @@ export default function StepFourSingle() {
       }),
     onSuccess: async () => {
       await router.push('/calendar?message=createdEvent');
-      await utils.event.getCalendarData.invalidate();
+      await utils.event.invalidate();
       setSheetOpened(false);
       reset();
     },
