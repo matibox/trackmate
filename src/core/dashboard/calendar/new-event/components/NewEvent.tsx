@@ -20,11 +20,11 @@ export default function NewEvent() {
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
-      <SheetTrigger asChild>
+      <SheetTrigger asChild className='lg:hidden'>
         <Button
           variant='fab'
           size='fab'
-          className='absolute bottom-24 right-4'
+          className='fixed bottom-24 right-4'
           aria-label='Create event'
         >
           <CalendarPlusIcon />

@@ -90,5 +90,55 @@ export const eventRouter = createTRPCRouter({
         select: { start: true },
       });
     }),
-  // get event/session data
+  fromTo: protectedProcedure
+    .input(z.object({ from: z.date(), to: z.date() }))
+    .query(async ({ ctx, input }) => {
+      const { from, to } = input;
+
+      return await ctx.prisma.eventSession.findMany({
+        where: {
+          event: {
+            roster: { members: { some: { userId: ctx.session.user.id } } },
+          },
+          start: { gte: from, lte: to },
+        },
+        orderBy: { start: 'asc' },
+        select: {
+          event: {
+            select: {
+              id: true,
+              name: true,
+              track: true,
+              car: true,
+              sessions: {
+                orderBy: { start: 'asc' },
+                select: {
+                  id: true,
+                  type: true,
+                  start: true,
+                  end: true,
+                  drivers: {
+                    select: {
+                      id: true,
+                      image: true,
+                      firstName: true,
+                      lastName: true,
+                      username: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+          id: true,
+          start: true,
+        },
+      });
+    }),
+  delete: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { id } = input;
+      return await ctx.prisma.event.delete({ where: { id } });
+    }),
 });

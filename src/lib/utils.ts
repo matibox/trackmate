@@ -6,15 +6,21 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function groupBy<T>(arr: T[], fn: (item: T) => string | number) {
-  return arr.reduce<Record<string, T[]>>((prev, curr) => {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const groupKey = fn(curr);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    const group = prev[groupKey] || [];
-    group.push(curr);
-    return { ...prev, [groupKey]: group };
-  }, {});
+export function groupBy<T, K extends string | number>(
+  array: T[],
+  property: (item: T) => K
+): Record<string, T[]> {
+  return array.reduce((acc, item) => {
+    const key = property(item).toString();
+
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+
+    (acc[key] as T[]).push(item);
+
+    return acc;
+  }, {} as Record<string, T[]>);
 }
 
 export type ReplaceAll<
@@ -72,8 +78,13 @@ export function getCalendarRowStyles({
       ? 'right'
       : 'left';
 
-  const offset = `calc(${counter * 37}px + ${counter * 0.75}rem)`;
-  const width = `calc(${(7 - counter) * 37}px + ${(6 - counter) * 0.75}rem)`;
+  const multiplicator =
+    typeof window !== 'undefined' && window.innerWidth > 1024 ? 45 : 37;
+
+  const offset = `calc(${counter * multiplicator}px + ${counter * 0.75}rem)`;
+  const width = `calc(${(7 - counter) * multiplicator}px + ${
+    (6 - counter) * 0.75
+  }rem)`;
 
   return {
     [direction]: offset,
