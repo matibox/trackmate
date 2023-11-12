@@ -64,6 +64,7 @@ export const teamRouter = createTRPCRouter({
                       username: true,
                       firstName: true,
                       lastName: true,
+                      image: true,
                     },
                   },
                 },
