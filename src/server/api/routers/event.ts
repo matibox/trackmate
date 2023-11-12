@@ -63,14 +63,16 @@ export const eventRouter = createTRPCRouter({
               : 'driverId' in session
               ? [session.driverId]
               : [];
-          if (ids.length === 0) continue;
 
           await ctx.prisma.eventSession.create({
             data: {
               ...getSessionTimespan({ session, raceDate: date }),
               type: session.type,
               event: { connect: { id: event.id } },
-              drivers: { connect: ids.map(id => ({ id })) },
+              drivers:
+                ids.length === 0
+                  ? undefined
+                  : { connect: ids.map(id => ({ id })) },
             },
           });
         }
