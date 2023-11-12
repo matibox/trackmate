@@ -37,6 +37,37 @@ const MyApp: AppType<{ session: Session | null }> = ({
             rel: 'icon',
             href: '/favicon.ico',
           },
+          {
+            rel: 'manifest',
+            href: '/manifest.json',
+          },
+        ]}
+        themeColor='#020617'
+        additionalMetaTags={[
+          {
+            name: 'application-name',
+            content: 'Trackmate',
+          },
+          {
+            name: 'apple-mobile-web-app-capable',
+            content: 'yes',
+          },
+          {
+            name: 'apple-mobile-web-app-status-bar-style',
+            content: 'default',
+          },
+          {
+            name: 'apple-mobile-web-app-title',
+            content: 'Trackmate',
+          },
+          {
+            name: 'format-detection',
+            content: 'telephone=no',
+          },
+          {
+            name: 'mobile-web-app-capable',
+            content: 'yes',
+          },
         ]}
       />
       <div className='min-h-[100dvh] bg-slate-950 text-slate-50'>
