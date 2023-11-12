@@ -64,6 +64,7 @@ export default function EventList() {
             <Button
               variant='ghost'
               className='h-8 w-8 p-0'
+              aria-label='Scroll left'
               onClick={() =>
                 scrollEventList({ ref: dragScroll.ref, offset: -320 })
               }
@@ -137,6 +138,7 @@ export default function EventList() {
             <Button
               variant='ghost'
               className='h-8 w-8 p-0'
+              aria-label='Scroll right'
               onClick={() =>
                 scrollEventList({ ref: dragScroll.ref, offset: 320 })
               }
