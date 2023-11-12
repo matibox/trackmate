@@ -53,6 +53,7 @@ export default function Event({
   session: RouterOutputs['event']['fromTo'][number];
 }) {
   const [isOpened, setIsOpened] = useState(false);
+
   const currentDay = useCalendar(s => s.currentDay);
 
   const nextSessionIdx = useMemo(() => {
@@ -68,6 +69,14 @@ export default function Event({
       s => dayjs(s.start).date() === dayjs(session.start).date()
     );
   }, [session.event.sessions, session.start]);
+
+  const defaultExpandedSessionId = useMemo(
+    () =>
+      sessionOverviews.find(s =>
+        dayjs().isBetween(dayjs(s.start), dayjs(s.end))
+      )?.id ?? sessionOverviews[0]?.id,
+    [sessionOverviews]
+  );
 
   return (
     <>
@@ -116,7 +125,7 @@ export default function Event({
             <Accordion
               type='single'
               collapsible
-              defaultValue={sessionOverviews[0]?.id}
+              defaultValue={defaultExpandedSessionId}
             >
               {sessionOverviews.map(sessionOverview => {
                 const sessionsOfType = sessionOverviews.filter(
@@ -174,7 +183,7 @@ export default function Event({
           <Accordion
             type='single'
             collapsible
-            defaultValue={sessionOverviews[0]?.id}
+            defaultValue={defaultExpandedSessionId}
           >
             {sessionOverviews.map(sessionOverview => {
               const sessionsOfType = sessionOverviews.filter(
@@ -315,14 +324,19 @@ function SessionDetails({
     start,
     end,
     drivers,
-    event: { car, track },
+    event: { car, track, sessions },
   },
   sessionTypeNumber,
 }: {
   session: SessionDetails;
   sessionTypeNumber: number;
 }) {
-  const status = useSessionStatus({ session: { start, end } });
+  const status = useMemo(() => {
+    if (dayjs().isBetween(dayjs(start), dayjs(end))) return 'running';
+    const nextSession = sessions.find(s => dayjs(s.start).isAfter(dayjs()));
+    if (!nextSession) return 'finished';
+    return nextSession.id === id ? 'next' : 'finished';
+  }, [end, start, sessions, id]);
 
   return (
     <AccordionItem
@@ -334,13 +348,13 @@ function SessionDetails({
         <span className='group-hover:underline'>
           {capitalize(type)} {sessionTypeNumber === 0 ? '' : sessionTypeNumber}
         </span>
-        {status === 'running' || status === 'upcoming' ? (
+        {status === 'running' || status === 'next' ? (
           <div
             className={cn(
               'ml-1 flex items-center rounded-md px-2 py-1 text-xs font-semibold uppercase leading-none tracking-wide transition',
               {
                 'bg-sky-700 text-slate-50': status === 'running',
-                'bg-slate-800 text-slate-200': status === 'upcoming',
+                'bg-slate-800 text-slate-200': status === 'next',
               }
             )}
           >
@@ -348,7 +362,8 @@ function SessionDetails({
           </div>
         ) : null}
         <span className='ml-auto text-sm font-normal leading-none'>
-          {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
+          {dayjs(start).format('HH:mm')}
+          {end ? ` - ${dayjs(end).format('HH:mm')}` : ''}
         </span>
       </AccordionTrigger>
       <AccordionContent>
@@ -356,17 +371,22 @@ function SessionDetails({
           <div className='flex items-center gap-1.5'>
             <ClockIcon className='h-[18px] w-[18px] text-slate-300' />
             <span className='leading-none'>
-              {dayjs(start).format('HH:mm')} - {dayjs(end).format('HH:mm')}
+              {dayjs(start).format('HH:mm')}
+              {end ? ` - ${dayjs(end).format('HH:mm')}` : ''}
             </span>
           </div>
-          <div className='flex items-center gap-1.5'>
-            <CarIcon className='h-[18px] w-[18px] text-slate-300' />
-            <span className='leading-none'>{car}</span>
-          </div>
-          <div className='flex items-center gap-1.5'>
-            <MapPinIcon className='h-[18px] w-[18px] text-slate-300' />
-            <span className='leading-none'>{track}</span>
-          </div>
+          {type !== 'briefing' ? (
+            <>
+              <div className='flex items-center gap-1.5'>
+                <CarIcon className='h-[18px] w-[18px] text-slate-300' />
+                <span className='leading-none'>{car}</span>
+              </div>
+              <div className='flex items-center gap-1.5'>
+                <MapPinIcon className='h-[18px] w-[18px] text-slate-300' />
+                <span className='leading-none'>{track}</span>
+              </div>
+            </>
+          ) : null}
           {/* < 2xl drivers */}
           <div className='2xl:hidden'>
             {drivers.length > 0 ? (
