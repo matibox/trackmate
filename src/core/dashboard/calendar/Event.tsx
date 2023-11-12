@@ -388,52 +388,54 @@ function SessionDetails({
             </>
           ) : null}
           {/* < 2xl drivers */}
-          <div className='2xl:hidden'>
-            {drivers.length > 0 ? (
-              <div className='flex items-center gap-1.5'>
-                {drivers.length > 1 ? (
-                  <UsersIcon className='h-[18px] w-[18px] text-slate-300' />
-                ) : (
-                  <UserIcon className='h-[18px] w-[18px] text-slate-300' />
-                )}
-                <span className='leading-none'>
-                  {drivers
-                    .map(
-                      d =>
-                        `${d.firstName?.charAt(0).toUpperCase() ?? ''}.
+          {drivers.length > 0 ? (
+            <>
+              <div className='2xl:hidden'>
+                <div className='flex items-center gap-1.5'>
+                  {drivers.length > 1 ? (
+                    <UsersIcon className='h-[18px] w-[18px] text-slate-300' />
+                  ) : (
+                    <UserIcon className='h-[18px] w-[18px] text-slate-300' />
+                  )}
+                  <span className='leading-none'>
+                    {drivers
+                      .map(
+                        d =>
+                          `${d.firstName?.charAt(0).toUpperCase() ?? ''}.
                     ${d.lastName ?? ''}`
-                    )
-                    .join(', ')}
-                </span>
+                      )
+                      .join(', ')}
+                  </span>
+                </div>
               </div>
-            ) : null}
-          </div>
-          {/* 2xl drivers */}
-          <div className='hidden 2xl:mt-1 2xl:flex 2xl:items-center 2xl:gap-1.5'>
-            <span className='text-sm font-medium'>Drivers</span>
-          </div>
-          <div className='hidden 2xl:flex 2xl:flex-wrap 2xl:gap-2'>
-            {drivers.map(d => (
-              <div
-                key={d.id}
-                className='flex basis-[calc(50%_-_0.5rem)] flex-col items-center gap-2 rounded-md border border-slate-800 bg-gradient-to-tr from-sky-900/20 to-slate-800/30 px-4 py-2'
-              >
-                <Avatar>
-                  <AvatarImage
-                    src={d.image ?? ''}
-                    alt={`@${d.username ?? ''}`}
-                  />
-                  <AvatarFallback>
-                    {d.firstName?.charAt(0).toUpperCase()}
-                    {d.lastName?.charAt(0).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <Button variant='link' className='h-auto w-auto p-0'>
-                  {d.firstName?.charAt(0).toUpperCase()}. {d.lastName}
-                </Button>
+              {/* 2xl drivers */}
+              <div className='hidden 2xl:mt-1 2xl:flex 2xl:items-center 2xl:gap-1.5'>
+                <span className='text-sm font-medium'>Drivers</span>
               </div>
-            ))}
-          </div>
+              <div className='hidden 2xl:flex 2xl:flex-wrap 2xl:gap-2'>
+                {drivers.map(d => (
+                  <div
+                    key={d.id}
+                    className='flex basis-[calc(50%_-_0.5rem)] flex-col items-center gap-2 rounded-md border border-slate-800 bg-gradient-to-tr from-sky-900/20 to-slate-800/30 px-4 py-2'
+                  >
+                    <Avatar>
+                      <AvatarImage
+                        src={d.image ?? ''}
+                        alt={`@${d.username ?? ''}`}
+                      />
+                      <AvatarFallback>
+                        {d.firstName?.charAt(0).toUpperCase()}
+                        {d.lastName?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <Button variant='link' className='h-auto w-auto p-0'>
+                      {d.firstName?.charAt(0).toUpperCase()}. {d.lastName}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : null}
         </div>
       </AccordionContent>
     </AccordionItem>
