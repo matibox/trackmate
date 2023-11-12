@@ -56,9 +56,11 @@ export default function Event({
   const currentDay = useCalendar(s => s.currentDay);
 
   const nextSessionIdx = useMemo(() => {
-    return session.event.sessions.length <= 2
-      ? 0
-      : session.event.sessions.findIndex(s => dayjs().isBefore(dayjs(s.start)));
+    const sessions = session.event.sessions;
+    if (sessions.length <= 2) return 0;
+    const idx = sessions.findIndex(s => dayjs().isBefore(dayjs(s.start)));
+    if (idx <= 2) return 0;
+    return idx;
   }, [session.event.sessions]);
 
   const sessionOverviews = useMemo(() => {
@@ -95,13 +97,15 @@ export default function Event({
           </CollapsibleTrigger>
           {!isOpened ? (
             <div className='flex flex-col items-end gap-0.5'>
-              {sessionOverviews.slice(nextSessionIdx).map(session => (
-                <SessionOverview
-                  key={`s-${session.id}`}
-                  session={session}
-                  length={sessionOverviews.length}
-                />
-              ))}
+              {sessionOverviews
+                .slice(nextSessionIdx, nextSessionIdx + 2)
+                .map(session => (
+                  <SessionOverview
+                    key={`s-${session.id}`}
+                    session={session}
+                    length={sessionOverviews.length}
+                  />
+                ))}
             </div>
           ) : (
             <Menu eventId={session.event.id} />
