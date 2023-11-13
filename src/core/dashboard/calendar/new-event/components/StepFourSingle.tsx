@@ -225,6 +225,9 @@ export default function StepFourSingle() {
       driverIds: [],
       start: '',
       end: '',
+      inGameTime: '',
+      serverName: '',
+      serverPassword: '',
     },
   });
 

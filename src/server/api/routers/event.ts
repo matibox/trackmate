@@ -2,7 +2,7 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { stepTwoSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepTwoSingle';
 import { stepThreeSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepThreeSingle';
 import { stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
-import { type ReplaceAll } from '~/lib/utils';
+import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { getSessionTimespan } from '../utils/utils';
 
@@ -73,6 +73,15 @@ export const eventRouter = createTRPCRouter({
                 ids.length === 0
                   ? undefined
                   : { connect: ids.map(id => ({ id })) },
+              ...(session.type !== 'briefing'
+                ? {
+                    inGameTime: session.inGameTime
+                      ? timeStringToDate(session.inGameTime).toDate()
+                      : undefined,
+                    serverName: session.serverName,
+                    serverPassword: session.serverPassword,
+                  }
+                : {}),
             },
           });
         }
