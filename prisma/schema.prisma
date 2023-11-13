@@ -160,12 +160,15 @@ model Event {
 }
 
 model EventSession {
-  id      String           @id @default(cuid())
-  type    EventSessionType
-  start   DateTime
-  end     DateTime?
-  event   Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId String
+  id             String           @id @default(cuid())
+  type           EventSessionType
+  start          DateTime
+  end            DateTime?
+  inGameTime     DateTime?
+  serverName     String?
+  serverPassword String?
+  event          Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId        String
 
   drivers User[]
 
