@@ -267,194 +267,196 @@ export default function StepFourSingle() {
         </SheetDescription>
       </SheetHeader>
       <div className='grid justify-center gap-4 py-8 text-slate-50'>
-        <Form {...form}>
-          <form id='main-form' onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name='sessions'
-              render={({ field }) => (
-                <FormItem>
-                  <div className='flex flex-col gap-3.5 p-px'>
-                    {field.value
-                      .sort((a, b) => {
-                        const startA = timeStringToDate(
-                          a.start,
-                          'customDay' in a
-                            ? dayjs(a.customDay)
-                            : dayjs(stepTwoSingle?.date)
-                        );
-                        const startB = timeStringToDate(
-                          b.start,
-                          'customDay' in b
-                            ? dayjs(b.customDay)
-                            : dayjs(stepTwoSingle?.date)
-                        );
+        <ScrollArea className='max-h-[60vh]'>
+          <Form {...form}>
+            <form id='main-form' onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name='sessions'
+                render={({ field }) => (
+                  <FormItem>
+                    <div className='flex flex-col gap-3.5 p-px'>
+                      {field.value
+                        .sort((a, b) => {
+                          const startA = timeStringToDate(
+                            a.start,
+                            'customDay' in a
+                              ? dayjs(a.customDay)
+                              : dayjs(stepTwoSingle?.date)
+                          );
+                          const startB = timeStringToDate(
+                            b.start,
+                            'customDay' in b
+                              ? dayjs(b.customDay)
+                              : dayjs(stepTwoSingle?.date)
+                          );
 
-                        if (startA.isBefore(startB)) return -1;
-                        if (startA.isAfter(startB)) return 1;
-                        return 0;
-                      })
-                      .map(session => {
-                        const day = dayjs(
-                          'customDay' in session
-                            ? session.customDay
-                            : stepTwoSingle?.date
-                        );
-                        let date = day.format('D MMM, dddd');
+                          if (startA.isBefore(startB)) return -1;
+                          if (startA.isAfter(startB)) return 1;
+                          return 0;
+                        })
+                        .map(session => {
+                          const day = dayjs(
+                            'customDay' in session
+                              ? session.customDay
+                              : stepTwoSingle?.date
+                          );
+                          let date = day.format('D MMM, dddd');
 
-                        if ('endsNextDay' in session && session.endsNextDay) {
-                          const nextDay = day.add(1, 'day');
+                          if ('endsNextDay' in session && session.endsNextDay) {
+                            const nextDay = day.add(1, 'day');
 
-                          const nextDayFormat = (
-                            day1: dayjs.Dayjs,
-                            day2: dayjs.Dayjs,
-                            baseTemplate: string,
-                            sameTemplate: string
-                          ) => {
-                            return day1.format(sameTemplate) ===
-                              day2.format(sameTemplate)
-                              ? day1.format(baseTemplate)
-                              : `${day1.format(sameTemplate)}/${day2.format(
-                                  sameTemplate
-                                )}`;
-                          };
+                            const nextDayFormat = (
+                              day1: dayjs.Dayjs,
+                              day2: dayjs.Dayjs,
+                              baseTemplate: string,
+                              sameTemplate: string
+                            ) => {
+                              return day1.format(sameTemplate) ===
+                                day2.format(sameTemplate)
+                                ? day1.format(baseTemplate)
+                                : `${day1.format(sameTemplate)}/${day2.format(
+                                    sameTemplate
+                                  )}`;
+                            };
 
-                          date = `${day.date()} - ${nextDay.date()} ${nextDayFormat(
-                            day,
-                            nextDay,
-                            'MMMM',
-                            'MMM'
-                          )}, ${nextDayFormat(day, nextDay, 'dddd', 'ddd')}`;
-                        }
+                            date = `${day.date()} - ${nextDay.date()} ${nextDayFormat(
+                              day,
+                              nextDay,
+                              'MMMM',
+                              'MMM'
+                            )}, ${nextDayFormat(day, nextDay, 'dddd', 'ddd')}`;
+                          }
 
-                        const sessionsOfType = field.value.filter(
-                          s => s.type === session.type
-                        );
-                        const sessionTypeNumber =
-                          sessionsOfType.length > 1
-                            ? sessionsOfType.findIndex(
-                                s => s.id === session.id
-                              ) + 1
-                            : 0;
+                          const sessionsOfType = field.value.filter(
+                            s => s.type === session.type
+                          );
+                          const sessionTypeNumber =
+                            sessionsOfType.length > 1
+                              ? sessionsOfType.findIndex(
+                                  s => s.id === session.id
+                                ) + 1
+                              : 0;
 
-                        const ids =
-                          'driverIds' in session
-                            ? session.driverIds
-                            : 'driverId' in session
-                            ? [session.driverId]
-                            : [];
+                          const ids =
+                            'driverIds' in session
+                              ? session.driverIds
+                              : 'driverId' in session
+                              ? [session.driverId]
+                              : [];
 
-                        const drivers = driversQuery.data
-                          ? driversQuery.data.filter(d => ids.includes(d.id))
-                          : undefined;
+                          const drivers = driversQuery.data
+                            ? driversQuery.data.filter(d => ids.includes(d.id))
+                            : undefined;
 
-                        return (
-                          <div
-                            key={session.id}
-                            className='flex w-full flex-col items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
-                          >
-                            <div className='flex w-full flex-col gap-3'>
-                              <div className='flex items-center justify-between'>
-                                <div className='flex flex-col gap-1.5'>
-                                  <span className='font-medium leading-none'>
-                                    {capitalize(session.type)}{' '}
-                                    {sessionTypeNumber === 0
-                                      ? ''
-                                      : sessionTypeNumber}
-                                  </span>
-                                  <span className='text-sm leading-none text-slate-400'>
-                                    {date}
-                                  </span>
-                                  <span className='text-sm leading-none text-slate-400'>
-                                    {session.start}{' '}
-                                    {'end' in session
-                                      ? ` - ${session.end}`
-                                      : ''}
-                                  </span>
+                          return (
+                            <div
+                              key={session.id}
+                              className='flex w-full flex-col items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
+                            >
+                              <div className='flex w-full flex-col gap-3'>
+                                <div className='flex items-center justify-between'>
+                                  <div className='flex flex-col gap-1.5'>
+                                    <span className='font-medium leading-none'>
+                                      {capitalize(session.type)}{' '}
+                                      {sessionTypeNumber === 0
+                                        ? ''
+                                        : sessionTypeNumber}
+                                    </span>
+                                    <span className='text-sm leading-none text-slate-400'>
+                                      {date}
+                                    </span>
+                                    <span className='text-sm leading-none text-slate-400'>
+                                      {session.start}{' '}
+                                      {'end' in session
+                                        ? ` - ${session.end}`
+                                        : ''}
+                                    </span>
+                                  </div>
+                                  <TooltipProvider>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          variant='ghost'
+                                          size='sm'
+                                          aria-label='Remove session'
+                                          onClick={() => {
+                                            const prev =
+                                              form.getValues('sessions');
+                                            form.setValue(
+                                              'sessions',
+                                              prev.filter(
+                                                s => s.id !== session.id
+                                              )
+                                            );
+                                          }}
+                                          disabled={createEvent.isLoading}
+                                        >
+                                          <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <p>
+                                          Remove {session.type}{' '}
+                                          {sessionTypeNumber === 0
+                                            ? ''
+                                            : sessionTypeNumber}
+                                        </p>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
                                 </div>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Button
-                                        variant='ghost'
-                                        size='sm'
-                                        aria-label='Remove session'
-                                        onClick={() => {
-                                          const prev =
-                                            form.getValues('sessions');
-                                          form.setValue(
-                                            'sessions',
-                                            prev.filter(
-                                              s => s.id !== session.id
-                                            )
-                                          );
-                                        }}
-                                        disabled={createEvent.isLoading}
-                                      >
-                                        <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
-                                      </Button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>
-                                        Remove {session.type}{' '}
-                                        {sessionTypeNumber === 0
-                                          ? ''
-                                          : sessionTypeNumber}
-                                      </p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                              <Separator />
-                              <div className='flex flex-col gap-1.5'>
-                                {session.type !== 'briefing' ? (
-                                  <>
-                                    {session.inGameTime ? (
-                                      <span className='text-sm leading-none text-slate-400'>
-                                        In-game: {session.inGameTime}
-                                      </span>
-                                    ) : null}
-                                    {session.serverName ? (
-                                      <span className='text-sm leading-none text-slate-400'>
-                                        Server: {session.serverName}
-                                      </span>
-                                    ) : null}
-                                    {session.serverPassword ? (
-                                      <span className='text-sm leading-none text-slate-400'>
-                                        Password: {session.serverPassword}
-                                      </span>
-                                    ) : null}
-                                  </>
+                                <Separator />
+                                <div className='flex flex-col gap-1.5'>
+                                  {session.type !== 'briefing' ? (
+                                    <>
+                                      {session.inGameTime ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          In-game: {session.inGameTime}
+                                        </span>
+                                      ) : null}
+                                      {session.serverName ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          Server: {session.serverName}
+                                        </span>
+                                      ) : null}
+                                      {session.serverPassword ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          Password: {session.serverPassword}
+                                        </span>
+                                      ) : null}
+                                    </>
+                                  ) : null}
+                                </div>
+                                {drivers && drivers.length > 0 ? (
+                                  <div className='flex gap-2'>
+                                    <UsersIcon className='h-4 w-4 shrink-0' />
+                                    <span className='text-sm leading-none'>
+                                      {drivers
+                                        .map(
+                                          d =>
+                                            `${
+                                              d.firstName
+                                                ?.charAt(0)
+                                                .toUpperCase() ?? ''
+                                            }. ${d.lastName ?? ''}`
+                                        )
+                                        .join(', ')}
+                                    </span>
+                                  </div>
                                 ) : null}
                               </div>
-                              {drivers && drivers.length > 0 ? (
-                                <div className='flex gap-2'>
-                                  <UsersIcon className='h-4 w-4 shrink-0' />
-                                  <span className='text-sm leading-none'>
-                                    {drivers
-                                      .map(
-                                        d =>
-                                          `${
-                                            d.firstName
-                                              ?.charAt(0)
-                                              .toUpperCase() ?? ''
-                                          }. ${d.lastName ?? ''}`
-                                      )
-                                      .join(', ')}
-                                  </span>
-                                </div>
-                              ) : null}
                             </div>
-                          </div>
-                        );
-                      })}
-                  </div>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </form>
-        </Form>
+                          );
+                        })}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </form>
+          </Form>
+        </ScrollArea>
         {/* SESSION FORM */}
         <Dialog open={sessionFormOpen} onOpenChange={setSessionFormOpen}>
           <DialogTrigger asChild>
