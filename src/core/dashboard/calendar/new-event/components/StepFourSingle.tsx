@@ -253,6 +253,9 @@ export default function StepFourSingle() {
   useEffect(() => {
     setIsDifferentDay(false);
     sessionForm.resetField('customDay');
+    sessionForm.resetField('inGameTime');
+    sessionForm.resetField('serverName');
+    sessionForm.resetField('serverPassword');
   }, [sessionType, sessionForm]);
 
   return (
