@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   CalendarIcon,
+  ChevronDown,
   Loader2Icon,
   PlusIcon,
   Trash2Icon,
@@ -66,6 +67,12 @@ import { Calendar } from '~/components/ui/Calendar';
 import Flag from '~/components/Flag';
 import { useRouter } from 'next/router';
 import { useToast } from '~/components/ui/useToast';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '~/components/ui/Collapsible';
+import { ScrollArea } from '~/components/ui/ScrollArea';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -78,6 +85,9 @@ const sessionSchema = z
           .string({ required_error: 'End time is required.' })
           .min(1, 'End time is required.'),
         customDay: z.date().optional(),
+        inGameTime: z.string().optional(),
+        serverName: z.string().optional(),
+        serverPassword: z.string().optional(),
       }),
       // BRIEFING
       z.object({
@@ -94,6 +104,9 @@ const sessionSchema = z
           .string({ required_error: 'Driver is required.' })
           .min(1, 'Driver is required.'),
         customDay: z.date().optional(),
+        inGameTime: z.string().optional(),
+        serverName: z.string().optional(),
+        serverPassword: z.string().optional(),
       }),
       // RACE
       z.object({
@@ -103,6 +116,9 @@ const sessionSchema = z
           .min(1, 'End time is required.'),
         driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
         endsNextDay: z.boolean().default(false),
+        inGameTime: z.string().optional(),
+        serverName: z.string().optional(),
+        serverPassword: z.string().optional(),
       }),
     ],
     {
@@ -224,6 +240,9 @@ export default function StepFourSingle() {
       driverIds: [],
       start: '',
       end: '',
+      inGameTime: '',
+      serverName: '',
+      serverPassword: '',
     });
     setIsDifferentDay(false);
     setSessionFormOpen(false);
@@ -403,6 +422,7 @@ export default function StepFourSingle() {
             />
           </form>
         </Form>
+        {/* SESSION FORM */}
         <Dialog open={sessionFormOpen} onOpenChange={setSessionFormOpen}>
           <DialogTrigger asChild>
             <Button
@@ -425,187 +445,31 @@ export default function StepFourSingle() {
               </DialogDescription>
             </DialogHeader>
             <Form {...sessionForm}>
-              <form onSubmit={sessionForm.handleSubmit(onSessionSubmit)}>
-                <div className='flex flex-col gap-5'>
-                  <FormField
-                    control={sessionForm.control}
-                    name='type'
-                    render={({ field }) => (
-                      <FormItem className='flex flex-col'>
-                        <FormLabel>Session type</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          value={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder='Select session type' />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent className='max-h-96'>
-                            {sessionTypes.map(type => (
-                              <SelectItem key={type} value={type}>
-                                {capitalize(type)}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {sessionType ? (
+              <form
+                onSubmit={sessionForm.handleSubmit(onSessionSubmit)}
+                className='flex flex-col gap-5'
+              >
+                <ScrollArea className='max-h-[calc(100vh_-_20rem)] md:max-h-[calc(100vh_-_15rem)]'>
+                  <div className='flex flex-col gap-5 p-1'>
                     <FormField
                       control={sessionForm.control}
-                      name='start'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Start time</FormLabel>
-                          <FormControl>
-                            <Input {...field} type='time' />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ) : null}
-                  {['practice', 'qualifying', 'race'].includes(sessionType) ? (
-                    <FormField
-                      control={sessionForm.control}
-                      name='end'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>End time</FormLabel>
-                          <FormControl>
-                            <Input {...field} type='time' />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ) : null}
-                  {sessionType === 'race' ? (
-                    <FormField
-                      control={sessionForm.control}
-                      name='endsNextDay'
-                      render={({ field }) => (
-                        <FormItem className='flex space-x-2 space-y-0'>
-                          <FormControl>
-                            <Checkbox
-                              checked={field.value}
-                              onCheckedChange={field.onChange}
-                            />
-                          </FormControl>
-                          <div className='grid gap-1.5'>
-                            <FormLabel className='!text-sm !leading-none'>
-                              Ends next day
-                            </FormLabel>
-                            <FormDescription className='!text-sm'>
-                              This option is useful i.e. in 24h races.
-                            </FormDescription>
-                          </div>
-                        </FormItem>
-                      )}
-                    />
-                  ) : null}
-                  {['briefing', 'practice', 'qualifying'].includes(
-                    sessionType
-                  ) ? (
-                    <div className='flex space-x-2'>
-                      <Checkbox
-                        id='different-day'
-                        checked={isDifferentDay}
-                        onCheckedChange={() => setIsDifferentDay(prev => !prev)}
-                      />
-                      <div className='grid gap-1.5 leading-none'>
-                        <label
-                          htmlFor='different-day'
-                          className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                        >
-                          Different day session
-                        </label>
-                        <p className='text-sm text-slate-400'>
-                          Check this if {sessionType} is on different day than
-                          race.
-                        </p>
-                      </div>
-                    </div>
-                  ) : null}
-                  {isDifferentDay ? (
-                    <FormField
-                      control={sessionForm.control}
-                      name='customDay'
-                      render={({ field }) => (
-                        <FormItem className='flex w-[278px] flex-col'>
-                          <FormLabel>Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground'
-                                  )}
-                                >
-                                  {field.value ? (
-                                    dayjs(field.value).format('MMMM DD, YYYY')
-                                  ) : (
-                                    <span>Pick a date</span>
-                                  )}
-                                  <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className='w-auto p-0'
-                              align='start'
-                            >
-                              <Calendar
-                                mode='single'
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                weekStartsOn={1}
-                                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                disabled={date => date >= stepTwoSingle!.date}
-                                initialFocus
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  ) : null}
-                  {sessionType === 'qualifying' ? (
-                    <FormField
-                      control={sessionForm.control}
-                      name='driverId'
+                      name='type'
                       render={({ field }) => (
                         <FormItem className='flex flex-col'>
-                          <FormLabel>Driver</FormLabel>
+                          <FormLabel>Session type</FormLabel>
                           <Select
                             onValueChange={field.onChange}
                             value={field.value}
                           >
                             <FormControl>
                               <SelectTrigger>
-                                <SelectValue placeholder='Select driver' />
+                                <SelectValue placeholder='Select session type' />
                               </SelectTrigger>
                             </FormControl>
                             <SelectContent className='max-h-96'>
-                              {driversQuery.data?.map(driver => (
-                                <SelectItem key={driver.id} value={driver.id}>
-                                  <div className='flex items-center gap-2'>
-                                    <Flag country={driver.profile?.country} />
-                                    <span>
-                                      {driver.firstName
-                                        ?.charAt(0)
-                                        .toUpperCase()}
-                                      {'. '}
-                                      {driver.lastName}
-                                    </span>
-                                  </div>
+                              {sessionTypes.map(type => (
+                                <SelectItem key={type} value={type}>
+                                  {capitalize(type)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -614,52 +478,270 @@ export default function StepFourSingle() {
                         </FormItem>
                       )}
                     />
-                  ) : null}
-                  {sessionType === 'race' ? (
-                    <FormField
-                      control={sessionForm.control}
-                      name='driverIds'
-                      render={({ field }) => (
-                        <FormItem className='relative flex max-h-72 flex-col overflow-y-scroll scrollbar-thin scrollbar-track-slate-950 scrollbar-thumb-slate-600 hover:scrollbar-thumb-slate-500'>
-                          <FormLabel>Drivers</FormLabel>
-                          <div className='flex flex-col gap-2 p-px'>
-                            {driversQuery.data?.map(driver => {
-                              const isActive = field.value.includes(driver.id);
-                              return (
-                                <DriverButton
-                                  key={driver.id}
-                                  driver={driver}
-                                  isActive={isActive}
-                                  onClick={() => {
-                                    const prev =
-                                      sessionForm.getValues('driverIds');
-                                    if (isActive) {
-                                      sessionForm.setValue(
-                                        'driverIds',
-                                        prev.filter(id => id !== driver.id)
-                                      );
-                                    } else {
-                                      sessionForm.setValue('driverIds', [
-                                        ...prev,
-                                        driver.id,
-                                      ]);
-                                    }
-                                  }}
+                    {sessionType ? (
+                      <FormField
+                        control={sessionForm.control}
+                        name='start'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Start time</FormLabel>
+                            <FormControl>
+                              <Input {...field} type='time' />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                    {['practice', 'qualifying', 'race'].includes(
+                      sessionType
+                    ) ? (
+                      <FormField
+                        control={sessionForm.control}
+                        name='end'
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>End time</FormLabel>
+                            <FormControl>
+                              <Input {...field} type='time' />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                    {sessionType === 'race' ? (
+                      <FormField
+                        control={sessionForm.control}
+                        name='endsNextDay'
+                        render={({ field }) => (
+                          <FormItem className='flex space-x-2 space-y-0'>
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <div className='grid gap-1.5'>
+                              <FormLabel className='!text-sm !leading-none'>
+                                Ends next day
+                              </FormLabel>
+                              <FormDescription className='!text-sm'>
+                                This option is useful i.e. in 24h races.
+                              </FormDescription>
+                            </div>
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                    {['briefing', 'practice', 'qualifying'].includes(
+                      sessionType
+                    ) ? (
+                      <div className='flex space-x-2'>
+                        <Checkbox
+                          id='different-day'
+                          checked={isDifferentDay}
+                          onCheckedChange={() =>
+                            setIsDifferentDay(prev => !prev)
+                          }
+                        />
+                        <div className='grid gap-1.5 leading-none'>
+                          <label
+                            htmlFor='different-day'
+                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+                          >
+                            Different day session
+                          </label>
+                          <p className='text-sm text-slate-400'>
+                            Check this if {sessionType} is on different day than
+                            race.
+                          </p>
+                        </div>
+                      </div>
+                    ) : null}
+                    {isDifferentDay ? (
+                      <FormField
+                        control={sessionForm.control}
+                        name='customDay'
+                        render={({ field }) => (
+                          <FormItem className='flex w-[278px] flex-col'>
+                            <FormLabel>Date</FormLabel>
+                            <Popover>
+                              <PopoverTrigger asChild>
+                                <FormControl>
+                                  <Button
+                                    variant={'outline'}
+                                    className={cn(
+                                      'pl-3 text-left font-normal',
+                                      !field.value && 'text-muted-foreground'
+                                    )}
+                                  >
+                                    {field.value ? (
+                                      dayjs(field.value).format('MMMM DD, YYYY')
+                                    ) : (
+                                      <span>Pick a date</span>
+                                    )}
+                                    <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                                  </Button>
+                                </FormControl>
+                              </PopoverTrigger>
+                              <PopoverContent
+                                className='w-auto p-0'
+                                align='start'
+                              >
+                                <Calendar
+                                  mode='single'
+                                  selected={field.value}
+                                  onSelect={field.onChange}
+                                  weekStartsOn={1}
+                                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                                  disabled={date => date >= stepTwoSingle!.date}
+                                  initialFocus
                                 />
-                              );
-                            })}
-                          </div>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                              </PopoverContent>
+                            </Popover>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                    {sessionType === 'qualifying' ? (
+                      <FormField
+                        control={sessionForm.control}
+                        name='driverId'
+                        render={({ field }) => (
+                          <FormItem className='flex flex-col'>
+                            <FormLabel>Driver</FormLabel>
+                            <Select
+                              onValueChange={field.onChange}
+                              value={field.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder='Select driver' />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent className='max-h-96'>
+                                {driversQuery.data?.map(driver => (
+                                  <SelectItem key={driver.id} value={driver.id}>
+                                    <div className='flex items-center gap-2'>
+                                      <Flag country={driver.profile?.country} />
+                                      <span>
+                                        {driver.firstName
+                                          ?.charAt(0)
+                                          .toUpperCase()}
+                                        {'. '}
+                                        {driver.lastName}
+                                      </span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                    {sessionType === 'race' ? (
+                      <FormField
+                        control={sessionForm.control}
+                        name='driverIds'
+                        render={({ field }) => (
+                          <FormItem className='relative flex max-h-72 flex-col overflow-y-scroll scrollbar-thin scrollbar-track-slate-950 scrollbar-thumb-slate-600 hover:scrollbar-thumb-slate-500'>
+                            <FormLabel>Drivers</FormLabel>
+                            <div className='flex flex-col gap-2 p-px'>
+                              {driversQuery.data?.map(driver => {
+                                const isActive = field.value.includes(
+                                  driver.id
+                                );
+                                return (
+                                  <DriverButton
+                                    key={driver.id}
+                                    driver={driver}
+                                    isActive={isActive}
+                                    onClick={() => {
+                                      const prev =
+                                        sessionForm.getValues('driverIds');
+                                      if (isActive) {
+                                        sessionForm.setValue(
+                                          'driverIds',
+                                          prev.filter(id => id !== driver.id)
+                                        );
+                                      } else {
+                                        sessionForm.setValue('driverIds', [
+                                          ...prev,
+                                          driver.id,
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                );
+                              })}
+                            </div>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    ) : null}
+                  </div>
+                  {['practice', 'qualifying', 'race'].includes(sessionType) ? (
+                    <Collapsible className='mt-5'>
+                      <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                        <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                        <span className='text-sm font-medium'>
+                          Optional information
+                        </span>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent className='mt-2 flex flex-col gap-5 p-1'>
+                        <FormField
+                          control={sessionForm.control}
+                          name='inGameTime'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>In-game time</FormLabel>
+                              <FormControl>
+                                <Input {...field} type='time' />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={sessionForm.control}
+                          name='serverName'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Server name</FormLabel>
+                              <FormControl>
+                                <Input {...field} type='text' />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={sessionForm.control}
+                          name='serverPassword'
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Server password</FormLabel>
+                              <FormControl>
+                                <Input {...field} type='text' />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </CollapsibleContent>
+                    </Collapsible>
                   ) : null}
-                  <DialogFooter>
-                    <Button type='submit' disabled={createEvent.isLoading}>
-                      Create
-                    </Button>
-                  </DialogFooter>
-                </div>
+                </ScrollArea>
+                <DialogFooter>
+                  <Button type='submit' disabled={createEvent.isLoading}>
+                    Create
+                  </Button>
+                </DialogFooter>
               </form>
             </Form>
           </DialogContent>
