@@ -73,6 +73,7 @@ import {
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
 import { ScrollArea } from '~/components/ui/ScrollArea';
+import { Separator } from '~/components/ui/Separator';
 
 const sessionSchema = z
   .discriminatedUnion(
@@ -347,23 +348,81 @@ export default function StepFourSingle() {
                         return (
                           <div
                             key={session.id}
-                            className='flex w-full items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
+                            className='flex w-full flex-col items-center justify-between rounded-md bg-slate-950 px-3.5 py-3 ring-1 ring-slate-800'
                           >
-                            <div className='flex flex-col gap-3'>
+                            <div className='flex w-full flex-col gap-3'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex flex-col gap-1.5'>
+                                  <span className='font-medium leading-none'>
+                                    {capitalize(session.type)}{' '}
+                                    {sessionTypeNumber === 0
+                                      ? ''
+                                      : sessionTypeNumber}
+                                  </span>
+                                  <span className='text-sm leading-none text-slate-400'>
+                                    {date}
+                                  </span>
+                                  <span className='text-sm leading-none text-slate-400'>
+                                    {session.start}{' '}
+                                    {'end' in session
+                                      ? ` - ${session.end}`
+                                      : ''}
+                                  </span>
+                                </div>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Button
+                                        variant='ghost'
+                                        size='sm'
+                                        aria-label='Remove session'
+                                        onClick={() => {
+                                          const prev =
+                                            form.getValues('sessions');
+                                          form.setValue(
+                                            'sessions',
+                                            prev.filter(
+                                              s => s.id !== session.id
+                                            )
+                                          );
+                                        }}
+                                        disabled={createEvent.isLoading}
+                                      >
+                                        <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
+                                      </Button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>
+                                        Remove {session.type}{' '}
+                                        {sessionTypeNumber === 0
+                                          ? ''
+                                          : sessionTypeNumber}
+                                      </p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
+                              <Separator />
                               <div className='flex flex-col gap-1.5'>
-                                <span className='font-medium leading-none'>
-                                  {capitalize(session.type)}{' '}
-                                  {sessionTypeNumber === 0
-                                    ? ''
-                                    : sessionTypeNumber}
-                                </span>
-                                <span className='text-sm leading-none text-slate-400'>
-                                  {date}
-                                </span>
-                                <span className='text-sm leading-none text-slate-400'>
-                                  {session.start}{' '}
-                                  {'end' in session ? ` - ${session.end}` : ''}
-                                </span>
+                                {session.type !== 'briefing' ? (
+                                  <>
+                                    {session.inGameTime ? (
+                                      <span className='text-sm leading-none text-slate-400'>
+                                        In-game: {session.inGameTime}
+                                      </span>
+                                    ) : null}
+                                    {session.serverName ? (
+                                      <span className='text-sm leading-none text-slate-400'>
+                                        Server: {session.serverName}
+                                      </span>
+                                    ) : null}
+                                    {session.serverPassword ? (
+                                      <span className='text-sm leading-none text-slate-400'>
+                                        Password: {session.serverPassword}
+                                      </span>
+                                    ) : null}
+                                  </>
+                                ) : null}
                               </div>
                               {drivers && drivers.length > 0 ? (
                                 <div className='flex gap-2'>
@@ -383,35 +442,6 @@ export default function StepFourSingle() {
                                 </div>
                               ) : null}
                             </div>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant='ghost'
-                                    size='sm'
-                                    aria-label='Remove session'
-                                    onClick={() => {
-                                      const prev = form.getValues('sessions');
-                                      form.setValue(
-                                        'sessions',
-                                        prev.filter(s => s.id !== session.id)
-                                      );
-                                    }}
-                                    disabled={createEvent.isLoading}
-                                  >
-                                    <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>
-                                    Remove {session.type}{' '}
-                                    {sessionTypeNumber === 0
-                                      ? ''
-                                      : sessionTypeNumber}
-                                  </p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
                           </div>
                         );
                       })}
@@ -690,7 +720,7 @@ export default function StepFourSingle() {
                       <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
                         <ChevronDown className='h-4 w-4 transition-transform duration-200' />
                         <span className='text-sm font-medium'>
-                          Optional information
+                          Server information
                         </span>
                       </CollapsibleTrigger>
                       <CollapsibleContent className='mt-2 flex flex-col gap-5 p-1'>
