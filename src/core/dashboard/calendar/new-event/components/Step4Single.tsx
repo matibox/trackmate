@@ -26,6 +26,7 @@ import { useToast } from '~/components/ui/useToast';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 import { Separator } from '~/components/ui/Separator';
 import SessionForm, { sessionSchema } from './SessionForm';
+import { useCalendar } from '../../store';
 
 export const step4SingleSchema = z.object({
   sessions: z
@@ -41,6 +42,7 @@ export default function Step4Single() {
     setSheetOpened,
     reset,
   } = useNewEvent();
+  const selectDay = useCalendar(s => s.selectDay);
 
   const { toast } = useToast();
   const router = useRouter();
@@ -57,10 +59,11 @@ export default function Step4Single() {
         title: 'An error occured',
         description: err.message,
       }),
-    onSuccess: async () => {
+    onSuccess: async date => {
       await router.push('/calendar?message=createdEvent');
       await utils.event.invalidate();
       setSheetOpened(false);
+      selectDay({ day: dayjs(date) });
       reset();
     },
   });

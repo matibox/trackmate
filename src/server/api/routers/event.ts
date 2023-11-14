@@ -99,6 +99,7 @@ export const eventRouter = createTRPCRouter({
                 : {}),
             },
           });
+          return date;
         }
       }
     }),
