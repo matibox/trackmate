@@ -167,6 +167,10 @@ model EventSession {
   inGameTime     DateTime?
   serverName     String?
   serverPassword String?
+  rainLevel      Decimal?         @db.Decimal(3, 2)
+  cloudLevel     Decimal?         @db.Decimal(3, 2)
+  randomness     Int?             @db.TinyInt
+  temperature    Int?             @db.TinyInt
   event          Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId        String
 
