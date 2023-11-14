@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { useForm } from 'react-hook-form';
 import { Button } from '~/components/ui/Button';
 import {
@@ -10,44 +9,10 @@ import {
 import { useNewEvent } from '../store/newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  CalendarIcon,
-  ChevronDown,
-  Loader2Icon,
-  PlusIcon,
-  Trash2Icon,
-  UsersIcon,
-} from 'lucide-react';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/Dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/Select';
-import { sessionTypes } from '~/lib/constants';
-import { Input } from '~/components/ui/Input';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '~/components/ui/Form';
+import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
+import { Form, FormField, FormItem, FormMessage } from '~/components/ui/Form';
 import { api } from '~/utils/api';
-import { capitalize, cn, timeStringToDate } from '~/lib/utils';
-import { useEffect, useState } from 'react';
+import { capitalize, timeStringToDate } from '~/lib/utils';
 import crypto from 'crypto';
 import {
   Tooltip,
@@ -55,109 +20,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
-import DriverButton from './DriverButton';
-import { Checkbox } from '~/components/ui/Checkbox';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/Popover';
 import dayjs from 'dayjs';
-import { Calendar } from '~/components/ui/Calendar';
-import Flag from '~/components/Flag';
 import { useRouter } from 'next/router';
 import { useToast } from '~/components/ui/useToast';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '~/components/ui/Collapsible';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 import { Separator } from '~/components/ui/Separator';
-import FormCondition from './FormCondition';
-
-const serverInfoSchema = z
-  .object({
-    inGameTime: z.string().optional(),
-    serverName: z.string().optional(),
-    serverPassword: z.string().optional(),
-  })
-  .optional();
-
-export const sessionSchema = z
-  .discriminatedUnion(
-    'type',
-    [
-      // PRACTICE
-      z.object({
-        type: z.literal('practice'),
-        end: z
-          .string({ required_error: 'End time is required.' })
-          .min(1, 'End time is required.'),
-        customDay: z.date().optional(),
-        serverInformation: serverInfoSchema,
-      }),
-      // BRIEFING
-      z.object({
-        type: z.literal('briefing'),
-        customDay: z.date().optional(),
-      }),
-      // QUALIFYING
-      z.object({
-        type: z.literal('qualifying'),
-        end: z
-          .string({ required_error: 'End time is required.' })
-          .min(1, 'End time is required.'),
-        driverId: z
-          .string({ required_error: 'Driver is required.' })
-          .min(1, 'Driver is required.'),
-        customDay: z.date().optional(),
-        serverInformation: serverInfoSchema,
-      }),
-      // RACE
-      z.object({
-        type: z.literal('race'),
-        end: z
-          .string({ required_error: 'End time is required.' })
-          .min(1, 'End time is required.'),
-        driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
-        endsNextDay: z.boolean().default(false),
-        serverInformation: serverInfoSchema,
-      }),
-    ],
-    {
-      errorMap: (issue, ctx) => {
-        if (issue.code === 'invalid_union_discriminator') {
-          return {
-            message: 'Session type is required.',
-          };
-        }
-        return { message: ctx.defaultError };
-      },
-    }
-  )
-  .and(
-    z.object({
-      start: z
-        .string({ required_error: 'Start time is required.' })
-        .min(1, 'Start time is required.'),
-    })
-  )
-  .superRefine((schema, ctx) => {
-    if (!('end' in schema) || !('endsNextDay' in schema)) return;
-
-    const start = timeStringToDate(schema.start);
-    const end = timeStringToDate(schema.end);
-
-    if (end.isBefore(start) && !schema.endsNextDay) {
-      ctx.addIssue({
-        code: 'custom',
-        fatal: true,
-        message: 'End time must be after start time.',
-        path: ['end'],
-      });
-    }
-  });
+import SessionForm, { sessionSchema } from './SessionForm';
 
 export const stepFourSingleSchema = z.object({
   sessions: z
@@ -207,64 +75,21 @@ export default function StepFourSingle() {
   async function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
     setData({ step: '4-single', data: values });
 
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const eventType = stepOne!.eventType!;
     await createEvent.mutateAsync(
       eventType === 'single'
         ? {
             eventType,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             stepTwo: stepTwoSingle!,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             stepThree: stepThreeSingle!,
             stepFour: values,
           }
         : { eventType }
     );
   }
-
-  const [sessionFormOpen, setSessionFormOpen] = useState(false);
-
-  const sessionForm = useForm<z.infer<typeof sessionSchema>>({
-    resolver: zodResolver(sessionSchema),
-    defaultValues: {
-      driverIds: [],
-      start: '',
-      end: '',
-      serverInformation: {
-        inGameTime: '',
-        serverName: '',
-        serverPassword: '',
-      },
-    },
-  });
-
-  const [isDifferentDay, setIsDifferentDay] = useState(false);
-
-  function onSessionSubmit(values: z.infer<typeof sessionSchema>) {
-    const prev = form.getValues('sessions');
-    form.setValue('sessions', [
-      ...prev,
-      { id: crypto.randomBytes(4).toString('hex'), ...values },
-    ]);
-    sessionForm.reset({
-      driverId: '',
-      driverIds: [],
-      start: '',
-      end: '',
-      serverInformation: {
-        inGameTime: '',
-        serverName: '',
-        serverPassword: '',
-      },
-    });
-    setIsDifferentDay(false);
-    setSessionFormOpen(false);
-  }
-
-  const sessionType = sessionForm.watch('type');
-  useEffect(() => {
-    setIsDifferentDay(false);
-    sessionForm.resetField('customDay');
-    sessionForm.resetField('serverInformation');
-  }, [sessionType, sessionForm]);
 
   return (
     <>
@@ -476,335 +301,16 @@ export default function StepFourSingle() {
             </form>
           </Form>
         </ScrollArea>
-        {/* SESSION FORM */}
-        <Dialog open={sessionFormOpen} onOpenChange={setSessionFormOpen}>
-          <DialogTrigger asChild>
-            <Button
-              type='button'
-              variant='secondary'
-              className='w-[278px] justify-between'
-              disabled={createEvent.isLoading}
-            >
-              New session
-              <PlusIcon className='h-4 w-4' />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className='text-slate-50 sm:max-w-[425px]'>
-            <DialogHeader>
-              <DialogTitle className='text-xl leading-none'>
-                Create a session
-              </DialogTitle>
-              <DialogDescription>
-                Insert session details here. Click create when you&apos;re done.
-              </DialogDescription>
-            </DialogHeader>
-            <Form {...sessionForm}>
-              <form
-                onSubmit={sessionForm.handleSubmit(onSessionSubmit)}
-                className='flex flex-col gap-5'
-              >
-                <ScrollArea className='max-h-[calc(100vh_-_20rem)] md:max-h-[calc(100vh_-_15rem)]'>
-                  <div className='flex flex-col gap-5 p-1'>
-                    <FormField
-                      control={sessionForm.control}
-                      name='type'
-                      render={({ field }) => (
-                        <FormItem className='flex flex-col'>
-                          <FormLabel>Session type</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder='Select session type' />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent className='max-h-96'>
-                              {sessionTypes.map(type => (
-                                <SelectItem key={type} value={type}>
-                                  {capitalize(type)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    {sessionType ? (
-                      <FormField
-                        control={sessionForm.control}
-                        name='start'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Start time</FormLabel>
-                            <FormControl>
-                              <Input {...field} type='time' />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ) : null}
-                    <FormCondition
-                      type='sessions'
-                      sessions={['practice', 'qualifying', 'race']}
-                      currentSession={sessionType}
-                    >
-                      <FormField
-                        control={sessionForm.control}
-                        name='end'
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>End time</FormLabel>
-                            <FormControl>
-                              <Input {...field} type='time' />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </FormCondition>
-                    {sessionType === 'race' ? (
-                      <FormField
-                        control={sessionForm.control}
-                        name='endsNextDay'
-                        render={({ field }) => (
-                          <FormItem className='flex space-x-2 space-y-0'>
-                            <FormControl>
-                              <Checkbox
-                                checked={field.value}
-                                onCheckedChange={field.onChange}
-                              />
-                            </FormControl>
-                            <div className='grid gap-1.5'>
-                              <FormLabel className='!text-sm !leading-none'>
-                                Ends next day
-                              </FormLabel>
-                              <FormDescription className='!text-sm'>
-                                This option is useful i.e. in 24h races.
-                              </FormDescription>
-                            </div>
-                          </FormItem>
-                        )}
-                      />
-                    ) : null}
-                    {['briefing', 'practice', 'qualifying'].includes(
-                      sessionType
-                    ) ? (
-                      <div className='flex space-x-2'>
-                        <Checkbox
-                          id='different-day'
-                          checked={isDifferentDay}
-                          onCheckedChange={() =>
-                            setIsDifferentDay(prev => !prev)
-                          }
-                        />
-                        <div className='grid gap-1.5 leading-none'>
-                          <label
-                            htmlFor='different-day'
-                            className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                          >
-                            Different day session
-                          </label>
-                          <p className='text-sm text-slate-400'>
-                            Check this if {sessionType} is on different day than
-                            race.
-                          </p>
-                        </div>
-                      </div>
-                    ) : null}
-                    {isDifferentDay ? (
-                      <FormField
-                        control={sessionForm.control}
-                        name='customDay'
-                        render={({ field }) => (
-                          <FormItem className='flex w-[278px] flex-col'>
-                            <FormLabel>Date</FormLabel>
-                            <Popover>
-                              <PopoverTrigger asChild>
-                                <FormControl>
-                                  <Button
-                                    variant={'outline'}
-                                    className={cn(
-                                      'pl-3 text-left font-normal',
-                                      !field.value && 'text-muted-foreground'
-                                    )}
-                                  >
-                                    {field.value ? (
-                                      dayjs(field.value).format('MMMM DD, YYYY')
-                                    ) : (
-                                      <span>Pick a date</span>
-                                    )}
-                                    <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                  </Button>
-                                </FormControl>
-                              </PopoverTrigger>
-                              <PopoverContent
-                                className='w-auto p-0'
-                                align='start'
-                              >
-                                <Calendar
-                                  mode='single'
-                                  selected={field.value}
-                                  onSelect={field.onChange}
-                                  weekStartsOn={1}
-                                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                                  disabled={date => date >= stepTwoSingle!.date}
-                                  initialFocus
-                                />
-                              </PopoverContent>
-                            </Popover>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ) : null}
-                    {sessionType === 'qualifying' ? (
-                      <FormField
-                        control={sessionForm.control}
-                        name='driverId'
-                        render={({ field }) => (
-                          <FormItem className='flex flex-col'>
-                            <FormLabel>Driver</FormLabel>
-                            <Select
-                              onValueChange={field.onChange}
-                              value={field.value}
-                            >
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder='Select driver' />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent className='max-h-96'>
-                                {driversQuery.data?.map(driver => (
-                                  <SelectItem key={driver.id} value={driver.id}>
-                                    <div className='flex items-center gap-2'>
-                                      <Flag country={driver.profile?.country} />
-                                      <span>
-                                        {driver.firstName
-                                          ?.charAt(0)
-                                          .toUpperCase()}
-                                        {'. '}
-                                        {driver.lastName}
-                                      </span>
-                                    </div>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ) : null}
-                    {sessionType === 'race' ? (
-                      <FormField
-                        control={sessionForm.control}
-                        name='driverIds'
-                        render={({ field }) => (
-                          <FormItem className='relative flex max-h-72 flex-col overflow-y-scroll scrollbar-thin scrollbar-track-slate-950 scrollbar-thumb-slate-600 hover:scrollbar-thumb-slate-500'>
-                            <FormLabel>Drivers</FormLabel>
-                            <div className='flex flex-col gap-2 p-px'>
-                              {driversQuery.data?.map(driver => {
-                                const isActive = field.value.includes(
-                                  driver.id
-                                );
-                                return (
-                                  <DriverButton
-                                    key={driver.id}
-                                    driver={driver}
-                                    isActive={isActive}
-                                    onClick={() => {
-                                      const prev =
-                                        sessionForm.getValues('driverIds');
-                                      if (isActive) {
-                                        sessionForm.setValue(
-                                          'driverIds',
-                                          prev.filter(id => id !== driver.id)
-                                        );
-                                      } else {
-                                        sessionForm.setValue('driverIds', [
-                                          ...prev,
-                                          driver.id,
-                                        ]);
-                                      }
-                                    }}
-                                  />
-                                );
-                              })}
-                            </div>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    ) : null}
-                  </div>
-                  {['practice', 'qualifying', 'race'].includes(sessionType) &&
-                  ['Assetto Corsa Competizione'].includes(
-                    stepTwoSingle!.game
-                  ) ? (
-                    <Collapsible className='mt-5'>
-                      <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
-                        <ChevronDown className='h-4 w-4 transition-transform duration-200' />
-                        <span className='text-sm font-medium'>
-                          Server information
-                        </span>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className='mt-2 flex flex-col gap-5 p-1'>
-                        <FormField
-                          control={sessionForm.control}
-                          name='serverInformation.inGameTime'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>In-game time</FormLabel>
-                              <FormControl>
-                                <Input {...field} type='time' />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={sessionForm.control}
-                          name='serverInformation.serverName'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Server name</FormLabel>
-                              <FormControl>
-                                <Input {...field} type='text' />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={sessionForm.control}
-                          name='serverInformation.serverPassword'
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Server password</FormLabel>
-                              <FormControl>
-                                <Input {...field} type='text' />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </CollapsibleContent>
-                    </Collapsible>
-                  ) : null}
-                </ScrollArea>
-                <DialogFooter>
-                  <Button type='submit' disabled={createEvent.isLoading}>
-                    Create
-                  </Button>
-                </DialogFooter>
-              </form>
-            </Form>
-          </DialogContent>
-        </Dialog>
+        <SessionForm
+          addSession={session => {
+            const prev = form.getValues('sessions');
+            form.setValue('sessions', [
+              ...prev,
+              { id: crypto.randomBytes(4).toString('hex'), ...session },
+            ]);
+          }}
+          loading={createEvent.isLoading}
+        />
         <SheetFooter className='flex-row justify-between sm:justify-between'>
           <Button
             type='button'

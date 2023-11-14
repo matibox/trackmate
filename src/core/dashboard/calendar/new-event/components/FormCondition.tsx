@@ -1,6 +1,6 @@
 import { type z } from 'zod';
 import { type games } from '~/lib/constants';
-import { type sessionSchema } from './StepFourSingle';
+import { type sessionSchema } from './SessionForm';
 import { useCallback, type ReactNode } from 'react';
 import { useNewEvent } from '../store/newEventStore';
 
