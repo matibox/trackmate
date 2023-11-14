@@ -272,6 +272,41 @@ export default function Step4Single() {
                                     </div>
                                   </>
                                 ) : null}
+                                {(session.type === 'qualifying' ||
+                                  session.type === 'race') &&
+                                session.weather &&
+                                Object.values(session.weather).filter(Boolean)
+                                  .length > 0 ? (
+                                  <>
+                                    <Separator />
+                                    <div className='flex flex-col gap-1.5'>
+                                      {session.weather.rainLevel ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          Rain level:{' '}
+                                          {session.weather.rainLevel}
+                                        </span>
+                                      ) : null}
+                                      {session.weather.cloudLevel ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          Cloud level:{' '}
+                                          {session.weather.cloudLevel}
+                                        </span>
+                                      ) : null}
+                                      {session.weather.randomness ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          Randomness:{' '}
+                                          {session.weather.randomness}
+                                        </span>
+                                      ) : null}
+                                      {session.weather.ambientTemp ? (
+                                        <span className='text-sm leading-none text-slate-400'>
+                                          Temperature:{' '}
+                                          {session.weather.ambientTemp}°C
+                                        </span>
+                                      ) : null}
+                                    </div>
+                                  </>
+                                ) : null}
                                 {drivers && drivers.length > 0 ? (
                                   <div className='flex gap-2'>
                                     <UsersIcon className='h-4 w-4 shrink-0' />
