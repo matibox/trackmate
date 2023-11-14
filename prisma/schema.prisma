@@ -141,7 +141,7 @@ model Roster {
   members RosterOnMember[]
   events  Event[]
 
-  @@unique([name, teamId])
+  @@unique([name, teamId, game])
   @@index([teamId])
 }
 
