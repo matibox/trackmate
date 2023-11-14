@@ -130,6 +130,9 @@ export const eventRouter = createTRPCRouter({
                   type: true,
                   start: true,
                   end: true,
+                  inGameTime: true,
+                  serverName: true,
+                  serverPassword: true,
                   drivers: {
                     select: {
                       id: true,

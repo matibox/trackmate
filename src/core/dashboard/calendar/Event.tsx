@@ -2,7 +2,9 @@ import dayjs from 'dayjs';
 import {
   CarIcon,
   ChevronDown,
+  ClipboardSignatureIcon,
   ClockIcon,
+  KeyRoundIcon,
   Loader2Icon,
   MapPinIcon,
   MenuIcon,
@@ -324,6 +326,9 @@ function SessionDetails({
     start,
     end,
     drivers,
+    inGameTime,
+    serverName,
+    serverPassword,
     event: { car, track, sessions },
   },
   sessionTypeNumber,
@@ -385,6 +390,44 @@ function SessionDetails({
                 <MapPinIcon className='h-[18px] w-[18px] text-slate-300' />
                 <span className='leading-none'>{track}</span>
               </div>
+              {inGameTime || serverName || serverPassword ? (
+                <Collapsible className='my-1'>
+                  <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                    <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                    <span className='text-sm font-medium'>
+                      Server information
+                    </span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='mt-1 flex flex-col gap-5'>
+                    <>
+                      <div className='flex flex-col gap-1.5'>
+                        {inGameTime ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ClockIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              {dayjs(inGameTime).format('HH:mm')}
+                            </span>
+                          </div>
+                        ) : null}
+                        {serverName ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ClipboardSignatureIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>{serverName}</span>
+                          </div>
+                        ) : null}
+                        {serverPassword ? (
+                          <div className='flex items-center gap-1.5'>
+                            <KeyRoundIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              {serverPassword}
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : null}
             </>
           ) : null}
           {/* < 2xl drivers */}
