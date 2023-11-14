@@ -179,7 +179,9 @@ export default function Event({
           </div>
           <div className='mx-4 h-12 w-px bg-slate-800' />
           <div className='flex flex-col'>
-            <span className='leading-none'>{session.event.name}</span>
+            <span className='leading-none'>
+              {capitalize(session.event.name)}
+            </span>
             <span className='text-sm leading-none text-slate-300'>
               {session.event.track}
             </span>
