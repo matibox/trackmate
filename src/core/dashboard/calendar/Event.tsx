@@ -4,10 +4,14 @@ import {
   ChevronDown,
   ClipboardSignatureIcon,
   ClockIcon,
+  CloudIcon,
+  CloudRainWindIcon,
   KeyRoundIcon,
   Loader2Icon,
   MapPinIcon,
   MenuIcon,
+  ShuffleIcon,
+  ThermometerIcon,
   TrashIcon,
   UserIcon,
   UsersIcon,
@@ -329,6 +333,10 @@ function SessionDetails({
     inGameTime,
     serverName,
     serverPassword,
+    cloudLevel,
+    rainLevel,
+    randomness,
+    temperature,
     event: { car, track, sessions },
   },
   sessionTypeNumber,
@@ -421,6 +429,57 @@ function SessionDetails({
                             <span className='leading-none'>
                               {serverPassword}
                             </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : null}
+            </>
+          ) : null}
+          {type === 'qualifying' || type === 'race' ? (
+            <>
+              {cloudLevel || rainLevel || temperature || randomness ? (
+                <Collapsible className='my-1'>
+                  <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                    <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                    <span className='text-sm font-medium'>
+                      Weather information
+                    </span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='mt-1 flex flex-col gap-5'>
+                    <>
+                      <div className='flex flex-col gap-1.5'>
+                        {cloudLevel ? (
+                          <div className='flex items-center gap-1.5'>
+                            <CloudIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              Clouds: {cloudLevel.toString()}
+                            </span>
+                          </div>
+                        ) : null}
+                        {rainLevel ? (
+                          <div className='flex items-center gap-1.5'>
+                            <CloudRainWindIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              Rain: {rainLevel.toString()}
+                            </span>
+                          </div>
+                        ) : null}
+                        {temperature ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ThermometerIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              {temperature}°C
+                            </span>
+                          </div>
+                        ) : null}
+                        {randomness ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ShuffleIcon className='h-[18px] w-[18px] text-slate-300' />
+                            Randomness:{' '}
+                            <span className='leading-none'>{randomness}</span>
                           </div>
                         ) : null}
                       </div>

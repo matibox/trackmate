@@ -146,6 +146,10 @@ export const eventRouter = createTRPCRouter({
                   inGameTime: true,
                   serverName: true,
                   serverPassword: true,
+                  cloudLevel: true,
+                  rainLevel: true,
+                  randomness: true,
+                  temperature: true,
                   drivers: {
                     select: {
                       id: true,
