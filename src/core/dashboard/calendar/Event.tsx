@@ -52,6 +52,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/Dialog';
 import { useCalendar } from './store';
+import { ScrollArea } from '~/components/ui/ScrollArea';
 
 export default function Event({
   session,
@@ -157,7 +158,7 @@ export default function Event({
         </CollapsibleContent>
       </Collapsible>
       {/* 2xl: */}
-      <div className='hidden 2xl:flex 2xl:h-full 2xl:w-[320px] 2xl:flex-col 2xl:gap-4 2xl:rounded-md 2xl:bg-slate-900 2xl:p-4 2xl:ring-1 2xl:ring-slate-800'>
+      <ScrollArea className='hidden 2xl:flex 2xl:h-full 2xl:w-[320px] 2xl:flex-col 2xl:gap-4 2xl:rounded-md 2xl:bg-slate-900 2xl:p-4 2xl:ring-1 2xl:ring-slate-800'>
         <div className='flex w-full items-center'>
           <div
             className={cn(
@@ -211,7 +212,7 @@ export default function Event({
             })}
           </Accordion>
         </div>
-      </div>
+      </ScrollArea>
     </>
   );
 }
