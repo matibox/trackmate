@@ -167,8 +167,6 @@ export default function SessionForm({
     },
   });
 
-  const sessionType = sessionForm.watch('type');
-
   function onSessionSubmit(values: z.infer<typeof sessionSchema>) {
     addSession(values);
     sessionForm.reset({
@@ -185,6 +183,8 @@ export default function SessionForm({
     setIsDifferentDay(false);
     setSessionFormOpen(false);
   }
+
+  const sessionType = sessionForm.watch('type');
 
   useEffect(() => {
     setIsDifferentDay(false);
@@ -282,7 +282,11 @@ export default function SessionForm({
                     )}
                   />
                 </FormCondition>
-                {sessionType === 'race' ? (
+                <FormCondition
+                  type='sessions'
+                  sessions={['race']}
+                  currentSession={sessionType}
+                >
                   <FormField
                     control={sessionForm.control}
                     name='endsNextDay'
@@ -305,10 +309,12 @@ export default function SessionForm({
                       </FormItem>
                     )}
                   />
-                ) : null}
-                {['briefing', 'practice', 'qualifying'].includes(
-                  sessionType
-                ) ? (
+                </FormCondition>
+                <FormCondition
+                  type='sessions'
+                  sessions={['briefing', 'practice', 'qualifying']}
+                  currentSession={sessionType}
+                >
                   <div className='flex space-x-2'>
                     <Checkbox
                       id='different-day'
@@ -328,7 +334,7 @@ export default function SessionForm({
                       </p>
                     </div>
                   </div>
-                ) : null}
+                </FormCondition>
                 {isDifferentDay ? (
                   <FormField
                     control={sessionForm.control}
@@ -372,7 +378,11 @@ export default function SessionForm({
                     )}
                   />
                 ) : null}
-                {sessionType === 'qualifying' ? (
+                <FormCondition
+                  type='sessions'
+                  sessions={['qualifying']}
+                  currentSession={sessionType}
+                >
                   <FormField
                     control={sessionForm.control}
                     name='driverId'
@@ -407,8 +417,12 @@ export default function SessionForm({
                       </FormItem>
                     )}
                   />
-                ) : null}
-                {sessionType === 'race' ? (
+                </FormCondition>
+                <FormCondition
+                  type='sessions'
+                  sessions={['race']}
+                  currentSession={sessionType}
+                >
                   <FormField
                     control={sessionForm.control}
                     name='driverIds'
@@ -446,10 +460,14 @@ export default function SessionForm({
                       </FormItem>
                     )}
                   />
-                ) : null}
+                </FormCondition>
               </div>
-              {['practice', 'qualifying', 'race'].includes(sessionType) &&
-              ['Assetto Corsa Competizione'].includes(stepTwoSingle!.game) ? (
+              <FormCondition
+                type='both'
+                sessions={['practice', 'qualifying', 'race']}
+                currentSession={sessionType}
+                games={['Assetto Corsa Competizione']}
+              >
                 <Collapsible className='mt-5'>
                   <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
                     <ChevronDown className='h-4 w-4 transition-transform duration-200' />
@@ -499,7 +517,7 @@ export default function SessionForm({
                     />
                   </CollapsibleContent>
                 </Collapsible>
-              ) : null}
+              </FormCondition>
             </ScrollArea>
             <DialogFooter>
               <Button type='submit' disabled={loading}>
