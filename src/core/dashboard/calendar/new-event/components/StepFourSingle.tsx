@@ -74,8 +74,17 @@ import {
 } from '~/components/ui/Collapsible';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 import { Separator } from '~/components/ui/Separator';
+import FormCondition from './FormCondition';
 
-const sessionSchema = z
+const serverInfoSchema = z
+  .object({
+    inGameTime: z.string().optional(),
+    serverName: z.string().optional(),
+    serverPassword: z.string().optional(),
+  })
+  .optional();
+
+export const sessionSchema = z
   .discriminatedUnion(
     'type',
     [
@@ -86,9 +95,7 @@ const sessionSchema = z
           .string({ required_error: 'End time is required.' })
           .min(1, 'End time is required.'),
         customDay: z.date().optional(),
-        inGameTime: z.string().optional(),
-        serverName: z.string().optional(),
-        serverPassword: z.string().optional(),
+        serverInformation: serverInfoSchema,
       }),
       // BRIEFING
       z.object({
@@ -105,9 +112,7 @@ const sessionSchema = z
           .string({ required_error: 'Driver is required.' })
           .min(1, 'Driver is required.'),
         customDay: z.date().optional(),
-        inGameTime: z.string().optional(),
-        serverName: z.string().optional(),
-        serverPassword: z.string().optional(),
+        serverInformation: serverInfoSchema,
       }),
       // RACE
       z.object({
@@ -117,9 +122,7 @@ const sessionSchema = z
           .min(1, 'End time is required.'),
         driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
         endsNextDay: z.boolean().default(false),
-        inGameTime: z.string().optional(),
-        serverName: z.string().optional(),
-        serverPassword: z.string().optional(),
+        serverInformation: serverInfoSchema,
       }),
     ],
     {
@@ -225,9 +228,11 @@ export default function StepFourSingle() {
       driverIds: [],
       start: '',
       end: '',
-      inGameTime: '',
-      serverName: '',
-      serverPassword: '',
+      serverInformation: {
+        inGameTime: '',
+        serverName: '',
+        serverPassword: '',
+      },
     },
   });
 
@@ -244,9 +249,11 @@ export default function StepFourSingle() {
       driverIds: [],
       start: '',
       end: '',
-      inGameTime: '',
-      serverName: '',
-      serverPassword: '',
+      serverInformation: {
+        inGameTime: '',
+        serverName: '',
+        serverPassword: '',
+      },
     });
     setIsDifferentDay(false);
     setSessionFormOpen(false);
@@ -256,9 +263,7 @@ export default function StepFourSingle() {
   useEffect(() => {
     setIsDifferentDay(false);
     sessionForm.resetField('customDay');
-    sessionForm.resetField('inGameTime');
-    sessionForm.resetField('serverName');
-    sessionForm.resetField('serverPassword');
+    sessionForm.resetField('serverInformation');
   }, [sessionType, sessionForm]);
 
   return (
@@ -409,28 +414,39 @@ export default function StepFourSingle() {
                                     </Tooltip>
                                   </TooltipProvider>
                                 </div>
-                                <Separator />
-                                <div className='flex flex-col gap-1.5'>
-                                  {session.type !== 'briefing' ? (
-                                    <>
-                                      {session.inGameTime ? (
+                                {session.type !== 'briefing' &&
+                                session.serverInformation &&
+                                Object.values(session.serverInformation).filter(
+                                  Boolean
+                                ).length > 0 ? (
+                                  <>
+                                    <Separator />
+                                    <div className='flex flex-col gap-1.5'>
+                                      {session.serverInformation.inGameTime ? (
                                         <span className='text-sm leading-none text-slate-400'>
-                                          In-game: {session.inGameTime}
+                                          In-game:{' '}
+                                          {session.serverInformation.inGameTime}
                                         </span>
                                       ) : null}
-                                      {session.serverName ? (
+                                      {session.serverInformation.serverName ? (
                                         <span className='text-sm leading-none text-slate-400'>
-                                          Server: {session.serverName}
+                                          Server:{' '}
+                                          {session.serverInformation.serverName}
                                         </span>
                                       ) : null}
-                                      {session.serverPassword ? (
+                                      {session.serverInformation
+                                        .serverPassword ? (
                                         <span className='text-sm leading-none text-slate-400'>
-                                          Password: {session.serverPassword}
+                                          Password:{' '}
+                                          {
+                                            session.serverInformation
+                                              .serverPassword
+                                          }
                                         </span>
                                       ) : null}
-                                    </>
-                                  ) : null}
-                                </div>
+                                    </div>
+                                  </>
+                                ) : null}
                                 {drivers && drivers.length > 0 ? (
                                   <div className='flex gap-2'>
                                     <UsersIcon className='h-4 w-4 shrink-0' />
@@ -531,9 +547,11 @@ export default function StepFourSingle() {
                         )}
                       />
                     ) : null}
-                    {['practice', 'qualifying', 'race'].includes(
-                      sessionType
-                    ) ? (
+                    <FormCondition
+                      type='sessions'
+                      sessions={['practice', 'qualifying', 'race']}
+                      currentSession={sessionType}
+                    >
                       <FormField
                         control={sessionForm.control}
                         name='end'
@@ -547,7 +565,7 @@ export default function StepFourSingle() {
                           </FormItem>
                         )}
                       />
-                    ) : null}
+                    </FormCondition>
                     {sessionType === 'race' ? (
                       <FormField
                         control={sessionForm.control}
@@ -723,7 +741,10 @@ export default function StepFourSingle() {
                       />
                     ) : null}
                   </div>
-                  {['practice', 'qualifying', 'race'].includes(sessionType) ? (
+                  {['practice', 'qualifying', 'race'].includes(sessionType) &&
+                  ['Assetto Corsa Competizione'].includes(
+                    stepTwoSingle!.game
+                  ) ? (
                     <Collapsible className='mt-5'>
                       <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
                         <ChevronDown className='h-4 w-4 transition-transform duration-200' />
@@ -734,7 +755,7 @@ export default function StepFourSingle() {
                       <CollapsibleContent className='mt-2 flex flex-col gap-5 p-1'>
                         <FormField
                           control={sessionForm.control}
-                          name='inGameTime'
+                          name='serverInformation.inGameTime'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>In-game time</FormLabel>
@@ -747,7 +768,7 @@ export default function StepFourSingle() {
                         />
                         <FormField
                           control={sessionForm.control}
-                          name='serverName'
+                          name='serverInformation.serverName'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Server name</FormLabel>
@@ -760,7 +781,7 @@ export default function StepFourSingle() {
                         />
                         <FormField
                           control={sessionForm.control}
-                          name='serverPassword'
+                          name='serverInformation.serverPassword'
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel>Server password</FormLabel>
