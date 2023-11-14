@@ -1,8 +1,8 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { stepTwoSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepTwoSingle';
-import { stepThreeSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepThreeSingle';
-import { stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
-import { type ReplaceAll } from '~/lib/utils';
+import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step2Single';
+import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step3Single';
+import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
+import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { getSessionTimespan } from '../utils/utils';
 
@@ -12,9 +12,9 @@ export const eventRouter = createTRPCRouter({
       z.discriminatedUnion('eventType', [
         z.object({
           eventType: z.literal('single'),
-          stepTwo: stepTwoSingleSchema,
-          stepThree: stepThreeSingleSchema,
-          stepFour: stepFourSingleSchema,
+          stepTwo: step2SingleSchema,
+          stepThree: step3SingleSchema,
+          stepFour: step4SingleSchema,
         }),
         z.object({
           eventType: z.literal('championship'),
@@ -73,8 +73,33 @@ export const eventRouter = createTRPCRouter({
                 ids.length === 0
                   ? undefined
                   : { connect: ids.map(id => ({ id })) },
+              ...(session.type !== 'briefing' && session.serverInformation
+                ? {
+                    inGameTime: session.serverInformation.inGameTime
+                      ? timeStringToDate(
+                          session.serverInformation.inGameTime
+                        ).toDate()
+                      : undefined,
+                    serverName: session.serverInformation.serverName,
+                    serverPassword: session.serverInformation.serverPassword,
+                  }
+                : {}),
+              ...((session.type === 'qualifying' || session.type === 'race') &&
+              session.weather
+                ? {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    rainLevel: parseFloat(session.weather.rainLevel!),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    cloudLevel: parseFloat(session.weather.cloudLevel!),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    randomness: parseInt(session.weather.randomness!),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    temperature: parseInt(session.weather.ambientTemp!),
+                  }
+                : {}),
             },
           });
+          return date;
         }
       }
     }),
@@ -119,6 +144,13 @@ export const eventRouter = createTRPCRouter({
                   type: true,
                   start: true,
                   end: true,
+                  inGameTime: true,
+                  serverName: true,
+                  serverPassword: true,
+                  cloudLevel: true,
+                  rainLevel: true,
+                  randomness: true,
+                  temperature: true,
                   drivers: {
                     select: {
                       id: true,

@@ -1,13 +1,13 @@
 import dayjs from 'dayjs';
 import { type z } from 'zod';
-import { type stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
+import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToMinutes } from '~/lib/utils';
 
 export function getSessionTimespan({
   session,
   raceDate: baseDate,
 }: {
-  session: z.infer<typeof stepFourSingleSchema>['sessions'][number];
+  session: z.infer<typeof step4SingleSchema>['sessions'][number];
   raceDate: Date;
 }) {
   const raceDate = dayjs(baseDate);

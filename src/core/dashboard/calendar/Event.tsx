@@ -2,10 +2,16 @@ import dayjs from 'dayjs';
 import {
   CarIcon,
   ChevronDown,
+  ClipboardSignatureIcon,
   ClockIcon,
+  CloudIcon,
+  CloudRainWindIcon,
+  KeyRoundIcon,
   Loader2Icon,
   MapPinIcon,
   MenuIcon,
+  ShuffleIcon,
+  ThermometerIcon,
   TrashIcon,
   UserIcon,
   UsersIcon,
@@ -46,6 +52,7 @@ import {
   DialogTrigger,
 } from '~/components/ui/Dialog';
 import { useCalendar } from './store';
+import { ScrollArea } from '~/components/ui/ScrollArea';
 
 export default function Event({
   session,
@@ -151,7 +158,7 @@ export default function Event({
         </CollapsibleContent>
       </Collapsible>
       {/* 2xl: */}
-      <div className='hidden 2xl:flex 2xl:h-full 2xl:w-[320px] 2xl:flex-col 2xl:gap-4 2xl:rounded-md 2xl:bg-slate-900 2xl:p-4 2xl:ring-1 2xl:ring-slate-800'>
+      <ScrollArea className='hidden 2xl:flex 2xl:h-full 2xl:w-[320px] 2xl:flex-col 2xl:gap-4 2xl:rounded-md 2xl:bg-slate-900 2xl:p-4 2xl:ring-1 2xl:ring-slate-800'>
         <div className='flex w-full items-center'>
           <div
             className={cn(
@@ -172,7 +179,9 @@ export default function Event({
           </div>
           <div className='mx-4 h-12 w-px bg-slate-800' />
           <div className='flex flex-col'>
-            <span className='leading-none'>{session.event.name}</span>
+            <span className='leading-none'>
+              {capitalize(session.event.name)}
+            </span>
             <span className='text-sm leading-none text-slate-300'>
               {session.event.track}
             </span>
@@ -205,7 +214,7 @@ export default function Event({
             })}
           </Accordion>
         </div>
-      </div>
+      </ScrollArea>
     </>
   );
 }
@@ -324,6 +333,13 @@ function SessionDetails({
     start,
     end,
     drivers,
+    inGameTime,
+    serverName,
+    serverPassword,
+    cloudLevel,
+    rainLevel,
+    randomness,
+    temperature,
     event: { car, track, sessions },
   },
   sessionTypeNumber,
@@ -385,6 +401,95 @@ function SessionDetails({
                 <MapPinIcon className='h-[18px] w-[18px] text-slate-300' />
                 <span className='leading-none'>{track}</span>
               </div>
+              {inGameTime || serverName || serverPassword ? (
+                <Collapsible className='my-1 first:mt-0.5 last:mb-0.5'>
+                  <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                    <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                    <span className='text-sm font-medium'>
+                      Server information
+                    </span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='mt-1 flex flex-col gap-5'>
+                    <>
+                      <div className='flex flex-col gap-1.5'>
+                        {inGameTime ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ClockIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              {dayjs(inGameTime).format('HH:mm')}
+                            </span>
+                          </div>
+                        ) : null}
+                        {serverName ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ClipboardSignatureIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>{serverName}</span>
+                          </div>
+                        ) : null}
+                        {serverPassword ? (
+                          <div className='flex items-center gap-1.5'>
+                            <KeyRoundIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              {serverPassword}
+                            </span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : null}
+            </>
+          ) : null}
+          {type === 'qualifying' || type === 'race' ? (
+            <>
+              {cloudLevel || rainLevel || temperature || randomness ? (
+                <Collapsible className='my-1 first:mt-0.5 last:mb-0.5'>
+                  <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                    <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                    <span className='text-sm font-medium'>
+                      Weather information
+                    </span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='mt-1 flex flex-col gap-5'>
+                    <>
+                      <div className='flex flex-col gap-1.5'>
+                        {cloudLevel ? (
+                          <div className='flex items-center gap-1.5'>
+                            <CloudIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              Clouds: {cloudLevel.toString()}
+                            </span>
+                          </div>
+                        ) : null}
+                        {rainLevel ? (
+                          <div className='flex items-center gap-1.5'>
+                            <CloudRainWindIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              Rain: {rainLevel.toString()}
+                            </span>
+                          </div>
+                        ) : null}
+                        {temperature ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ThermometerIcon className='h-[18px] w-[18px] text-slate-300' />
+                            <span className='leading-none'>
+                              {temperature}°C
+                            </span>
+                          </div>
+                        ) : null}
+                        {randomness ? (
+                          <div className='flex items-center gap-1.5'>
+                            <ShuffleIcon className='h-[18px] w-[18px] text-slate-300' />
+                            Randomness:{' '}
+                            <span className='leading-none'>{randomness}</span>
+                          </div>
+                        ) : null}
+                      </div>
+                    </>
+                  </CollapsibleContent>
+                </Collapsible>
+              ) : null}
             </>
           ) : null}
           {/* < 2xl drivers */}

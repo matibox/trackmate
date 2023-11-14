@@ -36,7 +36,7 @@ import { Loader2Icon } from 'lucide-react';
 import DriverButton from './DriverButton';
 import { useFirstRender } from '~/hooks/useFirstRender';
 
-export const stepThreeSingleSchema = z.object({
+export const step3SingleSchema = z.object({
   teamName: z
     .string({ required_error: 'Please select a team.' })
     .min(1, 'Please select a team.'),
@@ -46,7 +46,7 @@ export const stepThreeSingleSchema = z.object({
   driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
 });
 
-export default function StepThreeSingle() {
+export default function Step3Single() {
   const {
     setStep,
     steps: { stepTwoSingle, stepThreeSingle },
@@ -55,8 +55,8 @@ export default function StepThreeSingle() {
 
   const firstRender = useFirstRender();
 
-  const form = useForm<z.infer<typeof stepThreeSingleSchema>>({
-    resolver: zodResolver(stepThreeSingleSchema),
+  const form = useForm<z.infer<typeof step3SingleSchema>>({
+    resolver: zodResolver(step3SingleSchema),
     defaultValues: {
       teamName: stepThreeSingle?.teamName,
       rosterId: stepThreeSingle?.rosterId,
@@ -82,7 +82,7 @@ export default function StepThreeSingle() {
     return teamSelectDisabled && teamsQuery.data[0]!.rosters.length === 1;
   }, [teamSelectDisabled, teamsQuery.data]);
 
-  function onSubmit(values: z.infer<typeof stepThreeSingleSchema>) {
+  function onSubmit(values: z.infer<typeof step3SingleSchema>) {
     setData({ step: '3-single', data: values });
     setStep('4-single');
   }

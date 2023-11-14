@@ -54,7 +54,7 @@ const baseSchemaShape = z.object({
 const trackErrorMessage = 'Track is required.';
 const carErrorMessage = 'Car is required.';
 
-export const stepTwoSingleSchema = z
+export const step2SingleSchema = z
   .discriminatedUnion('game', [
     // ACC
     z.object({
@@ -79,7 +79,7 @@ export const stepTwoSingleSchema = z
   ])
   .and(baseSchemaShape);
 
-export default function StepTwoSingle() {
+export default function Step2Single() {
   const { data: session } = useSession();
   const {
     setStep,
@@ -89,8 +89,8 @@ export default function StepTwoSingle() {
 
   const firstRender = useFirstRender();
 
-  const form = useForm<z.infer<typeof stepTwoSingleSchema>>({
-    resolver: zodResolver(stepTwoSingleSchema),
+  const form = useForm<z.infer<typeof step2SingleSchema>>({
+    resolver: zodResolver(step2SingleSchema),
     defaultValues: {
       name: stepTwoSingle?.name ?? '',
       date: stepTwoSingle?.date,
@@ -114,7 +114,7 @@ export default function StepTwoSingle() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof stepTwoSingleSchema>) {
+  function onSubmit(values: z.infer<typeof step2SingleSchema>) {
     setData({ step: '2-single', data: values });
     setStep('3-single');
   }

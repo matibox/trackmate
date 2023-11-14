@@ -22,11 +22,11 @@ import { Form, FormField, FormMessage } from '~/components/ui/Form';
 import { useNewEvent } from '../store/newEventStore';
 import { api } from '~/utils/api';
 
-export const stepOneSchema = z.object({
+export const step1Schema = z.object({
   eventType: z.enum(eventTypes).nullable(),
 });
 
-export default function EventType() {
+export default function Step1() {
   const {
     setData,
     setStep,
@@ -36,14 +36,14 @@ export default function EventType() {
 
   const { data, isLoading } = api.user.isInTeamOrRoster.useQuery();
 
-  const form = useForm<z.infer<typeof stepOneSchema>>({
-    resolver: zodResolver(stepOneSchema),
+  const form = useForm<z.infer<typeof step1Schema>>({
+    resolver: zodResolver(step1Schema),
     defaultValues: {
       eventType: stepOne?.eventType ?? null,
     },
   });
 
-  function onSubmit(values: z.infer<typeof stepOneSchema>) {
+  function onSubmit(values: z.infer<typeof step1Schema>) {
     const { eventType } = values;
 
     if (!eventType) return;
