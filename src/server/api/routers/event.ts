@@ -1,7 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { stepTwoSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepTwoSingle';
-import { stepThreeSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepThreeSingle';
-import { stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
+import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step2Single';
+import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step3Single';
+import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { getSessionTimespan } from '../utils/utils';
@@ -12,9 +12,9 @@ export const eventRouter = createTRPCRouter({
       z.discriminatedUnion('eventType', [
         z.object({
           eventType: z.literal('single'),
-          stepTwo: stepTwoSingleSchema,
-          stepThree: stepThreeSingleSchema,
-          stepFour: stepFourSingleSchema,
+          stepTwo: step2SingleSchema,
+          stepThree: step3SingleSchema,
+          stepFour: step4SingleSchema,
         }),
         z.object({
           eventType: z.literal('championship'),
@@ -73,13 +73,15 @@ export const eventRouter = createTRPCRouter({
                 ids.length === 0
                   ? undefined
                   : { connect: ids.map(id => ({ id })) },
-              ...(session.type !== 'briefing'
+              ...(session.type !== 'briefing' && session.serverInformation
                 ? {
-                    inGameTime: session.inGameTime
-                      ? timeStringToDate(session.inGameTime).toDate()
+                    inGameTime: session.serverInformation.inGameTime
+                      ? timeStringToDate(
+                          session.serverInformation.inGameTime
+                        ).toDate()
                       : undefined,
-                    serverName: session.serverName,
-                    serverPassword: session.serverPassword,
+                    serverName: session.serverInformation.serverName,
+                    serverPassword: session.serverInformation.serverPassword,
                   }
                 : {}),
             },

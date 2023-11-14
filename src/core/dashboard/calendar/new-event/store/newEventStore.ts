@@ -1,10 +1,10 @@
 import { type z } from 'zod';
-import { type stepOneSchema } from '../components/StepOne';
+import { type step1Schema } from '../components/Step1';
 import { create } from 'zustand';
-import { type stepTwoSingleSchema } from '../components/StepTwoSingle';
-import { type stepThreeSingleSchema } from '../components/StepThreeSingle';
+import { type step2SingleSchema } from '../components/Step2Single';
+import { type step3SingleSchema } from '../components/Step3Single';
 import { objKeys } from '~/lib/utils';
-import { type stepFourSingleSchema } from '../components/StepFourSingle';
+import { type step4SingleSchema } from '../components/Step4Single';
 
 const stepVariant = {
   '1': 'stepOne',
@@ -15,10 +15,10 @@ const stepVariant = {
 
 export type StepId = keyof typeof stepVariant;
 
-type StepOneData = z.infer<typeof stepOneSchema>;
-type StepTwoSingleData = z.infer<typeof stepTwoSingleSchema>;
-type StepThreeSingleData = z.infer<typeof stepThreeSingleSchema>;
-type StepFourSingleData = z.infer<typeof stepFourSingleSchema>;
+type StepOneData = z.infer<typeof step1Schema>;
+type StepTwoSingleData = z.infer<typeof step2SingleSchema>;
+type StepThreeSingleData = z.infer<typeof step3SingleSchema>;
+type StepFourSingleData = z.infer<typeof step4SingleSchema>;
 
 type SetDataType =
   | { step: '1'; data: Partial<StepOneData> }

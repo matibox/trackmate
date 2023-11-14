@@ -27,13 +27,13 @@ import { ScrollArea } from '~/components/ui/ScrollArea';
 import { Separator } from '~/components/ui/Separator';
 import SessionForm, { sessionSchema } from './SessionForm';
 
-export const stepFourSingleSchema = z.object({
+export const step4SingleSchema = z.object({
   sessions: z
     .array(sessionSchema.and(z.object({ id: z.string() })))
     .min(1, 'Add at least 1 session.'),
 });
 
-export default function StepFourSingle() {
+export default function Step4Single() {
   const {
     setStep,
     setData,
@@ -65,14 +65,14 @@ export default function StepFourSingle() {
     },
   });
 
-  const form = useForm<z.infer<typeof stepFourSingleSchema>>({
-    resolver: zodResolver(stepFourSingleSchema),
+  const form = useForm<z.infer<typeof step4SingleSchema>>({
+    resolver: zodResolver(step4SingleSchema),
     defaultValues: {
       sessions: stepFourSingle?.sessions ?? [],
     },
   });
 
-  async function onSubmit(values: z.infer<typeof stepFourSingleSchema>) {
+  async function onSubmit(values: z.infer<typeof step4SingleSchema>) {
     setData({ step: '4-single', data: values });
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

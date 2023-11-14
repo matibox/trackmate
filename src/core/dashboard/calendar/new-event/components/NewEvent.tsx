@@ -3,16 +3,16 @@ import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/Sheet';
 import { CalendarPlusIcon } from 'lucide-react';
 import { type StepId, useNewEvent } from '../store/newEventStore';
 import { type ReactNode } from 'react';
-import EventType from './StepOne';
-import StepTwoSingle from './StepTwoSingle';
-import StepThreeSingle from './StepThreeSingle';
-import StepFourSingle from './StepFourSingle';
+import Step1 from './Step1';
+import Step2Single from './Step2Single';
+import Step3Single from './Step3Single';
+import Step4Single from './Step4Single';
 
 const steps: Record<StepId, ReactNode> = {
-  '1': <EventType />,
-  '2-single': <StepTwoSingle />,
-  '3-single': <StepThreeSingle />,
-  '4-single': <StepFourSingle />,
+  '1': <Step1 />,
+  '2-single': <Step2Single />,
+  '3-single': <Step3Single />,
+  '4-single': <Step4Single />,
 };
 
 export default function NewEvent() {

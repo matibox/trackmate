@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import { type z } from 'zod';
-import { type stepFourSingleSchema } from '~/core/dashboard/calendar/new-event/components/StepFourSingle';
+import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { getSessionTimespan } from './utils';
 import dayjs from 'dayjs';
 
 describe('getSessionTimespan', () => {
-  type Session = z.infer<typeof stepFourSingleSchema>['sessions'][number];
+  type Session = z.infer<typeof step4SingleSchema>['sessions'][number];
 
   const raceDate = dayjs(
     new Date(dayjs().year(), dayjs().month(), dayjs().date())
