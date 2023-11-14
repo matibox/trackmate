@@ -400,7 +400,7 @@ function SessionDetails({
                 <span className='leading-none'>{track}</span>
               </div>
               {inGameTime || serverName || serverPassword ? (
-                <Collapsible className='my-1'>
+                <Collapsible className='my-1 first:mt-0.5 last:mb-0.5'>
                   <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
                     <ChevronDown className='h-4 w-4 transition-transform duration-200' />
                     <span className='text-sm font-medium'>
@@ -442,7 +442,7 @@ function SessionDetails({
           {type === 'qualifying' || type === 'race' ? (
             <>
               {cloudLevel || rainLevel || temperature || randomness ? (
-                <Collapsible className='my-1'>
+                <Collapsible className='my-1 first:mt-0.5 last:mb-0.5'>
                   <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
                     <ChevronDown className='h-4 w-4 transition-transform duration-200' />
                     <span className='text-sm font-medium'>
