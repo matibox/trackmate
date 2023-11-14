@@ -84,6 +84,19 @@ export const eventRouter = createTRPCRouter({
                     serverPassword: session.serverInformation.serverPassword,
                   }
                 : {}),
+              ...((session.type === 'qualifying' || session.type === 'race') &&
+              session.weather
+                ? {
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    rainLevel: parseFloat(session.weather.rainLevel!),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    cloudLevel: parseFloat(session.weather.cloudLevel!),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    randomness: parseInt(session.weather.randomness!),
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    temperature: parseInt(session.weather.ambientTemp!),
+                  }
+                : {}),
             },
           });
         }
