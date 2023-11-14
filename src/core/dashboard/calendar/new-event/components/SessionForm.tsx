@@ -60,6 +60,15 @@ const serverInfoSchema = z
   })
   .optional();
 
+const weatherSchema = z
+  .object({
+    rainLevel: z.string().optional(),
+    cloudLevel: z.string().optional(),
+    randomness: z.string().optional(),
+    ambientTemp: z.string().optional(),
+  })
+  .optional();
+
 export const sessionSchema = z
   .discriminatedUnion(
     'type',
@@ -89,6 +98,7 @@ export const sessionSchema = z
           .min(1, 'Driver is required.'),
         customDay: z.date().optional(),
         serverInformation: serverInfoSchema,
+        weather: weatherSchema,
       }),
       // RACE
       z.object({
@@ -99,6 +109,7 @@ export const sessionSchema = z
         driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
         endsNextDay: z.boolean().default(false),
         serverInformation: serverInfoSchema,
+        weather: weatherSchema,
       }),
     ],
     {
@@ -164,6 +175,12 @@ export default function SessionForm({
         serverName: '',
         serverPassword: '',
       },
+      weather: {
+        rainLevel: '',
+        cloudLevel: '',
+        randomness: '',
+        ambientTemp: '',
+      },
     },
   });
 
@@ -178,6 +195,12 @@ export default function SessionForm({
         inGameTime: '',
         serverName: '',
         serverPassword: '',
+      },
+      weather: {
+        rainLevel: '',
+        cloudLevel: '',
+        randomness: '',
+        ambientTemp: '',
       },
     });
     setIsDifferentDay(false);
@@ -475,7 +498,7 @@ export default function SessionForm({
                       Server information
                     </span>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className='mt-2 flex flex-col gap-5 p-1'>
+                  <CollapsibleContent className='flex flex-col gap-5 px-1 py-2'>
                     <FormField
                       control={sessionForm.control}
                       name='serverInformation.inGameTime'
@@ -511,6 +534,109 @@ export default function SessionForm({
                           <FormControl>
                             <Input {...field} type='text' />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CollapsibleContent>
+                </Collapsible>
+              </FormCondition>
+              <FormCondition
+                type='both'
+                sessions={['qualifying', 'race']}
+                currentSession={sessionType}
+                games={['Assetto Corsa Competizione']}
+              >
+                <Collapsible>
+                  <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                    <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                    <span className='text-sm font-medium'>Weather</span>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='flex flex-col gap-5 px-1 py-2'>
+                    <FormField
+                      control={sessionForm.control}
+                      name='weather.rainLevel'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Rain level</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min={0}
+                              max={1}
+                              step={0.05}
+                            />
+                          </FormControl>
+                          <FormDescription className='!text-sm'>
+                            Between 0 and 1
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={sessionForm.control}
+                      name='weather.cloudLevel'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Cloud level</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min={0}
+                              max={1}
+                              step={0.05}
+                            />
+                          </FormControl>
+                          <FormDescription className='!text-sm'>
+                            Between 0 and 1
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={sessionForm.control}
+                      name='weather.randomness'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Randomness</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min={0}
+                              max={7}
+                              step={1}
+                            />
+                          </FormControl>
+                          <FormDescription className='!text-sm'>
+                            Between 0 and 7
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={sessionForm.control}
+                      name='weather.ambientTemp'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Temperature (°C)</FormLabel>
+                          <FormControl>
+                            <Input
+                              {...field}
+                              type='number'
+                              min={10}
+                              max={45}
+                              step={1}
+                            />
+                          </FormControl>
+                          <FormDescription className='!text-sm'>
+                            Between 10 and 45
+                          </FormDescription>
                           <FormMessage />
                         </FormItem>
                       )}
