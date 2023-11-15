@@ -13,6 +13,7 @@ import {
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
 import { type RouterOutputs, api } from '~/utils/api';
+import { useFirstRender } from '~/hooks/useFirstRender';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
@@ -118,13 +119,15 @@ function Row({
   isLoading?: boolean;
 }) {
   const { currentDay } = useCalendar();
+  const [showRow, setShowRow] = useState(false);
 
   const [rowStyles, setRowStyles] =
     useState<ReturnType<typeof getCalendarRowStyles>>();
 
   useEffect(() => {
     if (typeof window === undefined) return;
-    setRowStyles(getCalendarRowStyles({ row, currentDay }));
+    setRowStyles(getCalendarRowStyles({ row, currentDay: dayjs() }));
+    setShowRow(dayjs().week() === row[0]?.week());
   }, [currentDay, row]);
 
   return (
@@ -151,7 +154,7 @@ function Row({
       ))}
       <div
         className={cn('absolute top-0 h-full rounded-md transition', {
-          'bg-slate-800': currentDay.week() === row[0]?.week(),
+          'bg-slate-800': showRow,
         })}
         style={rowStyles}
       />
@@ -171,6 +174,7 @@ function Day({
   differentMonth?: boolean;
 }) {
   const { currentDay, selectDay } = useCalendar();
+  const firstRender = useFirstRender();
 
   const isSelected = useMemo(() => currentDay.isSame(day), [currentDay, day]);
 
@@ -179,10 +183,12 @@ function Day({
       className={cn(
         'relative z-10 flex h-[37px] w-[37px] items-center justify-center rounded-md text-sm transition hover:bg-slate-800 lg:h-[45px] lg:w-[45px]',
         {
-          'hover:bg-slate-700': activeWeek,
-          'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500': isSelected,
-          'text-slate-400 opacity-50': differentMonth,
+          'hover:bg-slate-700': !firstRender && activeWeek,
+          'bg-sky-500 hover:bg-sky-500 focus:bg-sky-500':
+            !firstRender && isSelected,
+          'text-slate-400 opacity-50': !firstRender && differentMonth,
           'ring-1 ring-slate-300':
+            !firstRender &&
             day.format('DDMMYYYY') === dayjs().format('DDMMYYYY'),
         }
       )}
