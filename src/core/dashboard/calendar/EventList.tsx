@@ -38,11 +38,14 @@ export default function EventList() {
   function scrollEventList({
     ref,
     offset,
+    smooth = false,
   }: {
     ref: RefObject<HTMLElement>;
     offset: number;
+    smooth?: boolean;
   }) {
     if (ref.current?.scrollLeft === undefined) return;
+    ref.current.style.scrollBehavior = smooth ? 'smooth' : 'auto';
     ref.current.scrollLeft += offset;
   }
 
@@ -66,7 +69,11 @@ export default function EventList() {
               className='h-8 w-8 p-0'
               aria-label='Scroll left'
               onClick={() =>
-                scrollEventList({ ref: dragScroll.ref, offset: -320 })
+                scrollEventList({
+                  ref: dragScroll.ref,
+                  offset: -320,
+                  smooth: true,
+                })
               }
             >
               <ChevronLeft className='h-5 w-5' />
@@ -140,7 +147,11 @@ export default function EventList() {
               className='h-8 w-8 p-0'
               aria-label='Scroll right'
               onClick={() =>
-                scrollEventList({ ref: dragScroll.ref, offset: 320 })
+                scrollEventList({
+                  ref: dragScroll.ref,
+                  offset: 320,
+                  smooth: true,
+                })
               }
             >
               <ChevronRight className='h-5 w-5' />
