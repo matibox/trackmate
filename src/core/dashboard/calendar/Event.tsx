@@ -2,6 +2,7 @@ import dayjs from 'dayjs';
 import {
   CarIcon,
   ChevronDown,
+  ClipboardCopyIcon,
   ClipboardSignatureIcon,
   ClockIcon,
   CloudIcon,
@@ -53,6 +54,13 @@ import {
 } from '~/components/ui/Dialog';
 import { useCalendar } from './store';
 import { ScrollArea } from '~/components/ui/ScrollArea';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '~/components/ui/Tooltip';
+import { useCopyToast } from '~/hooks/useCopyToast';
 
 export default function Event({
   session,
@@ -60,7 +68,6 @@ export default function Event({
   session: RouterOutputs['event']['fromTo'][number];
 }) {
   const [isOpened, setIsOpened] = useState(false);
-
   const currentDay = useCalendar(s => s.currentDay);
 
   const nextSessionIdx = useMemo(() => {
@@ -354,6 +361,8 @@ function SessionDetails({
     return nextSession.id === id ? 'next' : 'finished';
   }, [end, start, sessions, id]);
 
+  const { copyWithToast } = useCopyToast();
+
   return (
     <AccordionItem
       key={id}
@@ -403,12 +412,56 @@ function SessionDetails({
               </div>
               {inGameTime || serverName || serverPassword ? (
                 <Collapsible className='my-1 first:mt-0.5 last:mb-0.5'>
-                  <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
-                    <ChevronDown className='h-4 w-4 transition-transform duration-200' />
-                    <span className='text-sm font-medium'>
-                      Server information
-                    </span>
-                  </CollapsibleTrigger>
+                  <div className='flex items-center gap-2'>
+                    <CollapsibleTrigger className='group flex items-center gap-2 [&[data-state=open]>svg]:rotate-180'>
+                      <ChevronDown className='h-4 w-4 transition-transform duration-200' />
+                      <span className='text-sm font-medium'>
+                        Server information
+                      </span>
+                    </CollapsibleTrigger>
+                    {serverName ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='outline'
+                              className='ml-auto h-auto p-1.5'
+                              onClick={() =>
+                                copyWithToast({ valueToCopy: serverName })
+                              }
+                            >
+                              <ClipboardCopyIcon className='h-4 w-4' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Copy server name</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : null}
+                    {serverPassword ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              variant='outline'
+                              className='h-auto p-1.5'
+                              onClick={() =>
+                                window.navigator.clipboard.writeText(
+                                  serverPassword
+                                )
+                              }
+                            >
+                              <KeyRoundIcon className='h-4 w-4' />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Copy server password</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : null}
+                  </div>
                   <CollapsibleContent className='mt-1 flex flex-col gap-5'>
                     <>
                       <div className='flex flex-col gap-1.5'>
