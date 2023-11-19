@@ -99,8 +99,8 @@ export const eventRouter = createTRPCRouter({
                 : {}),
             },
           });
-          return date;
         }
+        return date;
       }
     }),
   getCalendarData: protectedProcedure
