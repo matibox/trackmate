@@ -8,12 +8,9 @@ import {
   CloudIcon,
   CloudRainWindIcon,
   KeyRoundIcon,
-  Loader2Icon,
   MapPinIcon,
-  MenuIcon,
   ShuffleIcon,
   ThermometerIcon,
-  TrashIcon,
   UserIcon,
   UsersIcon,
 } from 'lucide-react';
@@ -25,7 +22,7 @@ import {
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
 import { capitalize, cn } from '~/lib/utils';
-import { api, type RouterOutputs } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import { useSessionStatus } from './useSessionStatus';
 import {
   Accordion,
@@ -34,24 +31,6 @@ import {
   AccordionTrigger,
 } from '~/components/ui/Accordion';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/Avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '~/components/ui/DropdownMenu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/Dialog';
 import { useCalendar } from './store';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 import {
@@ -61,6 +40,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import { useCopyToast } from '~/hooks/useCopyToast';
+import EventDropdown from './EventDropdown';
 
 export default function Event({
   session,
@@ -131,7 +111,7 @@ export default function Event({
                 ))}
             </div>
           ) : (
-            <Menu eventId={session.event.id} />
+            <EventDropdown eventId={session.event.id} />
           )}
         </div>
         <CollapsibleContent className='CollapsibleContent'>
@@ -193,7 +173,7 @@ export default function Event({
               {session.event.track}
             </span>
           </div>
-          <Menu className='ml-auto' eventId={session.event.id} />
+          <EventDropdown className='ml-auto' eventId={session.event.id} />
         </div>
         <div>
           <Accordion
@@ -223,79 +203,6 @@ export default function Event({
         </div>
       </ScrollArea>
     </>
-  );
-}
-
-function Menu({ eventId, className }: { eventId: string; className?: string }) {
-  const [menuOpened, setMenuOpened] = useState(false);
-  const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
-
-  const utils = api.useContext();
-  const { mutateAsync: deleteEvent, isLoading: isDeleteLoading } =
-    api.event.delete.useMutation({
-      onSuccess: async () => {
-        await utils.event.invalidate();
-      },
-    });
-
-  return (
-    <Dialog open={deleteDialogOpened} onOpenChange={setDeleteDialogOpened}>
-      <DropdownMenu
-        open={menuOpened}
-        onOpenChange={setMenuOpened}
-        modal={false}
-      >
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant='ghost'
-            className={cn('h-8 w-8 px-0', className)}
-            aria-label={`${menuOpened ? 'close' : 'open'} the menu`}
-          >
-            <MenuIcon className='h-5 w-5' />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end' className='w-56'>
-          <DropdownMenuLabel>Event options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuGroup>
-            <DialogTrigger asChild>
-              <DropdownMenuItem className='text-red-500 focus:text-red-500'>
-                <TrashIcon className='mr-2 h-4 w-4' />
-                <span>Delete event</span>
-              </DropdownMenuItem>
-            </DialogTrigger>
-          </DropdownMenuGroup>
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Are you sure absolutely sure?</DialogTitle>
-          <DialogDescription>
-            This action cannot be undone. Are you sure you want to permanently
-            delete this event?
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            variant='destructive'
-            disabled={isDeleteLoading}
-            onClick={async () => {
-              await deleteEvent({ id: eventId });
-              setDeleteDialogOpened(false);
-            }}
-          >
-            {isDeleteLoading ? (
-              <>
-                Please wait
-                <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-              </>
-            ) : (
-              'Delete event'
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 
