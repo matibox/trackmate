@@ -1,4 +1,4 @@
-import { Loader2Icon, MenuIcon, TrashIcon } from 'lucide-react';
+import { FilePlus, Loader2Icon, MenuIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import {
@@ -8,7 +8,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '~/components/ui/Dialog';
 import {
   DropdownMenu,
@@ -31,6 +30,7 @@ export default function EventDropdown({
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
   const [deleteDialogOpened, setDeleteDialogOpened] = useState(false);
+  const [addSetupDialogOpened, setAddSetupDialogOpened] = useState(false);
 
   const utils = api.useContext();
   const { mutateAsync: deleteEvent, isLoading: isDeleteLoading } =
@@ -57,15 +57,30 @@ export default function EventDropdown({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align='end' className='w-56'>
-          <DropdownMenuLabel>Event options</DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Setups</DropdownMenuLabel>
           <DropdownMenuGroup>
-            <DialogTrigger asChild>
+            <button
+              className='w-full'
+              onClick={() => setAddSetupDialogOpened(true)}
+            >
+              <DropdownMenuItem>
+                <FilePlus className='mr-2 h-4 w-4' />
+                <span>Add setup</span>
+              </DropdownMenuItem>
+            </button>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Manage event</DropdownMenuLabel>
+          <DropdownMenuGroup>
+            <button
+              className='w-full'
+              onClick={() => setDeleteDialogOpened(true)}
+            >
               <DropdownMenuItem className='text-red-500 focus:text-red-500'>
                 <TrashIcon className='mr-2 h-4 w-4' />
                 <span>Delete event</span>
               </DropdownMenuItem>
-            </DialogTrigger>
+            </button>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
