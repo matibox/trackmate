@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import updateLocale from 'dayjs/plugin/updateLocale';
+import enLocale from 'dayjs/locale/en';
 import { ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import { generateDayGrid } from '~/lib/dates';
@@ -17,6 +19,12 @@ import { useFirstRender } from '~/hooks/useFirstRender';
 
 dayjs.extend(weekOfYear);
 dayjs.extend(isBetween);
+dayjs.extend(updateLocale);
+
+dayjs.locale('calendar', {
+  ...enLocale,
+  weekStart: 1,
+});
 
 export default function Calendar() {
   const { currentDay, nextMonth, prevMonth } = useCalendar();
@@ -126,8 +134,8 @@ function Row({
 
   useEffect(() => {
     if (typeof window === undefined) return;
-    setRowStyles(getCalendarRowStyles({ row, currentDay: dayjs() }));
-    setShowRow(dayjs().week() === row[0]?.week());
+    setRowStyles(getCalendarRowStyles({ row, currentDay }));
+    setShowRow(currentDay.locale('calendar').week() === row[0]?.week());
   }, [currentDay, row]);
 
   return (

@@ -9,6 +9,7 @@ export function useCopyToast() {
       await window.navigator.clipboard.writeText(valueToCopy);
       toast({
         title: 'Value copied to clipboard',
+        description: valueToCopy,
       });
     },
     [toast]
