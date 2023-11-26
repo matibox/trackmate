@@ -111,7 +111,7 @@ export default function Event({
                 ))}
             </div>
           ) : (
-            <EventDropdown eventId={session.event.id} />
+            <EventDropdown event={session.event} />
           )}
         </div>
         <CollapsibleContent className='CollapsibleContent'>
@@ -173,7 +173,7 @@ export default function Event({
               {session.event.track}
             </span>
           </div>
-          <EventDropdown className='ml-auto' eventId={session.event.id} />
+          <EventDropdown className='ml-auto' event={session.event} />
         </div>
         <div>
           <Accordion

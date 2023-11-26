@@ -20,13 +20,15 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/DropdownMenu';
 import { cn } from '~/lib/utils';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
+
+type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
 export default function EventDropdown({
-  eventId,
+  event,
   className,
 }: {
-  eventId: string;
+  event: Event;
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
@@ -45,24 +47,26 @@ export default function EventDropdown({
       <DropdownMenuContent align='end' className='w-56'>
         <DropdownMenuLabel>Setups</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <AddSetupDialog />
+          <AddSetupDialog event={event} />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Manage event</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DeleteEventDialog eventId={eventId} />
+          <DeleteEventDialog event={event} />
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   );
 }
 
-function AddSetupDialog() {
+function AddSetupDialog({ event: { game } }: { event: Event }) {
   const [dialogOpen, setDialogOpen] = useState(false);
+
+  const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={supportedGames.includes(game)}>
         <DropdownMenuItem onSelect={e => e.preventDefault()}>
           <FilePlus className='mr-2 h-4 w-4' />
           <span>Add setup</span>
@@ -77,10 +81,9 @@ function AddSetupDialog() {
           <Button
             variant='primary'
             // disabled={isDeleteLoading}
-            // onClick={async () => {
-            //   await deleteEvent({ id: eventId });
-            //   setDialogOpen(false);
-            // }}
+            onClick={() => {
+              setDialogOpen(false);
+            }}
           >
             {/*//TODO: loading */}
             Add setup
@@ -91,7 +94,7 @@ function AddSetupDialog() {
   );
 }
 
-function DeleteEventDialog({ eventId }: { eventId: string }) {
+function DeleteEventDialog({ event: { id: eventId } }: { event: Event }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const utils = api.useContext();

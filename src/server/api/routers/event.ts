@@ -137,6 +137,7 @@ export const eventRouter = createTRPCRouter({
               name: true,
               track: true,
               car: true,
+              game: true,
               sessions: {
                 orderBy: { start: 'asc' },
                 select: {
