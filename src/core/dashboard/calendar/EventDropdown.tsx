@@ -102,6 +102,7 @@ function DeleteEventDialog({ event: { id: eventId } }: { event: Event }) {
     api.event.delete.useMutation({
       onSuccess: async () => {
         await utils.event.invalidate();
+        setDialogOpen(false);
       },
     });
 
@@ -130,7 +131,6 @@ function DeleteEventDialog({ event: { id: eventId } }: { event: Event }) {
             disabled={isDeleteLoading}
             onClick={async () => {
               await deleteEvent({ id: eventId });
-              setDialogOpen(false);
             }}
           >
             {isDeleteLoading ? (

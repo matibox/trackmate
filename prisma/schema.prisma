@@ -85,6 +85,7 @@ model User {
   teams         UsersOnTeams[]
   rosters       RosterOnMember[]
   eventSessions EventSession[]
+  setups        Setup[]
 }
 
 model Profile {
@@ -155,6 +156,7 @@ model Event {
   rosterId String
 
   sessions EventSession[]
+  setups   Setup[]
 
   @@index([rosterId])
 }
@@ -176,5 +178,22 @@ model EventSession {
 
   drivers User[]
 
+  @@index([eventId])
+}
+
+model Setup {
+  id         String   @id @default(cuid())
+  name       String
+  game       Game
+  car        String
+  track      String
+  data       String   @db.Text
+  uploadedAt DateTime @default(now())
+  uploader   User     @relation(fields: [uploaderId], references: [id])
+  uploaderId String
+  event      Event?   @relation(fields: [eventId], references: [id])
+  eventId    String?
+
+  @@index([uploaderId])
   @@index([eventId])
 }
