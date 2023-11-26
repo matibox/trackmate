@@ -176,4 +176,19 @@ export const eventRouter = createTRPCRouter({
       const { id } = input;
       return await ctx.prisma.event.delete({ where: { id } });
     }),
+  addSetup: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        setupData: z.string(),
+        eventId: z.string(),
+        game: z.string(),
+        car: z.string().nullable(),
+        track: z.string().nullable(),
+      })
+    )
+    .mutation(({ ctx, input }) => {
+      const { setupData } = input;
+      console.log(JSON.parse(setupData));
+    }),
 });

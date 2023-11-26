@@ -78,7 +78,7 @@ export default function EventDropdown({
   );
 }
 
-const formSchema = z.object({
+export const addSetupSchema = z.object({
   name: z.string().min(1, 'Setup name is required.'),
   setup: z
     .custom<File>(v => v instanceof File, 'Setup is required.')
@@ -89,21 +89,54 @@ const formSchema = z.object({
     .refine(file => file.size < 4096, 'File size must be less than 4kb.'),
 });
 
-function AddSetupDialog({ event: { game } }: { event: Event }) {
+function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof addSetupSchema>>({
+    resolver: zodResolver(addSetupSchema),
     defaultValues: {
       name: '',
       setup: new File([], ''),
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+  const utils = api.useContext();
+  const { mutate: addSetup, isLoading } = api.event.addSetup.useMutation({
+    onSuccess: async () => {
+      console.log('success');
+      await utils.event.invalidate();
+      setDialogOpen(false);
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof addSetupSchema>) {
+    const { setup } = values;
+    const reader = new FileReader();
+
+    reader.addEventListener('load', e => {
+      const setupData = e.target?.result;
+      if (!setupData) {
+        return form.setError('setup', {
+          message: 'There was an error while uploading a setup.',
+        });
+      }
+
+      // cut .json part off
+      const name = setup.name.slice(0, setup.name.length - 5);
+
+      addSetup({
+        eventId: id,
+        setupData: JSON.stringify(setupData),
+        name,
+        game,
+        car,
+        track,
+      });
+    });
+
+    reader.readAsText(setup);
   }
 
   return (
@@ -185,16 +218,15 @@ function AddSetupDialog({ event: { game } }: { event: Event }) {
               </div>
             </DialogHeader>
             <DialogFooter>
-              <Button
-                type='submit'
-                variant='primary'
-                // disabled={isDeleteLoading}
-                // onClick={() => {
-                //   setDialogOpen(false);
-                // }}
-              >
-                {/*//TODO: loading */}
-                Add setup
+              <Button type='submit' variant='primary' disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    Please wait
+                    <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
+                  </>
+                ) : (
+                  'Add setup'
+                )}
               </Button>
             </DialogFooter>
           </form>
