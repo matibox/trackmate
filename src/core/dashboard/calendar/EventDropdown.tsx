@@ -1,5 +1,14 @@
-import { FilePlus, Loader2Icon, MenuIcon, TrashIcon } from 'lucide-react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import {
+  FilePlus,
+  Loader2Icon,
+  MenuIcon,
+  TrashIcon,
+  UploadIcon,
+} from 'lucide-react';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
 import {
   Dialog,
@@ -19,6 +28,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '~/components/ui/DropdownMenu';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/Form';
+import { Input } from '~/components/ui/Input';
 import { cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 
@@ -59,10 +77,33 @@ export default function EventDropdown({
   );
 }
 
+const formSchema = z.object({
+  name: z.string().min(1, 'Setup name is required.'),
+  setup: z
+    .custom<File>(v => v instanceof File, 'Setup is required.')
+    .refine(
+      file => file.type === 'application/json',
+      'Only .json file is accepted.'
+    )
+    .refine(file => file.size < 4096, 'File size must be less than 4kb.'),
+});
+
 function AddSetupDialog({ event: { game } }: { event: Event }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: '',
+      setup: new File([], ''),
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    console.log(values);
+  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -73,22 +114,78 @@ function AddSetupDialog({ event: { game } }: { event: Event }) {
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Add setup</DialogTitle>
-          <DialogDescription>Add setup description</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button
-            variant='primary'
-            // disabled={isDeleteLoading}
-            onClick={() => {
-              setDialogOpen(false);
-            }}
-          >
-            {/*//TODO: loading */}
-            Add setup
-          </Button>
-        </DialogFooter>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <DialogHeader>
+              <DialogTitle>Add setup</DialogTitle>
+              <div className='flex flex-col gap-4 text-slate-50'>
+                <FormField
+                  control={form.control}
+                  name='name'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Setup name</FormLabel>
+                      <FormControl>
+                        <Input type='text' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name='setup'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Setup</FormLabel>
+                      <FormControl>
+                        <Input
+                          type='file'
+                          id='file-input'
+                          className='hidden'
+                          accept='application/json'
+                          onChange={e =>
+                            field.onChange(
+                              e.target.files ? e.target.files[0] : null
+                            )
+                          }
+                        />
+                      </FormControl>
+                      <div className='flex items-center gap-4'>
+                        <label
+                          htmlFor='file-input'
+                          className='flex cursor-pointer items-center gap-2 rounded-md border border-slate-800 bg-slate-900 px-4 py-2 text-sm font-semibold transition hover:border-slate-700 hover:bg-slate-800'
+                        >
+                          <UploadIcon className='h-4 w-4' />
+                          <span>Upload setup</span>
+                        </label>
+                        <span className='text-sm text-slate-50'>
+                          {field.value.size > 0
+                            ? field.value.name
+                            : 'No file selected'}
+                        </span>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                type='submit'
+                variant='primary'
+                // disabled={isDeleteLoading}
+                // onClick={() => {
+                //   setDialogOpen(false);
+                // }}
+              >
+                {/*//TODO: loading */}
+                Add setup
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
