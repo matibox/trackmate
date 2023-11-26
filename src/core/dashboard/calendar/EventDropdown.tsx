@@ -66,7 +66,7 @@ function AddSetupDialog({ event: { game } }: { event: Event }) {
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-      <DialogTrigger asChild disabled={supportedGames.includes(game)}>
+      <DialogTrigger asChild disabled={!supportedGames.includes(game)}>
         <DropdownMenuItem onSelect={e => e.preventDefault()}>
           <FilePlus className='mr-2 h-4 w-4' />
           <span>Add setup</span>
