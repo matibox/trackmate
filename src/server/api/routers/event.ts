@@ -5,6 +5,7 @@ import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/component
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { encryptString, getSessionTimespan } from '../utils/utils';
+import { games } from '~/lib/constants';
 
 export const eventRouter = createTRPCRouter({
   create: protectedProcedure
@@ -182,14 +183,23 @@ export const eventRouter = createTRPCRouter({
         name: z.string(),
         setupData: z.string(),
         eventId: z.string(),
-        game: z.string(),
+        game: z.enum(games),
         car: z.string().nullable(),
         track: z.string().nullable(),
       })
     )
-    .mutation(({ ctx, input }) => {
-      const { setupData } = input;
-      console.log(JSON.parse(setupData));
-      console.log(encryptString(setupData));
+    .mutation(async ({ ctx, input }) => {
+      const { eventId, setupData, game, ...values } = input;
+      const encryptedSetupData = encryptString(setupData);
+
+      return await ctx.prisma.setup.create({
+        data: {
+          ...values,
+          game: game.replaceAll(' ', '_') as ReplaceAll<typeof game, ' ', '_'>,
+          data: encryptedSetupData,
+          uploader: { connect: { id: ctx.session.user.id } },
+          event: { connect: { id: eventId } },
+        },
+      });
     }),
 });

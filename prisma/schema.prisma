@@ -185,8 +185,8 @@ model Setup {
   id         String   @id @default(cuid())
   name       String
   game       Game
-  car        String
-  track      String
+  car        String?
+  track      String?
   data       String   @db.Text
   uploadedAt DateTime @default(now())
   uploader   User     @relation(fields: [uploaderId], references: [id])

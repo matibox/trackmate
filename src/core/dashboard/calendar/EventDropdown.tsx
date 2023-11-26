@@ -38,7 +38,7 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
-import { cn } from '~/lib/utils';
+import { type ReplaceAll, cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
@@ -112,7 +112,7 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
   });
 
   function onSubmit(values: z.infer<typeof addSetupSchema>) {
-    const { setup } = values;
+    const { setup, name } = values;
     const reader = new FileReader();
 
     reader.addEventListener('load', e => {
@@ -123,14 +123,11 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
         });
       }
 
-      // cut .json part off
-      const name = setup.name.slice(0, setup.name.length - 5);
-
       addSetup({
         eventId: id,
         setupData: JSON.stringify(setupData),
+        game: game.replaceAll('_', ' ') as ReplaceAll<typeof game, '_', ' '>,
         name,
-        game,
         car,
         track,
       });
