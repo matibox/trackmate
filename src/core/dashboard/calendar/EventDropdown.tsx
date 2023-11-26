@@ -3,6 +3,7 @@ import {
   FilePlus,
   Loader2Icon,
   MenuIcon,
+  ShieldCheckIcon,
   TrashIcon,
   UploadIcon,
 } from 'lucide-react';
@@ -115,9 +116,11 @@ function AddSetupDialog({ event: { game } }: { event: Event }) {
       </DialogTrigger>
       <DialogContent>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <DialogHeader>
-              <DialogTitle>Add setup</DialogTitle>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+            <DialogHeader className='text-left'>
+              <DialogTitle className='text-center sm:text-left'>
+                Add setup
+              </DialogTitle>
               <div className='flex flex-col gap-4 text-slate-50'>
                 <FormField
                   control={form.control}
@@ -169,6 +172,16 @@ function AddSetupDialog({ event: { game } }: { event: Event }) {
                     </FormItem>
                   )}
                 />
+                <div className='flex w-full flex-row gap-4'>
+                  <div className='flex items-center self-auto'>
+                    <ShieldCheckIcon className='h-6 grow text-sky-400' />
+                  </div>
+                  <p className='text-sm text-slate-300'>
+                    All of the uploaded setups are encrypted. No one, except you
+                    and people who you share the setup with can see the setup
+                    data.
+                  </p>
+                </div>
               </div>
             </DialogHeader>
             <DialogFooter>
