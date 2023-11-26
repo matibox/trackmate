@@ -4,7 +4,7 @@ import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/component
 import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
-import { getSessionTimespan } from '../utils/utils';
+import { encryptString, getSessionTimespan } from '../utils/utils';
 
 export const eventRouter = createTRPCRouter({
   create: protectedProcedure
@@ -190,5 +190,6 @@ export const eventRouter = createTRPCRouter({
     .mutation(({ ctx, input }) => {
       const { setupData } = input;
       console.log(JSON.parse(setupData));
+      console.log(encryptString(setupData));
     }),
 });
