@@ -177,7 +177,7 @@ export const eventRouter = createTRPCRouter({
       const { id } = input;
       return await ctx.prisma.event.delete({ where: { id } });
     }),
-  addSetup: protectedProcedure
+  addAndAssignSetup: protectedProcedure
     .input(
       z.object({
         name: z.string(),

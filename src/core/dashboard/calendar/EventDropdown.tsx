@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { util, z } from 'zod';
 import { Button } from '~/components/ui/Button';
 import {
   Dialog,
@@ -114,13 +114,14 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
   });
 
   const utils = api.useContext();
-  const { mutate: addSetup, isLoading } = api.event.addSetup.useMutation({
-    onSuccess: async () => {
-      console.log('success');
-      await utils.event.invalidate();
-      setDialogOpen(false);
-    },
-  });
+  const { mutate: addSetup, isLoading } =
+    api.event.addAndAssignSetup.useMutation({
+      onSuccess: async () => {
+        console.log('success');
+        await utils.event.invalidate();
+        setDialogOpen(false);
+      },
+    });
 
   function onSubmit(values: z.infer<typeof addSetupSchema>) {
     const { setup, name } = values;
@@ -249,12 +250,25 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
 
   const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
 
+  const utils = api.useContext();
   const { data: setups, isLoading } = api.event.getSetups.useQuery(
     { eventId: id },
     {
       enabled: dialogOpen,
     }
   );
+
+  const [currentMutatingSetupId, setCurrentMutatingSetupId] =
+    useState<string>();
+  const { mutateAsync: deleteSetup, isLoading: isDeleteLoading } =
+    api.setup.delete.useMutation({
+      onMutate: ({ setupId }) => setCurrentMutatingSetupId(setupId),
+      onSuccess: async () => {
+        await utils.event.invalidate();
+        await utils.setup.invalidate();
+      },
+      onSettled: () => setCurrentMutatingSetupId(undefined),
+    });
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -326,8 +340,20 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
                             variant='ghost'
                             className='h-auto w-auto p-2 text-red-500'
                             aria-label='delete setup'
+                            disabled={
+                              currentMutatingSetupId === setup.id &&
+                              isDeleteLoading
+                            }
+                            onClick={async () => {
+                              await deleteSetup({ setupId: setup.id });
+                            }}
                           >
-                            <TrashIcon className='h-4 w-4' />
+                            {currentMutatingSetupId === setup.id &&
+                            isDeleteLoading ? (
+                              <Loader2Icon className='h-4 w-4 animate-spin' />
+                            ) : (
+                              <TrashIcon className='h-4 w-4' />
+                            )}
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
