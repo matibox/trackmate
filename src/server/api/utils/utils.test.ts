@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import { type z } from 'zod';
 import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
-import { getSessionTimespan } from './utils';
+import { decryptString, encryptString, getSessionTimespan } from './utils';
 import dayjs from 'dayjs';
+import crypto from 'crypto';
 
 describe('getSessionTimespan', () => {
   type Session = z.infer<typeof step4SingleSchema>['sessions'][number];
@@ -82,5 +83,16 @@ describe('getSessionTimespan', () => {
     );
     expect(dayjs(returned.end).hour()).toEqual(12);
     expect(dayjs(returned.end).minute()).toEqual(0);
+  });
+});
+
+describe('encrypt and decrypt string', () => {
+  it('encrypts and decrypts string correctly', () => {
+    const string = crypto.randomBytes(16).toString('hex');
+
+    const encryptedString = encryptString(string);
+    const decryptedString = decryptString(encryptedString);
+
+    expect(string).toEqual(decryptedString);
   });
 });

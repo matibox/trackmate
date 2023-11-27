@@ -4,7 +4,8 @@ import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/component
 import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
-import { getSessionTimespan } from '../utils/utils';
+import { encryptString, getSessionTimespan } from '../utils/utils';
+import { games } from '~/lib/constants';
 
 export const eventRouter = createTRPCRouter({
   create: protectedProcedure
@@ -137,6 +138,7 @@ export const eventRouter = createTRPCRouter({
               name: true,
               track: true,
               car: true,
+              game: true,
               sessions: {
                 orderBy: { start: 'asc' },
                 select: {
@@ -174,5 +176,45 @@ export const eventRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
       return await ctx.prisma.event.delete({ where: { id } });
+    }),
+  addAndAssignSetup: protectedProcedure
+    .input(
+      z.object({
+        name: z.string(),
+        setupData: z.string(),
+        eventId: z.string(),
+        game: z.enum(games),
+        car: z.string().nullable(),
+        track: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { eventId, setupData, game, ...values } = input;
+      const encryptedSetupData = encryptString(setupData);
+
+      return await ctx.prisma.setup.create({
+        data: {
+          ...values,
+          game: game.replaceAll(' ', '_') as ReplaceAll<typeof game, ' ', '_'>,
+          data: encryptedSetupData,
+          uploader: { connect: { id: ctx.session.user.id } },
+          event: { connect: { id: eventId } },
+        },
+      });
+    }),
+  getSetups: protectedProcedure
+    .input(z.object({ eventId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const { eventId } = input;
+
+      return await ctx.prisma.setup.findMany({
+        where: { event: { id: eventId } },
+        select: {
+          id: true,
+          name: true,
+          uploadedAt: true,
+          uploader: { select: { firstName: true, lastName: true } },
+        },
+      });
     }),
 });
