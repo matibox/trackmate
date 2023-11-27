@@ -41,6 +41,7 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
+import { Skeleton } from '~/components/ui/Skeleton';
 import {
   Tooltip,
   TooltipContent,
@@ -267,14 +268,30 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
         <DialogHeader className='space-y-4 text-left'>
           <DialogTitle className='text-center sm:text-left'>Setups</DialogTitle>
           <div className='flex w-full flex-col gap-2'>
-            {/*//TODO: skeleton loading */}
+            {isLoading
+              ? new Array(2).fill(null).map((_, i) => (
+                  <div
+                    key={i}
+                    className='flex w-full justify-between pb-2 last:pb-0'
+                  >
+                    <div className='flex flex-col justify-center gap-1'>
+                      <Skeleton className='h-4 w-12' />
+                      <Skeleton className='h-3 w-44' />
+                    </div>
+                    <div className='flex gap-1'>
+                      <Skeleton className='h-[30px] w-[30px]' />
+                      <Skeleton className='h-[30px] w-[30px]' />
+                    </div>
+                  </div>
+                ))
+              : null}
             {setups?.length === 0 ? (
               <p className='text-center text-slate-300'>No setups found.</p>
             ) : (
               setups?.map(setup => (
                 <div
                   key={setup.id}
-                  className='flex w-full justify-between border-b border-slate-900 pb-2 last:border-b-0'
+                  className='flex w-full justify-between border-b border-slate-900 pb-2 last:border-b-0 last:pb-0'
                 >
                   <div className='flex flex-col justify-center'>
                     <span className='text-slate-50'>{setup.name}</span>
