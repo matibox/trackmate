@@ -1,5 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import dayjs from 'dayjs';
 import {
+  DownloadIcon,
   FilePlus,
   Loader2Icon,
   MenuIcon,
@@ -39,6 +41,12 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '~/components/ui/Tooltip';
 import { type ReplaceAll, cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 
@@ -240,6 +248,13 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
 
   const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
 
+  const { data: setups, isLoading } = api.event.getSetups.useQuery(
+    { eventId: id },
+    {
+      enabled: dialogOpen,
+    }
+  );
+
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild disabled={!supportedGames.includes(game)}>
@@ -249,9 +264,65 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
-        <DialogHeader className='text-left'>
+        <DialogHeader className='space-y-4 text-left'>
           <DialogTitle className='text-center sm:text-left'>Setups</DialogTitle>
-          <DialogDescription>...setups</DialogDescription>
+          <div className='flex w-full flex-col gap-2'>
+            {/*//TODO: skeleton loading */}
+            {setups?.length === 0 ? (
+              <p className='text-center text-slate-300'>No setups found.</p>
+            ) : (
+              setups?.map(setup => (
+                <div
+                  key={setup.id}
+                  className='flex w-full justify-between border-b border-slate-900 pb-2 last:border-b-0'
+                >
+                  <div className='flex flex-col justify-center'>
+                    <span className='text-slate-50'>{setup.name}</span>
+                    <span className='text-sm text-slate-400'>
+                      {dayjs(setup.uploadedAt).format(
+                        'DD MMM YYYY [at] HH:mm [by] '
+                      )}
+                      {setup.uploader.firstName} {setup.uploader.lastName}
+                    </span>
+                  </div>
+                  <div className='flex items-center gap-0.5'>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            className='h-auto w-auto p-2'
+                            aria-label='download setup'
+                          >
+                            <DownloadIcon className='h-4 w-4' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Download setup</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant='ghost'
+                            className='h-auto w-auto p-2 text-red-500'
+                            aria-label='delete setup'
+                          >
+                            <TrashIcon className='h-4 w-4' />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Delete setup</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </DialogHeader>
       </DialogContent>
     </Dialog>
