@@ -1,13 +1,20 @@
 import { useCallback, useState } from 'react';
 import { useToast } from '~/components/ui/useToast';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
+import dayjs from 'dayjs';
+
+type Setup = RouterOutputs['event']['getSetups'][number];
+type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
 export function useSetupDownload() {
   const { toast } = useToast();
-  const [currentDownloadSetupId, setCurrentDownloadSetupId] =
+  const [currentDownloadSetupIds, setCurrentDownloadSetupIds] =
     useState<string>();
+  const [downloadAllLoading, setDownloadAllLoading] = useState(false);
 
-  const { mutateAsync: decryptSetup, isLoading } =
+  const { mutateAsync: decryptSetup, isLoading: decryptLoading } =
     api.setup.decrypt.useMutation({
       onError: ({ message }) => {
         toast({
@@ -15,28 +22,60 @@ export function useSetupDownload() {
           description: message,
         });
       },
-      onMutate: ({ setupId }) => setCurrentDownloadSetupId(setupId),
-      onSettled: () => setCurrentDownloadSetupId(undefined),
+      onMutate: ({ setupId }) => setCurrentDownloadSetupIds(setupId),
+      onSettled: () => setCurrentDownloadSetupIds(undefined),
     });
 
   const download = useCallback(
-    async ({
-      setup: { id, name },
-    }: {
-      setup: { id: string; name: string };
-    }) => {
+    async ({ setup: { id, name } }: { setup: Pick<Setup, 'id' | 'name'> }) => {
       const setupData = await decryptSetup({ setupId: id });
-      const href = `data:text/json;chatset=utf-8,${encodeURIComponent(
-        setupData
-      )}`;
-      const link = document.createElement('a');
-      link.href = href;
-      link.download = `${name}.json`;
-      link.click();
-      link.remove();
+
+      saveAs(
+        new Blob([(JSON.parse(setupData) as object).toString()], {
+          type: 'application/json',
+        }),
+        `${name}.json`
+      );
     },
     [decryptSetup]
   );
 
-  return { download, isLoading, currentDownloadSetupId };
+  type DownloadManyProps = {
+    setups: Array<Pick<Setup, 'id' | 'name'>>;
+    event: Pick<Event, 'name'>;
+  };
+
+  const downloadMany = useCallback(
+    async ({ setups, event }: DownloadManyProps) => {
+      setDownloadAllLoading(true);
+      const zip = new JSZip();
+      const name = `${event.name.replaceAll(' ', '_')}_${dayjs().format(
+        'DDMMYY'
+      )}_TM_SETUPS`;
+
+      const folder = zip.folder(name);
+
+      if (!folder) return;
+
+      for (const setup of setups) {
+        const setupData = await decryptSetup({ setupId: setup.id });
+        folder.file(
+          `${setup.name}.json`,
+          (JSON.parse(setupData) as object).toString()
+        );
+      }
+
+      const blob = await zip.generateAsync({ type: 'blob' });
+      saveAs(blob, `${name}.zip`);
+      setDownloadAllLoading(false);
+    },
+    [decryptSetup]
+  );
+
+  return {
+    download,
+    downloadMany,
+    isLoading: decryptLoading || downloadAllLoading,
+    currentDownloadSetupId: currentDownloadSetupIds,
+  };
 }

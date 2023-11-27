@@ -51,6 +51,7 @@ import {
 import { type ReplaceAll, cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useSetupDownload } from './useSetupDownload';
+import { ScrollArea } from '~/components/ui/ScrollArea';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
@@ -246,7 +247,7 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
   );
 }
 
-function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
+function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
@@ -273,6 +274,7 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
 
   const {
     download,
+    downloadMany,
     isLoading: isDownloadLoading,
     currentDownloadSetupId,
   } = useSetupDownload();
@@ -288,7 +290,7 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
       <DialogContent>
         <DialogHeader className='space-y-4 text-left'>
           <DialogTitle className='text-center sm:text-left'>Setups</DialogTitle>
-          <div className='flex w-full flex-col gap-2'>
+          <ScrollArea className='flex max-h-96 w-full flex-col gap-2'>
             {isLoading
               ? new Array(2).fill(null).map((_, i) => (
                   <div
@@ -382,7 +384,33 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
                 </div>
               ))
             )}
-          </div>
+          </ScrollArea>
+          {setups && setups.length > 0 ? (
+            <Button
+              variant='positive'
+              size='sm'
+              className='self-end'
+              onClick={() =>
+                downloadMany({
+                  setups: setups,
+                  event: { name },
+                })
+              }
+              disabled={isDownloadLoading || isLoading || isDeleteLoading}
+            >
+              {isDownloadLoading || isLoading || isDeleteLoading ? (
+                <>
+                  <span>Please wait</span>
+                  <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
+                </>
+              ) : (
+                <>
+                  <span>Download all</span>
+                  <DownloadIcon className='ml-2 h-4 w-4' />
+                </>
+              )}
+            </Button>
+          ) : null}
         </DialogHeader>
       </DialogContent>
     </Dialog>
