@@ -6,6 +6,7 @@ import {
   ShieldCheckIcon,
   TrashIcon,
   UploadIcon,
+  Wrench,
 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -67,6 +68,7 @@ export default function EventDropdown({
         <DropdownMenuLabel>Setups</DropdownMenuLabel>
         <DropdownMenuGroup>
           <AddSetupDialog event={event} />
+          <ViewSetupsDialog event={event} />
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Manage event</DropdownMenuLabel>
@@ -228,6 +230,29 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
             </DialogFooter>
           </form>
         </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
+
+  return (
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      <DialogTrigger asChild disabled={!supportedGames.includes(game)}>
+        <DropdownMenuItem onSelect={e => e.preventDefault()}>
+          <Wrench className='mr-2 h-4 w-4' />
+          <span>View setups</span>
+        </DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader className='text-left'>
+          <DialogTitle className='text-center sm:text-left'>Setups</DialogTitle>
+          <DialogDescription>...setups</DialogDescription>
+        </DialogHeader>
       </DialogContent>
     </Dialog>
   );
