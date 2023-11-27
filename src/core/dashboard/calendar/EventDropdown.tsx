@@ -172,7 +172,7 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
                     <FormItem>
                       <FormLabel>Setup name</FormLabel>
                       <FormControl>
-                        <Input type='text' {...field} />
+                        <Input type='text' autoComplete='off' {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
