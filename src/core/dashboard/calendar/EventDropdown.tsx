@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { util, z } from 'zod';
+import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
 import {
   Dialog,
@@ -50,6 +50,7 @@ import {
 } from '~/components/ui/Tooltip';
 import { type ReplaceAll, cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
+import { useSetupDownload } from './useSetupDownload';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
@@ -258,17 +259,23 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
     }
   );
 
-  const [currentMutatingSetupId, setCurrentMutatingSetupId] =
-    useState<string>();
+  const [currentDeleteSetupId, setCurrentDeleteSetupId] = useState<string>();
+
   const { mutateAsync: deleteSetup, isLoading: isDeleteLoading } =
     api.setup.delete.useMutation({
-      onMutate: ({ setupId }) => setCurrentMutatingSetupId(setupId),
+      onMutate: ({ setupId }) => setCurrentDeleteSetupId(setupId),
       onSuccess: async () => {
         await utils.event.invalidate();
         await utils.setup.invalidate();
       },
-      onSettled: () => setCurrentMutatingSetupId(undefined),
+      onSettled: () => setCurrentDeleteSetupId(undefined),
     });
+
+  const {
+    download,
+    isLoading: isDownloadLoading,
+    currentDownloadSetupId,
+  } = useSetupDownload();
 
   return (
     <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -324,8 +331,18 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
                             variant='ghost'
                             className='h-auto w-auto p-2'
                             aria-label='download setup'
+                            disabled={
+                              currentDownloadSetupId === setup.id &&
+                              isDownloadLoading
+                            }
+                            onClick={async () => await download({ setup })}
                           >
-                            <DownloadIcon className='h-4 w-4' />
+                            {currentDownloadSetupId === setup.id &&
+                            isDownloadLoading ? (
+                              <Loader2Icon className='h-4 w-4 animate-spin' />
+                            ) : (
+                              <DownloadIcon className='h-4 w-4' />
+                            )}
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -341,14 +358,14 @@ function ViewSetupsDialog({ event: { id, game } }: { event: Event }) {
                             className='h-auto w-auto p-2 text-red-500'
                             aria-label='delete setup'
                             disabled={
-                              currentMutatingSetupId === setup.id &&
+                              currentDeleteSetupId === setup.id &&
                               isDeleteLoading
                             }
                             onClick={async () => {
                               await deleteSetup({ setupId: setup.id });
                             }}
                           >
-                            {currentMutatingSetupId === setup.id &&
+                            {currentDeleteSetupId === setup.id &&
                             isDeleteLoading ? (
                               <Loader2Icon className='h-4 w-4 animate-spin' />
                             ) : (
@@ -392,7 +409,7 @@ function DeleteEventDialog({ event: { id: eventId } }: { event: Event }) {
           className='text-red-500 focus:text-red-500'
         >
           <TrashIcon className='mr-2 h-4 w-4' />
-          <span>Delete setup</span>
+          <span>Delete event</span>
         </DropdownMenuItem>
       </DialogTrigger>
       <DialogContent>
