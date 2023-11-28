@@ -254,7 +254,14 @@ export default function Step2Single() {
               <Button
                 type='button'
                 variant='secondary'
-                onClick={() => setStep('1')}
+                onClick={() => {
+                  const data = form.getValues();
+                  setData({
+                    step: '2-single',
+                    data,
+                  });
+                  setStep('1');
+                }}
               >
                 Back
               </Button>

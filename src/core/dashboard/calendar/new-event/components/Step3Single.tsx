@@ -267,7 +267,14 @@ export default function Step3Single() {
                   <Button
                     type='button'
                     variant='secondary'
-                    onClick={() => setStep('2-single')}
+                    onClick={() => {
+                      const data = form.getValues();
+                      setData({
+                        step: '3-single',
+                        data,
+                      });
+                      setStep('2-single');
+                    }}
                   >
                     Back
                   </Button>

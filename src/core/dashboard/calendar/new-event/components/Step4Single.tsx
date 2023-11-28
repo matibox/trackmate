@@ -347,8 +347,8 @@ export default function Step4Single() {
             type='button'
             variant='secondary'
             onClick={() => {
-              const sessions = form.getValues('sessions');
-              setData({ step: '4-single', data: { sessions } });
+              const data = form.getValues();
+              setData({ step: '4-single', data });
               setStep('3-single');
             }}
             disabled={createEvent.isLoading}
