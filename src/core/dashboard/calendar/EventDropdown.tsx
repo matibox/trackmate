@@ -68,8 +68,6 @@ export default function EventDropdown({
   const { setSheetOpened, setEditMode, setEditModeEventId, setData } =
     useNewEvent();
 
-  // TODO: add event type to DB
-
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
       <DropdownMenuTrigger asChild>
@@ -95,63 +93,66 @@ export default function EventDropdown({
               setSheetOpened(true);
               setEditMode(true);
               setEditModeEventId(event.id);
-              setData({ step: '1', data: { eventType: 'single' } });
-              setData({
-                step: '2-single',
-                data: {
-                  name: event.name ?? undefined,
-                  game:
-                    (event.game.replaceAll('_', ' ') as ReplaceAll<
-                      typeof event.game,
-                      '_',
-                      ' '
-                    >) ?? undefined,
-                  car: event.car ?? undefined,
-                  track: event.track ?? undefined,
-                },
-              });
+              setData({ step: '1', data: { eventType: event.type } });
 
-              const driverIds = [
-                ...new Set(
-                  event.sessions
-                    .map(s => s.drivers)
-                    .flat()
-                    .map(d => d.id)
-                ),
-              ];
+              if (event.type === 'single') {
+                setData({
+                  step: '2-single',
+                  data: {
+                    name: event.name ?? undefined,
+                    game:
+                      (event.game.replaceAll('_', ' ') as ReplaceAll<
+                        typeof event.game,
+                        '_',
+                        ' '
+                      >) ?? undefined,
+                    car: event.car ?? undefined,
+                    track: event.track ?? undefined,
+                  },
+                });
 
-              setData({
-                step: '3-single',
-                data: {
-                  teamName: event.roster.team.name,
-                  rosterId: event.roster.id,
-                  driverIds,
-                },
-              });
+                const driverIds = [
+                  ...new Set(
+                    event.sessions
+                      .map(s => s.drivers)
+                      .flat()
+                      .map(d => d.id)
+                  ),
+                ];
 
-              setData({
-                step: '4-single',
-                data: {
-                  sessions: event.sessions.map(s => {
-                    const start = dateToTimeString(s.start);
-                    const end = s.end ? dateToTimeString(s.end) : '00:00';
-                    const driverIds = s.drivers.map(d => d.id);
-                    const endsNextDay =
-                      dayjs(s.start).date() !== dayjs(s.end).date();
+                setData({
+                  step: '3-single',
+                  data: {
+                    teamName: event.roster.team.name,
+                    rosterId: event.roster.id,
+                    driverIds,
+                  },
+                });
 
-                    return {
-                      ...s,
-                      start,
-                      end,
-                      date: s.start,
-                      driverIds,
-                      endsNextDay,
-                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                      driverId: driverIds[0]!,
-                    };
-                  }),
-                },
-              });
+                setData({
+                  step: '4-single',
+                  data: {
+                    sessions: event.sessions.map(s => {
+                      const start = dateToTimeString(s.start);
+                      const end = s.end ? dateToTimeString(s.end) : '00:00';
+                      const driverIds = s.drivers.map(d => d.id);
+                      const endsNextDay =
+                        dayjs(s.start).date() !== dayjs(s.end).date();
+
+                      return {
+                        ...s,
+                        start,
+                        end,
+                        date: s.start,
+                        driverIds,
+                        endsNextDay,
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        driverId: driverIds[0]!,
+                      };
+                    }),
+                  },
+                });
+              }
             }}
           >
             <PencilIcon className='mr-2 h-4 w-4' />

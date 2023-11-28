@@ -33,6 +33,7 @@ export const eventRouter = createTRPCRouter({
 
       if (eventType === 'single') {
         const {
+          eventType,
           stepTwo: { game, name, car, track },
           stepThree: { rosterId },
           stepFour: { sessions },
@@ -41,6 +42,7 @@ export const eventRouter = createTRPCRouter({
         const event = await ctx.prisma.event.upsert({
           where: { id: eventId ?? '' },
           create: {
+            type: eventType,
             game: game.replaceAll(' ', '_') as ReplaceAll<
               typeof game,
               ' ',
@@ -164,6 +166,7 @@ export const eventRouter = createTRPCRouter({
               track: true,
               car: true,
               game: true,
+              type: true,
               roster: {
                 select: { id: true, team: { select: { name: true } } },
               },
