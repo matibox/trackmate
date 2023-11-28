@@ -79,7 +79,6 @@ export const sessionSchema = z
         end: z
           .string({ required_error: 'End time is required.' })
           .min(1, 'End time is required.'),
-        customDay: z.date().optional(),
         serverInformation: serverInfoSchema,
       }),
       // BRIEFING
@@ -128,6 +127,7 @@ export const sessionSchema = z
       start: z
         .string({ required_error: 'Start time is required.' })
         .min(1, 'Start time is required.'),
+      date: z.date({ required_error: 'Date is required' }),
     })
   )
   .superRefine((schema, ctx) => {
@@ -154,10 +154,9 @@ export default function SessionForm({
   addSession: (session: z.infer<typeof sessionSchema>) => void;
 }) {
   const [sessionFormOpen, setSessionFormOpen] = useState(false);
-  const [isDifferentDay, setIsDifferentDay] = useState(false);
 
   const {
-    steps: { stepTwoSingle, stepThreeSingle },
+    steps: { stepThreeSingle },
   } = useNewEvent();
 
   const driversQuery = api.user.byId.useQuery({
@@ -203,15 +202,12 @@ export default function SessionForm({
         ambientTemp: '',
       },
     });
-    setIsDifferentDay(false);
     setSessionFormOpen(false);
   }
 
   const sessionType = sessionForm.watch('type');
 
   useEffect(() => {
-    setIsDifferentDay(false);
-    sessionForm.resetField('customDay');
     sessionForm.resetField('serverInformation');
   }, [sessionType, sessionForm]);
 
@@ -272,19 +268,63 @@ export default function SessionForm({
                   )}
                 />
                 {sessionType ? (
-                  <FormField
-                    control={sessionForm.control}
-                    name='start'
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Start time</FormLabel>
-                        <FormControl>
-                          <Input {...field} type='time' />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                  <>
+                    <FormField
+                      control={sessionForm.control}
+                      name='date'
+                      render={({ field }) => (
+                        <FormItem className='flex w-full flex-col'>
+                          <FormLabel>Date</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={'outline'}
+                                  className={cn(
+                                    'pl-3 text-left font-normal',
+                                    !field.value && 'text-muted-foreground'
+                                  )}
+                                >
+                                  {field.value ? (
+                                    dayjs(field.value).format('MMMM DD, YYYY')
+                                  ) : (
+                                    <span>Pick a date</span>
+                                  )}
+                                  <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className='w-auto p-0'
+                              align='start'
+                            >
+                              <Calendar
+                                mode='single'
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                weekStartsOn={1}
+                                initialFocus
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={sessionForm.control}
+                      name='start'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Start time</FormLabel>
+                          <FormControl>
+                            <Input {...field} type='time' />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </>
                 ) : null}
                 <FormCondition
                   type='sessions'
@@ -333,74 +373,6 @@ export default function SessionForm({
                     )}
                   />
                 </FormCondition>
-                <FormCondition
-                  type='sessions'
-                  sessions={['briefing', 'practice', 'qualifying']}
-                  currentSession={sessionType}
-                >
-                  <div className='flex space-x-2'>
-                    <Checkbox
-                      id='different-day'
-                      checked={isDifferentDay}
-                      onCheckedChange={() => setIsDifferentDay(prev => !prev)}
-                    />
-                    <div className='grid gap-1.5 leading-none'>
-                      <label
-                        htmlFor='different-day'
-                        className='text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-                      >
-                        Different day session
-                      </label>
-                      <p className='text-sm text-slate-400'>
-                        Check this if {sessionType} is on different day than
-                        race.
-                      </p>
-                    </div>
-                  </div>
-                </FormCondition>
-                {isDifferentDay ? (
-                  <FormField
-                    control={sessionForm.control}
-                    name='customDay'
-                    render={({ field }) => (
-                      <FormItem className='flex w-[278px] flex-col'>
-                        <FormLabel>Date</FormLabel>
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <FormControl>
-                              <Button
-                                variant={'outline'}
-                                className={cn(
-                                  'pl-3 text-left font-normal',
-                                  !field.value && 'text-muted-foreground'
-                                )}
-                              >
-                                {field.value ? (
-                                  dayjs(field.value).format('MMMM DD, YYYY')
-                                ) : (
-                                  <span>Pick a date</span>
-                                )}
-                                <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                              </Button>
-                            </FormControl>
-                          </PopoverTrigger>
-                          <PopoverContent className='w-auto p-0' align='start'>
-                            <Calendar
-                              mode='single'
-                              selected={field.value}
-                              onSelect={field.onChange}
-                              weekStartsOn={1}
-                              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                              disabled={date => date >= stepTwoSingle!.date}
-                              initialFocus
-                            />
-                          </PopoverContent>
-                        </Popover>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                ) : null}
                 <FormCondition
                   type='sessions'
                   sessions={['qualifying']}

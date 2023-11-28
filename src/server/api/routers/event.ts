@@ -27,7 +27,7 @@ export const eventRouter = createTRPCRouter({
 
       if (eventType === 'single') {
         const {
-          stepTwo: { game, name, car, track, date },
+          stepTwo: { game, name, car, track },
           stepThree: { rosterId },
           stepFour: { sessions },
         } = input;
@@ -67,7 +67,7 @@ export const eventRouter = createTRPCRouter({
 
           await ctx.prisma.eventSession.create({
             data: {
-              ...getSessionTimespan({ session, raceDate: date }),
+              ...getSessionTimespan({ session, raceDate: session.date }),
               type: session.type,
               event: { connect: { id: event.id } },
               drivers:
@@ -101,7 +101,7 @@ export const eventRouter = createTRPCRouter({
             },
           });
         }
-        return date;
+        return sessions[0]?.date;
       }
     }),
   getCalendarData: protectedProcedure

@@ -11,7 +11,7 @@ import {
   UploadIcon,
   Wrench,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
@@ -65,10 +65,13 @@ export default function EventDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const { setSheetOpened, setData } = useNewEvent();
+  const { setSheetOpened, setData, steps } = useNewEvent();
+
+  useEffect(() => {
+    console.log(steps);
+  }, [steps]);
 
   // TODO: add event type to DB
-  // TODO: enable step 2 event date before today
 
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
@@ -105,7 +108,6 @@ export default function EventDropdown({
                       ' '
                     >) ?? undefined,
                   car: event.car ?? undefined,
-                  date: undefined,
                   track: event.track ?? undefined,
                 },
               });
@@ -127,6 +129,29 @@ export default function EventDropdown({
                   driverIds,
                 },
               });
+
+              // setData({
+              //   step: '4-single',
+              //   data: {
+              //     sessions: event.sessions.map(s => {
+              //       const start = dateToTimeString(s.start);
+              //       const end = s.end ? dateToTimeString(s.end) : '00:00';
+              //       const driverIds = s.drivers.map(d => d.id);
+              //       const endsNextDay =
+              //         dayjs(s.start).date() !== dayjs(s.end).date();
+
+              //       return {
+              //         ...s,
+              //         start,
+              //         end,
+              //         driverIds,
+              //         endsNextDay,
+              //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+              //         driverId: driverIds[0]!,
+              //       };
+              //     }),
+              //   },
+              // });
             }}
           >
             <PencilIcon className='mr-2 h-4 w-4' />

@@ -116,15 +116,12 @@ export default function Step4Single() {
                         .sort((a, b) => {
                           const startA = timeStringToDate(
                             a.start,
-                            'customDay' in a
-                              ? dayjs(a.customDay)
-                              : dayjs(stepTwoSingle?.date)
+                            dayjs(a.date)
                           );
+
                           const startB = timeStringToDate(
                             b.start,
-                            'customDay' in b
-                              ? dayjs(b.customDay)
-                              : dayjs(stepTwoSingle?.date)
+                            dayjs(b.date)
                           );
 
                           if (startA.isBefore(startB)) return -1;
@@ -132,11 +129,7 @@ export default function Step4Single() {
                           return 0;
                         })
                         .map(session => {
-                          const day = dayjs(
-                            'customDay' in session
-                              ? session.customDay
-                              : stepTwoSingle?.date
-                          );
+                          const day = dayjs(session.date);
                           let date = day.format('D MMM, dddd');
 
                           if ('endsNextDay' in session && session.endsNextDay) {
