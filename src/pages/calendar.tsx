@@ -25,7 +25,7 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 const Calendar: NextPage = () => {
   const router = useRouter();
   const { message: toastMessage } = router.query as {
-    message?: 'welcome' | 'createdEvent' | undefined;
+    message?: 'welcome' | 'createdEvent' | 'editedEvent' | undefined;
   };
   const { toast } = useToast();
 
@@ -44,6 +44,13 @@ const Calendar: NextPage = () => {
           variant: 'default',
           title: 'Success!',
           description: 'An event has successfully been created.',
+        });
+        break;
+      case 'editedEvent':
+        toast({
+          variant: 'default',
+          title: 'Success!',
+          description: 'An event has successfully been edited.',
         });
         break;
     }

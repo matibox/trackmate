@@ -39,6 +39,10 @@ export const useNewEvent = create<{
   };
   setData: ({ step, data }: SetDataType) => void;
   reset: () => void;
+  editMode: boolean;
+  setEditMode: (editMode: boolean) => void;
+  editModeEventId: string | undefined;
+  setEditModeEventId: (eventId: string | undefined) => void;
 }>((set, get) => ({
   sheetOpened: false,
   setSheetOpened: sheetOpened => set(() => ({ sheetOpened })),
@@ -64,6 +68,10 @@ export const useNewEvent = create<{
       const steps = { ...get().steps };
       objKeys(steps).forEach(k => (steps[k] = null));
 
-      return { steps };
+      return { steps, editMode: false, editModeEventId: undefined };
     }),
+  editMode: false,
+  setEditMode: editMode => set(() => ({ editMode })),
+  editModeEventId: undefined,
+  setEditModeEventId: editModeEventId => set(() => ({ editModeEventId })),
 }));

@@ -41,6 +41,8 @@ export default function Step4Single() {
     steps: { stepOne, stepTwoSingle, stepFourSingle, stepThreeSingle },
     setSheetOpened,
     reset,
+    editMode,
+    editModeEventId,
   } = useNewEvent();
   const selectDay = useCalendar(s => s.selectDay);
 
@@ -52,7 +54,7 @@ export default function Step4Single() {
   });
 
   const utils = api.useContext();
-  const createEvent = api.event.create.useMutation({
+  const createOrEditEvent = api.event.createOrEdit.useMutation({
     onError: err =>
       toast({
         variant: 'destructive',
@@ -60,7 +62,9 @@ export default function Step4Single() {
         description: err.message,
       }),
     onSuccess: async date => {
-      await router.push('/calendar?message=createdEvent');
+      await router.push(
+        `/calendar?message=${editMode ? 'edited' : 'created'}Event`
+      );
       await utils.event.invalidate();
       setSheetOpened(false);
       selectDay({ day: dayjs(date) });
@@ -80,8 +84,8 @@ export default function Step4Single() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const eventType = stepOne!.eventType!;
-    await createEvent.mutateAsync(
-      eventType === 'single'
+    await createOrEditEvent.mutateAsync({
+      ...(eventType === 'single'
         ? {
             eventType,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -90,14 +94,17 @@ export default function Step4Single() {
             stepThree: stepThreeSingle!,
             stepFour: values,
           }
-        : { eventType }
-    );
+        : { eventType }),
+      eventId: editMode ? editModeEventId : undefined,
+    });
   }
 
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create single event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} single event
+        </SheetTitle>
         <SheetDescription>
           Define the race week. Click next when you&apos;re ready.
         </SheetDescription>
@@ -116,15 +123,12 @@ export default function Step4Single() {
                         .sort((a, b) => {
                           const startA = timeStringToDate(
                             a.start,
-                            'customDay' in a
-                              ? dayjs(a.customDay)
-                              : dayjs(stepTwoSingle?.date)
+                            dayjs(a.date)
                           );
+
                           const startB = timeStringToDate(
                             b.start,
-                            'customDay' in b
-                              ? dayjs(b.customDay)
-                              : dayjs(stepTwoSingle?.date)
+                            dayjs(b.date)
                           );
 
                           if (startA.isBefore(startB)) return -1;
@@ -132,11 +136,7 @@ export default function Step4Single() {
                           return 0;
                         })
                         .map(session => {
-                          const day = dayjs(
-                            'customDay' in session
-                              ? session.customDay
-                              : stepTwoSingle?.date
-                          );
+                          const day = dayjs(session.date);
                           let date = day.format('D MMM, dddd');
 
                           if ('endsNextDay' in session && session.endsNextDay) {
@@ -226,7 +226,7 @@ export default function Step4Single() {
                                               )
                                             );
                                           }}
-                                          disabled={createEvent.isLoading}
+                                          disabled={createOrEditEvent.isLoading}
                                         >
                                           <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
                                         </Button>
@@ -347,29 +347,33 @@ export default function Step4Single() {
               { id: crypto.randomBytes(4).toString('hex'), ...session },
             ]);
           }}
-          loading={createEvent.isLoading}
+          loading={createOrEditEvent.isLoading}
         />
         <SheetFooter className='flex-row justify-between sm:justify-between'>
           <Button
             type='button'
             variant='secondary'
-            onClick={() => setStep('3-single')}
-            disabled={createEvent.isLoading}
+            onClick={() => {
+              const data = form.getValues();
+              setData({ step: '4-single', data });
+              setStep('3-single');
+            }}
+            disabled={createOrEditEvent.isLoading}
           >
             Back
           </Button>
           <Button
             type='submit'
             form='main-form'
-            disabled={createEvent.isLoading}
+            disabled={createOrEditEvent.isLoading}
           >
-            {createEvent.isLoading ? (
+            {createOrEditEvent.isLoading ? (
               <>
                 Please wait
                 <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
               </>
             ) : (
-              'Create event'
+              `${editMode ? 'Edit' : 'Create'} event`
             )}
           </Button>
         </SheetFooter>

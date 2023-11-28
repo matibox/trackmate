@@ -5,6 +5,7 @@ import {
   FilePlus,
   Loader2Icon,
   MenuIcon,
+  PencilIcon,
   ShieldCheckIcon,
   TrashIcon,
   UploadIcon,
@@ -48,10 +49,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
-import { type ReplaceAll, cn } from '~/lib/utils';
+import { type ReplaceAll, cn, dateToTimeString } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useSetupDownload } from './useSetupDownload';
 import { ScrollArea } from '~/components/ui/ScrollArea';
+import { useNewEvent } from './new-event/store/newEventStore';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
@@ -63,6 +65,8 @@ export default function EventDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
+  const { setSheetOpened, setEditMode, setEditModeEventId, setData } =
+    useNewEvent();
 
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
@@ -84,6 +88,76 @@ export default function EventDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Manage event</DropdownMenuLabel>
         <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() => {
+              setSheetOpened(true);
+              setEditMode(true);
+              setEditModeEventId(event.id);
+              setData({ step: '1', data: { eventType: event.type } });
+
+              if (event.type === 'single') {
+                setData({
+                  step: '2-single',
+                  data: {
+                    name: event.name ?? undefined,
+                    game:
+                      (event.game.replaceAll('_', ' ') as ReplaceAll<
+                        typeof event.game,
+                        '_',
+                        ' '
+                      >) ?? undefined,
+                    car: event.car ?? undefined,
+                    track: event.track ?? undefined,
+                  },
+                });
+
+                const driverIds = [
+                  ...new Set(
+                    event.sessions
+                      .map(s => s.drivers)
+                      .flat()
+                      .map(d => d.id)
+                  ),
+                ];
+
+                setData({
+                  step: '3-single',
+                  data: {
+                    teamName: event.roster.team.name,
+                    rosterId: event.roster.id,
+                    driverIds,
+                  },
+                });
+
+                setData({
+                  step: '4-single',
+                  data: {
+                    sessions: event.sessions.map(s => {
+                      const start = dateToTimeString(s.start);
+                      const end = s.end ? dateToTimeString(s.end) : '00:00';
+                      const driverIds = s.drivers.map(d => d.id);
+                      const endsNextDay =
+                        dayjs(s.start).date() !== dayjs(s.end).date();
+
+                      return {
+                        ...s,
+                        start,
+                        end,
+                        date: s.start,
+                        driverIds,
+                        endsNextDay,
+                        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                        driverId: driverIds[0]!,
+                      };
+                    }),
+                  },
+                });
+              }
+            }}
+          >
+            <PencilIcon className='mr-2 h-4 w-4' />
+            <span>Edit event</span>
+          </DropdownMenuItem>
           <DeleteEventDialog event={event} />
         </DropdownMenuGroup>
       </DropdownMenuContent>
@@ -119,7 +193,6 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
   const { mutate: addSetup, isLoading } =
     api.event.addAndAssignSetup.useMutation({
       onSuccess: async () => {
-        console.log('success');
         await utils.event.invalidate();
         setDialogOpen(false);
       },

@@ -12,22 +12,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/Popover';
-import { type ReplaceAll, cn, groupBy } from '~/lib/utils';
-import dayjs from 'dayjs';
-import { CalendarIcon } from 'lucide-react';
-import { Calendar } from '~/components/ui/Calendar';
+import { type ReplaceAll, groupBy } from '~/lib/utils';
 import { useSession } from 'next-auth/react';
 import {
   Select,
@@ -48,7 +39,6 @@ const baseSchemaShape = z.object({
   name: z
     .string({ required_error: 'Event name is required.' })
     .min(1, 'Event name is required.'),
-  date: z.date({ required_error: 'Event date is required.' }),
 });
 
 const trackErrorMessage = 'Track is required.';
@@ -85,6 +75,7 @@ export default function Step2Single() {
     setStep,
     setData,
     steps: { stepTwoSingle },
+    editMode,
   } = useNewEvent();
 
   const firstRender = useFirstRender();
@@ -93,7 +84,6 @@ export default function Step2Single() {
     resolver: zodResolver(step2SingleSchema),
     defaultValues: {
       name: stepTwoSingle?.name ?? '',
-      date: stepTwoSingle?.date,
       game: stepTwoSingle
         ? stepTwoSingle.game
         : (session?.user.profile?.mainGame.replaceAll('_', ' ') as ReplaceAll<
@@ -128,16 +118,12 @@ export default function Step2Single() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [form, game, setData]);
 
-  const date = form.watch('date');
-
-  useEffect(() => {
-    setData({ step: '4-single', data: { sessions: [] } });
-  }, [date, setData]);
-
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create single event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} single event
+        </SheetTitle>
         <SheetDescription>
           Fill basic event data, click next when you&apos;re ready.
         </SheetDescription>
@@ -154,57 +140,6 @@ export default function Step2Single() {
                   <FormControl className='w-[278px]'>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='date'
-              render={({ field }) => (
-                <FormItem className='flex w-[278px] flex-col'>
-                  <FormLabel>Date</FormLabel>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant={'outline'}
-                          className={cn(
-                            'pl-3 text-left font-normal',
-                            !field.value && 'text-muted-foreground'
-                          )}
-                        >
-                          {field.value ? (
-                            dayjs(field.value).format('MMMM DD, YYYY')
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className='w-auto p-0' align='start'>
-                      <Calendar
-                        mode='single'
-                        weekStartsOn={1}
-                        selected={field.value}
-                        onSelect={field.onChange}
-                        disabled={date =>
-                          date <
-                          new Date(
-                            dayjs().year(),
-                            dayjs().month(),
-                            dayjs().date()
-                          )
-                        }
-                        initialFocus
-                      />
-                    </PopoverContent>
-                  </Popover>
-                  <FormDescription>
-                    If some part of an event is held on a different day than the
-                    race, put in a date the race is held on.
-                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -322,7 +257,14 @@ export default function Step2Single() {
               <Button
                 type='button'
                 variant='secondary'
-                onClick={() => setStep('1')}
+                onClick={() => {
+                  const data = form.getValues();
+                  setData({
+                    step: '2-single',
+                    data,
+                  });
+                  setStep('1');
+                }}
               >
                 Back
               </Button>
