@@ -8,7 +8,7 @@ import { encryptString, getSessionTimespan } from '../utils/utils';
 import { games } from '~/lib/constants';
 
 export const eventRouter = createTRPCRouter({
-  create: protectedProcedure
+  createOrEdit: protectedProcedure
     .input(
       z
         .discriminatedUnion('eventType', [

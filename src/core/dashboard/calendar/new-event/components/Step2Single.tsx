@@ -75,6 +75,7 @@ export default function Step2Single() {
     setStep,
     setData,
     steps: { stepTwoSingle },
+    editMode,
   } = useNewEvent();
 
   const firstRender = useFirstRender();
@@ -120,7 +121,9 @@ export default function Step2Single() {
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create single event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} single event
+        </SheetTitle>
         <SheetDescription>
           Fill basic event data, click next when you&apos;re ready.
         </SheetDescription>

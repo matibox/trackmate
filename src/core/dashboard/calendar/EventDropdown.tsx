@@ -11,7 +11,7 @@ import {
   UploadIcon,
   Wrench,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
@@ -65,12 +65,8 @@ export default function EventDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const { setSheetOpened, setEditMode, setEditModeEventId, setData, steps } =
+  const { setSheetOpened, setEditMode, setEditModeEventId, setData } =
     useNewEvent();
-
-  useEffect(() => {
-    console.log(steps);
-  }, [steps]);
 
   // TODO: add event type to DB
 
@@ -196,7 +192,6 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
   const { mutate: addSetup, isLoading } =
     api.event.addAndAssignSetup.useMutation({
       onSuccess: async () => {
-        console.log('success');
         await utils.event.invalidate();
         setDialogOpen(false);
       },

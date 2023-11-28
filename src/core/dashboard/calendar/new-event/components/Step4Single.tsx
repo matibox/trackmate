@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/Form';
-import { RouterOutputs, api } from '~/utils/api';
+import { api } from '~/utils/api';
 import { capitalize, timeStringToDate } from '~/lib/utils';
 import crypto from 'crypto';
 import {
@@ -54,7 +54,7 @@ export default function Step4Single() {
   });
 
   const utils = api.useContext();
-  const createEvent = api.event.create.useMutation({
+  const createOrEditEvent = api.event.createOrEdit.useMutation({
     onError: err =>
       toast({
         variant: 'destructive',
@@ -84,7 +84,7 @@ export default function Step4Single() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const eventType = stepOne!.eventType!;
-    await createEvent.mutateAsync({
+    await createOrEditEvent.mutateAsync({
       ...(eventType === 'single'
         ? {
             eventType,
@@ -102,7 +102,9 @@ export default function Step4Single() {
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create single event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} single event
+        </SheetTitle>
         <SheetDescription>
           Define the race week. Click next when you&apos;re ready.
         </SheetDescription>
@@ -224,7 +226,7 @@ export default function Step4Single() {
                                               )
                                             );
                                           }}
-                                          disabled={createEvent.isLoading}
+                                          disabled={createOrEditEvent.isLoading}
                                         >
                                           <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
                                         </Button>
@@ -345,7 +347,7 @@ export default function Step4Single() {
               { id: crypto.randomBytes(4).toString('hex'), ...session },
             ]);
           }}
-          loading={createEvent.isLoading}
+          loading={createOrEditEvent.isLoading}
         />
         <SheetFooter className='flex-row justify-between sm:justify-between'>
           <Button
@@ -356,22 +358,22 @@ export default function Step4Single() {
               setData({ step: '4-single', data });
               setStep('3-single');
             }}
-            disabled={createEvent.isLoading}
+            disabled={createOrEditEvent.isLoading}
           >
             Back
           </Button>
           <Button
             type='submit'
             form='main-form'
-            disabled={createEvent.isLoading}
+            disabled={createOrEditEvent.isLoading}
           >
-            {createEvent.isLoading ? (
+            {createOrEditEvent.isLoading ? (
               <>
                 Please wait
                 <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
               </>
             ) : (
-              'Create event'
+              `${editMode ? 'Edit' : 'Create'} event`
             )}
           </Button>
         </SheetFooter>

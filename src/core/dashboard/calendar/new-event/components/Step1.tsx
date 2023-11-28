@@ -32,6 +32,7 @@ export default function Step1() {
     setStep,
     steps: { stepOne },
     setSheetOpened,
+    editMode,
   } = useNewEvent();
 
   const { data, isLoading } = api.user.isInTeamOrRoster.useQuery();
@@ -57,7 +58,9 @@ export default function Step1() {
       <>
         {data?.isInRoster && data?.isInTeam ? (
           <SheetHeader>
-            <SheetTitle className='text-3xl'>Create event</SheetTitle>
+            <SheetTitle className='text-3xl'>
+              {editMode ? 'Edit' : 'Create'} event
+            </SheetTitle>
             <SheetDescription>
               Select event type first, click next when you&apos;re ready.
             </SheetDescription>

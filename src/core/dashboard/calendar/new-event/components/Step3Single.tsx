@@ -51,6 +51,7 @@ export default function Step3Single() {
     setStep,
     steps: { stepTwoSingle, stepThreeSingle },
     setData,
+    editMode,
   } = useNewEvent();
 
   const firstRender = useFirstRender();
@@ -120,7 +121,9 @@ export default function Step3Single() {
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create single event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} single event
+        </SheetTitle>
         <SheetDescription>
           Choose drivers, click next when you&apos;re ready.
         </SheetDescription>
