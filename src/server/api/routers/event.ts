@@ -139,6 +139,9 @@ export const eventRouter = createTRPCRouter({
               track: true,
               car: true,
               game: true,
+              roster: {
+                select: { id: true, team: { select: { name: true } } },
+              },
               sessions: {
                 orderBy: { start: 'asc' },
                 select: {

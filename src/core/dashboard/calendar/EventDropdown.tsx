@@ -5,6 +5,7 @@ import {
   FilePlus,
   Loader2Icon,
   MenuIcon,
+  PencilIcon,
   ShieldCheckIcon,
   TrashIcon,
   UploadIcon,
@@ -48,10 +49,11 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
-import { type ReplaceAll, cn } from '~/lib/utils';
+import { type ReplaceAll, cn, dateToTimeString } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useSetupDownload } from './useSetupDownload';
 import { ScrollArea } from '~/components/ui/ScrollArea';
+import { useNewEvent } from './new-event/store/newEventStore';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
@@ -63,6 +65,10 @@ export default function EventDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
+  const { setSheetOpened, setData } = useNewEvent();
+
+  // TODO: add event type to DB
+  // TODO: enable step 2 event date before today
 
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
@@ -84,6 +90,48 @@ export default function EventDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Manage event</DropdownMenuLabel>
         <DropdownMenuGroup>
+          <DropdownMenuItem
+            onClick={() => {
+              setSheetOpened(true);
+              setData({ step: '1', data: { eventType: 'single' } });
+              setData({
+                step: '2-single',
+                data: {
+                  name: event.name ?? undefined,
+                  game:
+                    (event.game.replaceAll('_', ' ') as ReplaceAll<
+                      typeof event.game,
+                      '_',
+                      ' '
+                    >) ?? undefined,
+                  car: event.car ?? undefined,
+                  date: undefined,
+                  track: event.track ?? undefined,
+                },
+              });
+
+              const driverIds = [
+                ...new Set(
+                  event.sessions
+                    .map(s => s.drivers)
+                    .flat()
+                    .map(d => d.id)
+                ),
+              ];
+
+              setData({
+                step: '3-single',
+                data: {
+                  teamName: event.roster.team.name,
+                  rosterId: event.roster.id,
+                  driverIds,
+                },
+              });
+            }}
+          >
+            <PencilIcon className='mr-2 h-4 w-4' />
+            <span>Edit event</span>
+          </DropdownMenuItem>
           <DeleteEventDialog event={event} />
         </DropdownMenuGroup>
       </DropdownMenuContent>
