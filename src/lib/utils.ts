@@ -48,6 +48,12 @@ export function timeStringToDate(str: string, date = dayjs()) {
   );
 }
 
+export function dateToTimeString(date: Date) {
+  const hours = dayjs(date).hour();
+  const minutes = dayjs(date).minute();
+  return `${hours}:${minutes}`;
+}
+
 export function timeStringToMinutes(str: string) {
   const [hours, minutes] = str.split(':').map(Number) as [number, number];
   return hours * 60 + minutes;
