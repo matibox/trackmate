@@ -10,20 +10,26 @@ import { games } from '~/lib/constants';
 export const eventRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
-      z.discriminatedUnion('eventType', [
-        z.object({
-          eventType: z.literal('single'),
-          stepTwo: step2SingleSchema,
-          stepThree: step3SingleSchema,
-          stepFour: step4SingleSchema,
-        }),
-        z.object({
-          eventType: z.literal('championship'),
-        }),
-      ])
+      z
+        .discriminatedUnion('eventType', [
+          z.object({
+            eventType: z.literal('single'),
+            stepTwo: step2SingleSchema,
+            stepThree: step3SingleSchema,
+            stepFour: step4SingleSchema,
+          }),
+          z.object({
+            eventType: z.literal('championship'),
+          }),
+        ])
+        .and(
+          z.object({
+            eventId: z.string().optional(),
+          })
+        )
     )
     .mutation(async ({ ctx, input }) => {
-      const { eventType } = input;
+      const { eventType, eventId } = input;
 
       if (eventType === 'single') {
         const {
@@ -32,8 +38,9 @@ export const eventRouter = createTRPCRouter({
           stepFour: { sessions },
         } = input;
 
-        const event = await ctx.prisma.event.create({
-          data: {
+        const event = await ctx.prisma.event.upsert({
+          where: { id: eventId ?? '' },
+          create: {
             game: game.replaceAll(' ', '_') as ReplaceAll<
               typeof game,
               ' ',
@@ -51,9 +58,26 @@ export const eventRouter = createTRPCRouter({
             //   },
             // },
           },
+          update: {
+            game: game.replaceAll(' ', '_') as ReplaceAll<
+              typeof game,
+              ' ',
+              '_'
+            >,
+            name,
+            car,
+            track,
+            roster: { connect: { id: rosterId } },
+          },
           include: { sessions: true },
         });
 
+        // if in edit mode
+        if (eventId) {
+          await ctx.prisma.eventSession.deleteMany({
+            where: { eventId },
+          });
+        }
         // super annoying...
         // https://github.com/prisma/prisma/issues/5455
         // https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#create-multiple-records-and-multiple-related-records
@@ -67,7 +91,7 @@ export const eventRouter = createTRPCRouter({
 
           await ctx.prisma.eventSession.create({
             data: {
-              ...getSessionTimespan({ session, raceDate: session.date }),
+              ...getSessionTimespan({ session }),
               type: session.type,
               event: { connect: { id: event.id } },
               drivers:
@@ -101,6 +125,7 @@ export const eventRouter = createTRPCRouter({
             },
           });
         }
+
         return sessions[0]?.date;
       }
     }),

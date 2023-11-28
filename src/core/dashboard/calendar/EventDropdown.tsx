@@ -65,7 +65,8 @@ export default function EventDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const { setSheetOpened, setData, steps } = useNewEvent();
+  const { setSheetOpened, setEditMode, setEditModeEventId, setData, steps } =
+    useNewEvent();
 
   useEffect(() => {
     console.log(steps);
@@ -96,6 +97,8 @@ export default function EventDropdown({
           <DropdownMenuItem
             onClick={() => {
               setSheetOpened(true);
+              setEditMode(true);
+              setEditModeEventId(event.id);
               setData({ step: '1', data: { eventType: 'single' } });
               setData({
                 step: '2-single',

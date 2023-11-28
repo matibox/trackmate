@@ -124,6 +124,7 @@ export const sessionSchema = z
   )
   .and(
     z.object({
+      id: z.string().optional(),
       start: z
         .string({ required_error: 'Start time is required.' })
         .min(1, 'Start time is required.'),

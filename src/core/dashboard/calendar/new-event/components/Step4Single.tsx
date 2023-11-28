@@ -11,7 +11,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/Form';
-import { api } from '~/utils/api';
+import { RouterOutputs, api } from '~/utils/api';
 import { capitalize, timeStringToDate } from '~/lib/utils';
 import crypto from 'crypto';
 import {
@@ -41,6 +41,8 @@ export default function Step4Single() {
     steps: { stepOne, stepTwoSingle, stepFourSingle, stepThreeSingle },
     setSheetOpened,
     reset,
+    editMode,
+    editModeEventId,
   } = useNewEvent();
   const selectDay = useCalendar(s => s.selectDay);
 
@@ -60,7 +62,9 @@ export default function Step4Single() {
         description: err.message,
       }),
     onSuccess: async date => {
-      await router.push('/calendar?message=createdEvent');
+      await router.push(
+        `/calendar?message=${editMode ? 'edited' : 'created'}Event`
+      );
       await utils.event.invalidate();
       setSheetOpened(false);
       selectDay({ day: dayjs(date) });
@@ -80,8 +84,8 @@ export default function Step4Single() {
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const eventType = stepOne!.eventType!;
-    await createEvent.mutateAsync(
-      eventType === 'single'
+    await createEvent.mutateAsync({
+      ...(eventType === 'single'
         ? {
             eventType,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -90,8 +94,9 @@ export default function Step4Single() {
             stepThree: stepThreeSingle!,
             stepFour: values,
           }
-        : { eventType }
-    );
+        : { eventType }),
+      eventId: editMode ? editModeEventId : undefined,
+    });
   }
 
   return (
