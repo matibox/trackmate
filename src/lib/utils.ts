@@ -49,8 +49,8 @@ export function timeStringToDate(str: string, date = dayjs()) {
 }
 
 export function dateToTimeString(date: Date) {
-  const hours = dayjs(date).hour();
-  const minutes = dayjs(date).minute();
+  const hours = dayjs(date).format('HH');
+  const minutes = dayjs(date).format('mm');
   return `${hours}:${minutes}`;
 }
 

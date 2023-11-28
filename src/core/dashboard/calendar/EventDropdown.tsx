@@ -130,28 +130,29 @@ export default function EventDropdown({
                 },
               });
 
-              // setData({
-              //   step: '4-single',
-              //   data: {
-              //     sessions: event.sessions.map(s => {
-              //       const start = dateToTimeString(s.start);
-              //       const end = s.end ? dateToTimeString(s.end) : '00:00';
-              //       const driverIds = s.drivers.map(d => d.id);
-              //       const endsNextDay =
-              //         dayjs(s.start).date() !== dayjs(s.end).date();
+              setData({
+                step: '4-single',
+                data: {
+                  sessions: event.sessions.map(s => {
+                    const start = dateToTimeString(s.start);
+                    const end = s.end ? dateToTimeString(s.end) : '00:00';
+                    const driverIds = s.drivers.map(d => d.id);
+                    const endsNextDay =
+                      dayjs(s.start).date() !== dayjs(s.end).date();
 
-              //       return {
-              //         ...s,
-              //         start,
-              //         end,
-              //         driverIds,
-              //         endsNextDay,
-              //         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              //         driverId: driverIds[0]!,
-              //       };
-              //     }),
-              //   },
-              // });
+                    return {
+                      ...s,
+                      start,
+                      end,
+                      date: s.start,
+                      driverIds,
+                      endsNextDay,
+                      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                      driverId: driverIds[0]!,
+                    };
+                  }),
+                },
+              });
             }}
           >
             <PencilIcon className='mr-2 h-4 w-4' />
