@@ -13,6 +13,7 @@ import CalendarComp from '~/core/dashboard/calendar/Calendar';
 import EventList from '~/core/dashboard/calendar/EventList';
 import { Button } from '~/components/ui/Button';
 import { useNewEvent } from '~/core/dashboard/calendar/new-event/store/newEventStore';
+import { api } from '~/utils/api';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -68,6 +69,8 @@ const Calendar: NextPage = () => {
 
   useProtectedRoute();
 
+  const greetUser = api.welcome.greetUser.useMutation();
+
   return (
     <>
       <NextSeo title='Calendar' />
@@ -78,6 +81,7 @@ const Calendar: NextPage = () => {
             <div className='hidden lg:col-span-2 lg:mb-8 lg:flex lg:items-center lg:justify-between lg:pr-12'>
               <div className='flex flex-col gap-2'>
                 <h1 className='text-5xl font-bold leading-none'>Calendar</h1>
+                <button onClick={() => greetUser.mutate()}>test</button>
                 <span className='leading-none text-slate-300'>
                   Schedule your races and see their details.
                 </span>
