@@ -170,7 +170,6 @@ export const welcomeRouter = createTRPCRouter({
     client.once(Events.ClientReady, client => {
       schedule.scheduleJob(dayjs().add(10, 'second').toDate(), async () => {
         await client.users.send('459023179801952286', 'lol it works');
-        await client.destroy();
       });
     });
 
