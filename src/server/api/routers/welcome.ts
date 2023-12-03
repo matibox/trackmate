@@ -10,9 +10,6 @@ import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 import { type ReplaceAll } from '~/lib/utils';
 
-import { sendDirectMessage } from '~/server/discord';
-import cron from 'node-cron';
-
 async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
   return await bcrypt.hash(password, salt);
