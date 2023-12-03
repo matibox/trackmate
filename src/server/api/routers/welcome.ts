@@ -10,9 +10,8 @@ import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 import { type ReplaceAll } from '~/lib/utils';
 
-import { Client, Events, GatewayIntentBits } from 'discord.js';
-import schedule from 'node-schedule';
-import dayjs from 'dayjs';
+import { sendDirectMessage } from '~/server/discord';
+import cron from 'node-cron';
 
 async function hashPassword(password: string) {
   const salt = await bcrypt.genSalt(10);
@@ -164,15 +163,9 @@ export const welcomeRouter = createTRPCRouter({
         return user;
       }
     }),
-  greetUser: protectedProcedure.mutation(async () => {
-    const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-    client.once(Events.ClientReady, client => {
-      schedule.scheduleJob(dayjs().add(10, 'second').toDate(), async () => {
-        await client.users.send('459023179801952286', 'lol it works');
-      });
+  greetUser: protectedProcedure.mutation(() => {
+    cron.schedule('*/1 * * * *', () => {
+      void sendDirectMessage('459023179801952286', 'the real test');
     });
-
-    await client.login(process.env.DISCORD_BOT_TOKEN as string);
   }),
 });
