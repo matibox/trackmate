@@ -40,6 +40,11 @@ export const eventRouter = createTRPCRouter({
           stepFour: { sessions },
         } = input;
 
+        console.log(
+          'session dates',
+          sessions.map(s => dayjs(s.date).format('YYYY/MM/DD HH:mm'))
+        );
+
         const event = await ctx.prisma.event.upsert({
           where: { id: eventId ?? '' },
           create: {
