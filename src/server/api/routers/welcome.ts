@@ -163,9 +163,4 @@ export const welcomeRouter = createTRPCRouter({
         return user;
       }
     }),
-  greetUser: protectedProcedure.mutation(() => {
-    cron.schedule('*/1 * * * *', () => {
-      void sendDirectMessage('459023179801952286', 'the real test');
-    });
-  }),
 });
