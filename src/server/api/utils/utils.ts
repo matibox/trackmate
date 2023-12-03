@@ -45,6 +45,8 @@ export function getSessionTimespan({
   const start = timeStringToMinutes(session.start);
   const end = 'end' in session ? timeStringToMinutes(session.end) : undefined;
 
+  console.log('session date', dayjs(session.date).format('YYYY/MM/DD HH:mm'));
+
   const baseDate = dayjs(session.date)
     .set('minutes', 0)
     .set('hours', 0)
