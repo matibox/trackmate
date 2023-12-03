@@ -1,11 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step2Single';
 import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step3Single';
-import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
-import { encryptString, getSessionTimespan } from '../utils/utils';
+import { encryptString } from '../utils/utils';
 import { games } from '~/lib/constants';
+import { sessionSchema } from '~/core/dashboard/calendar/new-event/components/SessionForm';
 
 export const eventRouter = createTRPCRouter({
   createOrEdit: protectedProcedure
@@ -16,7 +16,16 @@ export const eventRouter = createTRPCRouter({
             eventType: z.literal('single'),
             stepTwo: step2SingleSchema,
             stepThree: step3SingleSchema,
-            stepFour: step4SingleSchema,
+            stepFour: z.object({
+              sessions: z.array(
+                sessionSchema.and(
+                  z.object({
+                    startDate: z.date(),
+                    endDate: z.date().optional(),
+                  })
+                )
+              ),
+            }),
           }),
           z.object({
             eventType: z.literal('championship'),
@@ -93,7 +102,8 @@ export const eventRouter = createTRPCRouter({
 
           await ctx.prisma.eventSession.create({
             data: {
-              ...getSessionTimespan({ session }),
+              start: session.startDate,
+              end: session.endDate,
               type: session.type,
               event: { connect: { id: event.id } },
               drivers:
