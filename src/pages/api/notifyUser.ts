@@ -16,18 +16,17 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const now = dayjs();
+  const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 
   for (const notif of testNotifications) {
-    if (notif.date.date() > now.date()) return;
-    const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
-    client.once(Events.ClientReady, async () => {
-      await client.users.send('459023179801952286', 'test');
-      await client.destroy();
-    });
-
-    await client.login(process.env.DISCORD_BOT_TOKEN);
+    if (notif.date.date() <= now.date()) {
+      await client.login(process.env.DISCORD_BOT_TOKEN);
+      client.once(Events.ClientReady, async () => {
+        await client.users.send('459023179801952286', 'test');
+        await client.destroy();
+      });
+    }
   }
 
-  res.status(200);
+  res.status(201).end();
 }
