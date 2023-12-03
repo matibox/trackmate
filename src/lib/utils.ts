@@ -69,20 +69,13 @@ export function getSessionTimespan({
   const start = timeStringToMinutes(session.start);
   const end = 'end' in session ? timeStringToMinutes(session.end) : undefined;
 
-  console.log('session date', dayjs(session.date).format('YYYY/MM/DD HH:mm'));
-
   const baseDate = dayjs(session.date)
     .set('minutes', 0)
     .set('hours', 0)
     .set('seconds', 0);
 
-  console.log('base date', baseDate.format('YYYY/MM/DD HH:mm'));
-
   const startDate = baseDate.add(start, 'minutes');
   const endDate = end ? baseDate.add(end, 'minutes') : undefined;
-
-  console.log('startDate', startDate.format('YYYY/MM/DD HH:mm'));
-  console.log('endDate', endDate?.format('YYYY/MM/DD HH:mm'));
 
   if ('endsNextDay' in session && session.endsNextDay && endDate) {
     return {

@@ -82,10 +82,6 @@ export default function Step4Single() {
   async function onSubmit(values: z.infer<typeof step4SingleSchema>) {
     setData({ step: '4-single', data: values });
 
-    console.log(
-      values.sessions.map(s => dayjs(s.date).format('YYYY/MM/DD HH:mm'))
-    );
-
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const eventType = stepOne!.eventType!;
     await createOrEditEvent.mutateAsync({
