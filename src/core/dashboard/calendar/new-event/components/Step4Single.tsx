@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/Form';
 import { api } from '~/utils/api';
-import { capitalize, timeStringToDate } from '~/lib/utils';
+import { capitalize, timeStringToDate, getSessionTimespan } from '~/lib/utils';
 import crypto from 'crypto';
 import {
   Tooltip,
@@ -96,7 +96,18 @@ export default function Step4Single() {
             stepTwo: stepTwoSingle!,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             stepThree: stepThreeSingle!,
-            stepFour: values,
+            stepFour: {
+              sessions: values.sessions.map(session => {
+                const { start: startDate, end: endDate } = getSessionTimespan({
+                  session,
+                });
+                return {
+                  ...session,
+                  startDate,
+                  endDate,
+                };
+              }),
+            },
           }
         : { eventType }),
       eventId: editMode ? editModeEventId : undefined,
