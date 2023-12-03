@@ -6,6 +6,7 @@ import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { encryptString, getSessionTimespan } from '../utils/utils';
 import { games } from '~/lib/constants';
+import dayjs from 'dayjs';
 
 export const eventRouter = createTRPCRouter({
   createOrEdit: protectedProcedure
@@ -90,6 +91,10 @@ export const eventRouter = createTRPCRouter({
               : 'driverId' in session
               ? [session.driverId]
               : [];
+
+          console.log(
+            dayjs(getSessionTimespan({ session }).start).format('DD/MM HH:mm')
+          );
 
           await ctx.prisma.eventSession.create({
             data: {
