@@ -93,7 +93,9 @@ export const eventRouter = createTRPCRouter({
               : [];
 
           console.log(
-            dayjs(getSessionTimespan({ session }).start).format('DD/MM HH:mm')
+            dayjs(getSessionTimespan({ session }).start).format(
+              'YYYY/MM/DD HH:mm'
+            )
           );
 
           await ctx.prisma.eventSession.create({

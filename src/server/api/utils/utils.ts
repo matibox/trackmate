@@ -50,8 +50,13 @@ export function getSessionTimespan({
     .set('hours', 0)
     .set('seconds', 0);
 
+  console.log('base date', baseDate.format('YYYY/MM/DD HH:mm'));
+
   const startDate = baseDate.add(start, 'minutes');
   const endDate = end ? baseDate.add(end, 'minutes') : undefined;
+
+  console.log('startDate', startDate.format('YYYY/MM/DD HH:mm'));
+  console.log('endDate', endDate?.format('YYYY/MM/DD HH:mm'));
 
   if ('endsNextDay' in session && session.endsNextDay && endDate) {
     return {
