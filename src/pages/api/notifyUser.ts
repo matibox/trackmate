@@ -23,7 +23,6 @@ export default async function handler(
       await client.login(process.env.DISCORD_BOT_TOKEN);
       client.once(Events.ClientReady, async () => {
         await client.users.send('459023179801952286', 'test');
-        await client.destroy();
       });
     }
   }

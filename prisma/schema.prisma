@@ -84,13 +84,14 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile       Profile?
-  accounts      Account[]
-  sessions      Session[]
-  teams         UsersOnTeams[]
-  rosters       RosterOnMember[]
-  eventSessions EventSession[]
-  setups        Setup[]
+  profile            Profile?
+  accounts           Account[]
+  sessions           Session[]
+  teams              UsersOnTeams[]
+  rosters            RosterOnMember[]
+  eventSessions      EventSession[]
+  setups             Setup[]
+  eventNotifications EventNotification[]
 }
 
 model Profile {
@@ -161,10 +162,22 @@ model Event {
   roster   Roster    @relation(fields: [rosterId], references: [id])
   rosterId String
 
-  sessions EventSession[]
-  setups   Setup[]
+  sessions      EventSession[]
+  setups        Setup[]
+  notifications EventNotification[]
 
   @@index([rosterId])
+}
+
+model EventNotification {
+  id        String   @id @default(cuid())
+  executeAt DateTime
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+
+  users User[]
+
+  @@index([eventId])
 }
 
 model EventSession {
