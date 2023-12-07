@@ -22,7 +22,14 @@ import { useToast } from '~/components/ui/useToast';
 import { useRouter } from 'next/router';
 import { useCalendar } from '../../store';
 import dayjs from 'dayjs';
-import { Loader2Icon } from 'lucide-react';
+import {
+  BotIcon,
+  ClockIcon,
+  ExternalLinkIcon,
+  Loader2Icon,
+  RefreshCwIcon,
+  UserCheckIcon,
+} from 'lucide-react';
 import Image from 'next/image';
 import { Checkbox } from '~/components/ui/Checkbox';
 
@@ -71,19 +78,20 @@ export default function Step5() {
 
   const utils = api.useContext();
 
-  const { data: userInDiscord } = api.user.isInDiscordServer.useQuery(
-    undefined,
-    {
-      onError: err =>
-        toast({
-          variant: 'destructive',
-          title: 'An error occured',
-          description: err.message,
-        }),
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    }
-  );
+  const {
+    data: userInDiscord,
+    refetch,
+    isLoading,
+  } = api.user.isInDiscordServer.useQuery(undefined, {
+    onError: err =>
+      toast({
+        variant: 'destructive',
+        title: 'An error occured',
+        description: err.message,
+      }),
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+  });
 
   const createOrEditEvent = api.event.createOrEdit.useMutation({
     onError: err =>
@@ -136,8 +144,12 @@ export default function Step5() {
       <div className='grid justify-center gap-4 py-8 text-slate-50'>
         <ScrollArea className='max-h-[60vh]'>
           <Form {...form}>
-            <form id='main-form' onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='flex flex-col gap-2'>
+            <form
+              id='main-form'
+              onSubmit={form.handleSubmit(onSubmit)}
+              className='w-[278px]'
+            >
+              <div className='flex flex-col gap-3'>
                 <div className='flex gap-2'>
                   <Image
                     src='/images/Discord.svg'
@@ -148,63 +160,131 @@ export default function Step5() {
                   />
                   <span className='font-semibold'>Discord</span>
                 </div>
-                <FormField
-                  control={form.control}
-                  name='reminders'
-                  render={() => (
-                    <FormItem>
-                      <span className='text-slate-300'>
-                        Remind me about the event:
-                      </span>
-                      {reminders.map(reminder => (
-                        <FormField
-                          key={reminder.id}
-                          control={form.control}
-                          name='reminders'
-                          render={({ field }) => (
-                            <FormItem
+                {isLoading ? (
+                  <Loader2Icon className='h-4 w-4 animate-spin' />
+                ) : userInDiscord ? (
+                  <>
+                    <div>
+                      <div className='flex w-full flex-row gap-4'>
+                        <div className='flex items-center self-auto'>
+                          <UserCheckIcon className='h-6 grow text-sky-400' />
+                        </div>
+                        <p className='text-sm text-slate-300'>
+                          You are a member of our discord server.
+                        </p>
+                      </div>
+                    </div>
+                    <div>
+                      <div className='flex w-full flex-row gap-4'>
+                        <div className='flex items-center self-auto'>
+                          <ClockIcon className='h-6 grow text-sky-400' />
+                        </div>
+                        <p className='text-sm text-slate-300'>
+                          Reminders are sent by our discord bot at{' '}
+                          {dayjs(
+                            new Date(
+                              dayjs().year(),
+                              dayjs().month(),
+                              dayjs().date(),
+                              9,
+                              0
+                            )
+                          )
+                            .add(dayjs().utcOffset(), 'minutes')
+                            .format('HH:mm')}{' '}
+                          your local time
+                        </p>
+                      </div>
+                    </div>
+                    <FormField
+                      control={form.control}
+                      name='reminders'
+                      render={() => (
+                        <FormItem>
+                          <span className='text-slate-300'>
+                            Remind me about the event:
+                          </span>
+                          {reminders.map(reminder => (
+                            <FormField
                               key={reminder.id}
-                              className='flex w-[278px] items-center space-x-2 space-y-0'
-                            >
-                              <FormControl>
-                                <Checkbox
-                                  checked={field.value.some(
-                                    val =>
-                                      val.daysBefore === reminder.daysBefore
-                                  )}
-                                  onCheckedChange={change =>
-                                    change
-                                      ? field.onChange([
-                                          ...field.value,
-                                          {
-                                            type: 'discord',
-                                            daysBefore: reminder.daysBefore,
-                                          },
-                                        ])
-                                      : field.onChange(
-                                          field.value?.filter(
-                                            val =>
-                                              val.daysBefore !==
-                                              reminder.daysBefore
-                                          )
-                                        )
-                                  }
-                                />
-                              </FormControl>
-                              <FormLabel>
-                                <span className='text-sm font-medium'>
-                                  {reminder.daysBefore}
-                                  {reminder.daysBefore > 1 ? ' days ' : ' day '}
-                                  before
-                                </span>
-                              </FormLabel>
-                            </FormItem>
-                          )}
-                        />
-                      ))}
-                    </FormItem>
-                  )}
-                />
+                              control={form.control}
+                              name='reminders'
+                              render={({ field }) => (
+                                <FormItem
+                                  key={reminder.id}
+                                  className='flex items-center space-x-2 space-y-0'
+                                >
+                                  <FormControl>
+                                    <Checkbox
+                                      checked={field.value.some(
+                                        val =>
+                                          val.daysBefore === reminder.daysBefore
+                                      )}
+                                      onCheckedChange={change =>
+                                        change
+                                          ? field.onChange([
+                                              ...field.value,
+                                              {
+                                                type: 'discord',
+                                                daysBefore: reminder.daysBefore,
+                                              },
+                                            ])
+                                          : field.onChange(
+                                              field.value?.filter(
+                                                val =>
+                                                  val.daysBefore !==
+                                                  reminder.daysBefore
+                                              )
+                                            )
+                                      }
+                                    />
+                                  </FormControl>
+                                  <FormLabel>
+                                    <span className='text-sm font-medium'>
+                                      {reminder.daysBefore}
+                                      {reminder.daysBefore > 1
+                                        ? ' days '
+                                        : ' day '}
+                                      before
+                                    </span>
+                                  </FormLabel>
+                                </FormItem>
+                              )}
+                            />
+                          ))}
+                        </FormItem>
+                      )}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <span className='text-slate-300'>
+                      You need to be in our discord server in order to receive
+                      reminders
+                    </span>
+                    <div className='flex gap-2'>
+                      <Button variant='outline' asChild type='button'>
+                        <a
+                          href='https://discord.gg/dChtQZ34uw'
+                          target='_blank'
+                          rel='noreferrer'
+                        >
+                          Join server
+                          <ExternalLinkIcon className='ml-2 h-4 w-4' />
+                        </a>
+                      </Button>
+                      <Button
+                        variant='outline'
+                        className='self-start'
+                        onClick={() => refetch()}
+                        type='button'
+                      >
+                        Refresh
+                        <RefreshCwIcon className='ml-2 h-4 w-4' />
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </form>
           </Form>
