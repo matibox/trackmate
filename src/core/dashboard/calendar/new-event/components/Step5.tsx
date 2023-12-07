@@ -25,7 +25,6 @@ import dayjs from 'dayjs';
 import { Loader2Icon } from 'lucide-react';
 import Image from 'next/image';
 import { Checkbox } from '~/components/ui/Checkbox';
-import { Input } from '~/components/ui/Input';
 
 const reminders: { id: number; daysBefore: number }[] = [
   {
@@ -53,13 +52,7 @@ export default function Step5() {
     setData,
     editMode,
     setStep,
-    steps: {
-      stepOne,
-      stepTwoSingle,
-      stepThreeSingle,
-      stepFourSingle,
-      stepFive,
-    },
+    steps: { stepOne, stepTwoSingle, stepThreeSingle, stepFourSingle },
     setSheetOpened,
     reset,
     editModeEventId,
@@ -77,6 +70,21 @@ export default function Step5() {
   });
 
   const utils = api.useContext();
+
+  const { data: userInDiscord } = api.user.isInDiscordServer.useQuery(
+    undefined,
+    {
+      onError: err =>
+        toast({
+          variant: 'destructive',
+          title: 'An error occured',
+          description: err.message,
+        }),
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
+
   const createOrEditEvent = api.event.createOrEdit.useMutation({
     onError: err =>
       toast({

@@ -38,4 +38,28 @@ export const userRouter = createTRPCRouter({
       isInRoster: userTeams.length > 0 && userRosters.length > 0,
     };
   }),
+  isInDiscordServer: protectedProcedure.query(async ({ ctx }) => {
+    const accounts = await ctx.prisma.account.findMany({
+      where: { provider: 'discord', userId: ctx.session.user.id },
+      select: { providerAccountId: true, access_token: true },
+    });
+
+    if (!accounts || !accounts[0]) return false;
+
+    const { providerAccountId: discordId, access_token: token } = accounts[0];
+
+    if (!discordId || !token) return false;
+
+    console.log(discordId, token);
+
+    const res = await fetch('https://discord.com/api/users/@me/guilds', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const userServers = (await res.json()) as { id: string }[];
+
+    return userServers.map(s => s.id).includes('1137424696363728956');
+  }),
 });
