@@ -9,7 +9,7 @@ import {
 import { useNewEvent } from '../store/newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
+import { Trash2Icon, UsersIcon } from 'lucide-react';
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/Form';
 import { api } from '~/utils/api';
 import { capitalize, timeStringToDate } from '~/lib/utils';
@@ -21,12 +21,9 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import dayjs from 'dayjs';
-import { useRouter } from 'next/router';
-import { useToast } from '~/components/ui/useToast';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 import { Separator } from '~/components/ui/Separator';
 import SessionForm, { sessionSchema } from './SessionForm';
-import { useCalendar } from '../../store';
 
 export const step4SingleSchema = z.object({
   sessions: z
@@ -38,38 +35,12 @@ export default function Step4Single() {
   const {
     setStep,
     setData,
-    steps: { stepOne, stepTwoSingle, stepFourSingle, stepThreeSingle },
-    setSheetOpened,
-    reset,
+    steps: { stepFourSingle, stepThreeSingle },
     editMode,
-    editModeEventId,
   } = useNewEvent();
-  const selectDay = useCalendar(s => s.selectDay);
-
-  const { toast } = useToast();
-  const router = useRouter();
 
   const driversQuery = api.user.byId.useQuery({
     memberIds: stepThreeSingle?.driverIds,
-  });
-
-  const utils = api.useContext();
-  const createOrEditEvent = api.event.createOrEdit.useMutation({
-    onError: err =>
-      toast({
-        variant: 'destructive',
-        title: 'An error occured',
-        description: err.message,
-      }),
-    onSuccess: async date => {
-      await router.push(
-        `/calendar?message=${editMode ? 'edited' : 'created'}Event`
-      );
-      await utils.event.invalidate();
-      setSheetOpened(false);
-      selectDay({ day: dayjs(date) });
-      reset();
-    },
   });
 
   const form = useForm<z.infer<typeof step4SingleSchema>>({
@@ -79,24 +50,9 @@ export default function Step4Single() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof step4SingleSchema>) {
+  function onSubmit(values: z.infer<typeof step4SingleSchema>) {
     setData({ step: '4-single', data: values });
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const eventType = stepOne!.eventType!;
-    await createOrEditEvent.mutateAsync({
-      ...(eventType === 'single'
-        ? {
-            eventType,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            stepTwo: stepTwoSingle!,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            stepThree: stepThreeSingle!,
-            stepFour: values,
-          }
-        : { eventType }),
-      eventId: editMode ? editModeEventId : undefined,
-    });
+    setStep('5');
   }
 
   return (
@@ -226,7 +182,6 @@ export default function Step4Single() {
                                               )
                                             );
                                           }}
-                                          disabled={createOrEditEvent.isLoading}
                                         >
                                           <Trash2Icon className='h-[18px] w-[18px] text-red-500' />
                                         </Button>
@@ -347,7 +302,6 @@ export default function Step4Single() {
               { id: crypto.randomBytes(4).toString('hex'), ...session },
             ]);
           }}
-          loading={createOrEditEvent.isLoading}
         />
         <SheetFooter className='flex-row justify-between sm:justify-between'>
           <Button
@@ -358,23 +312,11 @@ export default function Step4Single() {
               setData({ step: '4-single', data });
               setStep('3-single');
             }}
-            disabled={createOrEditEvent.isLoading}
           >
             Back
           </Button>
-          <Button
-            type='submit'
-            form='main-form'
-            disabled={createOrEditEvent.isLoading}
-          >
-            {createOrEditEvent.isLoading ? (
-              <>
-                Please wait
-                <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-              </>
-            ) : (
-              `${editMode ? 'Edit' : 'Create'} event`
-            )}
+          <Button type='submit' form='main-form'>
+            Next
           </Button>
         </SheetFooter>
       </div>
