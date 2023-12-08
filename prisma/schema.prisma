@@ -175,6 +175,7 @@ model Event {
 model EventNotification {
   id        String                @id @default(cuid())
   executeAt DateTime
+  sent      Boolean               @default(false)
   type      EventNotificationType
   event     Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String

@@ -1,4 +1,4 @@
-import { createTRPCRouter, protectedProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step2Single';
 import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step3Single';
 import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
@@ -11,6 +11,8 @@ import {
 } from '../utils/utils';
 import { games } from '~/lib/constants';
 import { step5Schema } from '~/core/dashboard/calendar/new-event/components/Step5';
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import dayjs from 'dayjs';
 
 export const eventRouter = createTRPCRouter({
   createOrEdit: protectedProcedure
@@ -283,4 +285,62 @@ export const eventRouter = createTRPCRouter({
         },
       });
     }),
+  sendDiscordReminder: publicProcedure.mutation(async ({ ctx }) => {
+    const discordNotifications = await ctx.prisma.eventNotification.findMany({
+      where: { type: 'discord', executeAt: { lte: new Date() }, sent: false },
+      include: {
+        event: {
+          select: {
+            sessions: {
+              select: {
+                drivers: {
+                  select: {
+                    accounts: {
+                      where: { provider: 'discord' },
+                      select: { providerAccountId: true },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const driverDiscordIds = [
+      ...new Set(
+        discordNotifications.flatMap(notif =>
+          notif.event.sessions.flatMap(s =>
+            s.drivers.flatMap(d => d.accounts[0]?.providerAccountId)
+          )
+        )
+      ),
+    ].filter(Boolean) as string[];
+
+    const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+    const sentNotifsIds: string[] = [];
+
+    for (const notif of discordNotifications) {
+      await client.login(process.env.DISCORD_BOT_TOKEN);
+
+      client.once(Events.ClientReady, async () => {
+        for (const driverId of driverDiscordIds) {
+          await client.users.send(
+            driverId,
+            `This is a test event reminder, scheduled at: ${dayjs(
+              notif.executeAt
+            ).format('YYYY/MM/DD HH:mm')}`
+          );
+        }
+      });
+
+      sentNotifsIds.push(notif.id);
+    }
+
+    await ctx.prisma.eventNotification.updateMany({
+      where: { id: { in: sentNotifsIds } },
+      data: { sent: true },
+    });
+  }),
 });

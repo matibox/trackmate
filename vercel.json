@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/api/notifyUser",
+      "path": "/api/sendDiscordReminder",
       "schedule": "0 9 * * *"
     }
   ]
