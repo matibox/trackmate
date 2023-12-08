@@ -23,7 +23,6 @@ import { useRouter } from 'next/router';
 import { useCalendar } from '../../store';
 import dayjs from 'dayjs';
 import {
-  BotIcon,
   ClockIcon,
   ExternalLinkIcon,
   Loader2Icon,
@@ -59,7 +58,13 @@ export default function Step5() {
     setData,
     editMode,
     setStep,
-    steps: { stepOne, stepTwoSingle, stepThreeSingle, stepFourSingle },
+    steps: {
+      stepOne,
+      stepTwoSingle,
+      stepThreeSingle,
+      stepFourSingle,
+      stepFive,
+    },
     setSheetOpened,
     reset,
     editModeEventId,
@@ -72,7 +77,7 @@ export default function Step5() {
   const form = useForm<z.infer<typeof step5Schema>>({
     resolver: zodResolver(step5Schema),
     defaultValues: {
-      reminders: [],
+      reminders: stepFive?.reminders ?? [],
     },
   });
 
@@ -126,6 +131,7 @@ export default function Step5() {
             stepThree: stepThreeSingle!,
             // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
             stepFour: stepFourSingle!,
+            stepFive: values,
           }
         : { eventType }),
       eventId: editMode ? editModeEventId : undefined,
@@ -145,7 +151,7 @@ export default function Step5() {
         <ScrollArea className='max-h-[60vh]'>
           <Form {...form}>
             <form
-              id='main-form'
+              id='form'
               onSubmit={form.handleSubmit(onSubmit)}
               className='w-[278px]'
             >
@@ -302,7 +308,11 @@ export default function Step5() {
           >
             Back
           </Button>
-          <Button type='submit' disabled={createOrEditEvent.isLoading}>
+          <Button
+            type='submit'
+            disabled={createOrEditEvent.isLoading}
+            form='form'
+          >
             {createOrEditEvent.isLoading ? (
               <>
                 Please wait

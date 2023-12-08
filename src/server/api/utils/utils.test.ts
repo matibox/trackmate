@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { type z } from 'zod';
 import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
-import { decryptString, encryptString, getSessionTimespan } from './utils';
+import {
+  decryptString,
+  encryptString,
+  getReminderDate,
+  getSessionTimespan,
+} from './utils';
 import dayjs from 'dayjs';
 import crypto from 'crypto';
 
@@ -72,5 +77,23 @@ describe('encrypt and decrypt string', () => {
     const decryptedString = decryptString(encryptedString);
 
     expect(string).toEqual(decryptedString);
+  });
+});
+
+describe('getReminderDate', () => {
+  it('returns correct date', () => {
+    for (let i = 1; i <= 3; i++) {
+      const testDate = dayjs('2018-04-13 19:18').toDate();
+      const dateOne = getReminderDate({
+        daysBefore: i,
+        sessionDate: dayjs().toDate(),
+      });
+      const dateTwo = getReminderDate({ daysBefore: i, sessionDate: testDate });
+
+      expect(dayjs(dateOne).date()).toEqual(dayjs().date() - i);
+      expect(dayjs(dateOne).hour()).toEqual(5);
+      expect(dayjs(dateTwo).date()).toEqual(dayjs(testDate).date() - i);
+      expect(dayjs(dateTwo).hour()).toEqual(5);
+    }
   });
 });

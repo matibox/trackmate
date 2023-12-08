@@ -35,6 +35,10 @@ enum EventSessionType {
   race
 }
 
+enum EventNotificationType {
+  discord
+}
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -84,14 +88,13 @@ model User {
   lastName      String?
   active        Boolean   @default(false)
 
-  profile            Profile?
-  accounts           Account[]
-  sessions           Session[]
-  teams              UsersOnTeams[]
-  rosters            RosterOnMember[]
-  eventSessions      EventSession[]
-  setups             Setup[]
-  eventNotifications EventNotification[]
+  profile       Profile?
+  accounts      Account[]
+  sessions      Session[]
+  teams         UsersOnTeams[]
+  rosters       RosterOnMember[]
+  eventSessions EventSession[]
+  setups        Setup[]
 }
 
 model Profile {
@@ -170,12 +173,11 @@ model Event {
 }
 
 model EventNotification {
-  id        String   @id @default(cuid())
+  id        String                @id @default(cuid())
   executeAt DateTime
-  event     Event    @relation(fields: [eventId], references: [id])
+  type      EventNotificationType
+  event     Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String
-
-  users User[]
 
   @@index([eventId])
 }

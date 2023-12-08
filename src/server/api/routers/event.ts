@@ -4,8 +4,13 @@ import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/component
 import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
-import { encryptString, getSessionTimespan } from '../utils/utils';
+import {
+  encryptString,
+  getReminderDate,
+  getSessionTimespan,
+} from '../utils/utils';
 import { games } from '~/lib/constants';
+import { step5Schema } from '~/core/dashboard/calendar/new-event/components/Step5';
 
 export const eventRouter = createTRPCRouter({
   createOrEdit: protectedProcedure
@@ -17,6 +22,7 @@ export const eventRouter = createTRPCRouter({
             stepTwo: step2SingleSchema,
             stepThree: step3SingleSchema,
             stepFour: step4SingleSchema,
+            stepFive: step5Schema,
           }),
           z.object({
             eventType: z.literal('championship'),
@@ -37,6 +43,7 @@ export const eventRouter = createTRPCRouter({
           stepTwo: { game, name, car, track },
           stepThree: { rosterId },
           stepFour: { sessions },
+          stepFive: { reminders },
         } = input;
 
         const event = await ctx.prisma.event.upsert({
@@ -52,6 +59,18 @@ export const eventRouter = createTRPCRouter({
             car,
             track,
             roster: { connect: { id: rosterId } },
+            notifications: {
+              createMany: {
+                data: reminders.map(({ daysBefore, type }) => ({
+                  type,
+                  executeAt: getReminderDate({
+                    daysBefore,
+                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                    sessionDate: sessions[0]!.date,
+                  }),
+                })),
+              },
+            },
             // sessions: {
             //   createMany: {
             //     data: sessions.map(session => ({
@@ -78,6 +97,21 @@ export const eventRouter = createTRPCRouter({
         if (eventId) {
           await ctx.prisma.eventSession.deleteMany({
             where: { eventId },
+          });
+
+          await ctx.prisma.$transaction(async tx => {
+            await tx.eventNotification.deleteMany({ where: { eventId } });
+            await tx.eventNotification.createMany({
+              data: reminders.map(({ daysBefore, type }) => ({
+                eventId,
+                type,
+                executeAt: getReminderDate({
+                  daysBefore,
+                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                  sessionDate: sessions[0]!.date,
+                }),
+              })),
+            });
           });
         }
         // super annoying...
@@ -170,6 +204,7 @@ export const eventRouter = createTRPCRouter({
               roster: {
                 select: { id: true, team: { select: { name: true } } },
               },
+              notifications: { select: { executeAt: true, type: true } },
               sessions: {
                 orderBy: { start: 'asc' },
                 select: {
