@@ -5,12 +5,14 @@ import { type step2SingleSchema } from '../components/Step2Single';
 import { type step3SingleSchema } from '../components/Step3Single';
 import { objKeys } from '~/lib/utils';
 import { type step4SingleSchema } from '../components/Step4Single';
+import { type step5Schema } from '../components/Step5';
 
 const stepVariant = {
   '1': 'stepOne',
   '2-single': 'stepTwoSingle',
   '3-single': 'stepThreeSingle',
   '4-single': 'stepFourSingle',
+  '5': 'stepFive',
 } as const;
 
 export type StepId = keyof typeof stepVariant;
@@ -19,12 +21,14 @@ type StepOneData = z.infer<typeof step1Schema>;
 type StepTwoSingleData = z.infer<typeof step2SingleSchema>;
 type StepThreeSingleData = z.infer<typeof step3SingleSchema>;
 type StepFourSingleData = z.infer<typeof step4SingleSchema>;
+type StepFiveData = z.infer<typeof step5Schema>;
 
 type SetDataType =
   | { step: '1'; data: Partial<StepOneData> }
   | { step: '2-single'; data: Partial<StepTwoSingleData> }
   | { step: '3-single'; data: Partial<StepThreeSingleData> }
-  | { step: '4-single'; data: Partial<StepFourSingleData> };
+  | { step: '4-single'; data: Partial<StepFourSingleData> }
+  | { step: '5'; data: Partial<StepFiveData> };
 
 export const useNewEvent = create<{
   sheetOpened: boolean;
@@ -36,6 +40,7 @@ export const useNewEvent = create<{
     stepTwoSingle: StepTwoSingleData | null;
     stepThreeSingle: StepThreeSingleData | null;
     stepFourSingle: StepFourSingleData | null;
+    stepFive: StepFiveData | null;
   };
   setData: ({ step, data }: SetDataType) => void;
   reset: () => void;
@@ -53,6 +58,7 @@ export const useNewEvent = create<{
     stepTwoSingle: null,
     stepThreeSingle: null,
     stepFourSingle: null,
+    stepFive: null,
   },
   setData: ({ step, data }) =>
     set(state => ({
