@@ -291,8 +291,12 @@ export const eventRouter = createTRPCRouter({
       include: {
         event: {
           select: {
+            name: true,
+            car: true,
+            track: true,
             sessions: {
               select: {
+                start: true,
                 drivers: {
                   select: {
                     accounts: {
@@ -323,14 +327,16 @@ export const eventRouter = createTRPCRouter({
 
     for (const notif of discordNotifications) {
       await client.login(process.env.DISCORD_BOT_TOKEN);
+      const { name, car, track } = notif.event;
+      const eventStart = notif.event.sessions[0]?.start;
 
       client.once(Events.ClientReady, async () => {
         for (const driverId of driverDiscordIds) {
           await client.users.send(
             driverId,
-            `This is a test event reminder, scheduled at: ${dayjs(
-              notif.executeAt
-            ).format('YYYY/MM/DD HH:mm')}`
+            `**REMINDER**\nYour event starts on ${dayjs(eventStart).format(
+              'YYYY/MM/DD HH:mm'
+            )}\n\nEvent: ${name}\nCar: ${car ?? '-'}\nTrack: ${track ?? '-'}`
           );
         }
       });

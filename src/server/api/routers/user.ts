@@ -58,8 +58,10 @@ export const userRouter = createTRPCRouter({
       },
     });
 
-    const userServers = (await res.json()) as { id: string }[];
+    const userServers = (await res.json()) as { id: string }[] | undefined;
 
-    return userServers.map(s => s.id).includes('1137424696363728956');
+    return userServers
+      ?.map(s => s.id)
+      .includes(process.env.DISCORD_SERVER_ID as string);
   }),
 });
