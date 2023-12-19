@@ -165,6 +165,9 @@ export default function Step5() {
                     height={16}
                   />
                   <span className='font-semibold'>Discord</span>
+                  <div className='mr-2 flex items-center rounded-md bg-slate-900 px-2 py-1 text-xs font-semibold uppercase leading-none tracking-wide text-slate-200'>
+                    beta
+                  </div>
                 </div>
                 {isLoading ? (
                   <Loader2Icon className='h-4 w-4 animate-spin' />
