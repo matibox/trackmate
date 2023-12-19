@@ -31,7 +31,6 @@ specifiers:
   '@types/eslint': ^8.37.0
   '@types/file-saver': ^2.0.7
   '@types/node': ^18.16.0
-  '@types/node-cron': ^3.0.11
   '@types/prettier': ^2.7.2
   '@types/react': ^18.2.6
   '@types/react-dom': ^18.2.4
@@ -56,7 +55,6 @@ specifiers:
   next: ^13.4.2
   next-auth: ^4.22.1
   next-seo: ^6.1.0
-  node-cron: ^3.0.3
   postcss: ^8.4.21
   prettier: ^2.8.8
   prettier-plugin-tailwindcss: ^0.2.8
@@ -119,7 +117,6 @@ dependencies:
   next: 13.4.13_biqbaboplfbrettd7655fr4n2y
   next-auth: 4.22.5_7bxrc77cqw5efxjm7xsv6oi4pi
   next-seo: 6.1.0_7bxrc77cqw5efxjm7xsv6oi4pi
-  node-cron: 3.0.3
   react: 18.2.0
   react-day-picker: 8.8.2_kzhlcyde2l6xjiirkbg7jzhosa
   react-dom: 18.2.0_react@18.2.0
@@ -136,7 +133,6 @@ devDependencies:
   '@types/eslint': 8.44.2
   '@types/file-saver': 2.0.7
   '@types/node': 18.17.4
-  '@types/node-cron': 3.0.11
   '@types/prettier': 2.7.3
   '@types/react': 18.2.20
   '@types/react-dom': 18.2.7
@@ -2452,10 +2448,6 @@ packages:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
     dev: true
 
-  /@types/node-cron/3.0.11:
-    resolution: {integrity: sha512-0ikrnug3/IyneSHqCBeslAhlK2aBfYek1fGo4bP4QnZPmiqSGRK+Oy7ZMisLWkesffJvQ1cqAcBnJC+8+nxIAg==}
-    dev: true
-
   /@types/node/18.17.4:
     resolution: {integrity: sha512-ATL4WLgr7/W40+Sp1WnNTSKbgVn6Pvhc/2RHAdt8fl6NsQyp4oPCi2eKcGOvA494bwf1K/W6nGgZ9TwDqvpjdw==}
 
@@ -4647,13 +4639,6 @@ packages:
 
   /node-addon-api/6.1.0:
     resolution: {integrity: sha512-+eawOlIgy680F0kBzPUNFhMZGtJ1YmqM6l4+Crf4IkImjYrO/mqPwRMh352g23uIaQKFItcQ64I7KMaJxHgAVA==}
-    dev: false
-
-  /node-cron/3.0.3:
-    resolution: {integrity: sha512-dOal67//nohNgYWb+nWmg5dkFdIwDm8EpeGYMekPMrngV3637lqnX0lbUcCtgibHTz6SEz7DAIjKvKDFYCnO1A==}
-    engines: {node: '>=6.0.0'}
-    dependencies:
-      uuid: 8.3.2
     dev: false
 
   /node-fetch/2.7.0:
