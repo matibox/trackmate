@@ -52,7 +52,7 @@ import {
   CollapsibleTrigger,
 } from '~/components/ui/Collapsible';
 
-const serverInfoSchema = z
+export const serverInfoSchema = z
   .object({
     inGameTime: z.string().optional(),
     serverName: z.string().optional(),
@@ -60,7 +60,7 @@ const serverInfoSchema = z
   })
   .optional();
 
-const weatherSchema = z
+export const weatherSchema = z
   .object({
     rainLevel: z.string().optional(),
     cloudLevel: z.string().optional(),
