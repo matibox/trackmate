@@ -1,18 +1,11 @@
-import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
+import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step2Single';
 import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step3Single';
-import { step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
-import {
-  encryptString,
-  getReminderDate,
-  getSessionTimespan,
-} from '../utils/utils';
+import { encryptString } from '../utils/utils';
 import { games } from '~/lib/constants';
-import { step5Schema } from '~/core/dashboard/calendar/new-event/components/Step5';
-import { Client, Events, GatewayIntentBits } from 'discord.js';
-import dayjs from 'dayjs';
+import { sessionSchema } from '~/core/dashboard/calendar/new-event/components/SessionForm';
 
 export const eventRouter = createTRPCRouter({
   createOrEdit: protectedProcedure
@@ -23,8 +16,16 @@ export const eventRouter = createTRPCRouter({
             eventType: z.literal('single'),
             stepTwo: step2SingleSchema,
             stepThree: step3SingleSchema,
-            stepFour: step4SingleSchema,
-            stepFive: step5Schema,
+            stepFour: z.object({
+              sessions: z.array(
+                sessionSchema.and(
+                  z.object({
+                    startDate: z.date(),
+                    endDate: z.date().optional(),
+                  })
+                )
+              ),
+            }),
           }),
           z.object({
             eventType: z.literal('championship'),
@@ -45,7 +46,6 @@ export const eventRouter = createTRPCRouter({
           stepTwo: { game, name, car, track },
           stepThree: { rosterId },
           stepFour: { sessions },
-          stepFive: { reminders },
         } = input;
 
         const event = await ctx.prisma.event.upsert({
@@ -61,18 +61,6 @@ export const eventRouter = createTRPCRouter({
             car,
             track,
             roster: { connect: { id: rosterId } },
-            notifications: {
-              createMany: {
-                data: reminders.map(({ daysBefore, type }) => ({
-                  type,
-                  executeAt: getReminderDate({
-                    daysBefore,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    sessionDate: sessions[0]!.date,
-                  }),
-                })),
-              },
-            },
             // sessions: {
             //   createMany: {
             //     data: sessions.map(session => ({
@@ -100,21 +88,6 @@ export const eventRouter = createTRPCRouter({
           await ctx.prisma.eventSession.deleteMany({
             where: { eventId },
           });
-
-          await ctx.prisma.$transaction(async tx => {
-            await tx.eventNotification.deleteMany({ where: { eventId } });
-            await tx.eventNotification.createMany({
-              data: reminders.map(({ daysBefore, type }) => ({
-                eventId,
-                type,
-                executeAt: getReminderDate({
-                  daysBefore,
-                  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                  sessionDate: sessions[0]!.date,
-                }),
-              })),
-            });
-          });
         }
         // super annoying...
         // https://github.com/prisma/prisma/issues/5455
@@ -129,7 +102,8 @@ export const eventRouter = createTRPCRouter({
 
           await ctx.prisma.eventSession.create({
             data: {
-              ...getSessionTimespan({ session }),
+              start: session.startDate,
+              end: session.endDate,
               type: session.type,
               event: { connect: { id: event.id } },
               drivers:
@@ -206,7 +180,6 @@ export const eventRouter = createTRPCRouter({
               roster: {
                 select: { id: true, team: { select: { name: true } } },
               },
-              notifications: { select: { executeAt: true, type: true } },
               sessions: {
                 orderBy: { start: 'asc' },
                 select: {
@@ -285,68 +258,4 @@ export const eventRouter = createTRPCRouter({
         },
       });
     }),
-  sendDiscordReminder: publicProcedure.mutation(async ({ ctx }) => {
-    const discordNotifications = await ctx.prisma.eventNotification.findMany({
-      where: { type: 'discord', executeAt: { lte: new Date() }, sent: false },
-      include: {
-        event: {
-          select: {
-            name: true,
-            car: true,
-            track: true,
-            sessions: {
-              select: {
-                start: true,
-                drivers: {
-                  select: {
-                    accounts: {
-                      where: { provider: 'discord' },
-                      select: { providerAccountId: true },
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    });
-
-    const driverDiscordIds = [
-      ...new Set(
-        discordNotifications.flatMap(notif =>
-          notif.event.sessions.flatMap(s =>
-            s.drivers.flatMap(d => d.accounts[0]?.providerAccountId)
-          )
-        )
-      ),
-    ].filter(Boolean) as string[];
-
-    const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-    const sentNotifsIds: string[] = [];
-
-    for (const notif of discordNotifications) {
-      await client.login(process.env.DISCORD_BOT_TOKEN);
-      const { name, car, track } = notif.event;
-      const eventStart = notif.event.sessions[0]?.start;
-
-      client.once(Events.ClientReady, async () => {
-        for (const driverId of driverDiscordIds) {
-          await client.users.send(
-            driverId,
-            `**REMINDER**\nYour event starts on ${dayjs(eventStart).format(
-              'YYYY/MM/DD HH:mm'
-            )}\n\nEvent: ${name}\nCar: ${car ?? '-'}\nTrack: ${track ?? '-'}`
-          );
-        }
-      });
-
-      sentNotifsIds.push(notif.id);
-    }
-
-    await ctx.prisma.eventNotification.updateMany({
-      where: { id: { in: sentNotifsIds } },
-      data: { sent: true },
-    });
-  }),
 });

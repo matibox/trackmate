@@ -7,14 +7,12 @@ import Step1 from './Step1';
 import Step2Single from './Step2Single';
 import Step3Single from './Step3Single';
 import Step4Single from './Step4Single';
-import Step5 from './Step5';
 
 const steps: Record<StepId, ReactNode> = {
   '1': <Step1 />,
   '2-single': <Step2Single />,
   '3-single': <Step3Single />,
   '4-single': <Step4Single />,
-  '5': <Step5 />,
 };
 
 export default function NewEvent() {

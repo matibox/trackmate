@@ -153,20 +153,6 @@ export default function EventDropdown({
                   },
                 });
               }
-
-              setData({
-                step: '5',
-                data: {
-                  reminders: event.notifications.map(({ type, executeAt }) => ({
-                    type,
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    daysBefore: dayjs(event.sessions[0]!.start).diff(
-                      dayjs(executeAt),
-                      'days'
-                    ),
-                  })),
-                },
-              });
             }}
           >
             <PencilIcon className='mr-2 h-4 w-4' />

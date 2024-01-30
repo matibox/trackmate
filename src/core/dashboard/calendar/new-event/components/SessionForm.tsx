@@ -148,10 +148,10 @@ export const sessionSchema = z
   });
 
 export default function SessionForm({
-  loading = false,
+  loading,
   addSession,
 }: {
-  loading?: boolean;
+  loading: boolean;
   addSession: (session: z.infer<typeof sessionSchema>) => void;
 }) {
   const [sessionFormOpen, setSessionFormOpen] = useState(false);

@@ -35,10 +35,6 @@ enum EventSessionType {
   race
 }
 
-enum EventNotificationType {
-  discord
-}
-
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -165,22 +161,10 @@ model Event {
   roster   Roster    @relation(fields: [rosterId], references: [id])
   rosterId String
 
-  sessions      EventSession[]
-  setups        Setup[]
-  notifications EventNotification[]
+  sessions EventSession[]
+  setups   Setup[]
 
   @@index([rosterId])
-}
-
-model EventNotification {
-  id        String                @id @default(cuid())
-  executeAt DateTime
-  sent      Boolean               @default(false)
-  type      EventNotificationType
-  event     Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventId   String
-
-  @@index([eventId])
 }
 
 model EventSession {
