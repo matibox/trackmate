@@ -35,7 +35,7 @@ export const links = [
   // placeholder
   {
     label: 'Teams',
-    path: '/',
+    path: '/teams',
     icon: Users,
   },
   {

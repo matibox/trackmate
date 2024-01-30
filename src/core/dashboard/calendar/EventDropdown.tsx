@@ -123,8 +123,8 @@ export default function EventDropdown({
                 setData({
                   step: '3-single',
                   data: {
-                    teamName: event.roster.team.name,
-                    rosterId: event.roster.id,
+                    teamName: event.roster?.team.name,
+                    rosterId: event.roster?.id,
                     driverIds,
                   },
                 });
