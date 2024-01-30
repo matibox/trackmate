@@ -10,6 +10,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   Component,
   pageProps: { session, ...pageProps },
 }) => {
+  // reset
   return (
     <SessionProvider session={session}>
       <DefaultSeo
