@@ -28,7 +28,7 @@ export default function Team({ team }: { team: Team }) {
         <AvatarImage />
         <AvatarFallback>{team.abbreviation}</AvatarFallback>
       </Avatar>
-      <div className='flex flex-col gap-1'>
+      <div className='flex flex-col gap-2'>
         <span className='font-semibold leading-none'>{team.name}</span>
         <div className='flex gap-2'>
           {roles.map(role => (
