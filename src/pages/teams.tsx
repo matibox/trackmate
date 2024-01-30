@@ -5,6 +5,7 @@ import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/components/Layout';
 import TeamList from '~/core/dashboard/teams/TeamList';
 import NewTeam from '~/core/dashboard/teams/new-team/components/NewTeam';
+import { useNewTeam } from '~/core/dashboard/teams/new-team/store/newTeamStore';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 
@@ -17,6 +18,8 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 const Teams: NextPage = () => {
+  const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
+
   useProtectedRoute();
 
   return (
@@ -33,7 +36,10 @@ const Teams: NextPage = () => {
                   Manage, create and join teams.
                 </span>
               </div>
-              <Button variant='primary' onClick={() => console.log('yes')}>
+              <Button
+                variant='primary'
+                onClick={() => setNewTeamFormOpened(true)}
+              >
                 New team
               </Button>
             </div>
