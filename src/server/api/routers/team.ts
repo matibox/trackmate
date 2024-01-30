@@ -80,6 +80,7 @@ export const teamRouter = createTRPCRouter({
       select: {
         id: true,
         name: true,
+        abbreviation: true,
         members: {
           where: { userId: ctx.session.user.id },
           select: { role: true },
@@ -87,7 +88,7 @@ export const teamRouter = createTRPCRouter({
         rosters: {
           select: {
             members: {
-              where: { id: ctx.session.user.id },
+              where: { userId: ctx.session.user.id },
               select: { role: true },
             },
           },
@@ -95,4 +96,10 @@ export const teamRouter = createTRPCRouter({
       },
     });
   }),
+  delete: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { teamId } = input;
+      return await ctx.prisma.team.delete({ where: { id: teamId } });
+    }),
 });

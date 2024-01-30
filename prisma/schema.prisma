@@ -158,8 +158,8 @@ model Event {
   game     Game
   track    String?
   car      String?
-  roster   Roster    @relation(fields: [rosterId], references: [id])
-  rosterId String
+  roster   Roster?   @relation(fields: [rosterId], references: [id])
+  rosterId String?
 
   sessions EventSession[]
   setups   Setup[]

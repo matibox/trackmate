@@ -36,8 +36,8 @@ export default function TeamList() {
 
   return (
     <section className='flex w-full flex-col gap-4'>
-      {teams.length === 0 ? (
-        teams.map(team => <Team key={team.id} />)
+      {teams.length > 0 ? (
+        teams.map(team => <Team key={team.id} team={team} />)
       ) : (
         <div className='flex flex-col items-center gap-1 text-slate-300'>
           <span>You have no teams.</span>
