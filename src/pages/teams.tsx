@@ -3,6 +3,7 @@ import { NextSeo } from 'next-seo';
 import { Button } from '~/components/ui/Button';
 import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/components/Layout';
+import NewTeam from '~/core/dashboard/teams/new-team/components/NewTeam';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 
@@ -36,6 +37,7 @@ const Teams: NextPage = () => {
               </Button>
             </div>
           </div>
+          <NewTeam />
         </DashboardLayout>
       </div>
     </>
