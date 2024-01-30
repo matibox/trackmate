@@ -28,7 +28,7 @@ const Teams: NextPage = () => {
       <div className='relative min-h-screen'>
         <Toaster />
         <DashboardLayout>
-          <div className='grid grid-cols-[min(100%,_370px)] justify-center gap-4 '>
+          <div className='grid grid-cols-1 justify-center gap-4 '>
             <div className='hidden lg:mb-8 lg:flex lg:items-center lg:justify-between lg:pr-12'>
               <div className='flex flex-col gap-2'>
                 <h1 className='text-5xl font-bold leading-none'>Teams</h1>
