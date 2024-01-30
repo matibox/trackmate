@@ -63,7 +63,7 @@ export default function TeamList() {
     <section>
       {teams.length > 0 ? (
         <div className='grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fill,_417px)]'>
-          {[...teams, ...teams, ...teams].map(team => (
+          {teams.map(team => (
             <Team key={team.id} team={team} />
           ))}
           <button
