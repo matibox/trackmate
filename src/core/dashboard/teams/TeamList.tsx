@@ -3,7 +3,7 @@ import { useToast } from '~/components/ui/useToast';
 import { api } from '~/utils/api';
 import Team from './Team';
 import { Button } from '~/components/ui/Button';
-import { useNewTeam } from './new-team/store/newTeamStore';
+import { useNewTeam } from './new-team/newTeamStore';
 import { PlusIcon } from 'lucide-react';
 import { Skeleton } from '~/components/ui/Skeleton';
 
