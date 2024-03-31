@@ -84,6 +84,7 @@ export const teamRouter = createTRPCRouter({
         id: true,
         name: true,
         abbreviation: true,
+        profilePicture: true,
         members: {
           where: { userId: ctx.session.user.id },
           select: { role: true },

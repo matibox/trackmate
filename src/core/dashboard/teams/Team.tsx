@@ -25,7 +25,10 @@ export default function Team({ team }: { team: Team }) {
   return (
     <div className='flex w-full items-center gap-4 rounded-md bg-slate-900 p-4 ring-1 ring-slate-800'>
       <Avatar>
-        <AvatarImage />
+        <AvatarImage
+          src={team.profilePicture ?? ''}
+          alt={`${team.name}'s logo`}
+        />
         <AvatarFallback>{team.abbreviation}</AvatarFallback>
       </Avatar>
       <div className='flex flex-col gap-2'>
