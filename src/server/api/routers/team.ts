@@ -110,7 +110,7 @@ export const teamRouter = createTRPCRouter({
     .input(
       newTeamSchema
         .omit({ profilePicture: true })
-        .and(z.object({ profilePicture: z.string() }))
+        .and(z.object({ profilePicture: z.string().optional() }))
     )
     .mutation(async ({ ctx, input }) => {
       const { name, abbreviation, password, profilePicture } = input;

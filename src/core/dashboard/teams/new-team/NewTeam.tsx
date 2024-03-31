@@ -47,10 +47,14 @@ export const newTeamSchema = z.object({
     .min(1, 'Join password is required.')
     .min(4, 'Join password must be at least 4 characters long.'),
   profilePicture: z
-    .custom<File>(v => v instanceof File, 'Team profile picture is required.')
-    .refine(file => file.size < 2000000, 'File size must be less than 2MB.')
+    .custom<File | null>()
+    .optional()
     .refine(
-      file => acceptedImageTypes.includes(file.type),
+      file => file === null || (file && file?.size < 2000000),
+      'File size must be less than 2MB.'
+    )
+    .refine(
+      file => file === null || (file && acceptedImageTypes.includes(file.type)),
       'Only .jpg, .jpeg, .png and .webp formats are supported.'
     ),
 });
@@ -67,7 +71,7 @@ export default function NewTeam() {
       name: data?.name ?? '',
       abbreviation: data?.abbreviation ?? '',
       password: data?.password ?? '',
-      profilePicture: data?.profilePicture ?? new File([], ''),
+      profilePicture: data?.profilePicture ?? null,
     },
   });
 
@@ -96,27 +100,32 @@ export default function NewTeam() {
   function onSubmit(values: z.infer<typeof newTeamSchema>) {
     setData(values);
 
-    setIsImageUploading(true);
-    uploadFiles('imageUploader', {
-      files: [values.profilePicture],
-    })
-      .then(res => {
-        createTeam({
-          ...values,
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          profilePicture: res[0]!.url,
-        });
+    if (values.profilePicture) {
+      setIsImageUploading(true);
+      uploadFiles('imageUploader', {
+        files: [values.profilePicture],
       })
-      .catch(err => {
-        if (err instanceof UploadThingError) {
-          toast({
-            variant: 'destructive',
-            title: 'An error occured while uploading the image.',
-            description: err.message,
+        .then(res => {
+          createTeam({
+            ...values,
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            profilePicture: res[0]!.url,
           });
-        }
-      });
-    setIsImageUploading(false);
+        })
+        .catch(err => {
+          if (err instanceof UploadThingError) {
+            toast({
+              variant: 'destructive',
+              title: 'An error occured while uploading the image.',
+              description: err.message,
+            });
+          }
+        });
+      setIsImageUploading(false);
+      return;
+    }
+
+    createTeam({ ...values, profilePicture: undefined });
   }
 
   return (
@@ -188,7 +197,7 @@ export default function NewTeam() {
                 name='profilePicture'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Team picture</FormLabel>
+                    <FormLabel>Team picture (optional)</FormLabel>
                     <FormControl>
                       <Input
                         type='file'
@@ -211,7 +220,7 @@ export default function NewTeam() {
                         <span>Upload image</span>
                       </label>
                       <span className='text-sm text-slate-50'>
-                        {field.value.size > 0
+                        {field.value && field.value.size > 0
                           ? field.value.name
                           : 'No file selected'}
                       </span>
