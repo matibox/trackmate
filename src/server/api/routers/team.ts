@@ -6,6 +6,7 @@ import { games } from '~/lib/constants';
 import { type ReplaceAll } from '~/lib/utils';
 import { newTeamSchema } from '~/core/dashboard/teams/new-team/NewTeam';
 import { hashPassword } from '../utils/utils';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const teamRouter = createTRPCRouter({
   byQuery: publicProcedure
@@ -106,29 +107,38 @@ export const teamRouter = createTRPCRouter({
     }),
   create: protectedProcedure
     .input(
-      newTeamSchema.and(
-        z.object({
-          profilePicture: z.string(),
-        })
-      )
+      newTeamSchema
+        .omit({ profilePicture: true })
+        .and(z.object({ profilePicture: z.string() }))
     )
     .mutation(async ({ ctx, input }) => {
       const { name, abbreviation, password, profilePicture } = input;
       const hashedPassword = await hashPassword(password);
 
-      await ctx.prisma.team.create({
-        data: {
-          name,
-          abbreviation: abbreviation.toUpperCase(),
-          password: hashedPassword,
-          profilePicture,
-          members: {
-            create: {
-              role: 'owner',
-              userId: ctx.session.user.id,
+      try {
+        await ctx.prisma.team.create({
+          data: {
+            name,
+            abbreviation: abbreviation.toUpperCase(),
+            password: hashedPassword,
+            profilePicture,
+            members: {
+              create: {
+                role: 'owner',
+                userId: ctx.session.user.id,
+              },
             },
           },
-        },
-      });
+        });
+      } catch (err) {
+        if (err instanceof PrismaClientKnownRequestError) {
+          if (err.code === 'P2002') {
+            throw new TRPCError({
+              code: 'BAD_REQUEST',
+              message: 'Team name is already taken.',
+            });
+          }
+        }
+      }
     }),
 });

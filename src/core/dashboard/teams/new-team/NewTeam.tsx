@@ -25,6 +25,9 @@ import {
 import { Input } from '~/components/ui/Input';
 import { uploadFiles } from '~/utils/uploadthing';
 import { useState } from 'react';
+import { api } from '~/utils/api';
+import { useToast } from '~/components/ui/useToast';
+import { UploadThingError } from 'uploadthing/server';
 
 const acceptedImageTypes = [
   'image/jpeg',
@@ -54,6 +57,7 @@ export const newTeamSchema = z.object({
 
 export default function NewTeam() {
   const { setSheetOpened, sheetOpened, data, setData } = useNewTeam();
+  const { toast } = useToast();
 
   const [isImageUploading, setIsImageUploading] = useState(false);
 
@@ -67,17 +71,52 @@ export default function NewTeam() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof newTeamSchema>) {
+  const utils = api.useContext();
+  const { mutate: createTeam, isLoading } = api.team.create.useMutation({
+    onSuccess: async () => {
+      await utils.team.invalidate();
+      setData(null);
+      form.reset();
+      setSheetOpened(false);
+      toast({
+        variant: 'default',
+        title: 'Success!',
+        description: 'A team has successfully been created.',
+      });
+    },
+    onError: err => {
+      toast({
+        variant: 'destructive',
+        title: 'An error occured.',
+        description: err.message,
+      });
+    },
+  });
+
+  function onSubmit(values: z.infer<typeof newTeamSchema>) {
     setData(values);
-    console.log(values);
 
     setIsImageUploading(true);
-    const res = await uploadFiles('imageUploader', {
+    uploadFiles('imageUploader', {
       files: [values.profilePicture],
-    });
+    })
+      .then(res => {
+        createTeam({
+          ...values,
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          profilePicture: res[0]!.url,
+        });
+      })
+      .catch(err => {
+        if (err instanceof UploadThingError) {
+          toast({
+            variant: 'destructive',
+            title: 'An error occured while uploading the image.',
+            description: err.message,
+          });
+        }
+      });
     setIsImageUploading(false);
-
-    console.log({ ...values, profilePicture: res[0]?.url });
   }
 
   return (
@@ -184,7 +223,7 @@ export default function NewTeam() {
             </div>
             <SheetFooter className='mt-auto'>
               <Button type='submit' disabled={isImageUploading}>
-                {isImageUploading ? (
+                {isImageUploading || isLoading ? (
                   <>
                     Please wait
                     <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />

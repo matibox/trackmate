@@ -118,7 +118,7 @@ model UsersOnTeams {
 model Team {
   id             String  @id @default(cuid())
   name           String  @unique
-  abbreviation   String  @unique @db.VarChar(3)
+  abbreviation   String  @db.VarChar(3)
   password       String
   profilePicture String?
 
