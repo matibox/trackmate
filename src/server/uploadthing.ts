@@ -16,7 +16,7 @@ export const fileRouter = {
 
       return { session };
     })
-    .onUploadComplete(async ({ metadata, file }) => {
+    .onUploadComplete(({ metadata, file }) => {
       console.log(file.url);
 
       return { uploadedBy: metadata.session.user.id };

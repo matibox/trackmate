@@ -9,7 +9,7 @@ import {
 } from '~/components/ui/Sheet';
 import { useNewTeam } from './newTeamStore';
 import { Button } from '~/components/ui/Button';
-import { PlusIcon, UploadIcon } from 'lucide-react';
+import { Loader2Icon, PlusIcon, UploadIcon } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,6 +23,8 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
+import { uploadFiles } from '~/utils/uploadthing';
+import { useState } from 'react';
 
 const acceptedImageTypes = [
   'image/jpeg',
@@ -53,6 +55,8 @@ export const newTeamSchema = z.object({
 export default function NewTeam() {
   const { setSheetOpened, sheetOpened, data, setData } = useNewTeam();
 
+  const [isImageUploading, setIsImageUploading] = useState(false);
+
   const form = useForm<z.infer<typeof newTeamSchema>>({
     resolver: zodResolver(newTeamSchema),
     defaultValues: {
@@ -63,10 +67,17 @@ export default function NewTeam() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof newTeamSchema>) {
+  async function onSubmit(values: z.infer<typeof newTeamSchema>) {
     setData(values);
     console.log(values);
-    // post to backend etc.
+
+    setIsImageUploading(true);
+    const res = await uploadFiles('imageUploader', {
+      files: [values.profilePicture],
+    });
+    setIsImageUploading(false);
+
+    console.log({ ...values, profilePicture: res[0]?.url });
   }
 
   return (
@@ -172,7 +183,16 @@ export default function NewTeam() {
               />
             </div>
             <SheetFooter className='mt-auto'>
-              <Button type='submit'>Create team</Button>
+              <Button type='submit' disabled={isImageUploading}>
+                {isImageUploading ? (
+                  <>
+                    Please wait
+                    <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
+                  </>
+                ) : (
+                  'Create team'
+                )}
+              </Button>
             </SheetFooter>
           </form>
         </Form>
