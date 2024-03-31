@@ -6,14 +6,9 @@ import {
   stepThreeCreateTeamSchema,
   stepThreeJoinTeamSchema,
 } from '~/core/welcome/components/StepThree';
-import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 import { type ReplaceAll } from '~/lib/utils';
-
-async function hashPassword(password: string) {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
-}
+import { hashPassword } from '../utils/utils';
 
 export const welcomeRouter = createTRPCRouter({
   isUsernameTaken: protectedProcedure

@@ -1,4 +1,5 @@
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 
 const iv = Buffer.from(process.env.ENCRYPTION_IV as string, 'hex');
 const key = Buffer.from(process.env.ENCRYPTION_KEY as string, 'hex');
@@ -18,4 +19,9 @@ export function decryptString(str: string) {
   decrypted += decipher.final('utf-8');
 
   return decrypted;
+}
+
+export async function hashPassword(password: string) {
+  const salt = await bcrypt.genSalt(10);
+  return await bcrypt.hash(password, salt);
 }

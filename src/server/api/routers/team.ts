@@ -4,6 +4,8 @@ import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 import { games } from '~/lib/constants';
 import { type ReplaceAll } from '~/lib/utils';
+import { newTeamSchema } from '~/core/dashboard/teams/new-team/NewTeam';
+import { hashPassword } from '../utils/utils';
 
 export const teamRouter = createTRPCRouter({
   byQuery: publicProcedure
@@ -101,5 +103,32 @@ export const teamRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { teamId } = input;
       return await ctx.prisma.team.delete({ where: { id: teamId } });
+    }),
+  create: protectedProcedure
+    .input(
+      newTeamSchema.and(
+        z.object({
+          profilePicture: z.string(),
+        })
+      )
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { name, abbreviation, password, profilePicture } = input;
+      const hashedPassword = await hashPassword(password);
+
+      await ctx.prisma.team.create({
+        data: {
+          name,
+          abbreviation: abbreviation.toUpperCase(),
+          password: hashedPassword,
+          profilePicture,
+          members: {
+            create: {
+              role: 'owner',
+              userId: ctx.session.user.id,
+            },
+          },
+        },
+      });
     }),
 });
