@@ -21,6 +21,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormField, FormMessage } from '~/components/ui/Form';
 import { useNewEvent } from '../store/newEventStore';
 import { api } from '~/utils/api';
+import Link from 'next/link';
 
 export const step1Schema = z.object({
   eventType: z.enum(eventTypes).nullable(),
@@ -141,8 +142,9 @@ export default function Step1() {
                   <Button
                     variant='primary'
                     onClick={() => setSheetOpened(false)}
+                    asChild
                   >
-                    Go to teams tab
+                    <Link href='/teams'>Go to teams tab</Link>
                   </Button>
                 </>
               ) : null}
