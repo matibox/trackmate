@@ -4,8 +4,8 @@ import { Button } from '~/components/ui/Button';
 import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/components/Layout';
 import TeamList from '~/core/dashboard/teams/TeamList';
-import NewTeam from '~/core/dashboard/teams/new-team/components/NewTeam';
-import { useNewTeam } from '~/core/dashboard/teams/new-team/store/newTeamStore';
+import NewTeam from '~/core/dashboard/teams/new-team/NewTeam';
+import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 
@@ -28,7 +28,7 @@ const Teams: NextPage = () => {
       <div className='relative min-h-screen'>
         <Toaster />
         <DashboardLayout>
-          <div className='grid grid-cols-1 justify-center gap-4 '>
+          <div className='grid grid-cols-1 justify-center gap-4'>
             <div className='hidden lg:mb-8 lg:flex lg:items-center lg:justify-between lg:pr-12'>
               <div className='flex flex-col gap-2'>
                 <h1 className='text-5xl font-bold leading-none'>Teams</h1>

@@ -116,10 +116,11 @@ model UsersOnTeams {
 }
 
 model Team {
-  id           String @id @default(cuid())
-  name         String @unique
-  abbreviation String @unique @db.VarChar(3)
-  password     String
+  id             String  @id @default(cuid())
+  name           String  @unique
+  abbreviation   String  @db.VarChar(3)
+  password       String
+  profilePicture String?
 
   members UsersOnTeams[]
   rosters Roster[]

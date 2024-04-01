@@ -6,14 +6,9 @@ import {
   stepThreeCreateTeamSchema,
   stepThreeJoinTeamSchema,
 } from '~/core/welcome/components/StepThree';
-import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 import { type ReplaceAll } from '~/lib/utils';
-
-async function hashPassword(password: string) {
-  const salt = await bcrypt.genSalt(10);
-  return await bcrypt.hash(password, salt);
-}
+import { hashPassword } from '../utils/utils';
 
 export const welcomeRouter = createTRPCRouter({
   isUsernameTaken: protectedProcedure
@@ -25,22 +20,16 @@ export const welcomeRouter = createTRPCRouter({
       });
       return Boolean(foundUser);
     }),
-  isTeamDataTaken: protectedProcedure
-    .input(z.object({ teamName: z.string(), abbreviation: z.string() }))
+  isTeamNameTaken: protectedProcedure
+    .input(z.object({ teamName: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { teamName, abbreviation } = input;
+      const { teamName } = input;
 
       const foundTeamByName = await ctx.prisma.team.findUnique({
         where: { name: teamName },
       });
-      const foundTeamByAbbrev = await ctx.prisma.team.findUnique({
-        where: { abbreviation: abbreviation.toUpperCase() },
-      });
 
-      return {
-        isNameTaken: Boolean(foundTeamByName),
-        isAbbreviationTaken: Boolean(foundTeamByAbbrev),
-      };
+      return { isNameTaken: Boolean(foundTeamByName) };
     }),
   submitForm: protectedProcedure
     .input(
