@@ -20,22 +20,16 @@ export const welcomeRouter = createTRPCRouter({
       });
       return Boolean(foundUser);
     }),
-  isTeamDataTaken: protectedProcedure
-    .input(z.object({ teamName: z.string(), abbreviation: z.string() }))
+  isTeamNameTaken: protectedProcedure
+    .input(z.object({ teamName: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      const { teamName, abbreviation } = input;
+      const { teamName } = input;
 
       const foundTeamByName = await ctx.prisma.team.findUnique({
         where: { name: teamName },
       });
-      const foundTeamByAbbrev = await ctx.prisma.team.findUnique({
-        where: { abbreviation: abbreviation.toUpperCase() },
-      });
 
-      return {
-        isNameTaken: Boolean(foundTeamByName),
-        isAbbreviationTaken: Boolean(foundTeamByAbbrev),
-      };
+      return { isNameTaken: Boolean(foundTeamByName) };
     }),
   submitForm: protectedProcedure
     .input(

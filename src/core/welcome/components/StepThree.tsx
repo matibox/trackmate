@@ -102,7 +102,7 @@ export default function StepOne() {
   });
 
   const utils = api.useContext();
-  const checkTeamData = api.welcome.isTeamDataTaken.useMutation();
+  const checkTeamData = api.welcome.isTeamNameTaken.useMutation();
   const checkTeamPassowrd = api.team.checkPassword.useMutation();
   const teamsByQuery = api.team.byQuery.useQuery(
     { q: query },
@@ -132,22 +132,13 @@ export default function StepOne() {
   async function onCreateTeamSubmit(
     values: z.infer<typeof stepThreeCreateTeamSchema>
   ) {
-    const { isNameTaken, isAbbreviationTaken } =
-      await checkTeamData.mutateAsync(values);
+    const { isNameTaken } = await checkTeamData.mutateAsync(values);
 
     if (isNameTaken) {
-      createTeamForm.setError('teamName', {
+      return createTeamForm.setError('teamName', {
         message: 'Team name is taken.',
       });
     }
-
-    if (isAbbreviationTaken) {
-      createTeamForm.setError('abbreviation', {
-        message: 'Abbreviation is taken.',
-      });
-    }
-
-    if (isNameTaken || isAbbreviationTaken) return;
 
     setData({ step: '3-create', data: values });
 
