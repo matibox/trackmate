@@ -52,6 +52,7 @@ import {
   AlertDialogTrigger,
 } from '~/components/ui/AlertDialog';
 import { useToast } from '~/components/ui/useToast';
+import { useSession } from 'next-auth/react';
 
 export const stepThreeCreateTeamSchema = z.object({
   teamName: z.string().min(1, 'Team name is required.'),
@@ -80,6 +81,8 @@ export default function StepOne() {
 
   const router = useRouter();
   const { toast } = useToast();
+
+  const { update: updateSession } = useSession();
 
   const [showPassword, setShowPassword] = useState(false);
   const [query, setQuery] = useState('');
@@ -124,8 +127,14 @@ export default function StepOne() {
         variant: 'destructive',
         description: err.message,
       }),
-    onSuccess: async () => {
-      await router.push('/calendar?message=welcome');
+    onSuccess: async user => {
+      await router.push('/calendar');
+      toast({
+        variant: 'default',
+        title: 'Signup successful.',
+        description: 'Welcome on board! Thanks for joining TrackMate!',
+      });
+      await updateSession({ active: user?.active ?? false });
     },
   });
 
