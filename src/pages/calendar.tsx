@@ -1,9 +1,6 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
-import { useRouter } from 'next/router';
-import { useEffect } from 'react';
 import { Toaster } from '~/components/ui/Toaster';
-import { useToast } from '~/components/ui/useToast';
 import Profile from '~/core/dashboard/calendar/Profile';
 import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
@@ -23,50 +20,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 const Calendar: NextPage = () => {
-  const router = useRouter();
-  const { message: toastMessage } = router.query as {
-    message?: 'welcome' | 'createdEvent' | 'editedEvent' | undefined;
-  };
-  const { toast } = useToast();
-
-  useEffect(() => {
-    if (!toastMessage) return;
-    switch (toastMessage) {
-      case 'welcome':
-        toast({
-          variant: 'default',
-          title: 'Signup successful.',
-          description: `Welcome on board! Thanks for joining TrackMate!`,
-        });
-        break;
-      case 'createdEvent':
-        toast({
-          variant: 'default',
-          title: 'Success!',
-          description: 'An event has successfully been created.',
-        });
-        break;
-      case 'editedEvent':
-        toast({
-          variant: 'default',
-          title: 'Success!',
-          description: 'An event has successfully been edited.',
-        });
-        break;
-    }
-
-    const timeout = setTimeout(() => {
-      void router.push('/calendar', undefined, { shallow: true });
-    }, 5000);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [toast, router, toastMessage]);
+  useProtectedRoute();
 
   const setNewEventFormOpened = useNewEvent(s => s.setSheetOpened);
-
-  useProtectedRoute();
 
   return (
     <>
