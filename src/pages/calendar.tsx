@@ -2,14 +2,14 @@ import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { Toaster } from '~/components/ui/Toaster';
 import Profile from '~/core/dashboard/calendar/Profile';
-import NewEvent from '~/core/dashboard/calendar/new-event/components/NewEvent';
+import NewEvent from '~/core/dashboard/calendar/new-event/NewEvent';
 import DashboardLayout from '~/core/dashboard/components/Layout';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 import CalendarComp from '~/core/dashboard/calendar/Calendar';
 import EventList from '~/core/dashboard/calendar/EventList';
 import { Button } from '~/components/ui/Button';
-import { useNewEvent } from '~/core/dashboard/calendar/new-event/store/newEventStore';
+import { useNewEvent } from '~/core/dashboard/calendar/new-event/newEventStore';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);

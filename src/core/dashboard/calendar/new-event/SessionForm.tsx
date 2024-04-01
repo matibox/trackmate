@@ -42,7 +42,7 @@ import {
 } from '~/components/ui/Popover';
 import dayjs from 'dayjs';
 import { Calendar } from '~/components/ui/Calendar';
-import { useNewEvent } from '../store/newEventStore';
+import { useNewEvent } from './newEventStore';
 import { api } from '~/utils/api';
 import Flag from '~/components/Flag';
 import DriverButton from './DriverButton';

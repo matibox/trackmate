@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/Select';
-import { useNewEvent } from '../store/newEventStore';
+import { useNewEvent } from './newEventStore';
 import { type $Enums } from '@prisma/client';
 import { useEffect } from 'react';
 import Flag from '~/components/Flag';

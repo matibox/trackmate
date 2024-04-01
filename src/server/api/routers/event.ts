@@ -1,11 +1,11 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step2Single';
-import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step3Single';
+import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/Step2Single';
+import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/Step3Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { encryptString } from '../utils/utils';
 import { games } from '~/lib/constants';
-import { sessionSchema } from '~/core/dashboard/calendar/new-event/components/SessionForm';
+import { sessionSchema } from '~/core/dashboard/calendar/new-event/SessionForm';
 
 export const eventRouter = createTRPCRouter({
   createOrEdit: protectedProcedure

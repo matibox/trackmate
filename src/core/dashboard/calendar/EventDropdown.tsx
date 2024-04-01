@@ -53,7 +53,7 @@ import { type ReplaceAll, cn, dateToTimeString } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useSetupDownload } from './useSetupDownload';
 import { ScrollArea } from '~/components/ui/ScrollArea';
-import { useNewEvent } from './new-event/store/newEventStore';
+import { useNewEvent } from './new-event/newEventStore';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
