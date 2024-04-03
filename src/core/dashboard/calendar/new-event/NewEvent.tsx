@@ -1,7 +1,7 @@
 import { Button } from '~/components/ui/Button';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/Sheet';
 import { CalendarPlusIcon } from 'lucide-react';
-import { type StepId, useNewEvent } from '../store/newEventStore';
+import { type StepId, useNewEvent } from './newEventStore';
 import { type ReactNode } from 'react';
 import Step1 from './Step1';
 import Step2Single from './Step2Single';

@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import dayjs, { type Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 import { type z } from 'zod';
-import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/components/Step4Single';
+import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/Step4Single';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

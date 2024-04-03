@@ -6,7 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
-import { useNewEvent } from '../store/newEventStore';
+import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
@@ -26,7 +26,7 @@ import { useToast } from '~/components/ui/useToast';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 import { Separator } from '~/components/ui/Separator';
 import SessionForm, { sessionSchema } from './SessionForm';
-import { useCalendar } from '../../store';
+import { useCalendar } from '../store';
 
 export const step4SingleSchema = z.object({
   sessions: z
@@ -62,9 +62,14 @@ export default function Step4Single() {
         description: err.message,
       }),
     onSuccess: async date => {
-      await router.push(
-        `/calendar?message=${editMode ? 'edited' : 'created'}Event`
-      );
+      await router.push('/calendar');
+      toast({
+        variant: 'default',
+        title: 'Success!',
+        description: `An event has successfully been ${
+          editMode ? 'edited' : 'created'
+        }.`,
+      });
       await utils.event.invalidate();
       setSheetOpened(false);
       selectDay({ day: dayjs(date) });

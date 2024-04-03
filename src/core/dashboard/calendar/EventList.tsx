@@ -8,7 +8,7 @@ import { useToast } from '~/components/ui/useToast';
 import { type RefObject, useEffect } from 'react';
 import Event from './Event';
 import { Button } from '~/components/ui/Button';
-import { useNewEvent } from './new-event/store/newEventStore';
+import { useNewEvent } from './new-event/newEventStore';
 import { useDragScroll } from './useDragScroll';
 
 export default function EventList() {

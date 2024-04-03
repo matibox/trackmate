@@ -34,10 +34,11 @@ declare module 'next-auth' {
  */
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: async ({ session, user }) => {
+    session: async ({ session, user, trigger, newSession }) => {
       const profile = await prisma.profile.findUnique({
         where: { userId: user.id },
       });
+
       if (session.user) {
         session.user = {
           ...user,
@@ -46,6 +47,19 @@ export const authOptions: NextAuthOptions = {
           profile,
         };
       }
+
+      if (
+        trigger === 'update' &&
+        (newSession as { active: boolean } | undefined)?.active
+      ) {
+        session.user = {
+          ...user,
+          image: user.image ?? null,
+          name: user.name ?? null,
+          active: true,
+        };
+      }
+
       return session;
     },
   },

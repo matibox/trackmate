@@ -231,7 +231,7 @@ export default function NewTeam() {
               />
             </div>
             <SheetFooter className='mt-auto'>
-              <Button type='submit' disabled={isImageUploading}>
+              <Button type='submit' disabled={isImageUploading || isLoading}>
                 {isImageUploading || isLoading ? (
                   <>
                     Please wait
