@@ -301,6 +301,7 @@ export const tracks = {
     { name: 'Misano', country: 'Italy' },
     { name: 'Monza', country: 'Italy' },
     { name: 'Nürburgring', country: 'Germany' },
+    { name: 'Nordschleife', country: 'Germany' },
     { name: 'Oulton Park', country: 'United Kingdom' },
     { name: 'Paul Ricard', country: 'France' },
     { name: 'Silverstone', country: 'United Kingdom' },
