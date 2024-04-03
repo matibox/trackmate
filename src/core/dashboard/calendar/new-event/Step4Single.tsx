@@ -9,7 +9,7 @@ import {
 import { useNewEvent } from './newEventStore';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Loader2Icon, Trash2Icon, UsersIcon } from 'lucide-react';
+import { Trash2Icon, UsersIcon } from 'lucide-react';
 import { Form, FormField, FormItem, FormMessage } from '~/components/ui/Form';
 import { api } from '~/utils/api';
 import { capitalize, timeStringToDate, getSessionTimespan } from '~/lib/utils';
@@ -383,14 +383,13 @@ export default function Step4Single() {
             form='main-form'
             disabled={createOrEditEvent.isLoading}
           >
-            {createOrEditEvent.isLoading ? (
-              <>
-                Please wait
-                <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-              </>
-            ) : (
-              `${editMode ? 'Edit' : 'Create'} event`
-            )}
+            <Button
+              type='submit'
+              form='main-form'
+              loading={createOrEditEvent.isLoading}
+            >
+              {editMode ? 'Edit' : 'Create'} event
+            </Button>
           </Button>
         </SheetFooter>
       </div>
