@@ -1,11 +1,11 @@
 import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { stepOneSchema } from '~/core/welcome/components/StepOne';
-import { stepTwoSchema } from '~/core/welcome/components/StepTwo';
+import { stepOneSchema } from '~/core/welcome/StepOne';
+import { stepTwoSchema } from '~/core/welcome/StepTwo';
 import {
   stepThreeCreateTeamSchema,
   stepThreeJoinTeamSchema,
-} from '~/core/welcome/components/StepThree';
+} from '~/core/welcome/StepThree';
 import { TRPCError } from '@trpc/server';
 import { type ReplaceAll } from '~/lib/utils';
 import { hashPassword } from '../utils/utils';

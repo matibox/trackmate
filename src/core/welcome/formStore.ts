@@ -1,11 +1,11 @@
 import { type z } from 'zod';
 import { create } from 'zustand';
-import { type stepOneSchema } from '../components/StepOne';
-import { type stepTwoSchema } from '../components/StepTwo';
+import { type stepOneSchema } from './StepOne';
+import { type stepTwoSchema } from './StepTwo';
 import {
   type stepThreeJoinTeamSchema,
   type stepThreeCreateTeamSchema,
-} from '../components/StepThree';
+} from './StepThree';
 
 const stepVariant = {
   '1': 'stepOne',
