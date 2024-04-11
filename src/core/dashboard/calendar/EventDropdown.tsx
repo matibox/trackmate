@@ -3,7 +3,6 @@ import dayjs from 'dayjs';
 import {
   DownloadIcon,
   FilePlus,
-  Loader2Icon,
   MenuIcon,
   PencilIcon,
   ShieldCheckIcon,
@@ -302,15 +301,8 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
               </div>
             </DialogHeader>
             <DialogFooter>
-              <Button type='submit' variant='primary' disabled={isLoading}>
-                {isLoading ? (
-                  <>
-                    Please wait
-                    <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-                  </>
-                ) : (
-                  'Add setup'
-                )}
+              <Button type='submit' variant='primary' loading={isLoading}>
+                Add setup
               </Button>
             </DialogFooter>
           </form>
@@ -406,18 +398,13 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                             variant='ghost'
                             className='h-auto w-auto p-2'
                             aria-label='download setup'
-                            disabled={
+                            loading={
                               currentDownloadSetupId === setup.id &&
                               isDownloadLoading
                             }
                             onClick={async () => await download({ setup })}
                           >
-                            {currentDownloadSetupId === setup.id &&
-                            isDownloadLoading ? (
-                              <Loader2Icon className='h-4 w-4 animate-spin' />
-                            ) : (
-                              <DownloadIcon className='h-4 w-4' />
-                            )}
+                            <DownloadIcon className='h-4 w-4' />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -432,7 +419,7 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                             variant='ghost'
                             className='h-auto w-auto p-2 text-red-500'
                             aria-label='delete setup'
-                            disabled={
+                            loading={
                               currentDeleteSetupId === setup.id &&
                               isDeleteLoading
                             }
@@ -440,12 +427,7 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                               await deleteSetup({ setupId: setup.id });
                             }}
                           >
-                            {currentDeleteSetupId === setup.id &&
-                            isDeleteLoading ? (
-                              <Loader2Icon className='h-4 w-4 animate-spin' />
-                            ) : (
-                              <TrashIcon className='h-4 w-4' />
-                            )}
+                            <TrashIcon className='h-4 w-4' />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -469,19 +451,10 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                   event: { name },
                 })
               }
-              disabled={isDownloadLoading || isLoading || isDeleteLoading}
+              loading={isDownloadLoading || isLoading || isDeleteLoading}
             >
-              {isDownloadLoading || isLoading || isDeleteLoading ? (
-                <>
-                  <span>Please wait</span>
-                  <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-                </>
-              ) : (
-                <>
-                  <span>Download all</span>
-                  <DownloadIcon className='ml-2 h-4 w-4' />
-                </>
-              )}
+              <span>Download all</span>
+              <DownloadIcon className='ml-2 h-4 w-4' />
             </Button>
           ) : null}
         </DialogHeader>
@@ -524,19 +497,12 @@ function DeleteEventDialog({ event: { id: eventId } }: { event: Event }) {
         <DialogFooter>
           <Button
             variant='destructive'
-            disabled={isDeleteLoading}
+            loading={isDeleteLoading}
             onClick={async () => {
               await deleteEvent({ id: eventId });
             }}
           >
-            {isDeleteLoading ? (
-              <>
-                Please wait
-                <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-              </>
-            ) : (
-              'Delete event'
-            )}
+            Delete event
           </Button>
         </DialogFooter>
       </DialogContent>

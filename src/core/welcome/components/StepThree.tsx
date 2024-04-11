@@ -275,20 +275,13 @@ export default function StepOne() {
                   variant='secondary'
                   type='button'
                   onClick={previousStep}
-                  disabled={submitForm.isLoading}
+                  loading={submitForm.isLoading}
                 >
                   <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
                   Previous
                 </Button>
-                <Button type='submit' disabled={submitForm.isLoading}>
-                  {submitForm.isLoading ? (
-                    <>
-                      Please wait
-                      <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-                    </>
-                  ) : (
-                    'Submit'
-                  )}
+                <Button type='submit' loading={submitForm.isLoading}>
+                  Submit
                 </Button>
               </div>
             </form>
@@ -412,15 +405,11 @@ export default function StepOne() {
                   <ArrowLeftIcon className='mr-1.5 h-4 w-4' />
                   Previous
                 </Button>
-                <Button type='submit' disabled={submitForm.isLoading}>
-                  {submitForm.isLoading || checkTeamPassowrd.isLoading ? (
-                    <>
-                      Please wait
-                      <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-                    </>
-                  ) : (
-                    'Submit'
-                  )}
+                <Button
+                  type='submit'
+                  loading={submitForm.isLoading || checkTeamPassowrd.isLoading}
+                >
+                  Submit
                 </Button>
               </div>
             </form>

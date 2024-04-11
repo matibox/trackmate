@@ -1,5 +1,5 @@
 import { type $Enums } from '@prisma/client';
-import { Loader2Icon, MenuIcon, PencilIcon, TrashIcon } from 'lucide-react';
+import { MenuIcon, PencilIcon, TrashIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import {
@@ -129,19 +129,13 @@ function DeleteTeamDialog({
         <DialogFooter>
           <Button
             variant='destructive'
-            disabled={isDeleteLoading || safetyString !== name}
+            disabled={safetyString !== name}
+            loading={isDeleteLoading}
             onClick={async () => {
               await deleteTeam({ teamId });
             }}
           >
-            {isDeleteLoading ? (
-              <>
-                Please wait
-                <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-              </>
-            ) : (
-              'Delete team'
-            )}
+            Delete team
           </Button>
         </DialogFooter>
       </DialogContent>
