@@ -23,7 +23,7 @@ import {
   EyeOffIcon,
   Loader2Icon,
 } from 'lucide-react';
-import { useWelcomeForm } from '../store/formStore';
+import { useWelcomeForm } from './formStore';
 import { api } from '~/utils/api';
 import { useRouter } from 'next/router';
 import {

@@ -11,7 +11,7 @@ import { Button } from '~/components/ui/Button';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useWelcomeForm } from '../store/formStore';
+import { useWelcomeForm } from './formStore';
 import WelcomeLayout from './Layout';
 import { ArrowRightIcon } from 'lucide-react';
 import { api } from '~/utils/api';

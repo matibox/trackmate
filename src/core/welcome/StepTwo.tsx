@@ -10,7 +10,7 @@ import { Button } from '~/components/ui/Button';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useWelcomeForm } from '../store/formStore';
+import { useWelcomeForm } from './formStore';
 import { countries, games } from '~/lib/constants';
 import {
   Popover,

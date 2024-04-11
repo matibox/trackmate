@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { decryptString, encryptString } from './utils';
+import { decryptString, encryptString } from '../utils';
 import crypto from 'crypto';
 
 describe('encrypt and decrypt string', () => {

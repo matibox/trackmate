@@ -11,10 +11,10 @@ import SimImage from '~/components/SimImage';
 import { getServerAuthSession } from '~/server/auth';
 import Image from 'next/image';
 import { type ReactNode } from 'react';
-import { useWelcomeForm } from '~/core/welcome/store/formStore';
-import StepOne from '~/core/welcome/components/StepOne';
-import StepTwo from '~/core/welcome/components/StepTwo';
-import StepThree from '~/core/welcome/components/StepThree';
+import { useWelcomeForm } from '~/core/welcome/formStore';
+import StepOne from '~/core/welcome/StepOne';
+import StepTwo from '~/core/welcome/StepTwo';
+import StepThree from '~/core/welcome/StepThree';
 import { NextSeo } from 'next-seo';
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {

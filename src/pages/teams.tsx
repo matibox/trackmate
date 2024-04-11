@@ -2,7 +2,7 @@ import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { Button } from '~/components/ui/Button';
 import { Toaster } from '~/components/ui/Toaster';
-import DashboardLayout from '~/core/dashboard/components/Layout';
+import DashboardLayout from '~/core/dashboard/Layout';
 import TeamList from '~/core/dashboard/teams/TeamList';
 import NewTeam from '~/core/dashboard/teams/new-team/NewTeam';
 import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
