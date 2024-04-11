@@ -381,15 +381,9 @@ export default function Step4Single() {
           <Button
             type='submit'
             form='main-form'
-            disabled={createOrEditEvent.isLoading}
+            loading={createOrEditEvent.isLoading}
           >
-            <Button
-              type='submit'
-              form='main-form'
-              loading={createOrEditEvent.isLoading}
-            >
-              {editMode ? 'Edit' : 'Create'} event
-            </Button>
+            {editMode ? 'Edit' : 'Create'} event
           </Button>
         </SheetFooter>
       </div>

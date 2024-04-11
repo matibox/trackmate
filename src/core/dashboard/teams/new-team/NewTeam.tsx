@@ -9,7 +9,7 @@ import {
 } from '~/components/ui/Sheet';
 import { useNewTeam } from './newTeamStore';
 import { Button } from '~/components/ui/Button';
-import { Loader2Icon, PlusIcon, UploadIcon } from 'lucide-react';
+import { PlusIcon, UploadIcon } from 'lucide-react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -231,15 +231,8 @@ export default function NewTeam() {
               />
             </div>
             <SheetFooter className='mt-auto'>
-              <Button type='submit' disabled={isImageUploading || isLoading}>
-                {isImageUploading || isLoading ? (
-                  <>
-                    Please wait
-                    <Loader2Icon className='ml-2 h-4 w-4 animate-spin' />
-                  </>
-                ) : (
-                  'Create team'
-                )}
+              <Button type='submit' loading={isImageUploading || isLoading}>
+                Create team
               </Button>
             </SheetFooter>
           </form>
