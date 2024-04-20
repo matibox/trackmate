@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import {
   DownloadIcon,
   FilePlus,
+  Loader2Icon,
   MenuIcon,
   PencilIcon,
   ShieldCheckIcon,
@@ -193,6 +194,7 @@ function AddSetupDialog({ event: { id, game, car, track } }: { event: Event }) {
     api.event.addAndAssignSetup.useMutation({
       onSuccess: async () => {
         await utils.event.invalidate();
+        form.reset();
         setDialogOpen(false);
       },
     });
@@ -398,13 +400,18 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                             variant='ghost'
                             className='h-auto w-auto p-2'
                             aria-label='download setup'
-                            loading={
+                            disabled={
                               currentDownloadSetupId === setup.id &&
                               isDownloadLoading
                             }
                             onClick={async () => await download({ setup })}
                           >
-                            <DownloadIcon className='h-4 w-4' />
+                            {currentDownloadSetupId === setup.id &&
+                            isDownloadLoading ? (
+                              <Loader2Icon className='h-4 w-4 animate-spin' />
+                            ) : (
+                              <DownloadIcon className='h-4 w-4' />
+                            )}
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -419,7 +426,7 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                             variant='ghost'
                             className='h-auto w-auto p-2 text-red-500'
                             aria-label='delete setup'
-                            loading={
+                            disabled={
                               currentDeleteSetupId === setup.id &&
                               isDeleteLoading
                             }
@@ -427,7 +434,12 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                               await deleteSetup({ setupId: setup.id });
                             }}
                           >
-                            <TrashIcon className='h-4 w-4' />
+                            {currentDeleteSetupId === setup.id &&
+                            isDeleteLoading ? (
+                              <Loader2Icon className='h-4 w-4 animate-spin' />
+                            ) : (
+                              <TrashIcon className='h-4 w-4' />
+                            )}
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>
@@ -451,7 +463,7 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
                   event: { name },
                 })
               }
-              loading={isDownloadLoading || isLoading || isDeleteLoading}
+              loading={isDownloadLoading || isLoading}
             >
               <span>Download all</span>
               <DownloadIcon className='ml-2 h-4 w-4' />
