@@ -1,13 +1,17 @@
+import { FilterIcon, SearchIcon } from 'lucide-react';
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
 import { Button } from '~/components/ui/Button';
+import { Input } from '~/components/ui/Input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/Layout';
 import TeamList from '~/core/dashboard/teams/TeamList';
 import NewTeam from '~/core/dashboard/teams/new-team/NewTeam';
 import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
+import { useDebounce } from '~/hooks/useDebounce';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
 
@@ -20,11 +24,22 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 const Teams: NextPage = () => {
-  const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
+  useProtectedRoute();
 
+  const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
   const router = useRouter();
 
-  useProtectedRoute();
+  const [query, setQuery] = useState('');
+
+  useDebounce(
+    () => {
+      void router.replace({
+        query: { ...router.query, q: query },
+      });
+    },
+    500,
+    [query]
+  );
 
   return (
     <>
@@ -52,7 +67,9 @@ const Teams: NextPage = () => {
                 (router.query.t as string | undefined) ?? 'your-teams'
               }
               className='space-y-4'
-              onValueChange={tab => router.replace(`?t=${tab}`)}
+              onValueChange={tab =>
+                router.replace({ query: { ...router.query, t: tab } })
+              }
             >
               <TabsList className='grid w-full max-w-[417px] grid-cols-2 bg-slate-900'>
                 <TabsTrigger value='your-teams'>Your teams</TabsTrigger>
@@ -61,7 +78,24 @@ const Teams: NextPage = () => {
               <TabsContent value='your-teams'>
                 <TeamList />
               </TabsContent>
-              <TabsContent value='explore'>explore tab</TabsContent>
+              <TabsContent value='explore' className='flex flex-col gap-4'>
+                <div className='flex gap-4 self-start'>
+                  <div className='relative'>
+                    <Input
+                      type='text'
+                      placeholder='Search'
+                      className='h-9 w-64 placeholder:text-sm placeholder:font-medium'
+                      value={query}
+                      onChange={e => setQuery(e.target.value)}
+                    />
+                    <SearchIcon className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
+                  </div>
+                  <Button variant='ghost' className='h-9 w-9 px-0'>
+                    <FilterIcon className='h-[18px] w-[18px] text-slate-50' />
+                  </Button>
+                </div>
+                <TeamList />
+              </TabsContent>
             </Tabs>
           </div>
           <NewTeam />
