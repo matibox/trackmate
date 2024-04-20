@@ -1,6 +1,7 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { Button } from '~/components/ui/Button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/Layout';
 import TeamList from '~/core/dashboard/teams/TeamList';
@@ -43,7 +44,16 @@ const Teams: NextPage = () => {
                 New team
               </Button>
             </div>
-            <TeamList />
+            <Tabs defaultValue='your-teams' className='space-y-4'>
+              <TabsList className='grid w-full max-w-[417px] grid-cols-2 bg-slate-900'>
+                <TabsTrigger value='your-teams'>Your teams</TabsTrigger>
+                <TabsTrigger value='explore'>Explore</TabsTrigger>
+              </TabsList>
+              <TabsContent value='your-teams'>
+                <TeamList />
+              </TabsContent>
+              <TabsContent value='explore'>explore tab</TabsContent>
+            </Tabs>
           </div>
           <NewTeam />
         </DashboardLayout>
