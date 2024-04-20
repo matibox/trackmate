@@ -23,7 +23,7 @@ export default function Team({ team }: { team: Team }) {
   }, [team.members, team.rosters]);
 
   return (
-    <div className='flex w-full items-center gap-4 rounded-md bg-slate-900 p-4 ring-1 ring-slate-800'>
+    <div className='flex w-full items-center gap-4 rounded-md bg-slate-900 p-4'>
       <Avatar>
         <AvatarImage
           src={team.profilePicture ?? ''}
