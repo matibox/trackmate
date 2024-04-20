@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider     = "mysql"
+  provider     = "postgresql"
   url          = env("DATABASE_URL")
   relationMode = "prisma"
 }
@@ -178,8 +178,8 @@ model EventSession {
   serverPassword String?
   rainLevel      Decimal?         @db.Decimal(3, 2)
   cloudLevel     Decimal?         @db.Decimal(3, 2)
-  randomness     Int?             @db.TinyInt
-  temperature    Int?             @db.TinyInt
+  randomness     Int?             @db.SmallInt
+  temperature    Int?             @db.SmallInt
   event          Event            @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId        String
 
