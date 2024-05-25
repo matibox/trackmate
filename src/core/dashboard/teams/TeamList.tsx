@@ -7,7 +7,11 @@ import { useNewTeam } from './new-team/newTeamStore';
 import { PlusIcon } from 'lucide-react';
 import { Skeleton } from '~/components/ui/Skeleton';
 
-export default function TeamList() {
+export default function TeamList({
+  addTeamButton = false,
+}: {
+  addTeamButton?: boolean;
+}) {
   const { data: teams, status, error } = api.team.list.useQuery();
   const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
 
@@ -66,13 +70,15 @@ export default function TeamList() {
           {teams.map(team => (
             <Team key={team.id} team={team} />
           ))}
-          <button
-            className='flex min-h-[5rem] items-center justify-center rounded-md text-slate-300 ring-1 ring-slate-800'
-            aria-label='New team'
-            onClick={() => setNewTeamFormOpened(true)}
-          >
-            <PlusIcon />
-          </button>
+          {addTeamButton ? (
+            <button
+              className='flex min-h-[5rem] items-center justify-center rounded-md text-slate-300 ring-1 ring-slate-800'
+              aria-label='New team'
+              onClick={() => setNewTeamFormOpened(true)}
+            >
+              <PlusIcon />
+            </button>
+          ) : null}
         </div>
       ) : (
         <div className='flex flex-col items-center gap-1 text-slate-300'>

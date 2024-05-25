@@ -76,15 +76,16 @@ const Teams: NextPage = () => {
                 <TabsTrigger value='explore'>Explore</TabsTrigger>
               </TabsList>
               <TabsContent value='your-teams'>
-                <TeamList />
+                <TeamList addTeamButton />
+                <NewTeam />
               </TabsContent>
               <TabsContent value='explore' className='flex flex-col gap-4'>
-                <div className='flex gap-4 self-start'>
-                  <div className='relative'>
+                <div className='flex w-full gap-4 self-start'>
+                  <div className='relative grow sm:grow-0'>
                     <Input
                       type='text'
                       placeholder='Search'
-                      className='h-9 w-64 placeholder:text-sm placeholder:font-medium'
+                      className='h-9 w-full placeholder:text-sm placeholder:font-medium sm:w-64'
                       value={query}
                       onChange={e => setQuery(e.target.value)}
                     />
@@ -98,7 +99,6 @@ const Teams: NextPage = () => {
               </TabsContent>
             </Tabs>
           </div>
-          <NewTeam />
         </DashboardLayout>
       </div>
     </>
