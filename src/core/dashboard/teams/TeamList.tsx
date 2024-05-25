@@ -1,30 +1,52 @@
-import { useEffect } from 'react';
 import { useToast } from '~/components/ui/useToast';
-import { api } from '~/utils/api';
+import { type RouterOutputs, api } from '~/utils/api';
 import Team from './Team';
 import { Button } from '~/components/ui/Button';
 import { useNewTeam } from './new-team/newTeamStore';
 import { PlusIcon } from 'lucide-react';
 import { Skeleton } from '~/components/ui/Skeleton';
+import { type QueryStatus } from '@tanstack/react-query';
+import { type TRPCError } from '@trpc/server';
 
 export default function TeamList({
+  data: teams,
+  status,
+  error,
   addTeamButton = false,
 }: {
+  data: RouterOutputs['team']['listMemberOf'] | undefined;
+  status: QueryStatus;
+  error: Omit<TRPCError, 'code' | 'name'> | null;
   addTeamButton?: boolean;
 }) {
-  const { data: teams, status, error } = api.team.list.useQuery();
+  // const [page, setPage] = useState(0);
+
+  // const {
+  //   data: teams,
+  //   status,
+  //   error,
+  //   fetchNextPage,
+  // } = api.team.get.useInfiniteQuery(
+  //   {
+  //     limit: 4,
+  //   },
+  //   {
+  //     getNextPageParam: lastPage => lastPage.nextCursor,
+  //   }
+  // );
+
+  // async function handleFetchNextPage() {
+  //   await fetchNextPage();
+  //   setPage(prev => prev + 1);
+  // }
+
+  // function handleFetchPrevPage() {
+  //   setPage(prev => prev - 1);
+  // }
+
+  // const { data: teams, status, error } = api.team.listMemberOf.useQuery();
   const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
-
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (status !== 'error') return;
-    toast({
-      variant: 'destructive',
-      title: 'An error occured',
-      description: error.message,
-    });
-  }, [error?.message, status, toast]);
 
   if (status === 'loading') {
     return (
@@ -54,6 +76,12 @@ export default function TeamList({
   }
 
   if (status === 'error') {
+    toast({
+      variant: 'destructive',
+      title: 'An error occured',
+      description: error?.message,
+    });
+
     return (
       <section className='flex w-full flex-col'>
         <p className='text-center text-slate-300 lg:text-left'>
@@ -65,9 +93,9 @@ export default function TeamList({
 
   return (
     <section>
-      {teams.length > 0 ? (
+      {teams?.length !== 0 ? (
         <div className='grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fill,_417px)]'>
-          {teams.map(team => (
+          {teams?.map(team => (
             <Team key={team.id} team={team} />
           ))}
           {addTeamButton ? (

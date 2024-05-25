@@ -2,7 +2,7 @@ import { FilterIcon, SearchIcon } from 'lucide-react';
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { Suspense, lazy, useState } from 'react';
 import { Button } from '~/components/ui/Button';
 import { Input } from '~/components/ui/Input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
@@ -14,6 +14,8 @@ import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
 import { useDebounce } from '~/hooks/useDebounce';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
+
+const YourTeams = lazy(() => import('~/core/dashboard/teams/YourTeams'));
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -76,8 +78,9 @@ const Teams: NextPage = () => {
                 <TabsTrigger value='explore'>Explore</TabsTrigger>
               </TabsList>
               <TabsContent value='your-teams'>
-                <TeamList addTeamButton />
-                <NewTeam />
+                <Suspense>
+                  <YourTeams />
+                </Suspense>
               </TabsContent>
               <TabsContent value='explore' className='flex flex-col gap-4'>
                 <div className='flex w-full gap-4 self-start'>
@@ -95,7 +98,7 @@ const Teams: NextPage = () => {
                     <FilterIcon className='h-[18px] w-[18px] text-slate-50' />
                   </Button>
                 </div>
-                <TeamList />
+                {/* <TeamList /> */}
               </TabsContent>
             </Tabs>
           </div>

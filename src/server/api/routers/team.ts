@@ -77,7 +77,7 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
-  list: protectedProcedure.query(async ({ ctx }) => {
+  listMemberOf: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.team.findMany({
       where: { members: { some: { userId: ctx.session.user.id } } },
       select: {
@@ -100,6 +100,34 @@ export const teamRouter = createTRPCRouter({
       },
     });
   }),
+  get: protectedProcedure
+    .input(
+      z.object({
+        limit: z.number(),
+        cursor: z.string().nullish(),
+        skip: z.number().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { limit, skip, cursor } = input;
+      const teams = await ctx.prisma.team.findMany({
+        take: limit + 1,
+        skip,
+        cursor: cursor ? { id: cursor } : undefined,
+        orderBy: { id: 'asc' },
+      });
+
+      let nextCursor: typeof cursor | undefined = undefined;
+      if (teams.length > limit) {
+        const nextTeam = teams.pop();
+        nextCursor = nextTeam?.id;
+      }
+
+      return {
+        teams,
+        nextCursor,
+      };
+    }),
   delete: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .mutation(async ({ ctx, input }) => {
