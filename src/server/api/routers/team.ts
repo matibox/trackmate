@@ -100,7 +100,7 @@ export const teamRouter = createTRPCRouter({
       },
     });
   }),
-  get: protectedProcedure
+  listWithFilter: protectedProcedure
     .input(
       z.object({
         limit: z.number(),
@@ -115,6 +115,24 @@ export const teamRouter = createTRPCRouter({
         skip,
         cursor: cursor ? { id: cursor } : undefined,
         orderBy: { id: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          abbreviation: true,
+          profilePicture: true,
+          members: {
+            where: { userId: ctx.session.user.id },
+            select: { role: true },
+          },
+          rosters: {
+            select: {
+              members: {
+                where: { userId: ctx.session.user.id },
+                select: { role: true },
+              },
+            },
+          },
+        },
       });
 
       let nextCursor: typeof cursor | undefined = undefined;

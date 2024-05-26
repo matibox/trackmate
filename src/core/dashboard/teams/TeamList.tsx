@@ -1,5 +1,5 @@
 import { useToast } from '~/components/ui/useToast';
-import { type RouterOutputs, api } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import Team from './Team';
 import { Button } from '~/components/ui/Button';
 import { useNewTeam } from './new-team/newTeamStore';
@@ -19,32 +19,6 @@ export default function TeamList({
   error: Omit<TRPCError, 'code' | 'name'> | null;
   addTeamButton?: boolean;
 }) {
-  // const [page, setPage] = useState(0);
-
-  // const {
-  //   data: teams,
-  //   status,
-  //   error,
-  //   fetchNextPage,
-  // } = api.team.get.useInfiniteQuery(
-  //   {
-  //     limit: 4,
-  //   },
-  //   {
-  //     getNextPageParam: lastPage => lastPage.nextCursor,
-  //   }
-  // );
-
-  // async function handleFetchNextPage() {
-  //   await fetchNextPage();
-  //   setPage(prev => prev + 1);
-  // }
-
-  // function handleFetchPrevPage() {
-  //   setPage(prev => prev - 1);
-  // }
-
-  // const { data: teams, status, error } = api.team.listMemberOf.useQuery();
   const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
   const { toast } = useToast();
 
