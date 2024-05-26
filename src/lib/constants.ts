@@ -234,6 +234,7 @@ export const cars = {
     { name: 'Ferrari 296', type: 'GT3' },
     { name: 'Ferrari 488', type: 'GT3' },
     { name: 'Ferrari 488 EVO', type: 'GT3' },
+    { name: 'Ford Mustang', type: 'GT3' },
     { name: 'Honda NSX', type: 'GT3' },
     { name: 'Honda NSX Evo', type: 'GT3' },
     { name: 'Lamborghini Huracán', type: 'GT3' },
