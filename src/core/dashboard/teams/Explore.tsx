@@ -1,9 +1,49 @@
-import { FilterIcon, SearchIcon } from 'lucide-react';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useDebounce } from '~/hooks/useDebounce';
+import { FilterIcon, SearchIcon } from 'lucide-react';
 import { Button } from '~/components/ui/Button';
 import { Input } from '~/components/ui/Input';
 import TeamList from './TeamList';
 import { api } from '~/utils/api';
+
+function useSearchQuery() {
+  const router = useRouter();
+  const initialQuery = (router.query.q as string | undefined) ?? '';
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] =
+    useState(initialQuery);
+
+  useDebounce(
+    () => {
+      if (debouncedSearchQuery !== searchQuery) {
+        setDebouncedSearchQuery(searchQuery);
+      }
+    },
+    500,
+    [searchQuery]
+  );
+
+  // update the URL with debouncedSearchQuery
+  useEffect(() => {
+    if (router.query.q !== debouncedSearchQuery) {
+      void router.replace({
+        query: { ...router.query, q: debouncedSearchQuery || undefined },
+      });
+    }
+  }, [debouncedSearchQuery, router, router.query]);
+
+  // update searchQuery when the URL changes
+  useEffect(() => {
+    if (router.query.q !== searchQuery) {
+      setSearchQuery((router.query.q as string | undefined) ?? '');
+    }
+    // Disabled due to causing of infinite loop
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.query.q]);
+
+  return { searchQuery: debouncedSearchQuery, setSearchQuery };
+}
 
 function useScrollPosition() {
   const [scrollPosition, setScrollPosition] = useState(0);
@@ -14,7 +54,6 @@ function useScrollPosition() {
       document.documentElement.clientHeight;
     const winScroll =
       document.body.scrollTop || document.documentElement.scrollTop;
-
     const scrolled = (winScroll / height) * 100;
 
     setScrollPosition(scrolled);
@@ -32,9 +71,11 @@ function useScrollPosition() {
 }
 
 function useTeamQuery() {
+  const { searchQuery, setSearchQuery } = useSearchQuery();
   const { data, ...rest } = api.team.listWithFilter.useInfiniteQuery(
     {
       limit: 32,
+      searchQuery,
     },
     {
       getNextPageParam: lastPage => lastPage.nextCursor,
@@ -43,19 +84,27 @@ function useTeamQuery() {
   );
 
   return {
+    searchQuery,
+    setSearchQuery,
     data: data?.pages?.flatMap(page => page.teams) ?? [],
     ...rest,
   };
 }
 
 export default function Explore() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const { data, error, status, hasNextPage, isFetching, fetchNextPage } =
-    useTeamQuery();
+  const {
+    searchQuery,
+    setSearchQuery,
+    data,
+    error,
+    status,
+    hasNextPage,
+    isFetching,
+    fetchNextPage,
+  } = useTeamQuery();
   const { scrollPosition } = useScrollPosition();
 
   useEffect(() => {
-    console.log(scrollPosition);
     if (scrollPosition > 90 && hasNextPage && !isFetching) {
       void fetchNextPage();
     }
@@ -69,7 +118,7 @@ export default function Explore() {
             type='text'
             placeholder='Search'
             className='h-9 w-full placeholder:text-sm placeholder:font-medium sm:w-64'
-            value={searchQuery}
+            defaultValue={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
           />
           <SearchIcon className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
@@ -79,9 +128,6 @@ export default function Explore() {
         </Button>
       </div>
       <TeamList data={data} error={error} status={status} />
-      <p className='text-center text-slate-300'>
-        There are no more teams to load.
-      </p>
     </>
   );
 }

@@ -104,13 +104,25 @@ export const teamRouter = createTRPCRouter({
     .input(
       z.object({
         limit: z.number(),
+        searchQuery: z.string().nullish(),
         cursor: z.string().nullish(),
         skip: z.number().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { limit, skip, cursor } = input;
+      const { limit, skip, cursor, searchQuery } = input;
       const teams = await ctx.prisma.team.findMany({
+        where: {
+          OR: [
+            { name: { contains: searchQuery ?? '', mode: 'insensitive' } },
+            {
+              abbreviation: {
+                contains: searchQuery ?? '',
+                mode: 'insensitive',
+              },
+            },
+          ],
+        },
         take: limit + 1,
         skip,
         cursor: cursor ? { id: cursor } : undefined,
