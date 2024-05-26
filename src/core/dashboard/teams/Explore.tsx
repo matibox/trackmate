@@ -38,7 +38,7 @@ function useSearchQuery() {
     if (router.query.q !== searchQuery) {
       setSearchQuery((router.query.q as string | undefined) ?? '');
     }
-    // Disabled due to causing of infinite loop
+    // disabled due to infinite loop
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router.query.q]);
 
