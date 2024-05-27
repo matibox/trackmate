@@ -185,7 +185,7 @@ export default function NewTeam() {
                     <FormControl className='w-[278px]'>
                       <Input type='password' {...field} />
                     </FormControl>
-                    <FormDescription>
+                    <FormDescription className='w-[278px]'>
                       This password will allow members to join your team.
                     </FormDescription>
                     <FormMessage />
@@ -230,7 +230,7 @@ export default function NewTeam() {
                 )}
               />
             </div>
-            <SheetFooter className='mt-auto'>
+            <SheetFooter className='mx-auto mt-auto w-[278px]'>
               <Button type='submit' loading={isImageUploading || isLoading}>
                 Create team
               </Button>
