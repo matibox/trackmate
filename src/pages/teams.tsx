@@ -6,6 +6,7 @@ import { Button } from '~/components/ui/Button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/Layout';
+import NewTeam from '~/core/dashboard/teams/new-team/NewTeam';
 import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
@@ -41,12 +42,14 @@ const Teams: NextPage = () => {
                   Manage, create and join teams.
                 </span>
               </div>
-              <Button
-                variant='primary'
-                onClick={() => setNewTeamFormOpened(true)}
-              >
-                New team
-              </Button>
+              {(router.query.t as string | undefined) === 'your-teams' ? (
+                <Button
+                  variant='primary'
+                  onClick={() => setNewTeamFormOpened(true)}
+                >
+                  New team
+                </Button>
+              ) : null}
             </div>
             <Tabs
               defaultValue={
@@ -72,6 +75,7 @@ const Teams: NextPage = () => {
                 </Suspense>
               </TabsContent>
             </Tabs>
+            <NewTeam />
           </div>
         </DashboardLayout>
       </div>

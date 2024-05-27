@@ -1,14 +1,8 @@
 import { api } from '~/utils/api';
 import TeamList from './TeamList';
-import NewTeam from './new-team/NewTeam';
 
 export default function YourTeams() {
   const { data, status, error } = api.team.listMemberOf.useQuery();
 
-  return (
-    <>
-      <TeamList data={data} status={status} error={error} addTeamButton />
-      <NewTeam />
-    </>
-  );
+  return <TeamList data={data} status={status} error={error} addTeamButton />;
 }

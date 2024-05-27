@@ -21,8 +21,9 @@ import {
 import { Input } from '~/components/ui/Input';
 import { cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
+import { useNewTeam } from './new-team/newTeamStore';
 
-type Team = RouterOutputs['team']['list'][number];
+type Team = RouterOutputs['team']['listMemberOf'][number];
 type Role = $Enums.RosterRole | Exclude<$Enums.TeamRole, 'member'>;
 
 export default function TeamDropdown({
@@ -35,6 +36,8 @@ export default function TeamDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
+  const { setSheetOpened, setEditMode, setEditModeTeamId, setData } =
+    useNewTeam();
 
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
@@ -48,15 +51,20 @@ export default function TeamDropdown({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-56'>
-        {/* <DropdownMenuLabel>Setups</DropdownMenuLabel>
-        <DropdownMenuGroup>
-          <AddSetupDialog event={event} />
-          <ViewSetupsDialog event={event} />
-        </DropdownMenuGroup> */}
-        {/* <DropdownMenuSeparator /> */}
         <DropdownMenuLabel>Manage team</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setSheetOpened(true);
+              setEditMode(true);
+              setEditModeTeamId(team.id);
+              setData({
+                ...team,
+                profilePicture: undefined,
+                password: '',
+              });
+            }}
+          >
             <PencilIcon className='mr-2 h-4 w-4' />
             <span>Edit team</span>
           </DropdownMenuItem>

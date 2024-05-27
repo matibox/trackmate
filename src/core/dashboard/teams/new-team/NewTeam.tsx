@@ -28,6 +28,7 @@ import { useState } from 'react';
 import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/useToast';
 import { UploadThingError } from 'uploadthing/server';
+import { useRouter } from 'next/router';
 
 const acceptedImageTypes = [
   'image/jpeg',
@@ -60,6 +61,7 @@ export const newTeamSchema = z.object({
 });
 
 export default function NewTeam() {
+  const router = useRouter();
   const { setSheetOpened, sheetOpened, data, setData } = useNewTeam();
   const { toast } = useToast();
 
@@ -131,14 +133,16 @@ export default function NewTeam() {
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
       <SheetTrigger asChild className='lg:hidden'>
-        <Button
-          variant='fab'
-          size='fab'
-          className='fixed bottom-24 right-4'
-          aria-label='Create team'
-        >
-          <PlusIcon />
-        </Button>
+        {(router.query.t as string | undefined) === 'your-teams' ? (
+          <Button
+            variant='fab'
+            size='fab'
+            className='fixed bottom-24 right-4'
+            aria-label='Create team'
+          >
+            <PlusIcon />
+          </Button>
+        ) : null}
       </SheetTrigger>
       <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
         <SheetHeader>
