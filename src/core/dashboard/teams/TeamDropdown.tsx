@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/DropdownMenu';
 import { Input } from '~/components/ui/Input';
-import { cn } from '~/lib/utils';
+import { cn, urlToFile } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useNewTeam } from './new-team/newTeamStore';
 
@@ -39,6 +39,27 @@ export default function TeamDropdown({
   const { setSheetOpened, setEditMode, setEditModeTeamId, setData } =
     useNewTeam();
 
+  const handleEditTeam = async () => {
+    setSheetOpened(true);
+    setEditMode(true);
+    setEditModeTeamId(team.id);
+
+    let profilePictureFile: File | null = null;
+    if (team.profilePicture) {
+      profilePictureFile = await urlToFile({
+        url: team.profilePicture,
+        filename: 'profilePicture.png',
+      });
+    }
+
+    setData({
+      name: team.name,
+      abbreviation: team.abbreviation,
+      password: '',
+      profilePicture: profilePictureFile,
+    });
+  };
+
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
       <DropdownMenuTrigger asChild>
@@ -53,18 +74,7 @@ export default function TeamDropdown({
       <DropdownMenuContent align='end' className='w-56'>
         <DropdownMenuLabel>Manage team</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem
-            onClick={() => {
-              setSheetOpened(true);
-              setEditMode(true);
-              setEditModeTeamId(team.id);
-              setData({
-                ...team,
-                profilePicture: undefined,
-                password: '',
-              });
-            }}
-          >
+          <DropdownMenuItem onClick={handleEditTeam}>
             <PencilIcon className='mr-2 h-4 w-4' />
             <span>Edit team</span>
           </DropdownMenuItem>

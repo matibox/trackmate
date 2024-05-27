@@ -24,7 +24,7 @@ import {
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
 import { uploadFiles } from '~/utils/uploadthing';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/useToast';
 import { UploadThingError } from 'uploadthing/server';
@@ -62,7 +62,17 @@ export const newTeamSchema = z.object({
 
 export default function NewTeam() {
   const router = useRouter();
-  const { setSheetOpened, sheetOpened, data, setData } = useNewTeam();
+  const {
+    setSheetOpened,
+    sheetOpened,
+    data,
+    setData,
+    editMode,
+    setEditMode,
+    editModeTeamId,
+    setEditModeTeamId,
+    reset,
+  } = useNewTeam();
   const { toast } = useToast();
 
   const [isImageUploading, setIsImageUploading] = useState(false);
@@ -77,13 +87,25 @@ export default function NewTeam() {
     },
   });
 
+  useEffect(() => {
+    if (editMode && data) {
+      console.log(data.profilePicture);
+      form.reset({
+        name: data.name,
+        abbreviation: data.abbreviation,
+        password: data.password,
+        profilePicture: data.profilePicture ?? null,
+      });
+    }
+  }, [editMode, data, form]);
+
   const utils = api.useContext();
   const { mutate: createTeam, isLoading } = api.team.create.useMutation({
     onSuccess: async () => {
       await utils.team.invalidate();
-      setData(null);
       form.reset();
       setSheetOpened(false);
+      reset();
       toast({
         variant: 'default',
         title: 'Success!',
@@ -144,11 +166,17 @@ export default function NewTeam() {
           </Button>
         ) : null}
       </SheetTrigger>
-      <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
+      <SheetContent
+        className='w-full border-0 ring-1 ring-slate-900'
+        onClose={reset}
+      >
         <SheetHeader>
-          <SheetTitle className='text-3xl'>Create team</SheetTitle>
+          <SheetTitle className='text-3xl'>
+            {editMode ? 'Edit' : 'Create'} team
+          </SheetTitle>
           <SheetDescription>
-            Fill team data, click create when you&apos;re ready.
+            Fill team data, click {editMode ? 'edit' : 'create'} when
+            you&apos;re ready.
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -236,7 +264,7 @@ export default function NewTeam() {
             </div>
             <SheetFooter className='mx-auto mt-auto w-[278px]'>
               <Button type='submit' loading={isImageUploading || isLoading}>
-                Create team
+                {editMode ? 'Edit' : 'Create'} team
               </Button>
             </SheetFooter>
           </form>

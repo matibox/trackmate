@@ -128,3 +128,27 @@ export function getCalendarRowStyles({
     width: counter > 0 ? width : '100%',
   };
 }
+
+export async function urlToFile({
+  url,
+  filename,
+}: {
+  url: string;
+  filename: string;
+}) {
+  const mimeTypeMapping: { [key: string]: `image/${string}` } = {
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    png: 'image/png',
+    webp: 'image/webp',
+  };
+
+  const res = await fetch(url);
+  const buffer = await res.arrayBuffer();
+
+  // extract the file extension from the URL
+  const extension = url.split('.').pop()?.toLowerCase() || '';
+  const mimeType = mimeTypeMapping[extension] || 'application/octet-stream';
+
+  return new File([buffer], filename, { type: mimeType });
+}

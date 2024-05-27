@@ -11,6 +11,7 @@ export const useNewTeam = create<{
   setEditMode: (editMode: boolean) => void;
   editModeTeamId: string | undefined;
   setEditModeTeamId: (id: string | undefined) => void;
+  reset: () => void;
 }>(set => ({
   sheetOpened: false,
   setSheetOpened: sheetOpened => set(() => ({ sheetOpened })),
@@ -20,4 +21,10 @@ export const useNewTeam = create<{
   setEditMode: editMode => set(() => ({ editMode })),
   editModeTeamId: undefined,
   setEditModeTeamId: editModeTeamId => set(() => ({ editModeTeamId })),
+  reset: () =>
+    set(() => ({
+      data: undefined,
+      editMode: false,
+      editModeTeamId: undefined,
+    })),
 }));
