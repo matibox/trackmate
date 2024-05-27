@@ -1,8 +1,7 @@
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { useDebounce } from '~/hooks/useDebounce';
-import { FilterIcon, SearchIcon } from 'lucide-react';
-import { Button } from '~/components/ui/Button';
+import { SearchIcon } from 'lucide-react';
 import { Input } from '~/components/ui/Input';
 import TeamList from './TeamList';
 import { api } from '~/utils/api';
@@ -123,9 +122,6 @@ export default function Explore() {
           />
           <SearchIcon className='absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
         </div>
-        <Button variant='ghost' className='h-9 w-9 px-0'>
-          <FilterIcon className='h-[18px] w-[18px] text-slate-50' />
-        </Button>
       </div>
       <TeamList data={data} error={error} status={status} />
     </>
