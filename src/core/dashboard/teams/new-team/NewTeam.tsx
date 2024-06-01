@@ -11,7 +11,7 @@ import { useNewTeam } from './newTeamStore';
 import { Button } from '~/components/ui/Button';
 import { PlusIcon, UploadIcon } from 'lucide-react';
 import { z } from 'zod';
-import { useForm } from 'react-hook-form';
+import { type UseFormReturn, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
   Form,
@@ -23,11 +23,11 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
-import { uploadFiles } from '~/utils/uploadthing';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { api } from '~/utils/api';
 import { useToast } from '~/components/ui/useToast';
-import { UploadThingError } from 'uploadthing/server';
+import { useRouter } from 'next/router';
+import { useImageUpload } from '~/hooks/useImageUpload';
 
 const acceptedImageTypes = [
   'image/jpeg',
@@ -42,10 +42,7 @@ export const newTeamSchema = z.object({
     .string()
     .min(1, 'Abbreviation is required.')
     .length(3, 'Abbreviation must be 3 characters long.'),
-  password: z
-    .string()
-    .min(1, 'Join password is required.')
-    .min(4, 'Join password must be at least 4 characters long.'),
+  password: z.string().optional(),
   profilePicture: z
     .custom<File | null>()
     .optional()
@@ -59,14 +56,83 @@ export const newTeamSchema = z.object({
     ),
 });
 
-export default function NewTeam() {
-  const { setSheetOpened, sheetOpened, data, setData } = useNewTeam();
+function useTeamMutations({
+  form,
+}: {
+  form: UseFormReturn<z.infer<typeof newTeamSchema>>;
+}) {
+  const { setSheetOpened, editMode, reset } = useNewTeam();
   const { toast } = useToast();
 
-  const [isImageUploading, setIsImageUploading] = useState(false);
+  const utils = api.useContext();
+
+  async function onSuccess() {
+    await utils.team.invalidate();
+    form.reset();
+    setSheetOpened(false);
+    toast({
+      variant: 'default',
+      title: 'Success!',
+      description: `A team has successfully been ${
+        editMode ? 'edited' : 'created'
+      }.`,
+    });
+    reset();
+  }
+
+  function onError({ errorMessage }: { errorMessage: string }) {
+    toast({
+      variant: 'destructive',
+      title: 'An error occured.',
+      description: errorMessage,
+    });
+  }
+
+  const { mutateAsync: createTeam, isLoading: isCreateLoading } =
+    api.team.create.useMutation({
+      onSuccess,
+      onError: err => onError({ errorMessage: err.message }),
+    });
+
+  const { mutateAsync: editTeam, isLoading: isEditLoading } =
+    api.team.edit.useMutation({
+      onSuccess,
+      onError: err => onError({ errorMessage: err.message }),
+    });
+
+  return {
+    createTeam,
+    editTeam,
+    isLoading: isCreateLoading || isEditLoading,
+  };
+}
+
+export default function NewTeam() {
+  const router = useRouter();
+  const {
+    setSheetOpened,
+    sheetOpened,
+    data,
+    setData,
+    editMode,
+    editModeTeamId,
+    reset,
+  } = useNewTeam();
+
+  const { uploadImage, isImageUploading } = useImageUpload();
 
   const form = useForm<z.infer<typeof newTeamSchema>>({
-    resolver: zodResolver(newTeamSchema),
+    resolver: zodResolver(
+      newTeamSchema.superRefine(({ password }, ctx) => {
+        if (!editMode && (!password || password.length < 4)) {
+          ctx.addIssue({
+            code: 'custom',
+            path: ['password'],
+            message: 'Join password must be at least 4 characters long.',
+          });
+        }
+      })
+    ),
     defaultValues: {
       name: data?.name ?? '',
       abbreviation: data?.abbreviation ?? '',
@@ -75,76 +141,89 @@ export default function NewTeam() {
     },
   });
 
-  const utils = api.useContext();
-  const { mutate: createTeam, isLoading } = api.team.create.useMutation({
-    onSuccess: async () => {
-      await utils.team.invalidate();
-      setData(null);
-      form.reset();
-      setSheetOpened(false);
-      toast({
-        variant: 'default',
-        title: 'Success!',
-        description: 'A team has successfully been created.',
-      });
-    },
-    onError: err => {
-      toast({
-        variant: 'destructive',
-        title: 'An error occured.',
-        description: err.message,
-      });
-    },
-  });
+  const { createTeam, editTeam, isLoading } = useTeamMutations({ form });
 
-  function onSubmit(values: z.infer<typeof newTeamSchema>) {
+  useEffect(() => {
+    if (editMode && data) {
+      form.reset({
+        name: data.name,
+        abbreviation: data.abbreviation,
+        password: data.password,
+        profilePicture: data.profilePicture ?? null,
+      });
+    } else if (!editMode) {
+      form.reset({
+        name: '',
+        abbreviation: '',
+        password: '',
+        profilePicture: null,
+      });
+    }
+  }, [editMode, data, form]);
+
+  useEffect(() => {
+    if (!sheetOpened) {
+      form.reset({
+        name: '',
+        abbreviation: '',
+        password: '',
+        profilePicture: null,
+      });
+    }
+  }, [sheetOpened, form]);
+
+  async function onSubmit(values: z.infer<typeof newTeamSchema>) {
     setData(values);
+    let profilePicture: string | undefined = undefined;
 
     if (values.profilePicture) {
-      setIsImageUploading(true);
-      uploadFiles('imageUploader', {
-        files: [values.profilePicture],
-      })
-        .then(res => {
-          createTeam({
-            ...values,
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            profilePicture: res[0]!.url,
-          });
-        })
-        .catch(err => {
-          if (err instanceof UploadThingError) {
-            toast({
-              variant: 'destructive',
-              title: 'An error occured while uploading the image.',
-              description: err.message,
-            });
-          }
-        });
-      setIsImageUploading(false);
-      return;
+      await uploadImage(values.profilePicture, ({ url }) => {
+        profilePicture = url;
+      });
     }
 
-    createTeam({ ...values, profilePicture: undefined });
+    if (editMode) {
+      await editTeam({
+        ...values,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        teamId: editModeTeamId!,
+        profilePicture,
+      });
+    } else {
+      await createTeam({
+        ...values,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        password: values.password!,
+        profilePicture,
+      });
+    }
   }
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
       <SheetTrigger asChild className='lg:hidden'>
-        <Button
-          variant='fab'
-          size='fab'
-          className='fixed bottom-24 right-4'
-          aria-label='Create team'
-        >
-          <PlusIcon />
-        </Button>
+        {(router.query.t as string | undefined) === 'your-teams' ? (
+          <Button
+            variant='fab'
+            size='fab'
+            className='fixed bottom-24 right-4'
+            aria-label='Create team'
+          >
+            <PlusIcon />
+          </Button>
+        ) : null}
       </SheetTrigger>
-      <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
+      <SheetContent
+        className='w-full border-0 ring-1 ring-slate-900'
+        onClose={reset}
+      >
         <SheetHeader>
-          <SheetTitle className='text-3xl'>Create team</SheetTitle>
+          <SheetTitle className='text-3xl'>
+            {editMode ? 'Edit' : 'Create'} team
+          </SheetTitle>
           <SheetDescription>
-            Fill team data, click create when you&apos;re ready.
+            Fill team data, click {editMode ? 'edit' : 'create'} when
+            you&apos;re ready.
           </SheetDescription>
         </SheetHeader>
         <Form {...form}>
@@ -176,28 +255,32 @@ export default function NewTeam() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name='password'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Join password</FormLabel>
-                    <FormControl className='w-[278px]'>
-                      <Input type='password' {...field} />
-                    </FormControl>
-                    <FormDescription>
-                      This password will allow members to join your team.
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {!editMode ? (
+                <FormField
+                  control={form.control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Join password</FormLabel>
+                      <FormControl className='w-[278px]'>
+                        <Input type='password' {...field} />
+                      </FormControl>
+                      <FormDescription className='w-[278px]'>
+                        This password will allow members to join your team.
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ) : null}
               <FormField
                 control={form.control}
                 name='profilePicture'
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Team picture (optional)</FormLabel>
+                    <FormLabel>
+                      Team picture {!editMode && '(optional)'}
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type='file'
@@ -230,9 +313,9 @@ export default function NewTeam() {
                 )}
               />
             </div>
-            <SheetFooter className='mt-auto'>
+            <SheetFooter className='mx-auto mt-auto w-[278px]'>
               <Button type='submit' loading={isImageUploading || isLoading}>
-                Create team
+                {editMode ? 'Edit' : 'Create'} team
               </Button>
             </SheetFooter>
           </form>

@@ -1,26 +1,26 @@
-import { useEffect } from 'react';
 import { useToast } from '~/components/ui/useToast';
-import { api } from '~/utils/api';
+import { type RouterOutputs } from '~/utils/api';
 import Team from './Team';
 import { Button } from '~/components/ui/Button';
 import { useNewTeam } from './new-team/newTeamStore';
 import { PlusIcon } from 'lucide-react';
 import { Skeleton } from '~/components/ui/Skeleton';
+import { type QueryStatus } from '@tanstack/react-query';
+import { type TRPCError } from '@trpc/server';
 
-export default function TeamList() {
-  const { data: teams, status, error } = api.team.list.useQuery();
+export default function TeamList({
+  data: teams,
+  status,
+  error,
+  addTeamButton = false,
+}: {
+  data: RouterOutputs['team']['listMemberOf'] | undefined;
+  status: QueryStatus;
+  error: Omit<TRPCError, 'code' | 'name'> | null;
+  addTeamButton?: boolean;
+}) {
   const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
-
   const { toast } = useToast();
-
-  useEffect(() => {
-    if (status !== 'error') return;
-    toast({
-      variant: 'destructive',
-      title: 'An error occured',
-      description: error.message,
-    });
-  }, [error?.message, status, toast]);
 
   if (status === 'loading') {
     return (
@@ -50,6 +50,12 @@ export default function TeamList() {
   }
 
   if (status === 'error') {
+    toast({
+      variant: 'destructive',
+      title: 'An error occured',
+      description: error?.message,
+    });
+
     return (
       <section className='flex w-full flex-col'>
         <p className='text-center text-slate-300 lg:text-left'>
@@ -61,18 +67,20 @@ export default function TeamList() {
 
   return (
     <section>
-      {teams.length > 0 ? (
+      {teams?.length !== 0 ? (
         <div className='grid grid-cols-1 gap-4 md:grid-cols-[repeat(auto-fill,_417px)]'>
-          {teams.map(team => (
+          {teams?.map(team => (
             <Team key={team.id} team={team} />
           ))}
-          <button
-            className='flex min-h-[5rem] items-center justify-center rounded-md text-slate-300 ring-1 ring-slate-800'
-            aria-label='New team'
-            onClick={() => setNewTeamFormOpened(true)}
-          >
-            <PlusIcon />
-          </button>
+          {addTeamButton ? (
+            <button
+              className='flex min-h-[5rem] items-center justify-center rounded-md text-slate-300 ring-1 ring-slate-800'
+              aria-label='New team'
+              onClick={() => setNewTeamFormOpened(true)}
+            >
+              <PlusIcon />
+            </button>
+          ) : null}
         </div>
       ) : (
         <div className='flex flex-col items-center gap-1 text-slate-300'>

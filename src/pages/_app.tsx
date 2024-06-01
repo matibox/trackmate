@@ -5,6 +5,7 @@ import { api } from '~/utils/api';
 import '~/styles/globals.css';
 import { DefaultSeo } from 'next-seo';
 import Navbar from '~/components/Navbar';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -74,6 +75,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <Navbar disabledOn={['/', '/login', '/welcome']} />
         <Component {...pageProps} />
       </div>
+      <ReactQueryDevtools />
     </SessionProvider>
   );
 };

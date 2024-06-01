@@ -1,13 +1,18 @@
 import { type GetServerSidePropsContext, type NextPage } from 'next';
 import { NextSeo } from 'next-seo';
+import { useRouter } from 'next/router';
+import { Suspense, lazy } from 'react';
 import { Button } from '~/components/ui/Button';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/Layout';
-import TeamList from '~/core/dashboard/teams/TeamList';
 import NewTeam from '~/core/dashboard/teams/new-team/NewTeam';
 import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
 import { useProtectedRoute } from '~/hooks/useProtectedRoute';
 import { getServerAuthSession } from '~/server/auth';
+
+const YourTeams = lazy(() => import('~/core/dashboard/teams/YourTeams'));
+const Explore = lazy(() => import('~/core/dashboard/teams/Explore'));
 
 export async function getServerSideProps(ctx: GetServerSidePropsContext) {
   const session = await getServerAuthSession(ctx);
@@ -18,9 +23,10 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 }
 
 const Teams: NextPage = () => {
-  const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
-
   useProtectedRoute();
+
+  const setNewTeamFormOpened = useNewTeam(s => s.setSheetOpened);
+  const router = useRouter();
 
   return (
     <>
@@ -36,16 +42,41 @@ const Teams: NextPage = () => {
                   Manage, create and join teams.
                 </span>
               </div>
-              <Button
-                variant='primary'
-                onClick={() => setNewTeamFormOpened(true)}
-              >
-                New team
-              </Button>
+              {(router.query.t as string | undefined) === 'your-teams' ? (
+                <Button
+                  variant='primary'
+                  onClick={() => setNewTeamFormOpened(true)}
+                >
+                  New team
+                </Button>
+              ) : null}
             </div>
-            <TeamList />
+            <Tabs
+              defaultValue={
+                (router.query.t as string | undefined) ?? 'your-teams'
+              }
+              className='space-y-4'
+              onValueChange={tab =>
+                router.replace({ query: { ...router.query, t: tab } })
+              }
+            >
+              <TabsList className='grid w-full max-w-[417px] grid-cols-2 bg-slate-900'>
+                <TabsTrigger value='your-teams'>Your teams</TabsTrigger>
+                <TabsTrigger value='explore'>Explore</TabsTrigger>
+              </TabsList>
+              <TabsContent value='your-teams'>
+                <Suspense>
+                  <YourTeams />
+                </Suspense>
+              </TabsContent>
+              <TabsContent value='explore' className='flex flex-col gap-4'>
+                <Suspense>
+                  <Explore />
+                </Suspense>
+              </TabsContent>
+            </Tabs>
+            <NewTeam />
           </div>
-          <NewTeam />
         </DashboardLayout>
       </div>
     </>
