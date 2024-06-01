@@ -24,6 +24,8 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: z.string(),
     ENCRYPTION_IV: z.string().length(32),
     ENCRYPTION_KEY: z.string().length(64),
+    UPLOADTHING_SECRET: z.string(),
+    UPLOADTHING_APP_ID: z.string(),
   },
 
   /**
@@ -47,6 +49,8 @@ export const env = createEnv({
     DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
     ENCRYPTION_IV: process.env.ENCRYPTION_IV,
     ENCRYPTION_KEY: process.env.ENCRYPTION_KEY,
+    UPLOADTHING_SECRET: process.env.UPLOADTHING_SECRET,
+    UPLOADTHING_APP_ID: process.env.UPLOADTHING_APP_ID,
     // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
   },
   /**

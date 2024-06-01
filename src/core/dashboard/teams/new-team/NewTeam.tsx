@@ -23,12 +23,11 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
-import { uploadFiles } from '~/utils/uploadthing';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { api } from '~/utils/api';
-import { toast, useToast } from '~/components/ui/useToast';
-import { UploadThingError } from 'uploadthing/server';
+import { useToast } from '~/components/ui/useToast';
 import { useRouter } from 'next/router';
+import { useImageUpload } from '~/hooks/useImageUpload';
 
 const acceptedImageTypes = [
   'image/jpeg',
@@ -63,6 +62,7 @@ function useTeamMutations({
   form: UseFormReturn<z.infer<typeof newTeamSchema>>;
 }) {
   const { setSheetOpened, editMode, reset } = useNewTeam();
+  const { toast } = useToast();
 
   const utils = api.useContext();
 
@@ -118,9 +118,8 @@ export default function NewTeam() {
     editModeTeamId,
     reset,
   } = useNewTeam();
-  const { toast } = useToast();
 
-  const [isImageUploading, setIsImageUploading] = useState(false);
+  const { uploadImage, isImageUploading } = useImageUpload();
 
   const form = useForm<z.infer<typeof newTeamSchema>>({
     resolver: zodResolver(
@@ -175,40 +174,12 @@ export default function NewTeam() {
 
   async function onSubmit(values: z.infer<typeof newTeamSchema>) {
     setData(values);
+    let profilePicture: string | undefined = undefined;
 
     if (values.profilePicture) {
-      setIsImageUploading(true);
-      uploadFiles('imageUploader', {
-        files: [values.profilePicture],
-      })
-        .then(async res => {
-          editMode
-            ? await editTeam({
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                teamId: editModeTeamId!,
-                ...values,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                profilePicture: res[0]!.url,
-              })
-            : await createTeam({
-                ...values,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                password: values.password!,
-                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                profilePicture: res[0]!.url,
-              });
-        })
-        .catch(err => {
-          if (err instanceof UploadThingError) {
-            toast({
-              variant: 'destructive',
-              title: 'An error occured while uploading the image.',
-              description: err.message,
-            });
-          }
-        });
-      setIsImageUploading(false);
-      return;
+      await uploadImage(values.profilePicture, ({ url }) => {
+        profilePicture = url;
+      });
     }
 
     if (editMode) {
@@ -216,14 +187,14 @@ export default function NewTeam() {
         ...values,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         teamId: editModeTeamId!,
-        profilePicture: undefined,
+        profilePicture,
       });
     } else {
       await createTeam({
         ...values,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         password: values.password!,
-        profilePicture: undefined,
+        profilePicture,
       });
     }
   }
