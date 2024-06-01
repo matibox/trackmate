@@ -167,8 +167,13 @@ export const teamRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
       newTeamSchema
-        .omit({ profilePicture: true })
-        .and(z.object({ profilePicture: z.string().optional() }))
+        .omit({ profilePicture: true, password: true })
+        .and(
+          z.object({
+            password: z.string(),
+            profilePicture: z.string().optional(),
+          })
+        )
     )
     .mutation(async ({ ctx, input }) => {
       const { name, abbreviation, password, profilePicture } = input;
@@ -199,5 +204,29 @@ export const teamRouter = createTRPCRouter({
           }
         }
       }
+    }),
+  edit: protectedProcedure
+    .input(
+      newTeamSchema
+        .partial()
+        .omit({ profilePicture: true, password: true })
+        .and(
+          z.object({
+            teamId: z.string(),
+            profilePicture: z.string().optional(),
+          })
+        )
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { teamId, name, abbreviation, profilePicture } = input;
+
+      await ctx.prisma.team.update({
+        where: { id: teamId },
+        data: {
+          name,
+          abbreviation,
+          profilePicture,
+        },
+      });
     }),
 });

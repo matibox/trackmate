@@ -19,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/DropdownMenu';
 import { Input } from '~/components/ui/Input';
-import { cn, urlToFile } from '~/lib/utils';
+import { cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useNewTeam } from './new-team/newTeamStore';
 
@@ -39,24 +39,16 @@ export default function TeamDropdown({
   const { setSheetOpened, setEditMode, setEditModeTeamId, setData } =
     useNewTeam();
 
-  const handleEditTeam = async () => {
+  const handleEditTeam = () => {
     setSheetOpened(true);
     setEditMode(true);
     setEditModeTeamId(team.id);
-
-    let profilePictureFile: File | null = null;
-    if (team.profilePicture) {
-      profilePictureFile = await urlToFile({
-        url: team.profilePicture,
-        filename: 'profilePicture.png',
-      });
-    }
 
     setData({
       name: team.name,
       abbreviation: team.abbreviation,
       password: '',
-      profilePicture: profilePictureFile,
+      profilePicture: null,
     });
   };
 
