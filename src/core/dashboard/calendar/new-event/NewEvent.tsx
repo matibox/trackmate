@@ -2,21 +2,32 @@ import { Button } from '~/components/ui/Button';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/Sheet';
 import { CalendarPlusIcon } from 'lucide-react';
 import { type StepId, useNewEvent } from './newEventStore';
-import { type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import Step1 from './Step1';
 import Step2Single from './Step2Single';
 import Step3Single from './Step3Single';
 import Step4Single from './Step4Single';
+import MultiStepForm from '~/components/MultiStepForm';
+import { z } from 'zod';
+import StepOne, { stepOneSchema } from '../new-event-2/Step1';
 
-const steps: Record<StepId, ReactNode> = {
-  '1': <Step1 />,
-  '2-single': <Step2Single />,
-  '3-single': <Step3Single />,
-  '4-single': <Step4Single />,
-};
+// const steps: Record<StepId, ReactNode> = {
+//   '1': <Step1 />,
+//   '2-single': <Step2Single />,
+//   '3-single': <Step3Single />,
+//   '4-single': <Step4Single />,
+// };
+
+const stepTwoSchema = z.object({
+  test: z.string().min(1, 'Test is required.'),
+});
+
+const formSchema = stepOneSchema.and(stepTwoSchema);
 
 export default function NewEvent() {
-  const { stepId, reset, sheetOpened, setSheetOpened } = useNewEvent();
+  const [sheetOpened, setSheetOpened] = useState(false);
+
+  // const { stepId, reset } = useNewEvent();
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
@@ -32,9 +43,19 @@ export default function NewEvent() {
       </SheetTrigger>
       <SheetContent
         className='w-full border-0 ring-1 ring-slate-900'
-        onClose={reset}
+        // onClose={reset}
       >
-        {steps[stepId]}
+        <MultiStepForm<typeof formSchema>
+          onSubmit={values => {
+            console.log(values);
+          }}
+          steps={[
+            {
+              schema: stepOneSchema,
+              component: <StepOne />,
+            },
+          ]}
+        />
       </SheetContent>
     </Sheet>
   );
