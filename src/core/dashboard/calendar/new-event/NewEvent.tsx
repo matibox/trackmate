@@ -31,7 +31,10 @@ export default function NewEvent() {
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
-      <SheetTrigger asChild className='lg:hidden'>
+      <SheetTrigger
+        asChild
+        //  className='lg:hidden'
+      >
         <Button
           variant='fab'
           size='fab'
@@ -55,6 +58,9 @@ export default function NewEvent() {
               component: <StepOne />,
             },
           ]}
+          defaultValues={{
+            name: '',
+          }}
         />
       </SheetContent>
     </Sheet>

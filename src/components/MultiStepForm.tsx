@@ -11,14 +11,14 @@ export default function MultiStepForm<T extends ZodSchema>({
 }: {
   steps: Array<{ schema: ZodSchema; component: ReactNode }>;
   onSubmit: (values: z.infer<T>) => void;
-  defaultValues?: z.infer<T>;
+  defaultValues?: Partial<z.infer<T>>;
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const step = steps[currentStep]!;
 
   const form = useForm<z.infer<T>>({
     resolver: zodResolver(step.schema),
-    defaultValues,
+    defaultValues: defaultValues as z.infer<T>,
   });
 
   const isLastStep = useMemo(
@@ -27,7 +27,6 @@ export default function MultiStepForm<T extends ZodSchema>({
   );
 
   function handleNextStep() {
-    console.log('beng');
     if (!isLastStep) {
       setCurrentStep(prev => prev + 1);
     } else {
@@ -43,15 +42,19 @@ export default function MultiStepForm<T extends ZodSchema>({
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(handleNextStep)}>
         {step.component}
-        {currentStep > 0 && (
-          <Button
-            type='button'
-            onClick={() => setCurrentStep(prev => prev - 1)}
-          >
-            Previous
+        <div className='mx-auto flex w-4/5'>
+          {currentStep > 0 && (
+            <Button
+              type='button'
+              onClick={() => setCurrentStep(prev => prev - 1)}
+            >
+              Previous
+            </Button>
+          )}
+          <Button type='submit' className='ml-auto'>
+            {isLastStep ? 'Submit' : 'Next'}
           </Button>
-        )}
-        <Button type='submit'>{isLastStep ? 'submit' : 'next'}</Button>
+        </div>
       </form>
     </FormProvider>
   );
