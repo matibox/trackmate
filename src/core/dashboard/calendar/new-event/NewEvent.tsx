@@ -10,6 +10,7 @@ import Step4Single from './Step4Single';
 import MultiStepForm from '~/components/MultiStepForm';
 import { z } from 'zod';
 import StepOne, { stepOneSchema } from '../new-event-2/Step1';
+import StepTwo, { stepTwoSchema } from '../new-event-2/Step2';
 
 // const steps: Record<StepId, ReactNode> = {
 //   '1': <Step1 />,
@@ -17,10 +18,6 @@ import StepOne, { stepOneSchema } from '../new-event-2/Step1';
 //   '3-single': <Step3Single />,
 //   '4-single': <Step4Single />,
 // };
-
-const stepTwoSchema = z.object({
-  test: z.string().min(1, 'Test is required.'),
-});
 
 const formSchema = stepOneSchema.and(stepTwoSchema);
 
@@ -56,6 +53,10 @@ export default function NewEvent() {
             {
               schema: stepOneSchema,
               component: <StepOne />,
+            },
+            {
+              schema: stepTwoSchema,
+              component: <StepTwo />,
             },
           ]}
           defaultValues={{
