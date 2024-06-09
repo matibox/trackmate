@@ -5,7 +5,7 @@ import { TRPCError } from '@trpc/server';
 import { games } from '~/lib/constants';
 import { type ReplaceAll } from '~/lib/utils';
 import { newTeamSchema } from '~/core/dashboard/teams/new-team/NewTeam';
-import { hashPassword } from '../utils/utils';
+import { gameStrToDbStr, hashPassword } from '../utils/utils';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const teamRouter = createTRPCRouter({
@@ -35,6 +35,45 @@ export const teamRouter = createTRPCRouter({
       }
 
       return await bcrypt.compare(password, foundTeam.password);
+    }),
+  memberOf: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.prisma.team.findMany({
+      where: { members: { some: { userId: ctx.session.user.id } } },
+      select: {
+        id: true,
+        name: true,
+        abbreviation: true,
+        profilePicture: true,
+      },
+    });
+  }),
+  rostersByGame: protectedProcedure
+    .input(z.object({ teamId: z.string(), game: z.enum(games) }))
+    .query(async ({ ctx, input }) => {
+      const { game: _game, teamId } = input;
+      const game = gameStrToDbStr(_game);
+
+      const team = await ctx.prisma.team.findUnique({
+        where: { id: teamId },
+        select: {
+          rosters: {
+            where: { game },
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      });
+
+      if (!team) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'This team has no rosters.',
+        });
+      }
+
+      return team.rosters;
     }),
   withRostersByGame: protectedProcedure
     .input(z.object({ game: z.enum(games) }))
@@ -77,7 +116,7 @@ export const teamRouter = createTRPCRouter({
         },
       });
     }),
-  listMemberOf: protectedProcedure.query(async ({ ctx }) => {
+  memberOfRoles: protectedProcedure.query(async ({ ctx }) => {
     return await ctx.prisma.team.findMany({
       where: { members: { some: { userId: ctx.session.user.id } } },
       select: {
@@ -166,14 +205,12 @@ export const teamRouter = createTRPCRouter({
     }),
   create: protectedProcedure
     .input(
-      newTeamSchema
-        .omit({ profilePicture: true, password: true })
-        .and(
-          z.object({
-            password: z.string(),
-            profilePicture: z.string().optional(),
-          })
-        )
+      newTeamSchema.omit({ profilePicture: true, password: true }).and(
+        z.object({
+          password: z.string(),
+          profilePicture: z.string().optional(),
+        })
+      )
     )
     .mutation(async ({ ctx, input }) => {
       const { name, abbreviation, password, profilePicture } = input;

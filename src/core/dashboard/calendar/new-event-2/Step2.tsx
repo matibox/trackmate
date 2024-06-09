@@ -19,6 +19,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/Select';
+import { api } from '~/utils/api';
+import { type stepOneSchema } from './Step1';
+import DriverButton from '../new-event/DriverButton';
+import { Loader2Icon } from 'lucide-react';
 
 export const stepTwoSchema = z.object({
   teamId: z
@@ -30,14 +34,20 @@ export const stepTwoSchema = z.object({
   driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
 });
 
-// ! Placeholder
-// TODO: fetch from DB
-const teams = ['A', 'B', 'C'];
-const rosters = ['A', 'B', 'C'];
-// const drivers = ['abc', 'def', 'ghi'];
-
 export default function StepTwo() {
+  const { watch: getStepOne } = useFormContext<z.infer<typeof stepOneSchema>>();
   const form = useFormContext<z.infer<typeof stepTwoSchema>>();
+
+  const { data: teams, status: teamStatus } = api.team.memberOf.useQuery();
+  const { data: rosters, status: rosterStatus } =
+    api.team.rostersByGame.useQuery(
+      { teamId: form.watch('teamId'), game: getStepOne('game') },
+      { enabled: !!form.watch('teamId') }
+    );
+  const { data: drivers, status: driversStatus } = api.roster.drivers.useQuery(
+    { rosterId: form.watch('rosterId') },
+    { enabled: !!form.watch('teamId') && !!form.watch('rosterId') }
+  );
 
   return (
     <>
@@ -68,9 +78,9 @@ export default function StepTwo() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {teams.map(team => (
-                    <SelectItem key={team} value={team}>
-                      {team}
+                  {teams?.map(team => (
+                    <SelectItem key={team.id} value={team.id}>
+                      {team.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -99,13 +109,52 @@ export default function StepTwo() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {rosters.map(roster => (
-                      <SelectItem key={roster} value={roster}>
-                        {roster}
+                    {rosters?.map(roster => (
+                      <SelectItem key={roster.id} value={roster.id}>
+                        {roster.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <></>
+            )
+          }
+        />
+        <FormField
+          control={form.control}
+          name='driverIds'
+          render={({ field }) =>
+            form.watch('rosterId') ? (
+              <FormItem className='flex flex-col'>
+                <FormLabel>Drivers</FormLabel>
+                {driversStatus === 'loading' && (
+                  <Loader2Icon className='mx-auto h-4 w-4 animate-spin' />
+                )}
+                {drivers?.map(({ user }) => {
+                  const isActive = field.value.includes(user.id);
+
+                  return (
+                    <DriverButton
+                      key={user.id}
+                      driver={user}
+                      isActive={isActive}
+                      onClick={() => {
+                        const prev = field.value;
+                        if (isActive) {
+                          form.setValue(
+                            'driverIds',
+                            prev.filter(id => id !== user.id)
+                          );
+                        } else {
+                          form.setValue('driverIds', [...prev, user.id]);
+                        }
+                      }}
+                    />
+                  );
+                })}
                 <FormMessage />
               </FormItem>
             ) : (
