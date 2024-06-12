@@ -49,7 +49,9 @@ export default function ResponsiveDialog({
         </DialogContent>
       </Dialog>
     );
-  } else {
+  }
+
+  return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
@@ -66,6 +68,6 @@ export default function ResponsiveDialog({
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>
-    </Drawer>;
-  }
+    </Drawer>
+  );
 }

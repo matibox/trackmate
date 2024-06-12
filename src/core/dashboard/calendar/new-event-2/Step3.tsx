@@ -17,6 +17,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/DropdownMenu';
+import ResponsiveDialog from '~/components/ui/ResponsiveDialog';
 import {
   SheetDescription,
   SheetHeader,
@@ -54,22 +55,35 @@ export default function StepThree() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className='w-[268px]'>
             {sessionTypes.map(sessionType => (
-              <Dialog key={sessionType}>
-                <DialogTrigger asChild>
+              // <Dialog key={sessionType}>
+              //   <DialogTrigger asChild>
+              //     <DropdownMenuItem onSelect={e => e.preventDefault()}>
+              //       {capitalize(sessionType)}
+              //     </DropdownMenuItem>
+              //   </DialogTrigger>
+              //   <DialogContent className='text-slate-50'>
+              //     <DialogHeader>
+              //       <DialogTitle>Create {sessionType} session</DialogTitle>
+              //       <div className='flex w-full flex-col gap-4 text-slate-50'></div>
+              //     </DialogHeader>
+              //     <DialogFooter>
+              //       <Button>Submit</Button>
+              //     </DialogFooter>
+              //   </DialogContent>
+              // </Dialog>
+              <ResponsiveDialog
+                key={sessionType}
+                title={`Create ${sessionType} session`}
+                trigger={
                   <DropdownMenuItem onSelect={e => e.preventDefault()}>
                     {capitalize(sessionType)}
                   </DropdownMenuItem>
-                </DialogTrigger>
-                <DialogContent className='text-slate-50'>
-                  <DialogHeader>
-                    <DialogTitle>Create {sessionType} session</DialogTitle>
-                    <div className='flex w-full flex-col gap-4 text-slate-50'></div>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <Button>Submit</Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                }
+              >
+                <div className='flex w-full flex-col gap-4 text-slate-50'>
+                  {sessionType} form
+                </div>
+              </ResponsiveDialog>
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
