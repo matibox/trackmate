@@ -57,7 +57,7 @@ export default function StepOne() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Event name</FormLabel>
-              <FormControl className='w-[278px]'>
+              <FormControl>
                 <Input {...field} />
               </FormControl>
               <FormMessage />

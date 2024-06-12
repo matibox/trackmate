@@ -23,9 +23,15 @@ import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
 import { Input } from '~/components/ui/Input';
-import { stepThreeSchema } from './Step3';
+import { type stepThreeSchema } from './Step3';
 
 type SessionType = (typeof sessionTypes)[number];
+
+const serverInfoSchema = z.object({
+  inGameTime: z.string().optional(),
+  serverName: z.string().optional(),
+  serverPassword: z.string().optional(),
+});
 
 const briefingSchema = z.object({
   type: z.literal('briefing'),
@@ -35,11 +41,18 @@ const briefingSchema = z.object({
     .min(1, 'Start time is required.'),
 });
 
-const practiceSchema = z.object({
-  type: z.literal('practice', { required_error: 'type is required' }),
-  date: z.date({ required_error: 'Date is required.' }),
-  beng: z.string().min(1, 'yes'),
-});
+const practiceSchema = z
+  .object({
+    type: z.literal('practice', { required_error: 'type is required' }),
+    date: z.date({ required_error: 'Date is required.' }),
+    startTime: z
+      .string({ required_error: 'Start time is required.' })
+      .min(1, 'Start time is required.'),
+    endTime: z
+      .string({ required_error: 'End time is required.' })
+      .min(1, 'End time is required.'),
+  })
+  .merge(serverInfoSchema);
 
 const qualifyingSchema = z.object({
   type: z.literal('qualifying'),
@@ -123,7 +136,125 @@ function BriefingForm() {
 function PracticeForm() {
   const form = useFormContext<z.infer<typeof practiceSchema>>();
 
-  return <div>practice</div>;
+  return (
+    <>
+      <div className='flex flex-col gap-8'>
+        <div className='flex flex-col gap-4'>
+          <FormField
+            control={form.control}
+            name='date'
+            render={({ field }) => (
+              <FormItem className='flex flex-col'>
+                <FormLabel className='w-min'>Date</FormLabel>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <FormControl>
+                      <Button
+                        variant={'outline'}
+                        className={cn(
+                          'pl-3 text-left font-normal',
+                          !field.value && 'text-muted-foreground'
+                        )}
+                      >
+                        {field.value ? (
+                          dayjs(field.value).format('MMMM DD, YYYY')
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                      </Button>
+                    </FormControl>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-auto p-0' align='start'>
+                    <Calendar
+                      mode='single'
+                      selected={field.value}
+                      onSelect={field.onChange}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='startTime'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Start time</FormLabel>
+                <FormControl>
+                  <Input {...field} type='time' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='endTime'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>End time</FormLabel>
+                <FormControl>
+                  <Input {...field} type='time' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <div className='flex flex-col gap-1'>
+          <h2 className='flex items-center gap-1.5 text-lg font-medium'>
+            Server info{' '}
+            <span className='text-xs text-slate-400'>(optional)</span>
+          </h2>
+          <div className='flex flex-col gap-4'>
+            <FormField
+              control={form.control}
+              name='inGameTime'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>In-game time</FormLabel>
+                  <FormControl>
+                    <Input {...field} type='time' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='serverName'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='serverPassword'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server password</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
 }
 
 function QualifyingForm() {
@@ -161,8 +292,9 @@ export default function SessionForm({
   const form = useForm<z.infer<typeof sessionSchema>>({
     resolver: zodResolver(sessionSchema),
     defaultValues: {
-      startTime: '',
       date: lastSessionDate,
+      startTime: '',
+      endTime: '',
     },
   });
 
