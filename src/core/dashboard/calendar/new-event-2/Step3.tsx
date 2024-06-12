@@ -1,5 +1,5 @@
 import { PlusIcon } from 'lucide-react';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
@@ -15,9 +15,10 @@ import {
 } from '~/components/ui/Sheet';
 import { sessionTypes } from '~/lib/constants';
 import SessionForm, { sessionSchema } from './SessionForm';
+import crypto from 'crypto';
 
 export const stepThreeSchema = z.object({
-  sessions: z.array(sessionSchema),
+  sessions: z.array(sessionSchema.and(z.object({ id: z.string() }))),
 });
 
 export default function StepThree() {
@@ -35,11 +36,7 @@ export default function StepThree() {
       <div className='mx-auto flex w-4/5 flex-col gap-4 py-8 text-slate-50'>
         <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened}>
           <DropdownMenuTrigger asChild>
-            <Button
-              variant='secondary'
-              className='justify-between'
-              // disabled={loading}
-            >
+            <Button variant='secondary' className='justify-between'>
               New session
               <PlusIcon className='h-4 w-4' />
             </Button>
@@ -49,14 +46,27 @@ export default function StepThree() {
               <SessionForm
                 key={sessionType}
                 sessionType={sessionType}
-                onSubmit={values => {
-                  console.log(values);
+                onSubmit={newSession => {
+                  console.log(newSession);
+
+                  const currentSessions = form.getValues('sessions');
+                  form.setValue('sessions', [
+                    ...(currentSessions ?? []),
+                    {
+                      id: crypto.randomBytes(8).toString('hex'),
+                      ...newSession,
+                    },
+                  ]);
+
                   setMenuOpened(false);
                 }}
               />
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        {form.watch('sessions')?.map(session => (
+          <div key={session.id}>{session.type}</div>
+        ))}
       </div>
     </>
   );
