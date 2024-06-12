@@ -55,7 +55,7 @@ export default function ResponsiveDialog({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className='text-left'>
+        <DrawerHeader className='text-left text-slate-50'>
           <DrawerTitle>{title}</DrawerTitle>
           {description ? (
             <DrawerDescription>{description}</DrawerDescription>
@@ -64,7 +64,7 @@ export default function ResponsiveDialog({
         {children}
         <DrawerFooter className='pt-2'>
           <DrawerClose asChild>
-            <Button variant='outline'>Cancel</Button>
+            <Button variant='outline'>Submit</Button>
           </DrawerClose>
         </DrawerFooter>
       </DrawerContent>

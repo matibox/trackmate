@@ -4,30 +4,20 @@ import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
 import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '~/components/ui/Dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuItem,
   DropdownMenuTrigger,
 } from '~/components/ui/DropdownMenu';
-import ResponsiveDialog from '~/components/ui/ResponsiveDialog';
 import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
 import { sessionTypes } from '~/lib/constants';
-import { capitalize } from '~/lib/utils';
+import SessionForm, { sessionSchema } from './SessionForm';
 
 export const stepThreeSchema = z.object({
-  // schema
+  sessions: z.array(sessionSchema),
 });
 
 export default function StepThree() {
@@ -55,35 +45,7 @@ export default function StepThree() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className='w-[268px]'>
             {sessionTypes.map(sessionType => (
-              // <Dialog key={sessionType}>
-              //   <DialogTrigger asChild>
-              //     <DropdownMenuItem onSelect={e => e.preventDefault()}>
-              //       {capitalize(sessionType)}
-              //     </DropdownMenuItem>
-              //   </DialogTrigger>
-              //   <DialogContent className='text-slate-50'>
-              //     <DialogHeader>
-              //       <DialogTitle>Create {sessionType} session</DialogTitle>
-              //       <div className='flex w-full flex-col gap-4 text-slate-50'></div>
-              //     </DialogHeader>
-              //     <DialogFooter>
-              //       <Button>Submit</Button>
-              //     </DialogFooter>
-              //   </DialogContent>
-              // </Dialog>
-              <ResponsiveDialog
-                key={sessionType}
-                title={`Create ${sessionType} session`}
-                trigger={
-                  <DropdownMenuItem onSelect={e => e.preventDefault()}>
-                    {capitalize(sessionType)}
-                  </DropdownMenuItem>
-                }
-              >
-                <div className='flex w-full flex-col gap-4 text-slate-50'>
-                  {sessionType} form
-                </div>
-              </ResponsiveDialog>
+              <SessionForm key={sessionType} sessionType={sessionType} />
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
