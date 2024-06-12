@@ -11,6 +11,7 @@ import MultiStepForm from '~/components/MultiStepForm';
 import { z } from 'zod';
 import StepOne, { stepOneSchema } from '../new-event-2/Step1';
 import StepTwo, { stepTwoSchema } from '../new-event-2/Step2';
+import StepThree, { stepThreeSchema } from '../new-event-2/Step3';
 
 // const steps: Record<StepId, ReactNode> = {
 //   '1': <Step1 />,
@@ -50,14 +51,9 @@ export default function NewEvent() {
             console.log(values);
           }}
           steps={[
-            {
-              schema: stepOneSchema,
-              component: <StepOne />,
-            },
-            {
-              schema: stepTwoSchema,
-              component: <StepTwo />,
-            },
+            { schema: stepOneSchema, component: <StepOne /> },
+            { schema: stepTwoSchema, component: <StepTwo /> },
+            { schema: stepThreeSchema, component: <StepThree /> },
           ]}
           defaultValues={{
             name: '',
