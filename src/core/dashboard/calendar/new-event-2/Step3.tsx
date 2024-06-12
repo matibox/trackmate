@@ -1,5 +1,5 @@
 import { PlusIcon } from 'lucide-react';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
@@ -21,6 +21,7 @@ export const stepThreeSchema = z.object({
 });
 
 export default function StepThree() {
+  const [menuOpened, setMenuOpened] = useState(false);
   const form = useFormContext<z.infer<typeof stepThreeSchema>>();
 
   return (
@@ -32,7 +33,7 @@ export default function StepThree() {
         </SheetDescription>
       </SheetHeader>
       <div className='mx-auto flex w-4/5 flex-col gap-4 py-8 text-slate-50'>
-        <DropdownMenu>
+        <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened}>
           <DropdownMenuTrigger asChild>
             <Button
               variant='secondary'
@@ -45,7 +46,14 @@ export default function StepThree() {
           </DropdownMenuTrigger>
           <DropdownMenuContent className='w-[268px]'>
             {sessionTypes.map(sessionType => (
-              <SessionForm key={sessionType} sessionType={sessionType} />
+              <SessionForm
+                key={sessionType}
+                sessionType={sessionType}
+                onSubmit={values => {
+                  console.log(values);
+                  setMenuOpened(false);
+                }}
+              />
             ))}
           </DropdownMenuContent>
         </DropdownMenu>

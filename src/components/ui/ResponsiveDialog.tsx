@@ -13,30 +13,31 @@ import {
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
 } from './Drawer';
-import { Button } from './Button';
 
 export default function ResponsiveDialog({
+  open,
+  onOpenChange,
   title,
   description,
   trigger,
   children,
 }: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
   title: string;
   description?: string;
   trigger: ReactNode;
   children: ReactNode;
 }) {
-  const [open, setOpen] = useState(false);
   const isDesktop = useMediaQuery('(min-width: 768px)');
 
   if (isDesktop) {
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
@@ -52,7 +53,7 @@ export default function ResponsiveDialog({
   }
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
+    <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className='text-left text-slate-50'>
@@ -62,11 +63,6 @@ export default function ResponsiveDialog({
           ) : null}
         </DrawerHeader>
         {children}
-        <DrawerFooter className='pt-2'>
-          <DrawerClose asChild>
-            <Button variant='outline'>Submit</Button>
-          </DrawerClose>
-        </DrawerFooter>
       </DrawerContent>
     </Drawer>
   );
