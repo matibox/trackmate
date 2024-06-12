@@ -7,7 +7,7 @@ import StepTwo, { stepTwoSchema } from '../new-event-2/Step2';
 import StepThree, { stepThreeSchema } from '../new-event-2/Step3';
 import { CalendarPlusIcon } from 'lucide-react';
 
-const formSchema = stepOneSchema.and(stepTwoSchema);
+const formSchema = stepOneSchema.and(stepTwoSchema).and(stepThreeSchema);
 
 export default function NewEvent() {
   const [sheetOpened, setSheetOpened] = useState(false);
@@ -42,6 +42,7 @@ export default function NewEvent() {
           ]}
           defaultValues={{
             name: '',
+            sessions: [],
           }}
         />
       </SheetContent>

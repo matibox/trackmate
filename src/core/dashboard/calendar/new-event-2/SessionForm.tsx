@@ -22,29 +22,33 @@ import { Button } from '~/components/ui/Button';
 import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
+import { Input } from '~/components/ui/Input';
 
 type SessionType = (typeof sessionTypes)[number];
 
 const briefingSchema = z.object({
   type: z.literal('briefing'),
   date: z.date({ required_error: 'Date is required.' }),
-  // startTime: z
-  //   .string({ required_error: 'Start time is required.' })
-  //   .min(1, 'Start time is required.'),
+  startTime: z
+    .string({ required_error: 'Start time is required.' })
+    .min(1, 'Start time is required.'),
 });
 
 const practiceSchema = z.object({
   type: z.literal('practice', { required_error: 'type is required' }),
+  date: z.date({ required_error: 'Date is required.' }),
   beng: z.string().min(1, 'yes'),
 });
 
 const qualifyingSchema = z.object({
   type: z.literal('qualifying'),
+  date: z.date({ required_error: 'Date is required.' }),
   beng: z.string().min(1, 'yes'),
 });
 
 const raceSchema = z.object({
   type: z.literal('race'),
+  date: z.date({ required_error: 'Date is required.' }),
   beng: z.string().min(1, 'yes'),
 });
 
@@ -72,7 +76,7 @@ function BriefingForm() {
                   <Button
                     variant={'outline'}
                     className={cn(
-                      'w-[240px] pl-3 text-left font-normal',
+                      'pl-3 text-left font-normal',
                       !field.value && 'text-muted-foreground'
                     )}
                   >
@@ -94,6 +98,19 @@ function BriefingForm() {
                 />
               </PopoverContent>
             </Popover>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+      <FormField
+        control={form.control}
+        name='startTime'
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>Start time</FormLabel>
+            <FormControl>
+              <Input {...field} type='time' />
+            </FormControl>
             <FormMessage />
           </FormItem>
         )}
@@ -138,6 +155,9 @@ export default function SessionForm({
 
   const form = useForm<z.infer<typeof sessionSchema>>({
     resolver: zodResolver(sessionSchema),
+    defaultValues: {
+      startTime: '',
+    },
   });
 
   return (
@@ -159,7 +179,7 @@ export default function SessionForm({
             handleSubmit(values);
           })}
         >
-          <div className='flex flex-col gap-4 px-4 pb-4 text-slate-50 md:px-0 md:pb-0'>
+          <div className='mx-auto flex max-w-sm flex-col gap-4 px-4 pb-4 text-slate-50 md:px-0 md:pb-0'>
             <FormField
               control={form.control}
               name='type'

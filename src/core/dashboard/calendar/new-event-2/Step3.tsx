@@ -51,7 +51,7 @@ export default function StepThree() {
 
                   const currentSessions = form.getValues('sessions');
                   form.setValue('sessions', [
-                    ...(currentSessions ?? []),
+                    ...currentSessions,
                     {
                       id: crypto.randomBytes(8).toString('hex'),
                       ...newSession,

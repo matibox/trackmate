@@ -7,10 +7,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './Dialog';
-import { type ReactNode, useState } from 'react';
+import { type ReactNode } from 'react';
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
@@ -56,8 +55,8 @@ export default function ResponsiveDialog({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className='text-left text-slate-50'>
-          <DrawerTitle>{title}</DrawerTitle>
+        <DrawerHeader className='text-slate-50 sm:text-center'>
+          <DrawerTitle className='text-xl'>{title}</DrawerTitle>
           {description ? (
             <DrawerDescription>{description}</DrawerDescription>
           ) : null}
