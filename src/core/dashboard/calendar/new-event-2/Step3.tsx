@@ -16,9 +16,12 @@ import {
 import { sessionTypes } from '~/lib/constants';
 import SessionForm, { sessionSchema } from './SessionForm';
 import crypto from 'crypto';
+import { FormField, FormMessage } from '~/components/ui/Form';
 
 export const stepThreeSchema = z.object({
-  sessions: z.array(sessionSchema.and(z.object({ id: z.string() }))),
+  sessions: z
+    .array(sessionSchema.and(z.object({ id: z.string() })))
+    .min(1, 'At least 1 session is required.'),
 });
 
 export default function StepThree() {
@@ -47,7 +50,7 @@ export default function StepThree() {
                 key={sessionType}
                 sessionType={sessionType}
                 onSubmit={newSession => {
-                  console.log(newSession);
+                  console.log('inner', newSession);
 
                   const currentSessions = form.getValues('sessions');
                   form.setValue('sessions', [
@@ -64,9 +67,18 @@ export default function StepThree() {
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        {form.watch('sessions')?.map(session => (
-          <div key={session.id}>{session.type}</div>
-        ))}
+        <FormField
+          control={form.control}
+          name='sessions'
+          render={() => (
+            <>
+              {form.watch('sessions')?.map(session => (
+                <div key={session.id}>{session.type}</div>
+              ))}
+              <FormMessage />
+            </>
+          )}
+        />
       </div>
     </>
   );

@@ -14,10 +14,7 @@ export default function NewEvent() {
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
-      <SheetTrigger
-        asChild
-        //  className='lg:hidden'
-      >
+      <SheetTrigger asChild>
         <Button
           variant='fab'
           size='fab'
@@ -27,13 +24,10 @@ export default function NewEvent() {
           <CalendarPlusIcon />
         </Button>
       </SheetTrigger>
-      <SheetContent
-        className='w-full border-0 ring-1 ring-slate-900'
-        // onClose={reset}
-      >
+      <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
         <MultiStepForm<typeof formSchema>
           onSubmit={values => {
-            console.log(values);
+            console.log('outer', values);
           }}
           steps={[
             { schema: stepOneSchema, component: <StepOne /> },

@@ -174,10 +174,15 @@ export default function SessionForm({
     >
       <FormProvider {...form}>
         <form
-          onSubmit={form.handleSubmit(values => {
-            setIsOpened(false);
-            handleSubmit(values);
-          })}
+          onSubmit={async e => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            await form.handleSubmit(values => {
+              setIsOpened(false);
+              handleSubmit(values);
+            })();
+          }}
         >
           <div className='mx-auto flex max-w-sm flex-col gap-4 px-4 pb-4 text-slate-50 md:px-0 md:pb-0'>
             <FormField
