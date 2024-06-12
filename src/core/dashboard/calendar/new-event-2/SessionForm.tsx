@@ -23,6 +23,7 @@ import dayjs from 'dayjs';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
 import { Input } from '~/components/ui/Input';
+import { stepThreeSchema } from './Step3';
 
 type SessionType = (typeof sessionTypes)[number];
 
@@ -153,10 +154,15 @@ export default function SessionForm({
 }) {
   const [isOpened, setIsOpened] = useState(false);
 
+  const stepThreeForm = useFormContext<z.infer<typeof stepThreeSchema>>();
+  const sessions = stepThreeForm.getValues('sessions');
+  const lastSessionDate = [...sessions].pop()?.date;
+
   const form = useForm<z.infer<typeof sessionSchema>>({
     resolver: zodResolver(sessionSchema),
     defaultValues: {
       startTime: '',
+      date: lastSessionDate,
     },
   });
 
