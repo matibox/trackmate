@@ -1,6 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState, type ReactNode } from 'react';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import { useState } from 'react';
+import {
+  FormProvider,
+  type UseFormReturn,
+  useForm,
+  useFormContext,
+} from 'react-hook-form';
 import { z } from 'zod';
 import { DropdownMenuItem } from '~/components/ui/DropdownMenu';
 import ResponsiveDialog from '~/components/ui/ResponsiveDialog';
@@ -8,6 +13,7 @@ import { type sessionTypes } from '~/lib/constants';
 import { capitalize, cn } from '~/lib/utils';
 import {
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,10 +26,27 @@ import {
 } from '~/components/ui/Popover';
 import { Button } from '~/components/ui/Button';
 import dayjs from 'dayjs';
-import { CalendarIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  CloudIcon,
+  Loader2Icon,
+  ServerIcon,
+  Settings2Icon,
+} from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
 import { Input } from '~/components/ui/Input';
 import { type stepThreeSchema } from './Step3';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/Select';
+import Flag from '~/components/Flag';
+import { api } from '~/utils/api';
+import { type stepTwoSchema } from './Step2';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 
 type SessionType = (typeof sessionTypes)[number];
 
@@ -31,6 +54,13 @@ const serverInfoSchema = z.object({
   inGameTime: z.string().optional(),
   serverName: z.string().optional(),
   serverPassword: z.string().optional(),
+});
+
+const weatherSchema = z.object({
+  rainLevel: z.string().optional(),
+  cloudLevel: z.string().optional(),
+  randomness: z.string().optional(),
+  temperature: z.string().optional(),
 });
 
 const briefingSchema = z.object({
@@ -54,24 +84,28 @@ const practiceSchema = z
   })
   .merge(serverInfoSchema);
 
-const qualifyingSchema = z.object({
-  type: z.literal('qualifying'),
-  date: z.date({ required_error: 'Date is required.' }),
-  beng: z.string().min(1, 'yes'),
-});
+const qualifyingSchema = z
+  .object({
+    type: z.literal('qualifying'),
+    date: z.date({ required_error: 'Date is required.' }),
+    startTime: z
+      .string({ required_error: 'Start time is required.' })
+      .min(1, 'Start time is required.'),
+    endTime: z
+      .string({ required_error: 'End time is required.' })
+      .min(1, 'End time is required.'),
+    driverId: z
+      .string({ required_error: 'Choose a driver.' })
+      .min(1, 'Choose a driver.'),
+  })
+  .merge(serverInfoSchema)
+  .merge(weatherSchema);
 
 const raceSchema = z.object({
   type: z.literal('race'),
   date: z.date({ required_error: 'Date is required.' }),
   beng: z.string().min(1, 'yes'),
 });
-
-const sessionTypeMap: Record<SessionType, ReactNode> = {
-  briefing: <BriefingForm />,
-  practice: <PracticeForm />,
-  qualifying: <QualifyingForm />,
-  race: <RaceForm />,
-};
 
 function BriefingForm() {
   const form = useFormContext<z.infer<typeof briefingSchema>>();
@@ -257,10 +291,282 @@ function PracticeForm() {
   );
 }
 
-function QualifyingForm() {
+function QualifyingForm({
+  stepTwoForm,
+}: {
+  stepTwoForm: UseFormReturn<z.infer<typeof stepTwoSchema>>;
+}) {
   const form = useFormContext<z.infer<typeof qualifyingSchema>>();
 
-  return <div>qualifying</div>;
+  const driverIds = stepTwoForm.getValues('driverIds');
+
+  const { data: drivers, status } = api.user.byId.useQuery(
+    { memberIds: driverIds },
+    { enabled: !!driverIds }
+  );
+
+  return (
+    <>
+      <Tabs defaultValue='basic-info' className='flex flex-col gap-4'>
+        <TabsList className='flex w-full bg-transparent p-0'>
+          <TabsTrigger
+            value='basic-info'
+            className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
+          >
+            <Settings2Icon className='h-4 w-4' />
+            Basic info
+          </TabsTrigger>
+          <TabsTrigger
+            value='server-info'
+            className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
+          >
+            <ServerIcon className='h-4 w-4' />
+            Server settings
+          </TabsTrigger>
+          <TabsTrigger
+            value='weather'
+            className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
+          >
+            <CloudIcon className='h-4 w-4' />
+            Weather
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value='basic-info'>
+          <div className='flex flex-col gap-4'>
+            <FormField
+              control={form.control}
+              name='date'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel className='w-min'>Date</FormLabel>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <FormControl>
+                        <Button
+                          variant={'outline'}
+                          className={cn(
+                            'pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
+                        >
+                          {field.value ? (
+                            dayjs(field.value).format('MMMM DD, YYYY')
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                        </Button>
+                      </FormControl>
+                    </PopoverTrigger>
+                    <PopoverContent className='w-auto p-0' align='start'>
+                      <Calendar
+                        mode='single'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='startTime'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Start time</FormLabel>
+                  <FormControl>
+                    <Input {...field} type='time' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='endTime'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>End time</FormLabel>
+                  <FormControl>
+                    <Input {...field} type='time' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='driverId'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
+                  <FormLabel>Driver</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder='Select driver' />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className='max-h-96'>
+                      {status === 'loading' && (
+                        <div className='flex justify-center py-2'>
+                          <Loader2Icon className='h-5 w-5 animate-spin text-slate-300' />
+                        </div>
+                      )}
+                      {drivers?.map(driver => (
+                        <SelectItem key={driver.id} value={driver.id}>
+                          <div className='flex items-center gap-2'>
+                            <Flag country={driver.profile?.country} />
+                            <span>
+                              {driver.firstName?.charAt(0).toUpperCase()}
+                              {'. '}
+                              {driver.lastName}
+                            </span>
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </TabsContent>
+        <TabsContent value='server-info'>
+          <div className='flex flex-col gap-4'>
+            <FormField
+              control={form.control}
+              name='inGameTime'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>In-game time</FormLabel>
+                  <FormControl>
+                    <Input {...field} type='time' />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='serverName'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='serverPassword'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Server password</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </TabsContent>
+        <TabsContent value='weather'>
+          <div className='flex flex-col gap-4'>
+            <FormField
+              control={form.control}
+              name='rainLevel'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Rain level</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type='number'
+                      min={0}
+                      max={1}
+                      step={0.05}
+                    />
+                  </FormControl>
+                  <FormDescription className='!text-sm'>
+                    Between 0 and 1
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='cloudLevel'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cloud level</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type='number'
+                      min={0}
+                      max={1}
+                      step={0.05}
+                    />
+                  </FormControl>
+                  <FormDescription className='!text-sm'>
+                    Between 0 and 1
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='randomness'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Randomness</FormLabel>
+                  <FormControl>
+                    <Input {...field} type='number' min={0} max={7} step={1} />
+                  </FormControl>
+                  <FormDescription className='!text-sm'>
+                    Between 0 and 7
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='temperature'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Temperature (°C)</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type='number'
+                      min={10}
+                      max={45}
+                      step={1}
+                    />
+                  </FormControl>
+                  <FormDescription className='!text-sm'>
+                    Between 10 and 45
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+        </TabsContent>
+      </Tabs>
+    </>
+  );
 }
 
 function RaceForm() {
@@ -285,16 +591,21 @@ export default function SessionForm({
 }) {
   const [isOpened, setIsOpened] = useState(false);
 
+  const stepTwoForm = useFormContext<z.infer<typeof stepTwoSchema>>();
   const stepThreeForm = useFormContext<z.infer<typeof stepThreeSchema>>();
+
   const sessions = stepThreeForm.getValues('sessions');
   const lastSessionDate = [...sessions].pop()?.date;
 
   const form = useForm<z.infer<typeof sessionSchema>>({
     resolver: zodResolver(sessionSchema),
     defaultValues: {
+      type: sessionType,
       date: lastSessionDate,
       startTime: '',
       endTime: '',
+      serverName: '',
+      serverPassword: '',
     },
   });
 
@@ -323,13 +634,18 @@ export default function SessionForm({
           }}
         >
           <div className='mx-auto flex max-w-sm flex-col gap-4 px-4 pb-4 text-slate-50 md:px-0 md:pb-0'>
-            <FormField
-              control={form.control}
-              name='type'
-              defaultValue={sessionType}
-              render={() => <></>}
-            />
-            {sessionTypeMap[sessionType]}
+            {(() => {
+              switch (sessionType) {
+                case 'briefing':
+                  return <BriefingForm />;
+                case 'practice':
+                  return <PracticeForm />;
+                case 'qualifying':
+                  return <QualifyingForm stepTwoForm={stepTwoForm} />;
+                case 'race':
+                  return <RaceForm />;
+              }
+            })()}
             <Button>Submit</Button>
           </div>
         </form>

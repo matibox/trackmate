@@ -27,7 +27,7 @@ export default function ResponsiveDialog({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  title: string;
+  title?: string;
   description?: string;
   trigger: ReactNode;
   children: ReactNode;
@@ -40,7 +40,7 @@ export default function ResponsiveDialog({
         <DialogTrigger asChild>{trigger}</DialogTrigger>
         <DialogContent className='sm:max-w-[425px]'>
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            {title ? <DialogTitle>{title}</DialogTitle> : null}
             {description ? (
               <DialogDescription>{description}</DialogDescription>
             ) : null}
@@ -56,7 +56,7 @@ export default function ResponsiveDialog({
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className='text-slate-50 sm:text-center'>
-          <DrawerTitle className='text-xl'>{title}</DrawerTitle>
+          <DrawerTitle>{title}</DrawerTitle>
           {description ? (
             <DrawerDescription>{description}</DrawerDescription>
           ) : null}
