@@ -174,8 +174,24 @@ function PracticeForm() {
   const form = useFormContext<z.infer<typeof practiceSchema>>();
 
   return (
-    <>
-      <div className='flex flex-col gap-8'>
+    <Tabs defaultValue='basic-info' className='flex flex-col gap-4'>
+      <TabsList className='flex w-full bg-transparent p-0'>
+        <TabsTrigger
+          value='basic-info'
+          className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
+        >
+          <Settings2Icon className='h-4 w-4' />
+          Basic info
+        </TabsTrigger>
+        <TabsTrigger
+          value='server-info'
+          className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
+        >
+          <ServerIcon className='h-4 w-4' />
+          Server settings
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value='basic-info'>
         <div className='flex flex-col gap-4'>
           <FormField
             control={form.control}
@@ -242,55 +258,51 @@ function PracticeForm() {
             )}
           />
         </div>
-        <div className='flex flex-col gap-1'>
-          <h2 className='flex items-center gap-1.5 text-lg font-medium'>
-            Server info{' '}
-            <span className='text-xs text-slate-400'>(optional)</span>
-          </h2>
-          <div className='flex flex-col gap-4'>
-            <FormField
-              control={form.control}
-              name='inGameTime'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>In-game time</FormLabel>
-                  <FormControl>
-                    <Input {...field} type='time' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='serverName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Server name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='serverPassword'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Server password</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+      </TabsContent>
+      <TabsContent value='server-info'>
+        <div className='flex flex-col gap-4'>
+          <FormField
+            control={form.control}
+            name='inGameTime'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>In-game time</FormLabel>
+                <FormControl>
+                  <Input {...field} type='time' />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='serverName'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Server name</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name='serverPassword'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Server password</FormLabel>
+                <FormControl>
+                  <Input {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
-      </div>
-    </>
+      </TabsContent>
+    </Tabs>
   );
 }
 
