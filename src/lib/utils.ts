@@ -128,3 +128,9 @@ export function getCalendarRowStyles({
     width: counter > 0 ? width : '100%',
   };
 }
+
+export function isNaNArr(value: string | undefined) {
+  const casted = Number(value);
+  if (isNaN(casted)) return [];
+  return [casted];
+}
