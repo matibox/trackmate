@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
+import { type ReactNode, useState, useMemo } from 'react';
 import {
   FormProvider,
   type UseFormReturn,
@@ -678,6 +678,16 @@ export default function SessionForm({
     },
   });
 
+  const sessionTypeMap: Record<SessionType, ReactNode> = useMemo(
+    () => ({
+      briefing: <BriefingForm />,
+      practice: <PracticeForm />,
+      qualifying: <QualifyingForm stepTwoForm={stepTwoForm} />,
+      race: <RaceForm />,
+    }),
+    [stepTwoForm]
+  );
+
   return (
     <ResponsiveDialog
       key={sessionType}
@@ -703,18 +713,7 @@ export default function SessionForm({
           }}
         >
           <div className='mx-auto flex max-w-sm flex-col gap-4 px-4 pb-4 text-slate-50 md:px-0 md:pb-0'>
-            {(() => {
-              switch (sessionType) {
-                case 'briefing':
-                  return <BriefingForm />;
-                case 'practice':
-                  return <PracticeForm />;
-                case 'qualifying':
-                  return <QualifyingForm stepTwoForm={stepTwoForm} />;
-                case 'race':
-                  return <RaceForm />;
-              }
-            })()}
+            {sessionTypeMap[sessionType]}
             <Button>Submit</Button>
           </div>
         </form>
