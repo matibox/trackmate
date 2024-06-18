@@ -6,14 +6,13 @@ import {
   useForm,
   useFormContext,
 } from 'react-hook-form';
-import { z } from 'zod';
+import { ZodSchema, z } from 'zod';
 import { DropdownMenuItem } from '~/components/ui/DropdownMenu';
 import ResponsiveDialog from '~/components/ui/ResponsiveDialog';
 import { type sessionTypes } from '~/lib/constants';
-import { capitalize, cn, isNaNArr } from '~/lib/utils';
+import { capitalize, cn, timeStringToDate } from '~/lib/utils';
 import {
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -65,7 +64,7 @@ const briefingSchema = z.object({
 
 const practiceSchema = z
   .object({
-    type: z.literal('practice', { required_error: 'type is required' }),
+    type: z.literal('practice'),
     date: z.date({ required_error: 'Date is required.' }),
     startTime: z
       .string({ required_error: 'Start time is required.' })
@@ -93,11 +92,20 @@ const qualifyingSchema = z
   .merge(serverInfoSchema)
   .merge(weatherSchema);
 
-const raceSchema = z.object({
-  type: z.literal('race'),
-  date: z.date({ required_error: 'Date is required.' }),
-  beng: z.string().min(1, 'yes'),
-});
+const raceSchema = z
+  .object({
+    type: z.literal('race'),
+    date: z.date({ required_error: 'Date is required.' }),
+    startTime: z
+      .string({ required_error: 'Start time is required.' })
+      .min(1, 'Start time is required.'),
+    endTime: z
+      .string({ required_error: 'End time is required.' })
+      .min(1, 'End time is required.'),
+    endsNextDay: z.boolean(),
+  })
+  .merge(serverInfoSchema)
+  .merge(weatherSchema);
 
 function BriefingForm() {
   const form = useFormContext<z.infer<typeof briefingSchema>>();
@@ -424,12 +432,30 @@ function RaceForm() {
   return <div>race</div>;
 }
 
-export const sessionSchema = z.discriminatedUnion('type', [
-  briefingSchema,
-  practiceSchema,
-  qualifyingSchema,
-  raceSchema,
-]);
+export const sessionSchema = z
+  .discriminatedUnion('type', [
+    briefingSchema,
+    practiceSchema,
+    qualifyingSchema,
+    raceSchema,
+  ])
+  .superRefine((schema, ctx) => {
+    if (!('endTime' in schema)) return;
+
+    const start = timeStringToDate(schema.startTime);
+    const end = timeStringToDate(schema.endTime);
+
+    if (schema.type === 'race' && schema.endsNextDay) return;
+
+    if (end.isBefore(start)) {
+      ctx.addIssue({
+        code: 'custom',
+        fatal: true,
+        message: 'End time must be after start time.',
+        path: ['endTime'],
+      });
+    }
+  });
 
 export default function SessionForm({
   sessionType,
