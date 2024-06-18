@@ -15,19 +15,21 @@ export const serverInfoSchema = z.object({
   serverPassword: z.string().optional(),
 });
 
-export const serverSettingsDefaultValues: z.infer<typeof serverInfoSchema> = {
+export const serverSettingsDefaultValues: Partial<
+  z.infer<typeof serverInfoSchema>
+> = {
   inGameTime: '',
   serverName: '',
   serverPassword: '',
 };
 
 export default function ServerSettings() {
-  const { control } = useFormContext<z.infer<typeof serverInfoSchema>>();
+  const form = useFormContext<z.infer<typeof serverInfoSchema>>();
 
   return (
     <>
       <FormField
-        control={control}
+        control={form.control}
         name='inGameTime'
         render={({ field }) => (
           <FormItem>
@@ -40,7 +42,7 @@ export default function ServerSettings() {
         )}
       />
       <FormField
-        control={control}
+        control={form.control}
         name='serverName'
         render={({ field }) => (
           <FormItem>
@@ -53,7 +55,7 @@ export default function ServerSettings() {
         )}
       />
       <FormField
-        control={control}
+        control={form.control}
         name='serverPassword'
         render={({ field }) => (
           <FormItem>

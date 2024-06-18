@@ -47,13 +47,11 @@ import Flag from '~/components/Flag';
 import { api } from '~/utils/api';
 import { type stepTwoSchema } from './Step2';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
-import { Slider } from '~/components/ui/Slider';
-import { Checkbox } from '~/components/ui/Checkbox';
 import ServerSettings, {
   serverInfoSchema,
   serverSettingsDefaultValues,
 } from './ServerSettings';
-import Weather, { weatherSchema } from './Weather';
+import Weather, { weatherDefaultValues, weatherSchema } from './Weather';
 
 type SessionType = (typeof sessionTypes)[number];
 
@@ -456,10 +454,7 @@ export default function SessionForm({
       startTime: '',
       endTime: '',
       ...serverSettingsDefaultValues,
-      rainLevel: '0',
-      cloudLevel: '0',
-      randomness: '0',
-      temperature: '10',
+      ...weatherDefaultValues,
     },
   });
 

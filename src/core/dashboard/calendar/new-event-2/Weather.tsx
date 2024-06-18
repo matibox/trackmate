@@ -20,6 +20,13 @@ export const weatherSchema = z.object({
   temperature: z.string().optional(),
 });
 
+export const weatherDefaultValues: Partial<z.infer<typeof weatherSchema>> = {
+  rainLevel: '0',
+  cloudLevel: '0',
+  randomness: '0',
+  temperature: '10',
+};
+
 export default function Weather() {
   const form = useFormContext<z.infer<typeof weatherSchema>>();
 
