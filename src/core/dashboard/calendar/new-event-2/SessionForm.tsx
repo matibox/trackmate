@@ -49,14 +49,12 @@ import { type stepTwoSchema } from './Step2';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { Slider } from '~/components/ui/Slider';
 import { Checkbox } from '~/components/ui/Checkbox';
+import ServerSettings, {
+  serverInfoSchema,
+  serverSettingsDefaultValues,
+} from './ServerSettings';
 
 type SessionType = (typeof sessionTypes)[number];
-
-const serverInfoSchema = z.object({
-  inGameTime: z.string().optional(),
-  serverName: z.string().optional(),
-  serverPassword: z.string().optional(),
-});
 
 const weatherSchema = z.object({
   includeWeather: z.boolean().default(false),
@@ -261,45 +259,7 @@ function PracticeForm() {
       </TabsContent>
       <TabsContent value='server-info'>
         <div className='flex flex-col gap-4'>
-          <FormField
-            control={form.control}
-            name='inGameTime'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>In-game time</FormLabel>
-                <FormControl>
-                  <Input {...field} type='time' />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='serverName'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Server name</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name='serverPassword'
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Server password</FormLabel>
-                <FormControl>
-                  <Input {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <ServerSettings />
         </div>
       </TabsContent>
     </Tabs>
@@ -451,47 +411,11 @@ function QualifyingForm({
           </div>
         </TabsContent>
         <TabsContent value='server-info'>
-          <div className='flex flex-col gap-4'>
-            <FormField
-              control={form.control}
-              name='inGameTime'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>In-game time</FormLabel>
-                  <FormControl>
-                    <Input {...field} type='time' />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='serverName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Server name</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='serverPassword'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Server password</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          <TabsContent value='server-info'>
+            <div className='flex flex-col gap-4'>
+              <ServerSettings />
+            </div>
+          </TabsContent>
         </TabsContent>
         <TabsContent value='weather'>
           <div className='flex flex-col gap-4'>
@@ -669,8 +593,7 @@ export default function SessionForm({
       date: lastSessionDate,
       startTime: '',
       endTime: '',
-      serverName: '',
-      serverPassword: '',
+      ...serverSettingsDefaultValues,
       rainLevel: '0',
       cloudLevel: '0',
       randomness: '0',
