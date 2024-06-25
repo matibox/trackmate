@@ -65,6 +65,7 @@ export default function SessionForm({
       date: lastSessionDate,
       startTime: '',
       endTime: '',
+      driverIds: [],
       ...serverSettingsDefaultValues,
       ...weatherDefaultValues,
     },
@@ -75,7 +76,7 @@ export default function SessionForm({
       briefing: <Briefing />,
       practice: <Practice />,
       qualifying: <Qualifying stepTwoForm={stepTwoForm} />,
-      race: <Race />,
+      race: <Race stepTwoForm={stepTwoForm} />,
     }),
     [stepTwoForm]
   );

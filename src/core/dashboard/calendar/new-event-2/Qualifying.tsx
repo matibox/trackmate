@@ -208,9 +208,7 @@ export default function Qualifying({
           </div>
         </TabsContent>
         <TabsContent value='server-info'>
-          <TabsContent value='server-info'>
-            <ServerSettings.Content />
-          </TabsContent>
+          <ServerSettings.Content />
         </TabsContent>
         <TabsContent value='weather'>
           <Weather.Content />
