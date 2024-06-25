@@ -6,7 +6,7 @@ import {
   useForm,
   useFormContext,
 } from 'react-hook-form';
-import { ZodSchema, z } from 'zod';
+import { z } from 'zod';
 import { DropdownMenuItem } from '~/components/ui/DropdownMenu';
 import ResponsiveDialog from '~/components/ui/ResponsiveDialog';
 import { type sessionTypes } from '~/lib/constants';
@@ -31,6 +31,7 @@ import {
   Loader2Icon,
   ServerIcon,
   Settings2Icon,
+  AlertTriangleIcon,
 } from 'lucide-react';
 import { Calendar } from '~/components/ui/Calendar';
 import { Input } from '~/components/ui/Input';
@@ -169,6 +170,12 @@ function BriefingForm() {
 
 function PracticeForm() {
   const form = useFormContext<z.infer<typeof practiceSchema>>();
+  const errors = form.formState.errors;
+
+  const isBasicInfoError = useMemo(
+    () => errors.date || errors.startTime || errors.endTime,
+    [errors]
+  );
 
   return (
     <Tabs defaultValue='basic-info' className='flex flex-col gap-4'>
@@ -177,7 +184,11 @@ function PracticeForm() {
           value='basic-info'
           className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
         >
-          <Settings2Icon className='h-4 w-4' />
+          {isBasicInfoError ? (
+            <AlertTriangleIcon className='h-4 w-4 text-red-500' />
+          ) : (
+            <Settings2Icon className='h-4 w-4' />
+          )}
           Basic info
         </TabsTrigger>
         <TabsTrigger
@@ -271,12 +282,18 @@ function QualifyingForm({
   stepTwoForm: UseFormReturn<z.infer<typeof stepTwoSchema>>;
 }) {
   const form = useFormContext<z.infer<typeof qualifyingSchema>>();
+  const errors = form.formState.errors;
 
   const driverIds = stepTwoForm.getValues('driverIds');
 
   const { data: drivers, status } = api.user.byId.useQuery(
     { memberIds: driverIds },
     { enabled: !!driverIds }
+  );
+
+  const isBasicInfoError = useMemo(
+    () => errors.date || errors.startTime || errors.endTime || errors.driverId,
+    [errors]
   );
 
   return (
@@ -287,7 +304,11 @@ function QualifyingForm({
             value='basic-info'
             className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
           >
-            <Settings2Icon className='h-4 w-4' />
+            {isBasicInfoError ? (
+              <AlertTriangleIcon className='h-4 w-4 text-red-500' />
+            ) : (
+              <Settings2Icon className='h-4 w-4' />
+            )}
             Basic info
           </TabsTrigger>
           <TabsTrigger
