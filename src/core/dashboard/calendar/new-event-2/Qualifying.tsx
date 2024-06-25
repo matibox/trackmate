@@ -4,7 +4,6 @@ import Weather, { weatherSchema } from './Weather';
 import { type UseFormReturn, useFormContext } from 'react-hook-form';
 import { type stepTwoSchema } from './Step2';
 import { api } from '~/utils/api';
-import { useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import {
   AlertTriangleIcon,
@@ -37,6 +36,7 @@ import {
   SelectValue,
 } from '~/components/ui/Select';
 import Flag from '~/components/Flag';
+import { useIsFieldsError } from '~/hooks/useIsFieldsError';
 
 export const qualifyingSchema = z
   .object({
@@ -61,8 +61,6 @@ export default function Qualifying({
   stepTwoForm: UseFormReturn<z.infer<typeof stepTwoSchema>>;
 }) {
   const form = useFormContext<z.infer<typeof qualifyingSchema>>();
-  const errors = form.formState.errors;
-
   const driverIds = stepTwoForm.getValues('driverIds');
 
   const { data: drivers, status } = api.user.byId.useQuery(
@@ -70,10 +68,12 @@ export default function Qualifying({
     { enabled: !!driverIds }
   );
 
-  const isError = useMemo(
-    () => errors.date || errors.startTime || errors.endTime || errors.driverId,
-    [errors]
-  );
+  const { isError } = useIsFieldsError(form.formState.errors, [
+    'date',
+    'startTime',
+    'endTime',
+    'driverId',
+  ]);
 
   return (
     <>

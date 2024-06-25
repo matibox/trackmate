@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import ServerSettings, { serverInfoSchema } from './ServerSettings';
 import { useFormContext } from 'react-hook-form';
-import { useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
 import { AlertTriangleIcon, CalendarIcon, Settings2Icon } from 'lucide-react';
 import {
@@ -21,6 +20,7 @@ import { cn } from '~/lib/utils';
 import dayjs from 'dayjs';
 import { Calendar } from '~/components/ui/Calendar';
 import { Input } from '~/components/ui/Input';
+import { useIsFieldsError } from '~/hooks/useIsFieldsError';
 
 export const practiceSchema = z
   .object({
@@ -37,12 +37,12 @@ export const practiceSchema = z
 
 export default function Practice() {
   const form = useFormContext<z.infer<typeof practiceSchema>>();
-  const errors = form.formState.errors;
 
-  const isError = useMemo(
-    () => errors.date || errors.startTime || errors.endTime,
-    [errors]
-  );
+  const { isError } = useIsFieldsError(form.formState.errors, [
+    'date',
+    'startTime',
+    'endTime',
+  ]);
 
   return (
     <Tabs defaultValue='basic-info' className='flex flex-col gap-4'>
