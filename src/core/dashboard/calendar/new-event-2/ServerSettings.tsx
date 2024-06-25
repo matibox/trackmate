@@ -1,3 +1,5 @@
+import { AlertTriangleIcon, ServerIcon } from 'lucide-react';
+import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import {
@@ -23,11 +25,11 @@ export const serverSettingsDefaultValues: Partial<
   serverPassword: '',
 };
 
-export default function ServerSettings() {
+function ServerSettingsContent() {
   const form = useFormContext<z.infer<typeof serverInfoSchema>>();
 
   return (
-    <>
+    <div className='flex flex-col gap-4'>
       <FormField
         control={form.control}
         name='inGameTime'
@@ -67,6 +69,34 @@ export default function ServerSettings() {
           </FormItem>
         )}
       />
+    </div>
+  );
+}
+
+function ServerSettingsTrigger() {
+  const form = useFormContext<z.infer<typeof serverInfoSchema>>();
+  const errors = form.formState.errors;
+
+  const isError = useMemo(
+    () => errors.inGameTime || errors.serverName || errors.serverPassword,
+    [errors]
+  );
+
+  return (
+    <>
+      {isError ? (
+        <AlertTriangleIcon className='h-4 w-4 text-red-500' />
+      ) : (
+        <ServerIcon className='h-4 w-4' />
+      )}
+      Server settings
     </>
   );
 }
+
+const ServerSettings = {
+  Content: ServerSettingsContent,
+  Trigger: ServerSettingsTrigger,
+};
+
+export default ServerSettings;

@@ -1,3 +1,5 @@
+import { AlertTriangleIcon, CloudIcon } from 'lucide-react';
+import { useMemo } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Checkbox } from '~/components/ui/Checkbox';
@@ -27,11 +29,11 @@ export const weatherDefaultValues: Partial<z.infer<typeof weatherSchema>> = {
   temperature: '10',
 };
 
-export default function Weather() {
+function WeatherContent() {
   const form = useFormContext<z.infer<typeof weatherSchema>>();
 
   return (
-    <>
+    <div className='flex flex-col gap-4'>
       <FormField
         control={form.control}
         name='includeWeather'
@@ -156,6 +158,39 @@ export default function Weather() {
           />
         </>
       )}
+    </div>
+  );
+}
+
+function WeatherTrigger() {
+  const form = useFormContext<z.infer<typeof weatherSchema>>();
+  const errors = form.formState.errors;
+
+  const isError = useMemo(
+    () =>
+      errors.cloudLevel ||
+      errors.includeWeather ||
+      errors.rainLevel ||
+      errors.randomness ||
+      errors.temperature,
+    [errors]
+  );
+
+  return (
+    <>
+      {isError ? (
+        <AlertTriangleIcon className='h-4 w-4 text-red-500' />
+      ) : (
+        <CloudIcon className='h-4 w-4' />
+      )}
+      Weather
     </>
   );
 }
+
+const Weather = {
+  Content: WeatherContent,
+  Trigger: WeatherTrigger,
+};
+
+export default Weather;

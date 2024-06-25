@@ -3,12 +3,7 @@ import ServerSettings, { serverInfoSchema } from './ServerSettings';
 import { useFormContext } from 'react-hook-form';
 import { useMemo } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
-import {
-  AlertTriangleIcon,
-  CalendarIcon,
-  ServerIcon,
-  Settings2Icon,
-} from 'lucide-react';
+import { AlertTriangleIcon, CalendarIcon, Settings2Icon } from 'lucide-react';
 import {
   FormControl,
   FormField,
@@ -44,7 +39,7 @@ export default function Practice() {
   const form = useFormContext<z.infer<typeof practiceSchema>>();
   const errors = form.formState.errors;
 
-  const isBasicInfoError = useMemo(
+  const isError = useMemo(
     () => errors.date || errors.startTime || errors.endTime,
     [errors]
   );
@@ -56,7 +51,7 @@ export default function Practice() {
           value='basic-info'
           className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
         >
-          {isBasicInfoError ? (
+          {isError ? (
             <AlertTriangleIcon className='h-4 w-4 text-red-500' />
           ) : (
             <Settings2Icon className='h-4 w-4' />
@@ -67,8 +62,7 @@ export default function Practice() {
           value='server-info'
           className='flex grow items-center gap-2 px-0 data-[state=active]:border-b data-[state=active]:border-sky-400'
         >
-          <ServerIcon className='h-4 w-4' />
-          Server settings
+          <ServerSettings.Trigger />
         </TabsTrigger>
       </TabsList>
       <TabsContent value='basic-info'>
@@ -140,9 +134,7 @@ export default function Practice() {
         </div>
       </TabsContent>
       <TabsContent value='server-info'>
-        <div className='flex flex-col gap-4'>
-          <ServerSettings />
-        </div>
+        <ServerSettings.Content />
       </TabsContent>
     </Tabs>
   );
