@@ -134,3 +134,24 @@ export function isNaNArr(value: string | undefined) {
   if (isNaN(casted)) return [];
   return [casted];
 }
+
+export function formatSessionDate(date: Date, endsNextDay = false) {
+  const day = dayjs(date);
+
+  if (endsNextDay) {
+    const nextDay = day.add(1, 'day');
+    const daysOfWeek = `${day.format('ddd')}/${nextDay.format('ddd')}`;
+
+    if (day.month() !== nextDay.month()) {
+      return `${day.date()} - ${nextDay.date()} ${day.format(
+        'MMM'
+      )}/${nextDay.format('MMM')}, ${daysOfWeek}`;
+    }
+
+    return `${day.date()} - ${nextDay.date()} ${day.format(
+      'MMMM'
+    )}, ${daysOfWeek}`;
+  }
+
+  return day.format('D MMMM, dddd');
+}
