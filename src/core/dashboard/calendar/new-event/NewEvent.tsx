@@ -6,6 +6,10 @@ import StepTwo, { stepTwoSchema } from './Step2';
 import StepThree, { stepThreeSchema } from './Step3';
 import { CalendarPlusIcon } from 'lucide-react';
 import { create } from 'zustand';
+import { api } from '~/utils/api';
+import { useToast } from '~/components/ui/useToast';
+import { useCalendar } from '../store';
+import dayjs from 'dayjs';
 
 export const useNewEvent = create<{
   sheetOpened: boolean;
@@ -15,10 +19,38 @@ export const useNewEvent = create<{
   setSheetOpened: open => set(() => ({ sheetOpened: open })),
 }));
 
-export const formSchema = stepOneSchema.and(stepTwoSchema).and(stepThreeSchema);
+export const newEventSchema = stepOneSchema
+  .and(stepTwoSchema)
+  .and(stepThreeSchema);
 
 export default function NewEvent() {
   const { sheetOpened, setSheetOpened } = useNewEvent();
+  const { selectDay } = useCalendar();
+  const { toast } = useToast();
+
+  const utils = api.useContext();
+  const { mutateAsync: createEvent } = api.event.create.useMutation({
+    onError: err => {
+      toast({
+        variant: 'destructive',
+        title: 'An error occured',
+        description: err.message,
+      });
+    },
+    onSuccess: async event => {
+      toast({
+        variant: 'default',
+        title: 'Success!',
+        description: 'An event has successfully been created',
+      });
+
+      await utils.event.invalidate();
+      setSheetOpened(false);
+
+      const firstSessionDate = dayjs(event.sessions[0]?.start);
+      selectDay({ day: firstSessionDate });
+    },
+  });
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
@@ -33,9 +65,9 @@ export default function NewEvent() {
         </Button>
       </SheetTrigger>
       <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
-        <MultiStepForm<typeof formSchema>
-          onSubmit={values => {
-            console.log('outer', values);
+        <MultiStepForm<typeof newEventSchema>
+          onSubmit={async values => {
+            await createEvent(values);
           }}
           steps={[
             { schema: stepOneSchema, component: <StepOne /> },
