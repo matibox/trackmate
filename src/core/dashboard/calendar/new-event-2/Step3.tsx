@@ -1,11 +1,4 @@
-import {
-  ClipboardCopyIcon,
-  KeyRoundIcon,
-  MenuIcon,
-  PencilIcon,
-  PlusIcon,
-  Trash2Icon,
-} from 'lucide-react';
+import { MenuIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
@@ -37,79 +30,6 @@ export const stepThreeSchema = z.object({
     .array(sessionSchema.and(z.object({ id: z.string() })))
     .min(1, 'At least 1 session is required.'),
 });
-
-const mockSessions: z.infer<typeof stepThreeSchema>['sessions'] = [
-  {
-    id: '0',
-    type: 'briefing',
-    date: dayjs('2024-06-24').toDate(),
-    startTime: '15:00',
-  },
-  {
-    id: '1',
-    type: 'practice',
-    date: dayjs('2024-06-24').toDate(),
-    startTime: '15:30',
-    endTime: '16:30',
-    inGameTime: '15:30',
-  },
-  {
-    id: '2',
-    type: 'qualifying',
-    date: dayjs('2024-06-24').toDate(),
-    startTime: '16:30',
-    endTime: '17:00',
-    driverId: 'clwwn17ja0000tlci7yxs1299',
-    includeWeather: false,
-    inGameTime: '16:30',
-    serverName: 'quali',
-    serverPassword: 'quali',
-  },
-  {
-    id: '3',
-    type: 'race',
-    date: dayjs('2024-06-25').toDate(),
-    startTime: '15:00',
-    endTime: '16:00',
-    driverIds: ['clwwn17ja0000tlci7yxs1299'],
-    includeWeather: true,
-    endsNextDay: false,
-    cloudLevel: '1',
-    rainLevel: '1',
-    randomness: '2',
-    temperature: '17',
-  },
-  {
-    id: '4',
-    type: 'race',
-    date: dayjs('2024-06-25').toDate(),
-    startTime: '16:00',
-    endTime: '16:00',
-    driverIds: ['clwwn17ja0000tlci7yxs1299'],
-    includeWeather: false,
-    endsNextDay: true,
-    inGameTime: '16:00',
-    serverName: 'race',
-    serverPassword: 'race',
-  },
-  {
-    id: '5',
-    type: 'race',
-    date: dayjs('2024-06-30').toDate(),
-    startTime: '16:00',
-    endTime: '16:00',
-    driverIds: ['clwwn17ja0000tlci7yxs1299'],
-    includeWeather: true,
-    endsNextDay: true,
-    inGameTime: '16:00',
-    serverName: 'race',
-    serverPassword: 'race',
-    rainLevel: '1',
-    cloudLevel: '1',
-    randomness: '2',
-    temperature: '17',
-  },
-];
 
 export default function StepThree() {
   const [menuOpened, setMenuOpened] = useState(false);
@@ -143,11 +63,16 @@ export default function StepThree() {
             <>
               <ScrollArea>
                 <div className='flex max-h-[60vh] flex-col gap-4'>
-                  {mockSessions.map(session => {
+                  {sortedSessions.map(session => {
+                    const hasInGameTime =
+                      'inGameTime' in session && session.inGameTime;
+                    const hasServerPass =
+                      'serverPassword' in session && session.serverPassword;
+                    const hasServerName =
+                      'serverName' in session && session.serverName;
+
                     const hasServerSettings =
-                      'inGameTime' in session ||
-                      'serverPassword' in session ||
-                      'serverName' in session;
+                      hasInGameTime || hasServerName || hasServerPass;
 
                     return (
                       <div
@@ -216,13 +141,13 @@ export default function StepThree() {
                           <>
                             <Separator />
                             <div className='flex flex-col gap-1.5 text-sm leading-none text-slate-400'>
-                              {'inGameTime' in session && (
+                              {hasInGameTime && (
                                 <span>In-game: {session.inGameTime}</span>
                               )}
-                              {'serverName' in session && (
+                              {hasServerName && (
                                 <span>Server name: {session.serverName}</span>
                               )}
-                              {'serverPassword' in session && (
+                              {hasServerPass && (
                                 <span>
                                   Server password: {session.serverPassword}
                                 </span>
