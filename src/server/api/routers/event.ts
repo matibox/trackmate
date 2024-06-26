@@ -1,6 +1,4 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { step2SingleSchema } from '~/core/dashboard/calendar/new-event/Step2Single';
-import { step3SingleSchema } from '~/core/dashboard/calendar/new-event/Step3Single';
 import { timeStringToDate, type ReplaceAll } from '~/lib/utils';
 import { z } from 'zod';
 import { encryptString } from '../utils/utils';
@@ -8,139 +6,139 @@ import { games } from '~/lib/constants';
 import { sessionSchema } from '~/core/dashboard/calendar/new-event/SessionForm';
 
 export const eventRouter = createTRPCRouter({
-  createOrEdit: protectedProcedure
-    .input(
-      z
-        .discriminatedUnion('eventType', [
-          z.object({
-            eventType: z.literal('single'),
-            stepTwo: step2SingleSchema,
-            stepThree: step3SingleSchema,
-            stepFour: z.object({
-              sessions: z.array(
-                sessionSchema.and(
-                  z.object({
-                    startDate: z.date(),
-                    endDate: z.date().optional(),
-                  })
-                )
-              ),
-            }),
-          }),
-          z.object({
-            eventType: z.literal('championship'),
-          }),
-        ])
-        .and(
-          z.object({
-            eventId: z.string().optional(),
-          })
-        )
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { eventType, eventId } = input;
+  // createOrEdit: protectedProcedure
+  //   .input(
+  //     z
+  //       .discriminatedUnion('eventType', [
+  //         z.object({
+  //           eventType: z.literal('single'),
+  //           stepTwo: step2SingleSchema,
+  //           stepThree: step3SingleSchema,
+  //           stepFour: z.object({
+  //             sessions: z.array(
+  //               sessionSchema.and(
+  //                 z.object({
+  //                   startDate: z.date(),
+  //                   endDate: z.date().optional(),
+  //                 })
+  //               )
+  //             ),
+  //           }),
+  //         }),
+  //         z.object({
+  //           eventType: z.literal('championship'),
+  //         }),
+  //       ])
+  //       .and(
+  //         z.object({
+  //           eventId: z.string().optional(),
+  //         })
+  //       )
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     const { eventType, eventId } = input;
 
-      if (eventType === 'single') {
-        const {
-          eventType,
-          stepTwo: { game, name, car, track },
-          stepThree: { rosterId },
-          stepFour: { sessions },
-        } = input;
+  //     if (eventType === 'single') {
+  //       const {
+  //         eventType,
+  //         stepTwo: { game, name, car, track },
+  //         stepThree: { rosterId },
+  //         stepFour: { sessions },
+  //       } = input;
 
-        const event = await ctx.prisma.event.upsert({
-          where: { id: eventId ?? '' },
-          create: {
-            type: eventType,
-            game: game.replaceAll(' ', '_') as ReplaceAll<
-              typeof game,
-              ' ',
-              '_'
-            >,
-            name,
-            car,
-            track,
-            roster: { connect: { id: rosterId } },
-            // sessions: {
-            //   createMany: {
-            //     data: sessions.map(session => ({
-            //       ...getSessionTimespan({ session, raceDate: date }),
-            //     })),
-            //   },
-            // },
-          },
-          update: {
-            game: game.replaceAll(' ', '_') as ReplaceAll<
-              typeof game,
-              ' ',
-              '_'
-            >,
-            name,
-            car,
-            track,
-            roster: { connect: { id: rosterId } },
-          },
-          include: { sessions: true },
-        });
+  //       const event = await ctx.prisma.event.upsert({
+  //         where: { id: eventId ?? '' },
+  //         create: {
+  //           type: eventType,
+  //           game: game.replaceAll(' ', '_') as ReplaceAll<
+  //             typeof game,
+  //             ' ',
+  //             '_'
+  //           >,
+  //           name,
+  //           car,
+  //           track,
+  //           roster: { connect: { id: rosterId } },
+  //           // sessions: {
+  //           //   createMany: {
+  //           //     data: sessions.map(session => ({
+  //           //       ...getSessionTimespan({ session, raceDate: date }),
+  //           //     })),
+  //           //   },
+  //           // },
+  //         },
+  //         update: {
+  //           game: game.replaceAll(' ', '_') as ReplaceAll<
+  //             typeof game,
+  //             ' ',
+  //             '_'
+  //           >,
+  //           name,
+  //           car,
+  //           track,
+  //           roster: { connect: { id: rosterId } },
+  //         },
+  //         include: { sessions: true },
+  //       });
 
-        // if in edit mode
-        if (eventId) {
-          await ctx.prisma.eventSession.deleteMany({
-            where: { eventId },
-          });
-        }
-        // super annoying...
-        // https://github.com/prisma/prisma/issues/5455
-        // https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#create-multiple-records-and-multiple-related-records
-        for (const session of sessions) {
-          const ids =
-            'driverIds' in session
-              ? session.driverIds
-              : 'driverId' in session
-              ? [session.driverId]
-              : [];
+  //       // if in edit mode
+  //       if (eventId) {
+  //         await ctx.prisma.eventSession.deleteMany({
+  //           where: { eventId },
+  //         });
+  //       }
+  //       // super annoying...
+  //       // https://github.com/prisma/prisma/issues/5455
+  //       // https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#create-multiple-records-and-multiple-related-records
+  //       for (const session of sessions) {
+  //         const ids =
+  //           'driverIds' in session
+  //             ? session.driverIds
+  //             : 'driverId' in session
+  //             ? [session.driverId]
+  //             : [];
 
-          await ctx.prisma.eventSession.create({
-            data: {
-              start: session.startDate,
-              end: session.endDate,
-              type: session.type,
-              event: { connect: { id: event.id } },
-              drivers:
-                ids.length === 0
-                  ? undefined
-                  : { connect: ids.map(id => ({ id })) },
-              ...(session.type !== 'briefing' && session.serverInformation
-                ? {
-                    inGameTime: session.serverInformation.inGameTime
-                      ? timeStringToDate(
-                          session.serverInformation.inGameTime
-                        ).toDate()
-                      : undefined,
-                    serverName: session.serverInformation.serverName,
-                    serverPassword: session.serverInformation.serverPassword,
-                  }
-                : {}),
-              ...((session.type === 'qualifying' || session.type === 'race') &&
-              session.weather
-                ? {
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    rainLevel: parseFloat(session.weather.rainLevel!),
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    cloudLevel: parseFloat(session.weather.cloudLevel!),
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    randomness: parseInt(session.weather.randomness!),
-                    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                    temperature: parseInt(session.weather.ambientTemp!),
-                  }
-                : {}),
-            },
-          });
-        }
+  //         await ctx.prisma.eventSession.create({
+  //           data: {
+  //             start: session.startDate,
+  //             end: session.endDate,
+  //             type: session.type,
+  //             event: { connect: { id: event.id } },
+  //             drivers:
+  //               ids.length === 0
+  //                 ? undefined
+  //                 : { connect: ids.map(id => ({ id })) },
+  //             ...(session.type !== 'briefing' && session.serverInformation
+  //               ? {
+  //                   inGameTime: session.serverInformation.inGameTime
+  //                     ? timeStringToDate(
+  //                         session.serverInformation.inGameTime
+  //                       ).toDate()
+  //                     : undefined,
+  //                   serverName: session.serverInformation.serverName,
+  //                   serverPassword: session.serverInformation.serverPassword,
+  //                 }
+  //               : {}),
+  //             ...((session.type === 'qualifying' || session.type === 'race') &&
+  //             session.weather
+  //               ? {
+  //                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //                   rainLevel: parseFloat(session.weather.rainLevel!),
+  //                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //                   cloudLevel: parseFloat(session.weather.cloudLevel!),
+  //                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //                   randomness: parseInt(session.weather.randomness!),
+  //                   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  //                   temperature: parseInt(session.weather.ambientTemp!),
+  //                 }
+  //               : {}),
+  //           },
+  //         });
+  //       }
 
-        return sessions[0]?.date;
-      }
-    }),
+  //       return sessions[0]?.date;
+  //     }
+  //   }),
   getCalendarData: protectedProcedure
     .input(z.object({ from: z.date(), to: z.date() }))
     .query(async ({ ctx, input }) => {

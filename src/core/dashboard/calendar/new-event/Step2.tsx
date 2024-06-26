@@ -21,7 +21,7 @@ import {
 } from '~/components/ui/Select';
 import { api } from '~/utils/api';
 import { type stepOneSchema } from './Step1';
-import DriverButton from '../new-event/DriverButton';
+import DriverButton from './DriverButton';
 import { Loader2Icon } from 'lucide-react';
 
 export const stepTwoSchema = z.object({

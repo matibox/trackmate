@@ -53,7 +53,7 @@ import { type ReplaceAll, cn, dateToTimeString } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useSetupDownload } from './useSetupDownload';
 import { ScrollArea } from '~/components/ui/ScrollArea';
-import { useNewEvent } from './new-event/newEventStore';
+// import { useNewEvent } from './new-event/newEventStore';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
@@ -65,8 +65,8 @@ export default function EventDropdown({
   className?: string;
 }) {
   const [menuOpened, setMenuOpened] = useState(false);
-  const { setSheetOpened, setEditMode, setEditModeEventId, setData } =
-    useNewEvent();
+  // const { setSheetOpened, setEditMode, setEditModeEventId, setData } =
+  //   useNewEvent();
 
   return (
     <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened} modal={false}>
@@ -88,7 +88,7 @@ export default function EventDropdown({
         <DropdownMenuSeparator />
         <DropdownMenuLabel>Manage event</DropdownMenuLabel>
         <DropdownMenuGroup>
-          <DropdownMenuItem
+          {/* <DropdownMenuItem
             onClick={() => {
               setSheetOpened(true);
               setEditMode(true);
@@ -157,7 +157,7 @@ export default function EventDropdown({
           >
             <PencilIcon className='mr-2 h-4 w-4' />
             <span>Edit event</span>
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
           <DeleteEventDialog event={event} />
         </DropdownMenuGroup>
       </DropdownMenuContent>

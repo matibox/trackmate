@@ -26,7 +26,7 @@ import { Input } from '~/components/ui/Input';
 import { Checkbox } from '~/components/ui/Checkbox';
 import { type stepTwoSchema } from './Step2';
 import { api } from '~/utils/api';
-import DriverButton from '../new-event/DriverButton';
+import DriverButton from './DriverButton';
 import { Skeleton } from '~/components/ui/Skeleton';
 
 export const raceSchema = z
