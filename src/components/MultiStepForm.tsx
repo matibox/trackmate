@@ -46,6 +46,7 @@ export default function MultiStepForm<T extends ZodSchema>({
           {currentStep > 0 && (
             <Button
               type='button'
+              variant='secondary'
               onClick={() => setCurrentStep(prev => prev - 1)}
             >
               Previous
