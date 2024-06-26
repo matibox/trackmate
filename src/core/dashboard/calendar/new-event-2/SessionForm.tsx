@@ -50,11 +50,13 @@ export const sessionSchema = z
 export default function SessionForm({
   sessionType,
   onSubmit: handleSubmit,
+  title,
   trigger,
   defaultValues,
 }: {
   sessionType: SessionType;
   onSubmit: (values: z.infer<typeof sessionSchema>) => void;
+  title: string;
   trigger: ReactNode;
   defaultValues?: DefaultValues<z.infer<typeof sessionSchema>>;
 }) {
@@ -91,10 +93,9 @@ export default function SessionForm({
 
   return (
     <ResponsiveDialog
-      key={sessionType}
       open={isOpened}
       onOpenChange={setIsOpened}
-      title={`Create ${sessionType} session`}
+      title={title}
       trigger={trigger}
     >
       <FormProvider {...form}>

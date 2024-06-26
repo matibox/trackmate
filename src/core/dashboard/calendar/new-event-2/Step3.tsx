@@ -152,6 +152,7 @@ export default function StepThree() {
                                   <SessionForm
                                     sessionType={session.type}
                                     defaultValues={session}
+                                    title={`Edit ${session.type} session`}
                                     trigger={
                                       <DropdownMenuItem
                                         onSelect={e => e.preventDefault()}
@@ -233,6 +234,7 @@ export default function StepThree() {
               <SessionForm
                 key={sessionType}
                 sessionType={sessionType}
+                title={`Create ${sessionType} session`}
                 trigger={
                   <DropdownMenuItem onSelect={e => e.preventDefault()}>
                     {capitalize(sessionType)}
