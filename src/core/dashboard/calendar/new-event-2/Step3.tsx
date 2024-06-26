@@ -1,4 +1,11 @@
-import { MenuIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
+import {
+  ClipboardCopyIcon,
+  KeyRoundIcon,
+  MenuIcon,
+  PencilIcon,
+  PlusIcon,
+  Trash2Icon,
+} from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useFormContext } from 'react-hook-form';
 import { z } from 'zod';
@@ -139,26 +146,26 @@ export default function StepThree() {
                   {mockSessions.map(session => {
                     const hasServerSettings =
                       'inGameTime' in session ||
-                      'serverName' in session ||
-                      'serverPassword' in session;
+                      'serverPassword' in session ||
+                      'serverName' in session;
 
                     return (
                       <div
                         key={session.id}
-                        className='flex w-full flex-col justify-between gap-3 rounded-md border border-slate-800 px-3.5 py-3'
+                        className='flex w-full flex-col justify-between gap-3 rounded-md border border-slate-800 bg-slate-900 px-3.5 py-3'
                       >
                         <div className='flex justify-between'>
                           <div className='flex flex-col gap-1.5'>
                             <span className='font-medium leading-none'>
                               {capitalize(session.type)}
                             </span>
-                            <span className='text-sm leading-none text-slate-400'>
+                            <span className='text-sm leading-none text-slate-300'>
                               {formatSessionDate(
                                 session.date,
                                 'endsNextDay' in session && session.endsNextDay
                               )}
                             </span>
-                            <span className='text-sm leading-none text-slate-400'>
+                            <span className='text-sm leading-none text-slate-300'>
                               {session.startTime}{' '}
                               {'endTime' in session && ` - ${session.endTime}`}
                             </span>
