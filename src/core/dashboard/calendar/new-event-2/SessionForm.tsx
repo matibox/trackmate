@@ -1,11 +1,15 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ReactNode, useState, useMemo } from 'react';
-import { FormProvider, useForm, useFormContext } from 'react-hook-form';
+import {
+  type DefaultValues,
+  FormProvider,
+  useForm,
+  useFormContext,
+} from 'react-hook-form';
 import { z } from 'zod';
-import { DropdownMenuItem } from '~/components/ui/DropdownMenu';
 import ResponsiveDialog from '~/components/ui/ResponsiveDialog';
 import { type sessionTypes } from '~/lib/constants';
-import { capitalize, timeStringToDate } from '~/lib/utils';
+import { timeStringToDate } from '~/lib/utils';
 import { Button } from '~/components/ui/Button';
 import { type stepThreeSchema } from './Step3';
 import { type stepTwoSchema } from './Step2';
@@ -46,9 +50,13 @@ export const sessionSchema = z
 export default function SessionForm({
   sessionType,
   onSubmit: handleSubmit,
+  trigger,
+  defaultValues,
 }: {
   sessionType: SessionType;
   onSubmit: (values: z.infer<typeof sessionSchema>) => void;
+  trigger: ReactNode;
+  defaultValues?: DefaultValues<z.infer<typeof sessionSchema>>;
 }) {
   const [isOpened, setIsOpened] = useState(false);
 
@@ -60,7 +68,7 @@ export default function SessionForm({
 
   const form = useForm<z.infer<typeof sessionSchema>>({
     resolver: zodResolver(sessionSchema),
-    defaultValues: {
+    defaultValues: defaultValues ?? {
       type: sessionType,
       date: lastSessionDate,
       startTime: '',
@@ -87,11 +95,7 @@ export default function SessionForm({
       open={isOpened}
       onOpenChange={setIsOpened}
       title={`Create ${sessionType} session`}
-      trigger={
-        <DropdownMenuItem onSelect={e => e.preventDefault()}>
-          {capitalize(sessionType)}
-        </DropdownMenuItem>
-      }
+      trigger={trigger}
     >
       <FormProvider {...form}>
         <form

@@ -1,6 +1,6 @@
 import { MenuIcon, PencilIcon, PlusIcon, Trash2Icon } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { type UseFormReturn, useFormContext } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '~/components/ui/Button';
 import {
@@ -31,10 +31,7 @@ export const stepThreeSchema = z.object({
     .min(1, 'At least 1 session is required.'),
 });
 
-export default function StepThree() {
-  const [menuOpened, setMenuOpened] = useState(false);
-  const form = useFormContext<z.infer<typeof stepThreeSchema>>();
-
+function useSessions(form: UseFormReturn<z.infer<typeof stepThreeSchema>>) {
   const sessions = form.watch('sessions');
   const sortedSessions = useMemo(() => {
     return sessions.sort((a, b) => {
@@ -42,10 +39,51 @@ export default function StepThree() {
       const startDateB = timeStringToDate(b.startTime, dayjs(b.date));
 
       if (startDateA.isBefore(startDateB)) return -1;
-      if (startDateA.isAfter(startDateB)) return -1;
+      if (startDateA.isAfter(startDateB)) return 1;
       return 0;
     });
   }, [sessions]);
+
+  function addSession(newSession: z.infer<typeof sessionSchema>) {
+    const currentSessions = form.getValues('sessions');
+    form.setValue('sessions', [
+      ...currentSessions,
+      {
+        id: crypto.randomBytes(8).toString('hex'),
+        ...newSession,
+      },
+    ]);
+  }
+
+  function removeSession(id: string) {
+    const currentSessions = form.getValues('sessions');
+    form.setValue(
+      'sessions',
+      currentSessions.filter(s => s.id !== id)
+    );
+  }
+
+  function editSession(id: string, values: z.infer<typeof sessionSchema>) {
+    const currentSessions = form.getValues('sessions');
+    form.setValue(
+      'sessions',
+      currentSessions.map(s => (s.id === id ? { ...s, ...values } : s))
+    );
+  }
+
+  return { sortedSessions, addSession, removeSession, editSession };
+}
+
+export default function StepThree() {
+  const [newSessionMenuOpened, setNewSessionMenuOpened] = useState(false);
+  const form = useFormContext<z.infer<typeof stepThreeSchema>>();
+
+  const {
+    sortedSessions: sessions,
+    addSession,
+    editSession,
+    removeSession,
+  } = useSessions(form);
 
   return (
     <>
@@ -63,7 +101,7 @@ export default function StepThree() {
             <>
               <ScrollArea>
                 <div className='flex max-h-[60vh] flex-col gap-4'>
-                  {sortedSessions.map(session => {
+                  {sessions.map(session => {
                     const hasInGameTime =
                       'inGameTime' in session && session.inGameTime;
                     const hasServerPass =
@@ -111,22 +149,24 @@ export default function StepThree() {
                                   Session actions
                                 </DropdownMenuLabel>
                                 <DropdownMenuGroup>
-                                  <DropdownMenuItem
-                                    onClick={() => {
-                                      console.log('edit session');
+                                  <SessionForm
+                                    sessionType={session.type}
+                                    defaultValues={session}
+                                    trigger={
+                                      <DropdownMenuItem
+                                        onSelect={e => e.preventDefault()}
+                                      >
+                                        <PencilIcon className='mr-2 h-4 w-4' />
+                                        <span>Edit session</span>
+                                      </DropdownMenuItem>
+                                    }
+                                    onSubmit={values => {
+                                      console.log('edit: ', values);
+                                      editSession(session.id, values);
                                     }}
-                                  >
-                                    <PencilIcon className='mr-2 h-4 w-4' />
-                                    <span>Edit session</span>
-                                  </DropdownMenuItem>
+                                  />
                                   <DropdownMenuItem
-                                    onClick={() => {
-                                      const prev = form.getValues('sessions');
-                                      form.setValue(
-                                        'sessions',
-                                        prev.filter(s => s.id !== session.id)
-                                      );
-                                    }}
+                                    onClick={() => removeSession(session.id)}
                                     className='text-red-500 focus:text-red-500'
                                   >
                                     <Trash2Icon className='mr-2 h-4 w-4' />
@@ -178,7 +218,10 @@ export default function StepThree() {
             </>
           )}
         />
-        <DropdownMenu open={menuOpened} onOpenChange={setMenuOpened}>
+        <DropdownMenu
+          open={newSessionMenuOpened}
+          onOpenChange={setNewSessionMenuOpened}
+        >
           <DropdownMenuTrigger asChild>
             <Button variant='secondary' className='justify-between'>
               New session
@@ -190,19 +233,15 @@ export default function StepThree() {
               <SessionForm
                 key={sessionType}
                 sessionType={sessionType}
+                trigger={
+                  <DropdownMenuItem onSelect={e => e.preventDefault()}>
+                    {capitalize(sessionType)}
+                  </DropdownMenuItem>
+                }
                 onSubmit={newSession => {
                   console.log('inner', newSession);
-
-                  const currentSessions = form.getValues('sessions');
-                  form.setValue('sessions', [
-                    ...currentSessions,
-                    {
-                      id: crypto.randomBytes(8).toString('hex'),
-                      ...newSession,
-                    },
-                  ]);
-
-                  setMenuOpened(false);
+                  addSession(newSession);
+                  setNewSessionMenuOpened(false);
                 }}
               />
             ))}
