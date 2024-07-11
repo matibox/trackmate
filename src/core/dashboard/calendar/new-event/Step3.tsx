@@ -162,7 +162,6 @@ export default function StepThree() {
                                       </DropdownMenuItem>
                                     }
                                     onSubmit={values => {
-                                      console.log('edit: ', values);
                                       editSession(session.id, values);
                                     }}
                                   />
@@ -241,7 +240,6 @@ export default function StepThree() {
                   </DropdownMenuItem>
                 }
                 onSubmit={newSession => {
-                  console.log('inner', newSession);
                   addSession(newSession);
                   setNewSessionMenuOpened(false);
                 }}
