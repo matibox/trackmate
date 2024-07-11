@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { type ReactNode, useEffect, useMemo, useState } from 'react';
+import { type ReactNode, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { ZodSchema, z } from 'zod';
 import { Button } from '~/components/ui/Button';
@@ -33,10 +33,6 @@ export default function MultiStepForm<T extends ZodSchema>({
       onSubmit(form.getValues());
     }
   }
-
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues, form]);
 
   return (
     <FormProvider {...form}>

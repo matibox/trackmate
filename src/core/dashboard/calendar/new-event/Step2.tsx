@@ -49,6 +49,8 @@ export default function StepTwo() {
     { enabled: !!form.watch('teamId') && !!form.watch('rosterId') }
   );
 
+  // console.log(form.getValues());
+
   return (
     <>
       <SheetHeader>
@@ -134,6 +136,7 @@ export default function StepTwo() {
                   <Loader2Icon className='mx-auto h-4 w-4 animate-spin' />
                 )}
                 {drivers?.map(({ user }) => {
+                  // console.log(field.value);
                   const isActive = field.value.includes(user.id);
 
                   return (
