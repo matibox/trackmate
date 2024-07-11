@@ -29,7 +29,7 @@ export default function NewEvent() {
   const { toast } = useToast();
 
   const utils = api.useContext();
-  const { mutateAsync: createEvent } = api.event.create.useMutation({
+  const { mutateAsync: createEvent, status } = api.event.create.useMutation({
     onError: err => {
       toast({
         variant: 'destructive',
@@ -69,6 +69,7 @@ export default function NewEvent() {
           onSubmit={async values => {
             await createEvent(values);
           }}
+          loading={status === 'loading'}
           steps={[
             { schema: stepOneSchema, component: <StepOne /> },
             { schema: stepTwoSchema, component: <StepTwo /> },

@@ -465,6 +465,7 @@ function EditEventSheet({ event }: { event: Event }) {
               ...values,
             });
           }}
+          loading={status === 'loading'}
           steps={[
             { schema: stepOneSchema, component: <StepOne edit /> },
             { schema: stepTwoSchema, component: <StepTwo edit /> },

@@ -7,10 +7,12 @@ import { Button } from '~/components/ui/Button';
 export default function MultiStepForm<T extends ZodSchema>({
   steps,
   onSubmit,
+  loading = false,
   defaultValues,
 }: {
   steps: Array<{ schema: ZodSchema; component: ReactNode }>;
   onSubmit: (values: z.infer<T>) => void;
+  loading?: boolean;
   defaultValues?: Partial<z.infer<T>>;
 }) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -43,12 +45,13 @@ export default function MultiStepForm<T extends ZodSchema>({
             <Button
               type='button'
               variant='secondary'
+              disabled={loading}
               onClick={() => setCurrentStep(prev => prev - 1)}
             >
               Previous
             </Button>
           )}
-          <Button type='submit' className='ml-auto'>
+          <Button type='submit' className='ml-auto' loading={loading}>
             {isLastStep ? 'Submit' : 'Next'}
           </Button>
         </div>
