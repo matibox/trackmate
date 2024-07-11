@@ -90,6 +90,7 @@ export const eventRouter = createTRPCRouter({
 
       const event = await ctx.prisma.event.update({
         where: { id: eventId },
+        include: { sessions: true },
         data: {
           game: game ? gameStrToDbStr(game) : undefined,
           name,

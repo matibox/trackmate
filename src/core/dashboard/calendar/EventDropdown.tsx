@@ -53,12 +53,14 @@ import { type ReplaceAll, cn, dateToTimeString } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useSetupDownload } from './useSetupDownload';
 import { ScrollArea } from '~/components/ui/ScrollArea';
-import { type newEventSchema, useNewEvent } from './new-event/NewEvent';
+import { type newEventSchema } from './new-event/NewEvent';
 import MultiStepForm from '~/components/MultiStepForm';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/Sheet';
 import StepOne, { stepOneSchema } from './new-event/Step1';
 import StepTwo, { stepTwoSchema } from './new-event/Step2';
 import StepThree, { stepThreeSchema } from './new-event/Step3';
+import { useToast } from '~/components/ui/useToast';
+import { useCalendar } from './store';
 
 type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
@@ -411,6 +413,32 @@ function ViewSetupsDialog({ event: { id, name, game } }: { event: Event }) {
 
 function EditEventSheet({ event }: { event: Event }) {
   const [sheetOpened, setSheetOpened] = useState(false);
+  const selectDay = useCalendar(s => s.selectDay);
+  const { toast } = useToast();
+
+  const utils = api.useContext();
+  const { mutateAsync: editEvent, status } = api.event.edit.useMutation({
+    onError: err => {
+      toast({
+        variant: 'destructive',
+        title: 'An error occured',
+        description: err.message,
+      });
+    },
+    onSuccess: async event => {
+      toast({
+        variant: 'default',
+        title: 'Success!',
+        description: 'An event has successfully been edited',
+      });
+
+      await utils.event.invalidate();
+      setSheetOpened(false);
+
+      const firstSessionDate = dayjs(event.sessions[0]?.start);
+      selectDay({ day: firstSessionDate });
+    },
+  });
 
   const driverIds = [
     ...new Set(
@@ -420,8 +448,6 @@ function EditEventSheet({ event }: { event: Event }) {
         .map(d => d.id)
     ),
   ];
-
-  console.log(event.sessions);
 
   return (
     <Sheet open={sheetOpened} onOpenChange={setSheetOpened}>
@@ -433,10 +459,11 @@ function EditEventSheet({ event }: { event: Event }) {
       </SheetTrigger>
       <SheetContent className='w-full border-0 ring-1 ring-slate-900'>
         <MultiStepForm<typeof newEventSchema>
-          onSubmit={values => {
-            console.log(values);
-
-            // TODO: edit event mutation
+          onSubmit={async values => {
+            await editEvent({
+              eventId: event.id,
+              ...values,
+            });
           }}
           steps={[
             { schema: stepOneSchema, component: <StepOne edit /> },
