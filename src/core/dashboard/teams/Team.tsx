@@ -5,7 +5,7 @@ import { capitalize } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
 import TeamDropdown from './TeamDropdown';
 
-type Team = RouterOutputs['team']['listMemberOf'][number];
+type Team = RouterOutputs['team']['memberOfRoles'][number];
 type Role = $Enums.RosterRole | Exclude<$Enums.TeamRole, 'member'>;
 
 export default function Team({ team }: { team: Team }) {

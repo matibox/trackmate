@@ -19,6 +19,7 @@ export function groupBy<T, K extends string | number>(
       acc[key] = [];
     }
 
+    // eslint-disable-next-line
     (acc[key] as T[]).push(item);
 
     return acc;
