@@ -26,7 +26,7 @@ import {
 import { cars, games, tracks } from '~/lib/constants';
 import { groupBy } from '~/lib/utils';
 
-export const stepOneSchema = z.object({
+export const stepOneValues = {
   name: z
     .string({ required_error: 'Event name is required.' })
     .min(1, 'Event name is requred.'),
@@ -37,7 +37,9 @@ export const stepOneSchema = z.object({
   car: z
     .string({ required_error: 'Car is required.' })
     .min(1, 'Car is required.'),
-});
+};
+
+export const stepOneSchema = z.object(stepOneValues);
 
 export default function StepOne({
   edit: editMode = false,

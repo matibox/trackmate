@@ -25,11 +25,13 @@ import dayjs from 'dayjs';
 import { Separator } from '~/components/ui/Separator';
 import { ScrollArea } from '~/components/ui/ScrollArea';
 
-export const stepThreeSchema = z.object({
+export const stepThreeValues = {
   sessions: z
     .array(sessionSchema.and(z.object({ id: z.string() })))
     .min(1, 'At least 1 session is required.'),
-});
+};
+
+export const stepThreeSchema = z.object(stepThreeValues);
 
 function useSessions(form: UseFormReturn<z.infer<typeof stepThreeSchema>>) {
   const sessions = form.watch('sessions');

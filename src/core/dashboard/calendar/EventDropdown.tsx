@@ -435,6 +435,7 @@ function EditEventSheet({ event }: { event: Event }) {
         <MultiStepForm<typeof newEventSchema>
           onSubmit={values => {
             console.log(values);
+
             // TODO: edit event mutation
           }}
           steps={[

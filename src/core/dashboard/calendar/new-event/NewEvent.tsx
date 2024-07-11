@@ -2,8 +2,8 @@ import { Button } from '~/components/ui/Button';
 import { Sheet, SheetContent, SheetTrigger } from '~/components/ui/Sheet';
 import MultiStepForm from '~/components/MultiStepForm';
 import StepOne, { stepOneSchema } from './Step1';
-import StepTwo, { stepTwoSchema } from './Step2';
-import StepThree, { stepThreeSchema } from './Step3';
+import StepTwo, { stepTwoSchema, stepTwoValues } from './Step2';
+import StepThree, { stepThreeSchema, stepThreeValues } from './Step3';
 import { CalendarPlusIcon } from 'lucide-react';
 import { create } from 'zustand';
 import { api } from '~/utils/api';
@@ -20,8 +20,8 @@ export const useNewEvent = create<{
 }));
 
 export const newEventSchema = stepOneSchema
-  .and(stepTwoSchema)
-  .and(stepThreeSchema);
+  .extend(stepTwoValues)
+  .extend(stepThreeValues);
 
 export default function NewEvent() {
   const { sheetOpened, setSheetOpened } = useNewEvent();

@@ -8,6 +8,59 @@ import { z } from 'zod';
 import { encryptString, gameStrToDbStr } from '../utils/utils';
 import { games } from '~/lib/constants';
 import { newEventSchema } from '~/core/dashboard/calendar/new-event/NewEvent';
+import { type sessionSchema } from '~/core/dashboard/calendar/new-event/SessionForm';
+import { type PrismaClient } from '@prisma/client';
+
+async function createEventSession(
+  {
+    sessions,
+    eventId,
+  }: {
+    sessions: Array<z.infer<typeof sessionSchema>>;
+    eventId: string;
+  },
+  db: PrismaClient
+) {
+  for (const session of sessions) {
+    const { start, end } = getSessionTimespan({ session });
+    const inGameTime =
+      'inGameTime' in session && session.inGameTime
+        ? timeStringToDate(session.inGameTime).toDate()
+        : undefined;
+
+    const driverIds =
+      'driverIds' in session
+        ? session.driverIds
+        : 'driverId' in session
+        ? [session.driverId]
+        : [];
+
+    await db.eventSession.create({
+      data: {
+        event: { connect: { id: eventId } },
+        drivers:
+          driverIds.length > 0
+            ? { connect: driverIds.map(id => ({ id })) }
+            : undefined,
+        type: session.type,
+        serverName: 'serverName' in session ? session.serverName : undefined,
+        serverPassword:
+          'serverPassword' in session ? session.serverPassword : undefined,
+        start,
+        end,
+        inGameTime,
+        rainLevel:
+          'rainLevel' in session ? parseFloat(session.rainLevel!) : undefined,
+        cloudLevel:
+          'cloudLevel' in session ? parseFloat(session.cloudLevel!) : undefined,
+        randomness:
+          'randomness' in session ? parseInt(session.randomness!) : undefined,
+        temperature:
+          'temperature' in session ? parseInt(session.temperature!) : undefined,
+      },
+    });
+  }
+}
 
 export const eventRouter = createTRPCRouter({
   create: protectedProcedure
@@ -26,55 +79,31 @@ export const eventRouter = createTRPCRouter({
         },
       });
 
-      for (const session of sessions) {
-        const { start, end } = getSessionTimespan({ session });
-        const inGameTime =
-          'inGameTime' in session && session.inGameTime
-            ? timeStringToDate(session.inGameTime).toDate()
-            : undefined;
+      await createEventSession({ sessions, eventId: event.id }, ctx.prisma);
 
-        const driverIds =
-          'driverIds' in session
-            ? session.driverIds
-            : 'driverId' in session
-            ? [session.driverId]
-            : [];
+      return event;
+    }),
+  edit: protectedProcedure
+    .input(newEventSchema.partial().extend({ eventId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const { eventId, game, name, car, track, rosterId, sessions } = input;
 
-        await ctx.prisma.eventSession.create({
-          data: {
-            event: { connect: { id: event.id } },
-            drivers:
-              driverIds.length > 0
-                ? { connect: driverIds.map(id => ({ id })) }
-                : undefined,
-            type: session.type,
-            serverName:
-              'serverName' in session ? session.serverName : undefined,
-            serverPassword:
-              'serverPassword' in session ? session.serverPassword : undefined,
-            start,
-            end,
-            inGameTime,
-            rainLevel:
-              'rainLevel' in session
-                ? parseFloat(session.rainLevel!)
-                : undefined,
-            cloudLevel:
-              'cloudLevel' in session
-                ? parseFloat(session.cloudLevel!)
-                : undefined,
-            randomness:
-              'randomness' in session
-                ? parseInt(session.randomness!)
-                : undefined,
-            temperature:
-              'temperature' in session
-                ? parseInt(session.temperature!)
-                : undefined,
-          },
-        });
-      }
+      const event = await ctx.prisma.event.update({
+        where: { id: eventId },
+        data: {
+          game: game ? gameStrToDbStr(game) : undefined,
+          name,
+          car,
+          track,
+          roster: { connect: { id: rosterId } },
+        },
+      });
 
+      await ctx.prisma.eventSession.deleteMany({ where: { eventId } });
+
+      if (!sessions) return event;
+
+      await createEventSession({ sessions, eventId: event.id }, ctx.prisma);
       return event;
     }),
   getCalendarData: protectedProcedure

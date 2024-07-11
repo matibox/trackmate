@@ -24,7 +24,7 @@ import { type stepOneSchema } from './Step1';
 import DriverButton from './DriverButton';
 import { Loader2Icon } from 'lucide-react';
 
-export const stepTwoSchema = z.object({
+export const stepTwoValues = {
   teamId: z
     .string({ required_error: 'Team is required.' })
     .min(1, 'Team is required.'),
@@ -32,7 +32,9 @@ export const stepTwoSchema = z.object({
     .string({ required_error: 'Roster is required.' })
     .min(1, 'Roster is required.'),
   driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
-});
+};
+
+export const stepTwoSchema = z.object(stepTwoValues);
 
 export default function StepTwo({
   edit: editMode = false,
