@@ -34,7 +34,11 @@ export const stepTwoSchema = z.object({
   driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
 });
 
-export default function StepTwo() {
+export default function StepTwo({
+  edit: editMode = false,
+}: {
+  edit?: boolean;
+}) {
   const { watch: getStepOne } = useFormContext<z.infer<typeof stepOneSchema>>();
   const form = useFormContext<z.infer<typeof stepTwoSchema>>();
 
@@ -44,6 +48,7 @@ export default function StepTwo() {
       { teamId: form.watch('teamId'), game: getStepOne('game') },
       { enabled: !!form.watch('teamId') }
     );
+
   const { data: drivers, status: driversStatus } = api.roster.drivers.useQuery(
     { rosterId: form.watch('rosterId') },
     { enabled: !!form.watch('teamId') && !!form.watch('rosterId') }
@@ -52,7 +57,9 @@ export default function StepTwo() {
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create an event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} an event
+        </SheetTitle>
         <SheetDescription>
           Choose a team and drivers, click next when you&apos;re ready.
         </SheetDescription>

@@ -438,9 +438,9 @@ function EditEventSheet({ event }: { event: Event }) {
             // TODO: edit event mutation
           }}
           steps={[
-            { schema: stepOneSchema, component: <StepOne /> },
-            { schema: stepTwoSchema, component: <StepTwo /> },
-            { schema: stepThreeSchema, component: <StepThree /> },
+            { schema: stepOneSchema, component: <StepOne edit /> },
+            { schema: stepTwoSchema, component: <StepTwo edit /> },
+            { schema: stepThreeSchema, component: <StepThree edit /> },
           ]}
           defaultValues={{
             name: event.name,

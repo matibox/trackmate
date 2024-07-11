@@ -39,13 +39,19 @@ export const stepOneSchema = z.object({
     .min(1, 'Car is required.'),
 });
 
-export default function StepOne() {
+export default function StepOne({
+  edit: editMode = false,
+}: {
+  edit?: boolean;
+}) {
   const form = useFormContext<z.infer<typeof stepOneSchema>>();
 
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create an event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} an event
+        </SheetTitle>
         <SheetDescription>
           Fill basic event data, click next when you&apos;re ready.
         </SheetDescription>

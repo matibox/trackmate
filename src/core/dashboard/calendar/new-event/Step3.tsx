@@ -74,7 +74,11 @@ function useSessions(form: UseFormReturn<z.infer<typeof stepThreeSchema>>) {
   return { sortedSessions, addSession, removeSession, editSession };
 }
 
-export default function StepThree() {
+export default function StepThree({
+  edit: editMode = false,
+}: {
+  edit?: boolean;
+}) {
   const [newSessionMenuOpened, setNewSessionMenuOpened] = useState(false);
   const form = useFormContext<z.infer<typeof stepThreeSchema>>();
 
@@ -88,7 +92,9 @@ export default function StepThree() {
   return (
     <>
       <SheetHeader>
-        <SheetTitle className='text-3xl'>Create an event</SheetTitle>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} an event
+        </SheetTitle>
         <SheetDescription>
           Define the race week. Click next when you&apos;re ready.
         </SheetDescription>
