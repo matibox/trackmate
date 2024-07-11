@@ -15,7 +15,7 @@ export const eventRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { name, game, track, car, rosterId, sessions } = input;
 
-      return await ctx.prisma.event.create({
+      const event = await ctx.prisma.event.create({
         include: { sessions: true },
         data: {
           name,
@@ -23,48 +23,59 @@ export const eventRouter = createTRPCRouter({
           track,
           car,
           roster: { connect: { id: rosterId } },
-          sessions: {
-            createMany: {
-              data: sessions.map(session => {
-                const { start, end } = getSessionTimespan({ session });
-                const inGameTime =
-                  'inGameTime' in session && session.inGameTime
-                    ? timeStringToDate(session.inGameTime).toDate()
-                    : undefined;
-
-                return {
-                  type: session.type,
-                  serverName:
-                    'serverName' in session ? session.serverName : undefined,
-                  serverPassword:
-                    'serverPassword' in session
-                      ? session.serverPassword
-                      : undefined,
-                  start,
-                  end,
-                  inGameTime,
-                  rainLevel:
-                    'rainLevel' in session
-                      ? parseFloat(session.rainLevel!)
-                      : undefined,
-                  cloudLevel:
-                    'cloudLevel' in session
-                      ? parseFloat(session.cloudLevel!)
-                      : undefined,
-                  randomness:
-                    'randomness' in session
-                      ? parseInt(session.randomness!)
-                      : undefined,
-                  temperature:
-                    'temperature' in session
-                      ? parseInt(session.temperature!)
-                      : undefined,
-                };
-              }),
-            },
-          },
         },
       });
+
+      for (const session of sessions) {
+        const { start, end } = getSessionTimespan({ session });
+        const inGameTime =
+          'inGameTime' in session && session.inGameTime
+            ? timeStringToDate(session.inGameTime).toDate()
+            : undefined;
+
+        const driverIds =
+          'driverIds' in session
+            ? session.driverIds
+            : 'driverId' in session
+            ? [session.driverId]
+            : [];
+
+        await ctx.prisma.eventSession.create({
+          data: {
+            event: { connect: { id: event.id } },
+            drivers:
+              driverIds.length > 0
+                ? { connect: driverIds.map(id => ({ id })) }
+                : undefined,
+            type: session.type,
+            serverName:
+              'serverName' in session ? session.serverName : undefined,
+            serverPassword:
+              'serverPassword' in session ? session.serverPassword : undefined,
+            start,
+            end,
+            inGameTime,
+            rainLevel:
+              'rainLevel' in session
+                ? parseFloat(session.rainLevel!)
+                : undefined,
+            cloudLevel:
+              'cloudLevel' in session
+                ? parseFloat(session.cloudLevel!)
+                : undefined,
+            randomness:
+              'randomness' in session
+                ? parseInt(session.randomness!)
+                : undefined,
+            temperature:
+              'temperature' in session
+                ? parseInt(session.temperature!)
+                : undefined,
+          },
+        });
+      }
+
+      return event;
     }),
   getCalendarData: protectedProcedure
     .input(z.object({ from: z.date(), to: z.date() }))
@@ -102,7 +113,10 @@ export const eventRouter = createTRPCRouter({
               car: true,
               game: true,
               roster: {
-                select: { id: true, team: { select: { name: true } } },
+                select: {
+                  id: true,
+                  team: { select: { id: true, name: true } },
+                },
               },
               sessions: {
                 orderBy: { start: 'asc' },
