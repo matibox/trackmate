@@ -23,11 +23,6 @@ enum RosterRole {
   manager
 }
 
-enum EventType {
-  single
-  championship
-}
-
 enum EventSessionType {
   practice
   briefing
@@ -153,13 +148,12 @@ model Roster {
 }
 
 model Event {
-  id       String    @id @default(cuid())
-  type     EventType
+  id       String  @id @default(cuid())
   name     String
   game     Game
   track    String?
   car      String?
-  roster   Roster?   @relation(fields: [rosterId], references: [id])
+  roster   Roster? @relation(fields: [rosterId], references: [id])
   rosterId String?
 
   sessions EventSession[]

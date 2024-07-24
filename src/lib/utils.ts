@@ -2,7 +2,7 @@ import { clsx, type ClassValue } from 'clsx';
 import dayjs, { type Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 import { type z } from 'zod';
-import { type step4SingleSchema } from '~/core/dashboard/calendar/new-event/Step4Single';
+import { type sessionSchema } from '~/core/dashboard/calendar/new-event/SessionForm';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -19,6 +19,7 @@ export function groupBy<T, K extends string | number>(
       acc[key] = [];
     }
 
+    // eslint-disable-next-line
     (acc[key] as T[]).push(item);
 
     return acc;
@@ -64,10 +65,11 @@ export function timeStringToMinutes(str: string) {
 export function getSessionTimespan({
   session,
 }: {
-  session: z.infer<typeof step4SingleSchema>['sessions'][number];
+  session: z.infer<typeof sessionSchema>;
 }) {
-  const start = timeStringToMinutes(session.start);
-  const end = 'end' in session ? timeStringToMinutes(session.end) : undefined;
+  const start = timeStringToMinutes(session.startTime);
+  const end =
+    'endTime' in session ? timeStringToMinutes(session.endTime) : undefined;
 
   const baseDate = dayjs(session.date)
     .set('minutes', 0)
@@ -127,4 +129,31 @@ export function getCalendarRowStyles({
     [direction]: offset,
     width: counter > 0 ? width : '100%',
   };
+}
+
+export function isNaNArr(value: string | undefined) {
+  const casted = Number(value);
+  if (isNaN(casted)) return [];
+  return [casted];
+}
+
+export function formatSessionDate(date: Date, endsNextDay = false) {
+  const day = dayjs(date);
+
+  if (endsNextDay) {
+    const nextDay = day.add(1, 'day');
+    const daysOfWeek = `${day.format('ddd')}/${nextDay.format('ddd')}`;
+
+    if (day.month() !== nextDay.month()) {
+      return `${day.date()} - ${nextDay.date()} ${day.format(
+        'MMM'
+      )}/${nextDay.format('MMM')}, ${daysOfWeek}`;
+    }
+
+    return `${day.date()} - ${nextDay.date()} ${day.format(
+      'MMMM'
+    )}, ${daysOfWeek}`;
+  }
+
+  return day.format('D MMMM, dddd');
 }

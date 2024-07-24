@@ -37,6 +37,7 @@ const config = {
         },
       },
     ],
+    '@typescript-eslint/no-non-null-assertion': 'off',
   },
 };
 

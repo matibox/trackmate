@@ -23,7 +23,7 @@ import { cn } from '~/lib/utils';
 import { type RouterOutputs, api } from '~/utils/api';
 import { useNewTeam } from './new-team/newTeamStore';
 
-type Team = RouterOutputs['team']['listMemberOf'][number];
+type Team = RouterOutputs['team']['memberOfRoles'][number];
 type Role = $Enums.RosterRole | Exclude<$Enums.TeamRole, 'member'>;
 
 export default function TeamDropdown({

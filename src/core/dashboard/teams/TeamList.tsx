@@ -14,7 +14,7 @@ export default function TeamList({
   error,
   addTeamButton = false,
 }: {
-  data: RouterOutputs['team']['listMemberOf'] | undefined;
+  data: RouterOutputs['team']['memberOfRoles'] | undefined;
   status: QueryStatus;
   error: Omit<TRPCError, 'code' | 'name'> | null;
   addTeamButton?: boolean;

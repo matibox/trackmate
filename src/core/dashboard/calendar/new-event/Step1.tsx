@@ -1,199 +1,183 @@
+import { useFormContext } from 'react-hook-form';
+import { z } from 'zod';
+import Flag from '~/components/Flag';
 import {
-  CheckCircle2Icon,
-  FlagIcon,
-  type LucideIcon,
-  TrophyIcon,
-  Loader2Icon,
-} from 'lucide-react';
-import { type ButtonHTMLAttributes } from 'react';
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/Form';
+import { Input } from '~/components/ui/Input';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/Select';
 import {
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
 } from '~/components/ui/Sheet';
-import { eventTypes } from '~/lib/constants';
-import { cn } from '~/lib/utils';
-import { Button } from '~/components/ui/Button';
-import { z } from 'zod';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { Form, FormField, FormMessage } from '~/components/ui/Form';
-import { useNewEvent } from './newEventStore';
-import { api } from '~/utils/api';
-import Link from 'next/link';
+import { cars, games, tracks } from '~/lib/constants';
+import { groupBy } from '~/lib/utils';
 
-export const step1Schema = z.object({
-  eventType: z.enum(eventTypes).nullable(),
-});
+export const stepOneValues = {
+  name: z
+    .string({ required_error: 'Event name is required.' })
+    .min(1, 'Event name is requred.'),
+  game: z.enum(games, { required_error: 'Game is required.' }),
+  track: z
+    .string({ required_error: 'Track is required.' })
+    .min(1, 'Track is required.'),
+  car: z
+    .string({ required_error: 'Car is required.' })
+    .min(1, 'Car is required.'),
+};
 
-export default function Step1() {
-  const {
-    setData,
-    setStep,
-    steps: { stepOne },
-    setSheetOpened,
-    editMode,
-  } = useNewEvent();
+export const stepOneSchema = z.object(stepOneValues);
 
-  const { data, isLoading } = api.user.isInTeamOrRoster.useQuery();
-
-  const form = useForm<z.infer<typeof step1Schema>>({
-    resolver: zodResolver(step1Schema),
-    defaultValues: {
-      eventType: stepOne?.eventType ?? null,
-    },
-  });
-
-  function onSubmit(values: z.infer<typeof step1Schema>) {
-    const { eventType } = values;
-
-    if (!eventType) return;
-
-    setData({ step: '1', data: { eventType } });
-    setStep(`2-${eventType as 'single'}`);
-  }
+export default function StepOne({
+  edit: editMode = false,
+}: {
+  edit?: boolean;
+}) {
+  const form = useFormContext<z.infer<typeof stepOneSchema>>();
 
   return (
     <>
-      <>
-        {data?.isInRoster && data?.isInTeam ? (
-          <SheetHeader>
-            <SheetTitle className='text-3xl'>
-              {editMode ? 'Edit' : 'Create'} event
-            </SheetTitle>
-            <SheetDescription>
-              Select event type first, click next when you&apos;re ready.
-            </SheetDescription>
-          </SheetHeader>
-        ) : null}
-        {isLoading ? (
-          <div className='flex h-full items-center justify-center'>
-            <Loader2Icon className='h-4 w-4 animate-spin text-slate-50' />
-          </div>
-        ) : null}
-        {data?.isInRoster && data?.isInTeam ? (
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <div className='grid gap-4 py-8'>
-                <FormField
-                  control={form.control}
-                  name='eventType'
-                  render={({ field }) => (
-                    <>
-                      <EventTypeButton
-                        icon={FlagIcon}
-                        title='Single event'
-                        label='Create a one-off event.'
-                        isActive={field.value === 'single'}
-                        onClick={() =>
-                          form.setValue(
-                            'eventType',
-                            field.value === 'single' ? null : 'single'
-                          )
-                        }
-                      />
-                      <EventTypeButton
-                        icon={TrophyIcon}
-                        title='Championship event'
-                        label='Create an event associated with a championship.'
-                        isActive={field.value === 'championship'}
-                        onClick={() =>
-                          form.setValue(
-                            'eventType',
-                            field.value === 'championship'
-                              ? null
-                              : 'championship'
-                          )
-                        }
-                        disabled
-                      />
-                      <FormMessage />
-                    </>
-                  )}
-                />
-                <SheetFooter>
-                  <Button
-                    type='submit'
-                    className='self-end'
-                    disabled={form.watch('eventType') === null}
-                  >
-                    Next
-                  </Button>
-                </SheetFooter>
-              </div>
-            </form>
-          </Form>
-        ) : (
-          <div className='flex h-full -translate-y-8 items-center justify-center text-slate-50'>
-            <div className='flex flex-col items-center justify-center gap-4 text-center'>
-              {!data?.isInRoster ? (
-                <>
-                  <div className='space-y-2'>
-                    <h2 className='text-lg font-medium leading-none'>
-                      You are not part of any{' '}
-                      {!data?.isInTeam ? 'team' : 'roster'}
-                    </h2>
-                    <p className='text-slate-400'>
-                      Please create or join a{' '}
-                      {!data?.isInTeam ? 'team' : 'roster'} to create events.
-                    </p>
-                  </div>
-                  <Button
-                    variant='primary'
-                    onClick={() => setSheetOpened(false)}
-                    asChild
-                  >
-                    <Link href='/teams'>Go to teams tab</Link>
-                  </Button>
-                </>
-              ) : null}
-            </div>
-          </div>
-        )}
-      </>
-    </>
-  );
-}
-
-interface EventTypeButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: LucideIcon;
-  title: string;
-  label: string;
-  isActive: boolean;
-}
-
-function EventTypeButton({
-  icon,
-  title,
-  label,
-  isActive,
-  ...props
-}: EventTypeButtonProps) {
-  const Icon = icon;
-
-  return (
-    <button
-      className={cn(
-        'relative flex w-full select-none flex-col justify-end rounded-md bg-gradient-to-tr from-sky-700/25 via-slate-900/50 via-35% to-slate-900 bg-[length:200%_200%] bg-right-top p-6 no-underline outline-none ring-offset-slate-950 transition-[background-position] duration-500 hover:bg-left-bottom focus:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
-        {
-          'bg-left-bottom': isActive,
-        }
-      )}
-      type='button'
-      {...props}
-    >
-      <CheckCircle2Icon
-        className={cn(
-          'absolute right-6 top-6 text-sky-500 opacity-0 transition-opacity',
-          {
-            'opacity-100': isActive,
+      <SheetHeader>
+        <SheetTitle className='text-3xl'>
+          {editMode ? 'Edit' : 'Create'} an event
+        </SheetTitle>
+        <SheetDescription>
+          Fill basic event data, click next when you&apos;re ready.
+        </SheetDescription>
+      </SheetHeader>
+      <div className='mx-auto flex w-4/5 flex-col gap-4 py-8 text-slate-50'>
+        <FormField
+          control={form.control}
+          name='name'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Event name</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='game'
+          render={({ field }) => (
+            <FormItem className='flex flex-col'>
+              <FormLabel>Game</FormLabel>
+              <Select
+                onValueChange={e => {
+                  field.onChange(e);
+                  form.resetField('track', { defaultValue: '' });
+                  form.resetField('car', { defaultValue: '' });
+                }}
+                value={field.value}
+              >
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder='Select game' />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {games.map(game => (
+                    <SelectItem key={game} value={game}>
+                      {game}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='track'
+          render={({ field }) =>
+            form.watch('game') ? (
+              <FormItem className='flex flex-col'>
+                <FormLabel>Track</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a track' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className='max-h-96'>
+                    {tracks[form.getValues('game')]?.map(
+                      ({ name, country }) => (
+                        <SelectItem key={name} value={name}>
+                          <div className='flex items-center gap-2'>
+                            <Flag country={country} />
+                            <span>{name}</span>
+                          </div>
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <></>
+            )
           }
-        )}
-      />
-      <Icon className='h-6 w-6 text-slate-50' />
-      <div className='mb-2 mt-4 text-lg font-medium text-slate-50'>{title}</div>
-      <p className='text-left text-sm leading-tight text-slate-400'>{label}</p>
-    </button>
+        />
+        <FormField
+          control={form.control}
+          name='car'
+          render={({ field }) =>
+            form.watch('game') ? (
+              <FormItem className='flex flex-col'>
+                <FormLabel>Car</FormLabel>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <FormControl>
+                    <SelectTrigger>
+                      <SelectValue placeholder='Select a car' />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent className='max-h-96'>
+                    {Object.entries(
+                      groupBy(
+                        [...cars[form.getValues('game')]],
+                        car => car.type
+                      )
+                    ).map(([groupName, cars]) => (
+                      <SelectGroup
+                        key={groupName}
+                        className='border-b border-slate-800 pb-2 pt-2 first:pt-0 last:border-b-0 last:pb-0'
+                      >
+                        <SelectLabel>{groupName}</SelectLabel>
+                        {cars.map(car => (
+                          <SelectItem key={car.name} value={car.name}>
+                            {car.name}
+                          </SelectItem>
+                        ))}
+                      </SelectGroup>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <FormMessage />
+              </FormItem>
+            ) : (
+              <></>
+            )
+          }
+        />
+      </div>
+    </>
   );
 }

@@ -184,7 +184,10 @@ function Day({
   const { currentDay, selectDay } = useCalendar();
   const firstRender = useFirstRender();
 
-  const isSelected = useMemo(() => currentDay.isSame(day), [currentDay, day]);
+  const isSelected = useMemo(
+    () => currentDay.format('YYYYMMDD') === day.format('YYYYMMDD'),
+    [currentDay, day]
+  );
 
   return (
     <button
