@@ -11,12 +11,13 @@ import {
   DialogTrigger,
 } from '~/components/ui/Dialog';
 import { DropdownMenuItem } from '~/components/ui/DropdownMenu';
-import { api, type RouterOutputs } from '~/utils/api';
+import { api } from '~/utils/api';
+import { type Event } from './EventDropdown';
 
 export default function DeleteEventDialog({
   event: { id: eventId },
 }: {
-  event: RouterOutputs['event']['fromTo'][number]['event'];
+  event: Event;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 

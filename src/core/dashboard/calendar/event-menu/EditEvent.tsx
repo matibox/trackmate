@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, type RouterOutputs } from '~/utils/api';
+import { api } from '~/utils/api';
 import { useCalendar } from '../store';
 import { useToast } from '~/components/ui/useToast';
 import dayjs from 'dayjs';
@@ -12,12 +12,9 @@ import StepOne, { stepOneSchema } from '../new-event/Step1';
 import StepTwo, { stepTwoSchema } from '../new-event/Step2';
 import StepThree, { stepThreeSchema } from '../new-event/Step3';
 import { dateToTimeString, type ReplaceAll } from '~/lib/utils';
+import { type Event } from './EventDropdown';
 
-export default function EditEventSheet({
-  event,
-}: {
-  event: RouterOutputs['event']['fromTo'][number]['event'];
-}) {
+export default function EditEventSheet({ event }: { event: Event }) {
   const [sheetOpened, setSheetOpened] = useState(false);
   const selectDay = useCalendar(s => s.selectDay);
   const { toast } = useToast();

@@ -16,7 +16,7 @@ import ViewSetupsDialog from './ViewSetups';
 import EditEventSheet from './EditEvent';
 import DeleteEventDialog from './DeleteEvent';
 
-type Event = RouterOutputs['event']['fromTo'][number]['event'];
+export type Event = RouterOutputs['event']['fromTo'][number]['event'];
 
 export default function EventDropdown({
   event,

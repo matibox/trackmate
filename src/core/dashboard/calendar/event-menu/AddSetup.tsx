@@ -23,7 +23,8 @@ import {
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
 import { type ReplaceAll } from '~/lib/utils';
-import { api, type RouterOutputs } from '~/utils/api';
+import { api } from '~/utils/api';
+import { type Event } from './EventDropdown';
 
 export const addSetupSchema = z.object({
   name: z.string().min(1, 'Setup name is required.'),
@@ -39,7 +40,7 @@ export const addSetupSchema = z.object({
 export default function AddSetupDialog({
   event: { id, game, car, track },
 }: {
-  event: RouterOutputs['event']['fromTo'][number]['event'];
+  event: Event;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 

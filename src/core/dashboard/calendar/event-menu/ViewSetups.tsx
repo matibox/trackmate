@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { api, type RouterOutputs } from '~/utils/api';
+import { api } from '~/utils/api';
 import { useSetupDownload } from '../useSetupDownload';
 import {
   Dialog,
@@ -20,11 +20,12 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import { Button } from '~/components/ui/Button';
+import { type Event } from './EventDropdown';
 
 export default function ViewSetupsDialog({
   event: { id, name, game },
 }: {
-  event: RouterOutputs['event']['fromTo'][number]['event'];
+  event: Event;
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
