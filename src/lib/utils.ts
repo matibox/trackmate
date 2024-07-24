@@ -3,6 +3,7 @@ import dayjs, { type Dayjs } from 'dayjs';
 import { twMerge } from 'tailwind-merge';
 import { type z } from 'zod';
 import { type sessionSchema } from '~/core/dashboard/calendar/new-event/SessionForm';
+import crypto from 'crypto';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -164,4 +165,8 @@ export function replaceAll<
   To extends string
 >(str: Str, from: From, to: To) {
   return str.replaceAll(from, to) as ReplaceAll<Str, From, To>;
+}
+
+export function genId() {
+  return crypto.randomBytes(8).toString('hex');
 }

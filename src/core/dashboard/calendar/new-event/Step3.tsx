@@ -18,9 +18,13 @@ import {
 } from '~/components/ui/Sheet';
 import { sessionTypes } from '~/lib/constants';
 import SessionForm, { sessionSchema } from './SessionForm';
-import crypto from 'crypto';
 import { FormField, FormMessage } from '~/components/ui/Form';
-import { capitalize, formatSessionDate, timeStringToDate } from '~/lib/utils';
+import {
+  capitalize,
+  formatSessionDate,
+  genId,
+  timeStringToDate,
+} from '~/lib/utils';
 import dayjs from 'dayjs';
 import { Separator } from '~/components/ui/Separator';
 import { ScrollArea } from '~/components/ui/ScrollArea';
@@ -51,7 +55,7 @@ function useSessions(form: UseFormReturn<z.infer<typeof stepThreeSchema>>) {
     form.setValue('sessions', [
       ...currentSessions,
       {
-        id: crypto.randomBytes(8).toString('hex'),
+        id: genId(),
         ...newSession,
       },
     ]);
