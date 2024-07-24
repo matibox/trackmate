@@ -77,7 +77,6 @@ export default function StepTwo({
                 onValueChange={e => {
                   field.onChange(e);
                   form.resetField('rosterId', { defaultValue: '' });
-                  // form.resetField('driverIds', { defaultValue: [] });
                 }}
                 value={field.value}
               >
@@ -87,6 +86,9 @@ export default function StepTwo({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
+                  {teamStatus === 'loading' && (
+                    <Loader2Icon className='mx-auto my-1 h-4 w-4 animate-spin' />
+                  )}
                   {teams?.map(team => (
                     <SelectItem key={team.id} value={team.id}>
                       {team.name}
@@ -118,6 +120,9 @@ export default function StepTwo({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
+                    {rosterStatus === 'loading' && (
+                      <Loader2Icon className='mx-auto my-1 h-4 w-4 animate-spin' />
+                    )}
                     {rosters?.map(roster => (
                       <SelectItem key={roster.id} value={roster.id}>
                         {roster.name}
