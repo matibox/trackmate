@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/Avatar';
 import { capitalize } from '~/lib/utils';
 import { type RouterOutputs } from '~/utils/api';
-import TeamDropdown from './TeamDropdown';
+import TeamDropdown from './team-menu/TeamDropdown';
 
 type Team = RouterOutputs['team']['memberOfRoles'][number];
 type Role = $Enums.RosterRole | Exclude<$Enums.TeamRole, 'member'>;
