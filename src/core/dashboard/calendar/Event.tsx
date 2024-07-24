@@ -40,7 +40,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui/Tooltip';
 import { useCopyToast } from '~/hooks/useCopyToast';
-import EventDropdown from './EventDropdown';
+import EventDropdown from './event-menu/EventDropdown';
 
 export default function Event({
   session,
