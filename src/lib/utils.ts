@@ -26,16 +26,6 @@ export function groupBy<T, K extends string | number>(
   }, {} as Record<string, T[]>);
 }
 
-export type ReplaceAll<
-  T extends string,
-  From extends string,
-  To extends string
-> = From extends ''
-  ? T
-  : T extends `${infer L}${From}${infer R}`
-  ? `${L}${To}${ReplaceAll<R, From, To>}`
-  : T;
-
 export function objKeys<T extends object>(obj: T) {
   return Object.keys(obj) as Array<keyof T>;
 }
@@ -156,4 +146,22 @@ export function formatSessionDate(date: Date, endsNextDay = false) {
   }
 
   return day.format('D MMMM, dddd');
+}
+
+export type ReplaceAll<
+  T extends string,
+  From extends string,
+  To extends string
+> = From extends ''
+  ? T
+  : T extends `${infer L}${From}${infer R}`
+  ? `${L}${To}${ReplaceAll<R, From, To>}`
+  : T;
+
+export function replaceAll<
+  Str extends string,
+  From extends string,
+  To extends string
+>(str: Str, from: From, to: To) {
+  return str.replaceAll(from, to) as ReplaceAll<Str, From, To>;
 }

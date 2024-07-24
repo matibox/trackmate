@@ -11,7 +11,7 @@ import { type newEventSchema } from '../new-event/NewEvent';
 import StepOne, { stepOneSchema } from '../new-event/Step1';
 import StepTwo, { stepTwoSchema } from '../new-event/Step2';
 import StepThree, { stepThreeSchema } from '../new-event/Step3';
-import { dateToTimeString, type ReplaceAll } from '~/lib/utils';
+import { dateToTimeString, replaceAll } from '~/lib/utils';
 import { type Event } from './EventDropdown';
 
 export default function EditEventSheet({ event }: { event: Event }) {
@@ -76,11 +76,7 @@ export default function EditEventSheet({ event }: { event: Event }) {
           ]}
           defaultValues={{
             name: event.name,
-            game: event.game.replaceAll('_', ' ') as ReplaceAll<
-              typeof event.game,
-              '_',
-              ' '
-            >,
+            game: replaceAll(event.game, '_', ' '),
             track: event.track ?? undefined,
             car: event.car ?? undefined,
             teamId: event.roster?.team.id,

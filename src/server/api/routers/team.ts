@@ -3,9 +3,9 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import bcrypt from 'bcrypt';
 import { TRPCError } from '@trpc/server';
 import { games } from '~/lib/constants';
-import { type ReplaceAll } from '~/lib/utils';
+import { replaceAll } from '~/lib/utils';
 import { newTeamSchema } from '~/core/dashboard/teams/new-team/NewTeam';
-import { gameStrToDbStr, hashPassword } from '../utils/utils';
+import { hashPassword } from '../utils/utils';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const teamRouter = createTRPCRouter({
@@ -51,7 +51,7 @@ export const teamRouter = createTRPCRouter({
     .input(z.object({ teamId: z.string(), game: z.enum(games) }))
     .query(async ({ ctx, input }) => {
       const { game: _game, teamId } = input;
-      const game = gameStrToDbStr(_game);
+      const game = replaceAll(_game, ' ', '_');
 
       const team = await ctx.prisma.team.findUnique({
         where: { id: teamId },
@@ -85,13 +85,7 @@ export const teamRouter = createTRPCRouter({
           abbreviation: true,
           name: true,
           rosters: {
-            where: {
-              game: input.game.replaceAll(' ', '_') as ReplaceAll<
-                typeof input.game,
-                ' ',
-                '_'
-              >,
-            },
+            where: { game: replaceAll(input.game, ' ', '_') },
             select: {
               id: true,
               game: true,
