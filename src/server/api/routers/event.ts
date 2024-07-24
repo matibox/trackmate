@@ -1,11 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import {
-  getSessionTimespan,
-  timeStringToDate,
-  type ReplaceAll,
-} from '~/lib/utils';
+import { getSessionTimespan, replaceAll, timeStringToDate } from '~/lib/utils';
 import { z } from 'zod';
-import { encryptString, gameStrToDbStr } from '../utils/utils';
+import { encryptString } from '../utils/utils';
 import { games } from '~/lib/constants';
 import { newEventSchema } from '~/core/dashboard/calendar/new-event/NewEvent';
 import { type sessionSchema } from '~/core/dashboard/calendar/new-event/SessionForm';
@@ -72,7 +68,7 @@ export const eventRouter = createTRPCRouter({
         include: { sessions: true },
         data: {
           name,
-          game: gameStrToDbStr(game),
+          game: replaceAll(game, ' ', '_'),
           track,
           car,
           roster: { connect: { id: rosterId } },
@@ -92,7 +88,7 @@ export const eventRouter = createTRPCRouter({
         where: { id: eventId },
         include: { sessions: true },
         data: {
-          game: game ? gameStrToDbStr(game) : undefined,
+          game: game ? replaceAll(game, ' ', '_') : undefined,
           name,
           car,
           track,
@@ -204,7 +200,7 @@ export const eventRouter = createTRPCRouter({
       return await ctx.prisma.setup.create({
         data: {
           ...values,
-          game: game.replaceAll(' ', '_') as ReplaceAll<typeof game, ' ', '_'>,
+          game: replaceAll(game, ' ', '_'),
           data: encryptedSetupData,
           uploader: { connect: { id: ctx.session.user.id } },
           event: { connect: { id: eventId } },

@@ -22,7 +22,7 @@ import {
   FormMessage,
 } from '~/components/ui/Form';
 import { Input } from '~/components/ui/Input';
-import { type ReplaceAll } from '~/lib/utils';
+import { replaceAll } from '~/lib/utils';
 import { api } from '~/utils/api';
 import { type Event } from './EventDropdown';
 
@@ -79,7 +79,7 @@ export default function AddSetupDialog({
       addSetup({
         eventId: id,
         setupData: JSON.stringify(setupData),
-        game: game.replaceAll('_', ' ') as ReplaceAll<typeof game, '_', ' '>,
+        game: replaceAll(game, '_', ' '),
         name,
         car,
         track,

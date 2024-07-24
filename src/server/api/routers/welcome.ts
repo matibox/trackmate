@@ -7,7 +7,7 @@ import {
   stepThreeJoinTeamSchema,
 } from '~/core/welcome/StepThree';
 import { TRPCError } from '@trpc/server';
-import { type ReplaceAll } from '~/lib/utils';
+import { replaceAll } from '~/lib/utils';
 import { hashPassword } from '../utils/utils';
 
 export const welcomeRouter = createTRPCRouter({
@@ -69,11 +69,7 @@ export const welcomeRouter = createTRPCRouter({
         stepThreeSkip,
       } = input;
 
-      const game = stepTwo.mainGame.replaceAll(' ', '_') as ReplaceAll<
-        typeof stepTwo.mainGame,
-        ' ',
-        '_'
-      >;
+      const game = replaceAll(stepTwo.mainGame, ' ', '_');
 
       const user = await ctx.prisma.user.update({
         where: { id: ctx.session.user.id },
