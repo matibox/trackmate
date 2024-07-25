@@ -15,7 +15,6 @@ import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useToast } from '~/components/ui/useToast';
-import { Toaster } from '~/components/ui/Toaster';
 import { getServerAuthSession } from '~/server/auth';
 import SimImage from '~/components/SimImage';
 import { NextSeo } from 'next-seo';
@@ -69,7 +68,6 @@ const Login: NextPage = () => {
     <>
       <NextSeo title='Login' />
       <div className='relative flex h-[100dvh] flex-col xl:flex-row'>
-        <Toaster />
         <header className='absolute left-0 top-0 z-10 flex w-full justify-end p-4 xl:justify-start'>
           <Button variant='ghost' size='icon' asChild aria-label='back'>
             <Link href='/'>
