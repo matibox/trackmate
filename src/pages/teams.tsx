@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { Suspense, lazy } from 'react';
 import { Button } from '~/components/ui/Button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/Tabs';
-import { Toaster } from '~/components/ui/Toaster';
 import DashboardLayout from '~/core/dashboard/Layout';
 import NewTeam from '~/core/dashboard/teams/new-team/NewTeam';
 import { useNewTeam } from '~/core/dashboard/teams/new-team/newTeamStore';
@@ -32,7 +31,6 @@ const Teams: NextPage = () => {
     <>
       <NextSeo title='Teams' />
       <div className='relative min-h-screen'>
-        <Toaster />
         <DashboardLayout>
           <div className='grid grid-cols-1 justify-center gap-4'>
             <div className='hidden lg:mb-8 lg:flex lg:items-center lg:justify-between lg:pr-12'>

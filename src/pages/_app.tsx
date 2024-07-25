@@ -6,6 +6,7 @@ import '~/styles/globals.css';
 import { DefaultSeo } from 'next-seo';
 import Navbar from '~/components/Navbar';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { Toaster } from '~/components/ui/Toaster';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -73,6 +74,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       />
       <div className='min-h-[100dvh] bg-slate-950 text-slate-50'>
         <Navbar disabledOn={['/', '/login', '/welcome']} />
+        <Toaster />
         <Component {...pageProps} />
       </div>
       <ReactQueryDevtools />
