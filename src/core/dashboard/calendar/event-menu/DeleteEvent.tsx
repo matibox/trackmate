@@ -21,7 +21,7 @@ export default function DeleteEventDialog({
 }) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutateAsync: deleteEvent, isLoading: isDeleteLoading } =
     api.event.delete.useMutation({
       onSuccess: async () => {

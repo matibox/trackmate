@@ -28,7 +28,7 @@ export default function NewEvent() {
   const { selectDay } = useCalendar();
   const { toast } = useToast();
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutateAsync: createEvent, status } = api.event.create.useMutation({
     onError: err => {
       toast({

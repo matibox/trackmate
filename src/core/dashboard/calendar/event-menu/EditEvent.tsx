@@ -19,7 +19,7 @@ export default function EditEventSheet({ event }: { event: Event }) {
   const selectDay = useCalendar(s => s.selectDay);
   const { toast } = useToast();
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutateAsync: editEvent, status } = api.event.edit.useMutation({
     onError: err => {
       toast({
