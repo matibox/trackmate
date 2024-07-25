@@ -54,7 +54,7 @@ export default function AddSetupDialog({
     },
   });
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutate: addSetup, isLoading } =
     api.event.addAndAssignSetup.useMutation({
       onSuccess: async () => {

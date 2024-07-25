@@ -64,7 +64,7 @@ function useTeamMutations({
   const { setSheetOpened, editMode, reset } = useNewTeam();
   const { toast } = useToast();
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
 
   async function onSuccess() {
     await utils.team.invalidate();

@@ -104,7 +104,7 @@ export default function StepOne() {
     },
   });
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const checkTeamData = api.welcome.isTeamNameTaken.useMutation();
   const checkTeamPassowrd = api.team.checkPassword.useMutation();
   const teamsByQuery = api.team.byQuery.useQuery(

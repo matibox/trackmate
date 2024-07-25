@@ -31,7 +31,7 @@ export default function ViewSetupsDialog({
 
   const supportedGames: Array<typeof game> = ['Assetto_Corsa_Competizione'];
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { data: setups, isLoading } = api.event.getSetups.useQuery(
     { eventId: id },
     {

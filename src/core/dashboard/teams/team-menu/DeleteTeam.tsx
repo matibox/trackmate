@@ -24,7 +24,7 @@ export default function DeleteTeamDialog({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [safetyString, setSafetyString] = useState('');
 
-  const utils = api.useContext();
+  const utils = api.useUtils();
   const { mutateAsync: deleteTeam, isLoading: isDeleteLoading } =
     api.team.delete.useMutation({
       onSuccess: async () => {
