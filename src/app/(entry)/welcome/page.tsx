@@ -1,8 +1,15 @@
 import { redirect } from 'next/navigation';
 import { api } from '~/trpc/server';
 import WelcomeForm from './_components/WelcomeForm';
+import { auth } from '~/server/auth';
 
 export default async function WelcomePage() {
+  const session = await auth();
+
+  if (!session) {
+    redirect('/');
+  }
+
   const profile = await api.user.profile();
 
   if (profile) {

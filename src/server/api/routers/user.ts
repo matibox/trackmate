@@ -8,7 +8,7 @@ export const userRouter = createTRPCRouter({
     const foundProfiles = await ctx.db
       .select({ id: profiles.id })
       .from(profiles)
-      .where(eq(profiles.id, ctx.session.user.id));
+      .where(eq(profiles.userId, ctx.session.user.id));
 
     return foundProfiles[0];
   }),

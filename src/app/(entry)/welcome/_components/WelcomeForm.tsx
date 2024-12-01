@@ -31,8 +31,13 @@ import {
 import Flag from '~/components/Flag';
 import { api } from '~/trpc/react';
 import { type WelcomeFormSchema, welcomeFormSchema } from './formSchema';
+import { useToast } from '~/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 export default function WelcomeForm() {
+  const { toast } = useToast();
+  const router = useRouter();
+
   const form = useForm<WelcomeFormSchema>({
     resolver: zodResolver(welcomeFormSchema),
     defaultValues: { firstName: '', lastName: '' },
@@ -40,7 +45,12 @@ export default function WelcomeForm() {
 
   const createProfile = api.profile.create.useMutation({
     onSuccess: () => {
-      console.log('success');
+      router.push('/dashboard');
+      toast({
+        variant: 'default',
+        title: 'Profile created successfully.',
+        description: 'Welcome! Thanks for joining TrackMate!',
+      });
     },
   });
 
