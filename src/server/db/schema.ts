@@ -114,5 +114,5 @@ export const profiles = createTable('profile', {
 });
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
-  user: one(users),
+  user: one(users, { fields: [profiles.userId], references: [users.id] }),
 }));

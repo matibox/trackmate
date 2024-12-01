@@ -10,7 +10,7 @@ export default function GroupLayout({
         {children}
       </main>
       <SimImage set={2} />
-      <div className="bg-gradient-radial absolute h-full w-full from-sky-500/20 via-sky-500/10 opacity-20" />
+      <div className="absolute h-full w-full bg-gradient-radial from-sky-500/20 via-sky-500/10 opacity-20" />
     </div>
   );
 }
