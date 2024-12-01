@@ -7,6 +7,7 @@ import {
   text,
 } from 'drizzle-orm/sqlite-core';
 import { type AdapterAccount } from 'next-auth/adapters';
+import { type Country } from '~/lib/constants';
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -94,6 +95,24 @@ export const users = createTable('user', {
   image: text('image', { length: 255 }),
 });
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
+  profile: one(profiles),
+}));
+
+export const profiles = createTable('profile', {
+  id: text('id', { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text('user_id', { length: 255 })
+    .notNull()
+    .references(() => users.id),
+  firstName: text('first_name', { length: 255 }).notNull(),
+  lastName: text('last_name', { length: 255 }).notNull(),
+  country: text('country', { length: 255 }).$type<Country>().notNull(),
+});
+
+export const profilesRelations = relations(profiles, ({ one }) => ({
+  user: one(users),
 }));
