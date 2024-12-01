@@ -4,11 +4,11 @@ import DiscordProvider from 'next-auth/providers/discord';
 
 import { db } from '~/server/db';
 import {
+  users,
   accounts,
   sessions,
-  users,
   verificationTokens,
-} from '~/server/db/schema/schema';
+} from '~/server/db/schema';
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
