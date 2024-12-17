@@ -34,7 +34,7 @@ export default async function DashboardSidebar() {
     <Sidebar>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>TrackMate</SidebarGroupLabel>
+          <SidebarGroupLabel>Trackmate</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map(item => (

@@ -1,4 +1,5 @@
 import { DrizzleAdapter } from '@auth/drizzle-adapter';
+import { eq } from 'drizzle-orm';
 import { type DefaultSession, type NextAuthConfig } from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
 
@@ -8,6 +9,7 @@ import {
   accounts,
   sessions,
   verificationTokens,
+  profiles,
 } from '~/server/db/schema';
 
 /**
@@ -23,6 +25,10 @@ declare module 'next-auth' {
       name: string;
       image: string | undefined;
       email: string;
+      profile: {
+        firstName: string;
+        lastName: string;
+      } | null;
       // ...other properties
       // role: UserRole;
     } & DefaultSession['user'];
@@ -59,12 +65,30 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const profile = await db
+        .select({
+          firstName: profiles.firstName,
+          lastName: profiles.lastName,
+        })
+        .from(profiles)
+        .where(eq(profiles.userId, session.user.id));
+
+      session.user = {
+        ...user,
+        image: user.image ?? undefined,
+        name: user.name ?? '',
+        profile: profile[0],
+      };
+
+      return session;
+      // ({
+      //   ...session,
+      //   user: {
+      //     ...session.user,
+      //     id: user.id,
+      //   },
+      // })
+    },
   },
 } satisfies NextAuthConfig;

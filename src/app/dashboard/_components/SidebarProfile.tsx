@@ -1,6 +1,7 @@
 'use client';
 
 import { ChevronsUpDown, LogOut, Sparkles, UserIcon } from 'lucide-react';
+import { type Session } from 'next-auth';
 import { signOut } from 'next-auth/react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
@@ -20,16 +21,11 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar';
 
-export function SidebarProfile({
-  user,
-}: {
-  user: {
-    name: string | null | undefined;
-    email: string | null | undefined;
-    image: string | null | undefined;
-  };
-}) {
+export function SidebarProfile({ user }: { user: Session['user'] }) {
   const { isMobile } = useSidebar();
+
+  const userInitials = `${user.profile?.firstName[0]}${user.profile?.lastName[0]}`;
+  const fullName = `${user.profile?.firstName} ${user.profile?.lastName}`;
 
   return (
     <SidebarMenu>
@@ -43,12 +39,12 @@ export function SidebarProfile({
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage
                   src={user.image ?? undefined}
-                  alt={user.name ?? undefined}
+                  alt={fullName ?? undefined}
                 />
                 <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-semibold">{user.name}</span>
+                <span className="truncate font-semibold">{fullName}</span>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
               <ChevronsUpDown className="ml-auto size-4" />
@@ -65,12 +61,14 @@ export function SidebarProfile({
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage
                     src={user.image ?? undefined}
-                    alt={user.name ?? undefined}
+                    alt={fullName ?? undefined}
                   />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {userInitials}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">{user.name}</span>
+                  <span className="truncate font-semibold">{fullName}</span>
                   <span className="truncate text-xs">{user.email}</span>
                 </div>
               </div>
