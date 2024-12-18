@@ -1,4 +1,4 @@
-import { SidebarProvider, SidebarTrigger } from '~/components/ui/sidebar';
+import { SidebarProvider } from '~/components/ui/sidebar';
 import DashboardSidebar from './_components/DashboardSidebar';
 import { cookies } from 'next/headers';
 import { auth } from '~/server/auth';
@@ -20,10 +20,7 @@ export default async function RootLayout({
   return (
     <SidebarProvider defaultOpen={defaultOpen}>
       <DashboardSidebar />
-      <main>
-        <SidebarTrigger />
-        {children}
-      </main>
+      <main className="grow">{children}</main>
     </SidebarProvider>
   );
 }
