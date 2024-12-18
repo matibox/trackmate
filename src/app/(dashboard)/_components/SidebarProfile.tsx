@@ -41,7 +41,9 @@ export function SidebarProfile({ user }: { user: Session['user'] }) {
                   src={user.image ?? undefined}
                   alt={fullName ?? undefined}
                 />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {userInitials}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{fullName}</span>

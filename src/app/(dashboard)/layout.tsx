@@ -5,7 +5,7 @@ import { auth } from '~/server/auth';
 import { redirect } from 'next/navigation';
 import { api } from '~/trpc/server';
 
-export default async function RootLayout({
+export default async function DashboardLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   const cookieStore = await cookies();
