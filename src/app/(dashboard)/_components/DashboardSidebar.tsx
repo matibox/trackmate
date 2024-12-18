@@ -1,4 +1,4 @@
-import { HomeIcon, type LucideIcon } from 'lucide-react';
+import { CalendarIcon, HomeIcon, type LucideIcon } from 'lucide-react';
 import Link from 'next/link';
 import {
   Sidebar,
@@ -24,6 +24,11 @@ const items: Array<{
     title: 'Dashboard',
     url: '/dashboard',
     icon: HomeIcon,
+  },
+  {
+    title: 'Calendar',
+    url: '/calendar',
+    icon: CalendarIcon,
   },
 ];
 

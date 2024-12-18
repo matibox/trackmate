@@ -82,13 +82,6 @@ export const authConfig = {
       };
 
       return session;
-      // ({
-      //   ...session,
-      //   user: {
-      //     ...session.user,
-      //     id: user.id,
-      //   },
-      // })
     },
   },
 } satisfies NextAuthConfig;
