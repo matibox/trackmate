@@ -1,12 +1,13 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { z } from 'zod';
 import { Sheet, SheetContent } from '~/components/ui/sheet';
-import useMultistepForm from '~/hooks/useMultistepForm';
-import Step from './Step';
 import { useEffect } from 'react';
 import { digit8StrToDate } from '~/lib/dates';
+import Step1, { stepOneSchema } from './Step1';
+import MultiStepForm from '~/components/MultistepForm';
+
+const newEventSchema = stepOneSchema;
 
 export default function NewEvent() {
   const router = useRouter();
@@ -20,23 +21,6 @@ export default function NewEvent() {
 
   const selectedDate = digit8StrToDate(selectedDateString!);
 
-  const { Form } = useMultistepForm({
-    onSubmit: values => {
-      console.log(values);
-    },
-    steps: [
-      {
-        schema: z.object({}),
-        component: (
-          <Step title="Step 1" description="Step 1 description">
-            some content
-            {selectedDate.format('YYYY/MM/DD')}
-          </Step>
-        ),
-      },
-    ],
-  });
-
   return (
     <Sheet
       defaultOpen
@@ -44,8 +28,24 @@ export default function NewEvent() {
         if (!open) router.push('/calendar');
       }}
     >
-      <SheetContent>
-        <Form />
+      <SheetContent
+        onOpenAutoFocus={e => e.preventDefault()}
+        onCloseAutoFocus={e => e.preventDefault()}
+      >
+        <MultiStepForm<typeof newEventSchema>
+          onSubmit={values => {
+            console.log(values);
+          }}
+          steps={[
+            {
+              schema: stepOneSchema,
+              component: <Step1 />,
+            },
+          ]}
+          defaultValues={{
+            name: '',
+          }}
+        />
       </SheetContent>
     </Sheet>
   );

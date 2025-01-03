@@ -1,12 +1,10 @@
-'use client';
-
 import { zodResolver } from '@hookform/resolvers/zod';
 import { type ReactNode, useMemo, useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import type { ZodSchema, z } from 'zod';
 import { Button } from '~/components/ui/button';
 
-export default function useMultistepForm<T extends ZodSchema>({
+export default function MultiStepForm<T extends ZodSchema>({
   steps,
   onSubmit,
   loading = false,
@@ -38,32 +36,26 @@ export default function useMultistepForm<T extends ZodSchema>({
     }
   }
 
-  function Form() {
-    return (
-      <FormProvider {...form}>
-        <form onSubmit={form.handleSubmit(handleNextStep)}>
-          {step.component}
-          <div className="mx-auto flex w-4/5">
-            {currentStep > 0 && (
-              <Button
-                type="button"
-                variant="secondary"
-                disabled={loading}
-                onClick={() => setCurrentStep(prev => prev - 1)}
-              >
-                Previous
-              </Button>
-            )}
-            <Button type="submit" className="ml-auto" loading={loading}>
-              {isLastStep ? 'Submit' : 'Next'}
+  return (
+    <FormProvider {...form}>
+      <form onSubmit={form.handleSubmit(handleNextStep)}>
+        {step.component}
+        <div className="mx-auto flex w-4/5">
+          {currentStep > 0 && (
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={loading}
+              onClick={() => setCurrentStep(prev => prev - 1)}
+            >
+              Previous
             </Button>
-          </div>
-        </form>
-      </FormProvider>
-    );
-  }
-
-  return {
-    Form,
-  };
+          )}
+          <Button type="submit" className="ml-auto" loading={loading}>
+            {isLastStep ? 'Submit' : 'Next'}
+          </Button>
+        </div>
+      </form>
+    </FormProvider>
+  );
 }
