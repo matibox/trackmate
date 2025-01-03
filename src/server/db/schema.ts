@@ -2,9 +2,11 @@ import { relations, sql } from 'drizzle-orm';
 import {
   index,
   int,
+  integer,
   primaryKey,
   sqliteTableCreator,
   text,
+  uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 import { type AdapterAccount } from 'next-auth/adapters';
 import { type Country } from '~/lib/constants';
@@ -98,21 +100,60 @@ export const users = createTable('user', {
 export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
   profile: one(profiles),
+  usersToTeams: many(usersToTeams),
 }));
 
-export const profiles = createTable('profile', {
-  id: text('id', { length: 255 })
-    .notNull()
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text('user_id', { length: 255 })
-    .notNull()
-    .references(() => users.id),
-  firstName: text('first_name', { length: 255 }).notNull(),
-  lastName: text('last_name', { length: 255 }).notNull(),
-  country: text('country', { length: 255 }).$type<Country>().notNull(),
-});
+export const profiles = createTable(
+  'profile',
+  {
+    id: text('id', { length: 255 })
+      .notNull()
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text('user_id', { length: 255 })
+      .notNull()
+      .references(() => users.id),
+    firstName: text('first_name', { length: 255 }).notNull(),
+    lastName: text('last_name', { length: 255 }).notNull(),
+    country: text('country', { length: 255 }).$type<Country>().notNull(),
+  },
+  table => ({
+    firstNameIdx: index('first_name_idx').on(table.firstName),
+    lastNameIdx: index('last_name_idx').on(table.lastName),
+  })
+);
 
 export const profilesRelations = relations(profiles, ({ one }) => ({
   user: one(users, { fields: [profiles.userId], references: [users.id] }),
+}));
+
+export const teams = createTable(
+  'team',
+  {
+    id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+    name: text('name', { length: 255 }).notNull(),
+  },
+  table => ({
+    uniqueNameIdx: uniqueIndex('name_unique_idx').on(sql`lower(${table.name})`),
+  })
+);
+
+export const teamsRelations = relations(teams, ({ many }) => ({
+  usersToTeams: many(usersToTeams),
+}));
+
+export const usersToTeams = createTable(
+  'users_to_teams',
+  {
+    teamId: integer('team_id', { mode: 'number' }).references(() => teams.id),
+    userId: text('user_id').references(() => users.id),
+  },
+  table => ({
+    pk: primaryKey({ columns: [table.teamId, table.userId] }),
+  })
+);
+
+export const usersToTeamsRelations = relations(usersToTeams, ({ one }) => ({
+  user: one(users, { fields: [usersToTeams.userId], references: [users.id] }),
+  team: one(teams, { fields: [usersToTeams.teamId], references: [teams.id] }),
 }));
