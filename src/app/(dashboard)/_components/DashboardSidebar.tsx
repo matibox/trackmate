@@ -7,6 +7,7 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -14,6 +15,7 @@ import {
 } from '~/components/ui/sidebar';
 import { SidebarProfile } from './SidebarProfile';
 import { auth } from '~/server/auth';
+import { TeamSwitcher } from './TeamSwitcher';
 
 const items: Array<{
   title: string;
@@ -37,6 +39,9 @@ export default async function DashboardSidebar() {
 
   return (
     <Sidebar>
+      <SidebarHeader>
+        <TeamSwitcher teams={[]} />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>Trackmate</SidebarGroupLabel>

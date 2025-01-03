@@ -44,10 +44,10 @@ export default function Calendar() {
               </Link>
               <div
                 className={cn(
-                  'absolute right-2 top-2 text-sm font-medium leading-none text-primary',
+                  'absolute right-2 top-2 text-sm font-medium leading-none text-primary-foreground',
                   {
                     'text-muted-foreground': day.month() !== today.month(),
-                    'before:absolute before:left-1/2 before:top-1/2 before:min-h-full before:min-w-[120%] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded before:bg-sky-600 before:p-2.5':
+                    'before:absolute before:left-1/2 before:top-1/2 before:min-h-full before:min-w-[120%] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded before:bg-primary before:p-2.5':
                       day.format('YYYYMMDD') === dayjs().format('YYYYMMDD'),
                   }
                 )}

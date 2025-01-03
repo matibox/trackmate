@@ -12,7 +12,7 @@ export default function CalendarNav() {
     <section className="flex h-16 w-full shrink-0 items-center gap-2 px-4">
       <SidebarTrigger />
       <div className="mr-2 h-4 w-px shrink-0 bg-border" />
-      <span className="text-primary">Calendar</span>
+      <span className="text-primary-foreground">Calendar</span>
       <span className="ml-auto text-sm font-medium">
         {date.format('MMMM YYYY')}
       </span>
