@@ -1,4 +1,4 @@
-import { profiles } from '~/server/db/schema';
+import { profiles, teams, usersToTeams } from '~/server/db/schema';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { eq } from 'drizzle-orm';
 
@@ -11,5 +11,14 @@ export const userRouter = createTRPCRouter({
       .where(eq(profiles.userId, ctx.session.user.id));
 
     return foundProfiles[0];
+  }),
+  teams: protectedProcedure.query(async ({ ctx }) => {
+    const foundTeams = await ctx.db
+      .select({ id: teams.id, name: teams.name })
+      .from(teams)
+      .innerJoin(usersToTeams, eq(teams.id, usersToTeams.teamId))
+      .where(eq(usersToTeams.userId, ctx.session.user.id));
+
+    return foundTeams;
   }),
 });
