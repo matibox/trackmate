@@ -3,9 +3,10 @@
 import dayjs, { generateDayGrid } from '~/lib/dates';
 import { Fragment } from 'react';
 import { cn } from '~/lib/utils';
-import { Button } from '~/components/ui/button';
+import { buttonVariants } from '~/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { useCalendarContext } from './CalendarContext';
+import Link from 'next/link';
 
 export default function Calendar() {
   const { date } = useCalendarContext();
@@ -28,15 +29,19 @@ export default function Calendar() {
               key={i}
               className="group relative min-h-[125px] border-b border-r"
             >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-1 top-1 hidden h-6 w-6 group-hover:flex"
+              <Link
+                className={buttonVariants({
+                  size: 'icon',
+                  variant: 'ghost',
+                  className:
+                    'absolute left-1 top-1 hidden h-6 w-6 group-hover:flex',
+                })}
                 title="Create event"
+                href="/calendar/new"
               >
                 <PlusIcon />
                 <span className="sr-only">Add event</span>
-              </Button>
+              </Link>
               <div
                 className={cn(
                   'absolute right-2 top-2 text-sm font-medium leading-none text-primary',
