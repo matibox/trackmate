@@ -9,8 +9,8 @@ import { useCalendarContext } from './CalendarContext';
 import Link from 'next/link';
 
 export default function Calendar() {
-  const { date } = useCalendarContext();
-  const calendar = generateDayGrid(date.month(), date.year());
+  const { date: today } = useCalendarContext();
+  const calendar = generateDayGrid(today.month(), today.year());
 
   return (
     <div className="grid-rows-[1fr,_repeat(7,_minmax(0, 1fr))] grid grid-cols-7">
@@ -37,7 +37,7 @@ export default function Calendar() {
                     'absolute left-1 top-1 hidden h-6 w-6 group-hover:flex',
                 })}
                 title="Create event"
-                href="/calendar/new"
+                href={`/calendar/new?d=${day.format('DDMMYYYY')}`}
               >
                 <PlusIcon />
                 <span className="sr-only">Add event</span>
@@ -46,7 +46,7 @@ export default function Calendar() {
                 className={cn(
                   'absolute right-2 top-2 text-sm font-medium leading-none text-primary',
                   {
-                    'text-muted-foreground': day.month() !== date.month(),
+                    'text-muted-foreground': day.month() !== today.month(),
                     'before:absolute before:left-1/2 before:top-1/2 before:min-h-full before:min-w-[120%] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded before:bg-sky-600 before:p-2.5':
                       day.format('YYYYMMDD') === dayjs().format('YYYYMMDD'),
                   }

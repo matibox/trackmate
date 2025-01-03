@@ -32,4 +32,12 @@ export function generateDayGrid(
   return dayGrid;
 }
 
+export function digit8StrToDate(str: string) {
+  const day = `${str[0]}${str[1]}`;
+  const month = `${str[2]}${str[3]}`;
+  const year = str.slice(4);
+
+  return dayjs(`${year}/${month}/${day}`);
+}
+
 export default dayjs;

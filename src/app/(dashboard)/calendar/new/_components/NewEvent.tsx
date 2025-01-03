@@ -1,16 +1,41 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '~/components/ui/sheet';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { z } from 'zod';
+import { Sheet, SheetContent } from '~/components/ui/sheet';
+import useMultistepForm from '~/hooks/useMultistepForm';
+import Step from './Step';
+import { useEffect } from 'react';
+import { digit8StrToDate } from '~/lib/dates';
 
 export default function NewEvent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const selectedDateString = searchParams.get('d');
+
+  useEffect(() => {
+    if (!selectedDateString || selectedDateString.length !== 8)
+      router.push('/calendar/');
+  }, [router, selectedDateString]);
+
+  const selectedDate = digit8StrToDate(selectedDateString!);
+
+  const { Form } = useMultistepForm({
+    onSubmit: values => {
+      console.log(values);
+    },
+    steps: [
+      {
+        schema: z.object({}),
+        component: (
+          <Step title="Step 1" description="Step 1 description">
+            some content
+            {selectedDate.format('YYYY/MM/DD')}
+          </Step>
+        ),
+      },
+    ],
+  });
 
   return (
     <Sheet
@@ -20,13 +45,7 @@ export default function NewEvent() {
       }}
     >
       <SheetContent>
-        <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
-          <SheetDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
-          </SheetDescription>
-        </SheetHeader>
+        <Form />
       </SheetContent>
     </Sheet>
   );
