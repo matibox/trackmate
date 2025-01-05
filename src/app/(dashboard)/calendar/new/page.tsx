@@ -10,7 +10,7 @@ export default async function NewEventPage({
 }) {
   // https://nextjs.org/docs/messages/sync-dynamic-apis
   // eslint-disable-next-line @typescript-eslint/await-thenable
-  const { d } = searchParams;
+  const { d } = await searchParams;
   if (!d || d.length !== 8) redirect('/calendar/');
 
   return (
