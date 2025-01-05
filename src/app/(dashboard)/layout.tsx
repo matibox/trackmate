@@ -11,6 +11,7 @@ export default async function DashboardLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
+  const selectedTeamId = cookieStore.get('sidebar:team')?.value;
 
   const session = await auth();
   if (!session) redirect('/');
@@ -21,7 +22,7 @@ export default async function DashboardLayout({
   const teams = await api.user.teams();
 
   return (
-    <DashboardContextProvider teams={teams}>
+    <DashboardContextProvider teams={teams} defaultSelectedId={selectedTeamId}>
       <SidebarProvider defaultOpen={defaultOpen}>
         <DashboardSidebar />
         <main className="grow">{children}</main>

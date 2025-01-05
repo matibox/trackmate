@@ -1,6 +1,12 @@
 'use client';
 
-import { createContext, type ReactNode, useContext, useState } from 'react';
+import {
+  createContext,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import { type RouterOutputs } from '~/trpc/react';
 
 type Teams = RouterOutputs['user']['teams'];
@@ -27,16 +33,26 @@ export function useDashboardContext() {
 
 export default function DashboardContextProvider({
   teams,
+  defaultSelectedId,
   children,
 }: {
   teams: Teams;
+  defaultSelectedId: string | undefined;
   children: ReactNode;
 }) {
-  const [selectedTeam, setSelectedTeam] = useState(teams[0]);
+  const [selectedTeam, setSelectedTeam] = useState(
+    defaultSelectedId
+      ? (teams.find(t => t.id === parseInt(defaultSelectedId)) ?? teams[0])
+      : teams[0]
+  );
 
-  function selectTeam(id: number) {
-    setSelectedTeam(prev => teams.find(team => team.id === id) ?? prev);
-  }
+  const selectTeam = useCallback(
+    (id: number) => {
+      setSelectedTeam(prev => teams.find(team => team.id === id) ?? prev);
+      document.cookie = `sidebar:team=${id}; path=/; max-age=${60 * 60 * 24 * 7}`;
+    },
+    [teams]
+  );
 
   return (
     <DashboardContext.Provider

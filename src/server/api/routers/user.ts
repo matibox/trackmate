@@ -1,6 +1,6 @@
 import { profiles, teams, usersToTeams } from '~/server/db/schema';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { count, eq } from 'drizzle-orm';
+import { eq, inArray, sql } from 'drizzle-orm';
 
 export const userRouter = createTRPCRouter({
   // READ
@@ -19,15 +19,22 @@ export const userRouter = createTRPCRouter({
       .innerJoin(usersToTeams, eq(teams.id, usersToTeams.teamId))
       .where(eq(usersToTeams.userId, ctx.session.user.id));
 
-    return Promise.all(
-      foundTeams.map(async team => {
-        const res = await ctx.db
-          .select({ count: count() })
-          .from(usersToTeams)
-          .where(eq(usersToTeams.teamId, team.id));
+    const teamIds = foundTeams.map(team => team.id);
 
-        return { ...team, memberCount: res[0].count };
+    const memberCounts = await ctx.db
+      .select({
+        teamId: usersToTeams.teamId,
+        count: sql<number>`COUNT(${usersToTeams.userId})`.as('count'),
       })
-    );
+      .from(usersToTeams)
+      .where(inArray(usersToTeams.teamId, teamIds))
+      .groupBy(usersToTeams.teamId);
+
+    const result = foundTeams.map(team => ({
+      ...team,
+      memberCount: memberCounts.find(t => t.teamId === team.id)?.count ?? 0,
+    }));
+
+    return result;
   }),
 });
