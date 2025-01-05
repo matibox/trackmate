@@ -14,7 +14,9 @@ export default function Step({
     <>
       <SheetTitle>{title}</SheetTitle>
       <SheetDescription>{description}</SheetDescription>
-      {children}
+      <div className="mx-auto flex w-4/5 flex-col gap-4 py-8 text-slate-50">
+        {children}
+      </div>
     </>
   );
 }

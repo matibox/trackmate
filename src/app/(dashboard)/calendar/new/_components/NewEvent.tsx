@@ -5,8 +5,10 @@ import { Sheet, SheetContent } from '~/components/ui/sheet';
 import { digit8StrToDate } from '~/lib/dates';
 import Step1, { stepOneSchema } from './Step1';
 import MultiStepForm from '~/components/MultistepForm';
+import Step2, { stepTwoSchema } from './Step2';
+import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
 
-const newEventSchema = stepOneSchema;
+const newEventSchema = stepOneSchema.and(stepTwoSchema);
 
 export default function NewEvent({
   selectedDateStr,
@@ -15,6 +17,7 @@ export default function NewEvent({
 }) {
   const router = useRouter();
   const selectedDate = digit8StrToDate(selectedDateStr);
+  const { selectedTeam } = useDashboardContext();
 
   return (
     <Sheet
@@ -36,9 +39,14 @@ export default function NewEvent({
               schema: stepOneSchema,
               component: <Step1 />,
             },
+            {
+              schema: stepTwoSchema,
+              component: <Step2 />,
+            },
           ]}
           defaultValues={{
             date: selectedDate.toDate(),
+            teamId: selectedTeam?.id,
             name: '',
           }}
         />
