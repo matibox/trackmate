@@ -1,25 +1,20 @@
 'use client';
 
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Sheet, SheetContent } from '~/components/ui/sheet';
-import { useEffect } from 'react';
 import { digit8StrToDate } from '~/lib/dates';
 import Step1, { stepOneSchema } from './Step1';
 import MultiStepForm from '~/components/MultistepForm';
 
 const newEventSchema = stepOneSchema;
 
-export default function NewEvent() {
+export default function NewEvent({
+  selectedDateStr,
+}: {
+  selectedDateStr: string;
+}) {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const selectedDateString = searchParams.get('d');
-
-  useEffect(() => {
-    if (!selectedDateString || selectedDateString.length !== 8)
-      router.push('/calendar/');
-  }, [router, selectedDateString]);
-
-  const selectedDate = digit8StrToDate(selectedDateString!);
+  const selectedDate = digit8StrToDate(selectedDateStr);
 
   return (
     <Sheet
