@@ -1,7 +1,6 @@
 'use client';
 
 import { ChevronsUpDown, Plus } from 'lucide-react';
-import { useState } from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
 
 import {
@@ -18,15 +17,11 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '~/components/ui/sidebar';
-import { type RouterOutputs } from '~/trpc/react';
+import { useDashboardContext } from './DashboardContext';
 
-export function TeamSwitcher({
-  teams,
-}: {
-  teams: RouterOutputs['user']['teams'];
-}) {
+export function TeamSwitcher() {
+  const { teams, selectedTeam, selectTeam } = useDashboardContext();
   const { isMobile } = useSidebar();
-  const [activeTeam, setActiveTeam] = useState(teams[0]);
 
   return (
     <SidebarMenu>
@@ -42,13 +37,17 @@ export function TeamSwitcher({
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={undefined} alt={undefined} />
                     <AvatarFallback className="!rounded-md bg-sidebar-primary">
-                      {activeTeam.name[0]}
+                      {selectedTeam.name[0]}
                     </AvatarFallback>
                   </Avatar>
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {activeTeam.name}
+                    {selectedTeam.name}
+                  </span>
+                  <span className="truncate text-xs">
+                    {selectedTeam.memberCount} member
+                    {selectedTeam.memberCount > 1 ? 's' : ''}
                   </span>
                 </div>
                 <ChevronsUpDown className="ml-auto" />
@@ -66,14 +65,14 @@ export function TeamSwitcher({
               {teams.map(team => (
                 <DropdownMenuItem
                   key={team.name}
-                  onClick={() => setActiveTeam(team)}
+                  onClick={() => selectTeam(team.id)}
                   className="gap-2 p-2"
                 >
                   <div className="flex aspect-square size-6 items-center justify-center rounded-lg bg-sidebar-accent text-sidebar-primary-foreground">
                     <Avatar className="h-6 w-6 rounded-lg">
                       <AvatarImage src={undefined} alt={undefined} />
                       <AvatarFallback className="flex !rounded-md bg-sidebar-primary text-xs">
-                        {activeTeam.name[0]}
+                        {team.name[0]}
                       </AvatarFallback>
                     </Avatar>
                   </div>

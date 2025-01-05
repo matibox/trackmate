@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import { auth } from '~/server/auth';
 import { redirect } from 'next/navigation';
 import { api } from '~/trpc/server';
+import DashboardContextProvider from './_components/DashboardContext';
 
 export default async function DashboardLayout({
   children,
@@ -17,10 +18,14 @@ export default async function DashboardLayout({
   const profile = await api.user.profile();
   if (!profile) redirect('/welcome');
 
+  const teams = await api.user.teams();
+
   return (
-    <SidebarProvider defaultOpen={defaultOpen}>
-      <DashboardSidebar />
-      <main className="grow">{children}</main>
-    </SidebarProvider>
+    <DashboardContextProvider teams={teams}>
+      <SidebarProvider defaultOpen={defaultOpen}>
+        <DashboardSidebar />
+        <main className="grow">{children}</main>
+      </SidebarProvider>
+    </DashboardContextProvider>
   );
 }

@@ -16,7 +16,6 @@ import {
 import { SidebarProfile } from './SidebarProfile';
 import { auth } from '~/server/auth';
 import { TeamSwitcher } from './TeamSwitcher';
-import { api } from '~/trpc/server';
 
 const items: Array<{
   title: string;
@@ -37,12 +36,11 @@ const items: Array<{
 
 export default async function DashboardSidebar() {
   const session = await auth();
-  const teams = await api.user.teams();
 
   return (
     <Sidebar>
       <SidebarHeader>
-        <TeamSwitcher teams={teams} />
+        <TeamSwitcher />
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>

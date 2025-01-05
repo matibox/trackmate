@@ -5,6 +5,7 @@ import { Sheet, SheetContent } from '~/components/ui/sheet';
 import { digit8StrToDate } from '~/lib/dates';
 import Step1, { stepOneSchema } from './Step1';
 import MultiStepForm from '~/components/MultistepForm';
+import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
 
 const newEventSchema = stepOneSchema;
 
@@ -15,6 +16,7 @@ export default function NewEvent({
 }) {
   const router = useRouter();
   const selectedDate = digit8StrToDate(selectedDateStr);
+  const { selectedTeam, selectTeam } = useDashboardContext();
 
   return (
     <Sheet
