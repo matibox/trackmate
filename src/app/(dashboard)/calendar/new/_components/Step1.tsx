@@ -22,9 +22,21 @@ import {
   SelectValue,
 } from '~/components/ui/select';
 import Flag from '~/components/Flag';
-import { groupBy } from '~/lib/utils';
+import { cn, groupBy } from '~/lib/utils';
+import { type Dayjs } from 'dayjs';
+import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover';
+import { Button } from '~/components/ui/button';
+import dayjs from '~/lib/dates';
+import { CalendarIcon } from 'lucide-react';
+import { Calendar } from '~/components/ui/calendar';
 
 export const stepOneSchema = z.object({
+  date: z.date({ required_error: 'Event date is required.' }),
   name: z
     .string({ required_error: 'Event name is required.' })
     .min(1, 'Event name is requred.'),
@@ -39,6 +51,7 @@ export const stepOneSchema = z.object({
 
 export default function Step1({ editMode = false }: { editMode?: boolean }) {
   const form = useFormContext<z.infer<typeof stepOneSchema>>();
+  const { selectedTeam, selectTeam, teams } = useDashboardContext();
 
   return (
     <Step
@@ -46,6 +59,44 @@ export default function Step1({ editMode = false }: { editMode?: boolean }) {
       description="Fill basic event data, click next when you're ready."
     >
       <div className="mx-auto flex w-4/5 flex-col gap-4 py-8 text-slate-50">
+        <FormField
+          control={form.control}
+          name="date"
+          render={({ field }) => (
+            <FormItem className="flex flex-col">
+              <FormLabel>Event date</FormLabel>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <FormControl>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        'pl-3 text-left font-normal',
+                        !field.value && 'text-muted-foreground'
+                      )}
+                    >
+                      {field.value ? (
+                        dayjs(field.value).format('MMMM DD, YYYY')
+                      ) : (
+                        <span>Pick a date</span>
+                      )}
+                      <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                    </Button>
+                  </FormControl>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="name"
