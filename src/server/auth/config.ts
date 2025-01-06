@@ -2,6 +2,7 @@ import { DrizzleAdapter } from '@auth/drizzle-adapter';
 import { eq } from 'drizzle-orm';
 import { type DefaultSession, type NextAuthConfig } from 'next-auth';
 import DiscordProvider from 'next-auth/providers/discord';
+import { type countries } from '~/lib/constants';
 
 import { db } from '~/server/db';
 import {
@@ -28,6 +29,7 @@ declare module 'next-auth' {
       profile: {
         firstName: string;
         lastName: string;
+        country: (typeof countries)[number];
       } | null;
       // ...other properties
       // role: UserRole;
@@ -70,6 +72,7 @@ export const authConfig = {
         .select({
           firstName: profiles.firstName,
           lastName: profiles.lastName,
+          country: profiles.country,
         })
         .from(profiles)
         .where(eq(profiles.userId, session.user.id));
