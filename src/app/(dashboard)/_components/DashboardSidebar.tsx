@@ -1,4 +1,9 @@
-import { CalendarIcon, HomeIcon, type LucideIcon } from 'lucide-react';
+import {
+  CalendarIcon,
+  HomeIcon,
+  UsersRoundIcon,
+  type LucideIcon,
+} from 'lucide-react';
 import Link from 'next/link';
 import {
   Sidebar,
@@ -31,6 +36,11 @@ const items: Array<{
     title: 'Calendar',
     url: '/calendar',
     icon: CalendarIcon,
+  },
+  {
+    title: 'Teams',
+    url: '/teams',
+    icon: UsersRoundIcon,
   },
 ];
 
