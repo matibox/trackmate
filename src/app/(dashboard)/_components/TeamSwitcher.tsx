@@ -39,23 +39,24 @@ export function TeamSwitcher() {
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={undefined} alt={undefined} />
                     <AvatarFallback className="!rounded-md bg-sidebar-primary">
-                      {selectedTeam.name[0]}
+                      {selectedTeam?.name[0]}
                     </AvatarFallback>
                   </Avatar>
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">
-                    {selectedTeam.name}
+                    {selectedTeam?.name}
                   </span>
                   <span className="truncate text-xs">
-                    {selectedTeam.memberCount} member
-                    {selectedTeam.memberCount > 1 ? 's' : ''}
+                    {selectedTeam?.memberCount} member
+                    {selectedTeam && selectedTeam.memberCount > 1 ? 's' : ''}
                   </span>
                 </div>
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent
+              onCloseAutoFocus={e => e.preventDefault()}
               className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
               align="start"
               side={isMobile ? 'bottom' : 'right'}

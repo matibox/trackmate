@@ -1,20 +1,14 @@
 'use client';
 
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
-import { type RouterOutputs } from '~/trpc/react';
+import { createContext, type ReactNode, useContext, useState } from 'react';
+import { api, type RouterOutputs } from '~/trpc/react';
 
 type Teams = RouterOutputs['user']['teams'];
 
 type CalendarContext = {
   teams: Teams;
-  selectedTeam: Teams[number];
-  selectTeam: (id: number) => void;
+  selectedTeam: Teams[number] | null;
+  selectTeam: (id: number, options?: { refetch: boolean }) => Promise<void>;
 };
 
 const DashboardContext = createContext<CalendarContext | null>(null);
@@ -36,28 +30,33 @@ export default function DashboardContextProvider({
   defaultSelectedId,
   children,
 }: {
-  teams: Teams;
-  defaultSelectedId: string | undefined;
+  teams: RouterOutputs['user']['teams'];
+  defaultSelectedId: number | undefined;
   children: ReactNode;
 }) {
-  const [selectedTeam, setSelectedTeam] = useState(
-    defaultSelectedId
-      ? (teams.find(t => t.id === parseInt(defaultSelectedId)) ?? teams[0])
-      : teams[0]
-  );
+  const teamsQuery = api.user.teams.useQuery(undefined, {
+    initialData: teams,
+  });
 
-  const selectTeam = useCallback(
-    (id: number) => {
-      setSelectedTeam(prev => teams.find(team => team.id === id) ?? prev);
-      document.cookie = `sidebar:team=${id}; path=/; max-age=${60 * 60 * 24 * 7}`;
-    },
-    [teams]
-  );
+  const [selectedTeam, setSelectedTeam] = useState<Teams[number] | null>(() => {
+    if (defaultSelectedId && teamsQuery.data) {
+      const foundTeam = teamsQuery.data.find(t => t.id === defaultSelectedId);
+      return foundTeam ?? null;
+    }
+    return null;
+  });
+
+  async function selectTeam(id: number, { refetch } = { refetch: false }) {
+    const { data: teams } = refetch ? await teamsQuery.refetch() : teamsQuery;
+
+    setSelectedTeam(prev => teams?.find(team => team.id === id) ?? prev);
+    document.cookie = `sidebar:team=${id}; path=/; max-age=${60 * 60 * 24 * 7}`;
+  }
 
   return (
     <DashboardContext.Provider
       value={{
-        teams,
+        teams: teamsQuery.data,
         selectedTeam,
         selectTeam,
       }}

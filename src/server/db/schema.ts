@@ -131,7 +131,7 @@ export const teams = createTable(
   'team',
   {
     id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-    name: text('name', { length: 255 }).notNull(),
+    name: text('name', { length: 255 }).notNull().unique(),
   },
   table => ({
     uniqueNameIdx: uniqueIndex('name_unique_idx').on(sql`lower(${table.name})`),

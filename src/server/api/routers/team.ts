@@ -3,8 +3,27 @@ import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { games } from '~/lib/constants';
 import { profiles, teams, users, usersToTeams } from '~/server/db/schema';
 import { and, eq, not } from 'drizzle-orm';
+import { newTeamSchema } from '~/app/(dashboard)/teams/new/_components/formSchema';
 
 export const teamRouter = createTRPCRouter({
+  // CREATE
+  create: protectedProcedure
+    .input(newTeamSchema)
+    .mutation(async ({ ctx, input }) => {
+      const { name } = input;
+
+      const createdTeam = await ctx.db
+        .insert(teams)
+        .values({ name })
+        .returning({ id: teams.id });
+
+      await ctx.db
+        .insert(usersToTeams)
+        .values({ teamId: createdTeam[0].id, userId: ctx.session.user.id });
+
+      return createdTeam[0].id;
+    }),
+
   // READ
   membersByGame: protectedProcedure
     .input(z.object({ teamId: z.number(), game: z.enum(games) }))
@@ -22,7 +41,9 @@ export const teamRouter = createTRPCRouter({
         .innerJoin(profiles, eq(users.id, profiles.userId))
         .innerJoin(usersToTeams, eq(users.id, usersToTeams.userId))
         .innerJoin(teams, eq(usersToTeams.teamId, teams.id))
+
         //TODO add games to profile
+
         .where(
           and(eq(teams.id, teamId), not(eq(users.id, ctx.session.user.id)))
         );

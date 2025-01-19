@@ -3,7 +3,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { FormProvider, useForm } from 'react-hook-form';
-import { z } from 'zod';
+import { type z } from 'zod';
 import { Button } from '~/components/ui/button';
 import {
   FormControl,
@@ -14,15 +14,15 @@ import {
 } from '~/components/ui/form';
 import { Input } from '~/components/ui/input';
 import ResponsiveDialog from '~/components/ui/responsive-dialog';
-
-export const newTeamSchema = z.object({
-  name: z
-    .string({ required_error: 'Team name is required.' })
-    .min(1, 'Team name is required.'),
-});
+import { api } from '~/trpc/react';
+import { newTeamSchema } from './formSchema';
+import { useToast } from '~/hooks/use-toast';
+import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
 
 export default function NewTeam() {
   const router = useRouter();
+  const { toast } = useToast();
+  const { selectTeam } = useDashboardContext();
 
   const form = useForm<z.infer<typeof newTeamSchema>>({
     resolver: zodResolver(newTeamSchema),
@@ -31,8 +31,36 @@ export default function NewTeam() {
     },
   });
 
+  const utils = api.useUtils();
+  const createTeam = api.team.create.useMutation({
+    onError: ({ message }) => {
+      // Team name is taken
+      if (message.includes('UNIQUE')) {
+        form.setError('name', { message: 'Team name is taken.' });
+        return;
+      }
+
+      toast({
+        variant: 'destructive',
+        title: 'Operation failed',
+        description: 'An unknown error occured.',
+      });
+    },
+    onSuccess: async createdTeamId => {
+      console.log(createdTeamId);
+      await utils.user.teams.invalidate();
+      await selectTeam(createdTeamId, { refetch: true });
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'A team has been created.',
+      });
+      router.back();
+    },
+  });
+
   function onSubmit(values: z.infer<typeof newTeamSchema>) {
-    console.log(values);
+    createTeam.mutate(values);
   }
 
   return (
@@ -62,7 +90,11 @@ export default function NewTeam() {
               </FormItem>
             )}
           />
-          <Button type="submit" className="self-end">
+          <Button
+            type="submit"
+            className="self-end"
+            loading={createTeam.status === 'pending'}
+          >
             Submit
           </Button>
         </form>

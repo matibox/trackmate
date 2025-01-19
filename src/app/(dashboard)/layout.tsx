@@ -24,7 +24,10 @@ export default async function DashboardLayout({
   const teams = await api.user.teams();
 
   return (
-    <DashboardContextProvider teams={teams} defaultSelectedId={selectedTeamId}>
+    <DashboardContextProvider
+      teams={teams}
+      defaultSelectedId={selectedTeamId ? parseInt(selectedTeamId) : undefined}
+    >
       <SidebarProvider defaultOpen={defaultOpen}>
         <DashboardSidebar />
         <main className="grow">
