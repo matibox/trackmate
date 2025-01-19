@@ -5,10 +5,12 @@ import { auth } from '~/server/auth';
 import { redirect } from 'next/navigation';
 import { api } from '~/trpc/server';
 import DashboardContextProvider from './_components/DashboardContext';
+import React from 'react';
 
 export default async function DashboardLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+  modal,
+}: Readonly<{ children: React.ReactNode; modal: React.ReactNode }>) {
   const cookieStore = await cookies();
   const defaultOpen = cookieStore.get('sidebar:state')?.value === 'true';
   const selectedTeamId = cookieStore.get('sidebar:team')?.value;
@@ -25,7 +27,10 @@ export default async function DashboardLayout({
     <DashboardContextProvider teams={teams} defaultSelectedId={selectedTeamId}>
       <SidebarProvider defaultOpen={defaultOpen}>
         <DashboardSidebar />
-        <main className="grow">{children}</main>
+        <main className="grow">
+          {children}
+          {modal}
+        </main>
       </SidebarProvider>
     </DashboardContextProvider>
   );

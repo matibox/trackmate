@@ -18,10 +18,12 @@ import {
   useSidebar,
 } from '~/components/ui/sidebar';
 import { useDashboardContext } from './DashboardContext';
+import { useRouter } from 'next/navigation';
 
 export function TeamSwitcher() {
   const { teams, selectedTeam, selectTeam } = useDashboardContext();
   const { isMobile } = useSidebar();
+  const router = useRouter();
 
   return (
     <SidebarMenu>
@@ -80,7 +82,10 @@ export function TeamSwitcher() {
                 </DropdownMenuItem>
               ))}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 p-2">
+              <DropdownMenuItem
+                className="gap-2 p-2"
+                onClick={() => router.push('/teams/new')}
+              >
                 <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                   <Plus className="size-4" />
                 </div>
@@ -91,7 +96,10 @@ export function TeamSwitcher() {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <SidebarMenuButton size="lg">
+          <SidebarMenuButton
+            size="lg"
+            onClick={() => router.push('/teams/new')}
+          >
             <div className="flex size-6 items-center justify-center rounded-md border bg-background">
               <Plus className="size-4" />
             </div>
