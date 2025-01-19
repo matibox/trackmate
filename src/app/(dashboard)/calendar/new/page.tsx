@@ -7,10 +7,9 @@ import { auth } from '~/server/auth';
 export default async function NewEventPage({
   searchParams,
 }: {
-  searchParams: { d: string };
+  searchParams: Promise<{ d: string }>;
 }) {
   // https://nextjs.org/docs/messages/sync-dynamic-apis
-  // eslint-disable-next-line @typescript-eslint/await-thenable
   const { d } = await searchParams;
   if (!d || d.length !== 8) redirect('/calendar/');
 
