@@ -3,13 +3,12 @@
 import { useRouter } from 'next/navigation';
 import { Sheet, SheetContent } from '~/components/ui/sheet';
 import { digit8StrToDate } from '~/lib/dates';
-import Step1, { stepOneSchema } from './Step1';
+import Step1 from './Step1';
 import MultiStepForm from '~/components/MultistepForm';
-import Step2, { stepTwoSchema } from './Step2';
+import Step2 from './Step2';
 import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
 import { type Session } from 'next-auth';
-
-const newEventSchema = stepOneSchema.and(stepTwoSchema);
+import { newEventSchema, stepOneSchema, stepTwoSchema } from './formSchema';
 
 export default function NewEvent({
   selectedDateStr,

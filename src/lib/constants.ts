@@ -211,6 +211,7 @@ export const countries = [
 export type Country = (typeof countries)[number];
 
 export const games = ['Assetto Corsa Competizione', 'iRacing'] as const;
+export type Game = (typeof games)[number];
 
 export const tracks = {
   'Assetto Corsa Competizione': [
@@ -244,6 +245,7 @@ export const tracks = {
   (typeof games)[number],
   Readonly<Array<{ name: string; country: (typeof countries)[number] }>>
 >;
+export type TrackName = (typeof tracks)[Game][number]['name'];
 
 export const cars = {
   'Assetto Corsa Competizione': [
@@ -301,3 +303,5 @@ export const cars = {
   (typeof games)[number],
   Readonly<Array<{ name: string; type: string }>>
 >;
+
+export type CarName = (typeof cars)[Game][number]['name'];

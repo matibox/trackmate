@@ -32,23 +32,10 @@ import { Button } from '~/components/ui/button';
 import dayjs from '~/lib/dates';
 import { CalendarIcon } from 'lucide-react';
 import { Calendar } from '~/components/ui/calendar';
-
-export const stepOneSchema = z.object({
-  date: z.date({ required_error: 'Event date is required.' }),
-  name: z
-    .string({ required_error: 'Event name is required.' })
-    .min(1, 'Event name is requred.'),
-  game: z.enum(games, { required_error: 'Game is required.' }),
-  track: z
-    .string({ required_error: 'Track is required.' })
-    .min(1, 'Track is required.'),
-  car: z
-    .string({ required_error: 'Car is required.' })
-    .min(1, 'Car is required.'),
-});
+import { type StepOneSchema } from './formSchema';
 
 export default function Step1({ editMode = false }: { editMode?: boolean }) {
-  const form = useFormContext<z.infer<typeof stepOneSchema>>();
+  const form = useFormContext<StepOneSchema>();
 
   return (
     <Step

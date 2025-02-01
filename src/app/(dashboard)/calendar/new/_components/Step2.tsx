@@ -27,15 +27,10 @@ import {
   PlusIcon,
 } from 'lucide-react';
 import { api, type RouterOutputs } from '~/trpc/react';
-import { type stepOneSchema } from './Step1';
 import { cn } from '~/lib/utils';
 import Flag from '~/components/Flag';
 import { Button } from '~/components/ui/button';
-
-export const stepTwoSchema = z.object({
-  teamId: z.number().nullable(),
-  driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
-});
+import { StepOneSchema, StepTwoSchema } from './formSchema';
 
 export default function Step2({
   editMode = false,
@@ -44,8 +39,8 @@ export default function Step2({
   editMode?: boolean;
   user: RouterOutputs['team']['membersByGame'][number];
 }) {
-  const { watch: getStepOne } = useFormContext<z.infer<typeof stepOneSchema>>();
-  const form = useFormContext<z.infer<typeof stepTwoSchema>>();
+  const { watch: getStepOne } = useFormContext<StepOneSchema>();
+  const form = useFormContext<StepTwoSchema>();
 
   const { teams } = useDashboardContext();
 

@@ -9,7 +9,7 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 import { type AdapterAccount } from 'next-auth/adapters';
-import { type Country } from '~/lib/constants';
+import { CarName, Game, TrackName, type Country } from '~/lib/constants';
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -99,8 +99,9 @@ export const users = createTable('user', {
 
 export const usersRelations = relations(users, ({ one, many }) => ({
   accounts: many(accounts),
-  profile: one(profiles),
+  profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   usersToTeams: many(usersToTeams),
+  events: many(driversToEvents),
 }));
 
 export const profiles = createTable(
@@ -127,21 +128,6 @@ export const profilesRelations = relations(profiles, ({ one }) => ({
   user: one(users, { fields: [profiles.userId], references: [users.id] }),
 }));
 
-export const teams = createTable(
-  'team',
-  {
-    id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-    name: text('name', { length: 255 }).notNull().unique(),
-  },
-  table => ({
-    uniqueNameIdx: uniqueIndex('name_unique_idx').on(sql`lower(${table.name})`),
-  })
-);
-
-export const teamsRelations = relations(teams, ({ many }) => ({
-  usersToTeams: many(usersToTeams),
-}));
-
 export const usersToTeams = createTable(
   'users_to_teams',
   {
@@ -156,4 +142,62 @@ export const usersToTeams = createTable(
 export const usersToTeamsRelations = relations(usersToTeams, ({ one }) => ({
   user: one(users, { fields: [usersToTeams.userId], references: [users.id] }),
   team: one(teams, { fields: [usersToTeams.teamId], references: [teams.id] }),
+}));
+
+export const teams = createTable(
+  'team',
+  {
+    id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+    name: text('name', { length: 255 }).notNull().unique(),
+  },
+  table => ({
+    uniqueNameIdx: uniqueIndex('name_unique_idx').on(sql`lower(${table.name})`),
+  })
+);
+
+export const teamsRelations = relations(teams, ({ many }) => ({
+  usersToTeams: many(usersToTeams),
+  events: many(events),
+}));
+
+export const driversToEvents = createTable(
+  'drivers_to_events',
+  {
+    eventId: integer('event_id', { mode: 'number' }).references(
+      () => events.id
+    ),
+    driverId: text('driver_id').references(() => users.id),
+  },
+  table => ({
+    pk: primaryKey({ columns: [table.eventId, table.driverId] }),
+  })
+);
+
+export const driversToEventsRelations = relations(
+  driversToEvents,
+  ({ one }) => ({
+    event: one(events, {
+      fields: [driversToEvents.eventId],
+      references: [events.id],
+    }),
+    driver: one(users, {
+      fields: [driversToEvents.driverId],
+      references: [users.id],
+    }),
+  })
+);
+
+export const events = createTable('event', {
+  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  name: text('name', { length: 255 }).notNull(),
+  date: int('start_date', { mode: 'timestamp' }).notNull(),
+  game: text('game', { length: 255 }).notNull().$type<Game>(),
+  track: text('track', { length: 255 }).notNull().$type<TrackName>(),
+  car: text('car', { length: 255 }).notNull().$type<CarName>(),
+  teamId: integer('team_id', { mode: 'number' }).references(() => teams.id),
+});
+
+export const eventsRelations = relations(events, ({ one, many }) => ({
+  team: one(teams, { fields: [events.teamId], references: [teams.id] }),
+  drivers: many(driversToEvents),
 }));
