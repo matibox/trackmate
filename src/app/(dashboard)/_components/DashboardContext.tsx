@@ -39,10 +39,18 @@ export default function DashboardContextProvider({
   });
 
   const [selectedTeam, setSelectedTeam] = useState<Teams[number] | null>(() => {
-    if (defaultSelectedId && teamsQuery.data) {
+    if (teamsQuery.data && teamsQuery.data.length > 0) {
       const foundTeam = teamsQuery.data.find(t => t.id === defaultSelectedId);
-      return foundTeam ?? null;
+
+      if (!foundTeam) {
+        const team = teamsQuery.data[0];
+        document.cookie = `sidebar:team=${team.id}; path=/; max-age=${60 * 60 * 24 * 7}`;
+        return team;
+      }
+
+      return foundTeam;
     }
+
     return null;
   });
 
