@@ -25,6 +25,10 @@ export function useDashboardContext() {
   return ctx;
 }
 
+function setTeamCookie(id: number) {
+  document.cookie = `sidebar:team=${id}; path=/; max-age=${60 * 60 * 24 * 7}`;
+}
+
 export default function DashboardContextProvider({
   teams,
   defaultSelectedId,
@@ -44,7 +48,7 @@ export default function DashboardContextProvider({
 
       if (!foundTeam) {
         const team = teamsQuery.data[0];
-        document.cookie = `sidebar:team=${team.id}; path=/; max-age=${60 * 60 * 24 * 7}`;
+        setTeamCookie(team.id);
         return team;
       }
 
@@ -58,7 +62,7 @@ export default function DashboardContextProvider({
     const { data: teams } = refetch ? await teamsQuery.refetch() : teamsQuery;
 
     setSelectedTeam(prev => teams?.find(team => team.id === id) ?? prev);
-    document.cookie = `sidebar:team=${id}; path=/; max-age=${60 * 60 * 24 * 7}`;
+    setTeamCookie(id);
   }
 
   return (
