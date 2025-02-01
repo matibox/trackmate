@@ -18,7 +18,7 @@ export const stepOneSchema = z.object({
 export type StepOneSchema = z.infer<typeof stepOneSchema>;
 
 export const stepTwoSchema = z.object({
-  teamId: z.number().nullable(),
+  teamId: z.number().nullable().default(null),
   driverIds: z.array(z.string()).min(1, 'Select at least 1 driver.'),
 });
 

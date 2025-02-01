@@ -31,6 +31,7 @@ import { cn } from '~/lib/utils';
 import Flag from '~/components/Flag';
 import { Button } from '~/components/ui/button';
 import { StepOneSchema, StepTwoSchema } from './formSchema';
+import { useRouter } from 'next/navigation';
 
 export default function Step2({
   editMode = false,
@@ -39,6 +40,8 @@ export default function Step2({
   editMode?: boolean;
   user: RouterOutputs['team']['membersByGame'][number];
 }) {
+  const router = useRouter();
+
   const { watch: getStepOne } = useFormContext<StepOneSchema>();
   const form = useFormContext<StepTwoSchema>();
 
@@ -49,7 +52,7 @@ export default function Step2({
       teamId: form.watch('teamId')!,
       game: getStepOne('game'),
     },
-    { enabled: form.watch('teamId') !== null }
+    { enabled: !!form.watch('teamId') }
   );
 
   return (
@@ -143,7 +146,10 @@ export default function Step2({
                   <p className="text-sm text-muted-foreground">
                     You don&apos;t belong to any team.
                   </p>
-                  <SidebarMenuButton className="py-5">
+                  <SidebarMenuButton
+                    className="py-5"
+                    onClick={() => router.push('/teams/new')}
+                  >
                     <div className="flex size-6 items-center justify-center rounded-md border bg-background">
                       <PlusIcon className="size-4" />
                     </div>
@@ -164,10 +170,9 @@ export default function Step2({
         render={({ field }) => (
           <FormItem className="flex flex-col gap-0.5">
             <FormLabel>Drivers</FormLabel>
-            {form.watch('teamId') !== null &&
-              driversQuery.status === 'pending' && (
-                <Loader2Icon className="mx-auto h-4 w-4 animate-spin" />
-              )}
+            {!!form.watch('teamId') && driversQuery.status === 'pending' && (
+              <Loader2Icon className="mx-auto h-4 w-4 animate-spin" />
+            )}
             {[user, ...(driversQuery.data ?? [])].map(user => {
               const isActive = field.value.includes(user.id);
 
