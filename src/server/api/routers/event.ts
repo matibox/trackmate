@@ -1,9 +1,9 @@
-import { driversToEvents, events, teams } from '~/server/db/schema';
+import { driversToEvents, events } from '~/server/db/schema';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { newEventSchema } from '~/app/(dashboard)/calendar/new/_components/formSchema';
 import { type TrackName, type CarName } from '~/lib/constants';
-import { and, eq, gte, lte } from 'drizzle-orm';
 import { z } from 'zod';
+import dayjs from '~/lib/dates';
 
 export const eventRouter = createTRPCRouter({
   // CREATE
@@ -73,9 +73,15 @@ export const eventRouter = createTRPCRouter({
           and(gte(date, from), lte(date, to)),
       });
 
-      return driverEvents.map(event => ({
-        ...event,
-        drivers: event.drivers.map(driverToEvent => driverToEvent.driver),
-      }));
+      return driverEvents.map(event => {
+        const { date } = event;
+        const shortDate = dayjs(date).format('YYYY/MM/DD');
+
+        return {
+          ...event,
+          shortDate,
+          drivers: event.drivers.map(driverToEvent => driverToEvent.driver),
+        };
+      });
     }),
 });

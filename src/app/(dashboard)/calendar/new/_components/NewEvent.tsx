@@ -31,6 +31,7 @@ export default function NewEvent({
     : dayjs();
   const { selectedTeam } = useDashboardContext();
 
+  const utils = api.useUtils();
   const createEvent = api.event.create.useMutation({
     onError: () => {
       toast({
@@ -39,9 +40,9 @@ export default function NewEvent({
         description: 'An unknown error occured.',
       });
     },
-    onSuccess: async event => {
+    onSuccess: async () => {
       // TODO invalidate queries
-      // await utils.user.teams.invalidate();
+      await utils.event.ofDriverFromTo.invalidate();
       toast({
         variant: 'default',
         title: 'Success',
