@@ -7,10 +7,18 @@ import { buttonVariants } from '~/components/ui/button';
 import { PlusIcon } from 'lucide-react';
 import { useCalendarContext } from './CalendarContext';
 import Link from 'next/link';
+import { api } from '~/trpc/react';
 
 export default function Calendar() {
-  const { date: today } = useCalendarContext();
-  const calendar = generateDayGrid(today.month(), today.year());
+  const { now } = useCalendarContext();
+  const calendar = generateDayGrid(now.month(), now.year());
+
+  const eventsQuery = api.event.ofDriverFromTo.useQuery({
+    from: now.set('date', 0).toDate(),
+    to: now.set('date', now.daysInMonth()).toDate(),
+  });
+
+  console.log(eventsQuery.data);
 
   return (
     <div className="grid-rows-[1fr,_repeat(7,_minmax(0, 1fr))] grid grid-cols-7">
@@ -46,7 +54,7 @@ export default function Calendar() {
                 className={cn(
                   'absolute right-2 top-2 text-sm font-medium leading-none text-primary-foreground',
                   {
-                    'text-muted-foreground': day.month() !== today.month(),
+                    'text-muted-foreground': day.month() !== now.month(),
                     'before:absolute before:left-1/2 before:top-1/2 before:min-h-full before:min-w-[120%] before:-translate-x-1/2 before:-translate-y-1/2 before:rounded before:bg-primary before:p-2.5':
                       day.format('YYYYMMDD') === dayjs().format('YYYYMMDD'),
                   }

@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { cn } from '~/lib/utils';
 
 export default function CalendarNav() {
-  const { nextMonth, prevMonth, setToday, date } = useCalendarContext();
+  const { nextMonth, prevMonth, setToday, now: date } = useCalendarContext();
 
   return (
     <section className="flex h-16 w-full shrink-0 items-center justify-center gap-2 px-4">

@@ -5,7 +5,7 @@ import { createContext, type ReactNode, useContext, useState } from 'react';
 import dayjs from '~/lib/dates';
 
 type CalendarContext = {
-  date: Dayjs;
+  now: Dayjs;
   nextMonth: () => void;
   prevMonth: () => void;
   setToday: () => void;
@@ -30,14 +30,14 @@ export default function CalendarContextProvider({
 }: {
   children: ReactNode;
 }) {
-  const [now, setNow] = useState(dayjs());
+  const [_now, setNow] = useState(dayjs());
 
   return (
     <CalendarContext.Provider
       value={{
-        date: now,
-        nextMonth: () => setNow(now.add(1, 'month')),
-        prevMonth: () => setNow(now.subtract(1, 'month')),
+        now: _now,
+        nextMonth: () => setNow(_now.add(1, 'month')),
+        prevMonth: () => setNow(_now.subtract(1, 'month')),
         setToday: () => setNow(dayjs()),
       }}
     >
