@@ -11,7 +11,7 @@ export default function CalendarNav() {
   const { nextMonth, prevMonth, setToday, now: date } = useCalendarContext();
 
   return (
-    <section className="flex h-16 w-full shrink-0 items-center justify-center gap-2 px-4">
+    <section className="sticky top-0 z-50 flex h-16 w-full shrink-0 items-center justify-center gap-2 bg-background px-4">
       <SidebarTrigger className="mr-auto md:mr-0" />
       <div className="hidden h-4 w-px shrink-0 bg-border md:block" />
       <span className="ml-2 hidden text-primary-foreground md:mr-auto md:block">

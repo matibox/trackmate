@@ -26,11 +26,11 @@ export default function Calendar() {
   console.log(groupedEvents);
 
   return (
-    <div className="grid-rows-[1fr,_repeat(7,_minmax(0, 1fr))] grid grid-cols-7">
+    <div className="grid-rows-[1fr,_repeat(7,_minmax(0, 1fr))] grid grid-cols-7 pb-px">
       {calendar[0].map((day, i) => (
         <span
           key={i}
-          className="flex w-full justify-center border-b py-2 text-sm text-muted-foreground"
+          className="sticky top-16 z-50 flex w-full justify-center border-b bg-background py-2 text-sm text-muted-foreground"
         >
           {day.format('ddd')}
         </span>
@@ -43,12 +43,13 @@ export default function Calendar() {
               className="group relative min-h-[125px] border-b border-r pt-8"
             >
               <Link
-                className={buttonVariants({
-                  size: 'icon',
-                  variant: 'ghost',
-                  className:
-                    'absolute left-1 top-1 hidden h-6 w-6 group-hover:flex',
-                })}
+                className={cn(
+                  buttonVariants({
+                    size: 'icon',
+                    variant: 'ghost',
+                  }),
+                  'absolute left-1 top-1 hidden h-6 w-6 md:group-hover:flex'
+                )}
                 title="Create event"
                 href={`/calendar/new?d=${day.format('DDMMYYYY')}`}
               >
