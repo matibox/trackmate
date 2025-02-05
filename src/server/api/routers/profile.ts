@@ -1,6 +1,7 @@
 import { welcomeFormSchema } from '~/app/(entry)/welcome/_components/formSchema';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
 import { profiles } from '~/server/db/schema';
+import { eq } from 'drizzle-orm';
 
 export const profileRouter = createTRPCRouter({
   // CREATE
@@ -16,4 +17,13 @@ export const profileRouter = createTRPCRouter({
         country,
       });
     }),
+  // READ
+  ofUser: protectedProcedure.query(async ({ ctx }) => {
+    const foundProfiles = await ctx.db
+      .select({ id: profiles.id })
+      .from(profiles)
+      .where(eq(profiles.userId, ctx.session.user.id));
+
+    return foundProfiles[0];
+  }),
 });

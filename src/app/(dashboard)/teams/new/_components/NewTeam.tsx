@@ -48,7 +48,7 @@ export default function NewTeam() {
     },
     onSuccess: async createdTeamId => {
       console.log(createdTeamId);
-      await utils.user.teams.invalidate();
+      await utils.team.ofUser.invalidate();
       await selectTeam(createdTeamId, { refetch: true });
       toast({
         variant: 'default',

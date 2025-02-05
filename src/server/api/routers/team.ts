@@ -1,8 +1,6 @@
-import { z } from 'zod';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { games } from '~/lib/constants';
-import { profiles, teams, users, usersToTeams } from '~/server/db/schema';
-import { and, eq, not } from 'drizzle-orm';
+import { teams, usersToTeams } from '~/server/db/schema';
+import { eq, inArray, sql } from 'drizzle-orm';
 import { newTeamSchema } from '~/app/(dashboard)/teams/new/_components/formSchema';
 
 export const teamRouter = createTRPCRouter({
@@ -25,31 +23,29 @@ export const teamRouter = createTRPCRouter({
     }),
 
   // READ
-  membersByGame: protectedProcedure
-    .input(z.object({ teamId: z.number(), game: z.enum(games) }))
-    .query(async ({ ctx, input }) => {
-      const { teamId, game } = input;
+  ofUser: protectedProcedure.query(async ({ ctx }) => {
+    const foundTeams = await ctx.db
+      .select({ id: teams.id, name: teams.name })
+      .from(teams)
+      .innerJoin(usersToTeams, eq(teams.id, usersToTeams.teamId))
+      .where(eq(usersToTeams.userId, ctx.session.user.id));
 
-      const drivers = await ctx.db
-        .select({
-          id: users.id,
-          firstName: profiles.firstName,
-          lastName: profiles.lastName,
-          country: profiles.country,
-        })
-        .from(users)
-        .innerJoin(profiles, eq(users.id, profiles.userId))
-        .innerJoin(usersToTeams, eq(users.id, usersToTeams.userId))
-        .innerJoin(teams, eq(usersToTeams.teamId, teams.id))
+    const teamIds = foundTeams.map(team => team.id);
 
-        //TODO add games to profile
+    const memberCounts = await ctx.db
+      .select({
+        teamId: usersToTeams.teamId,
+        count: sql<number>`COUNT(${usersToTeams.userId})`.as('count'),
+      })
+      .from(usersToTeams)
+      .where(inArray(usersToTeams.teamId, teamIds))
+      .groupBy(usersToTeams.teamId);
 
-        .where(
-          and(eq(teams.id, teamId), not(eq(users.id, ctx.session.user.id)))
-        );
+    const result = foundTeams.map(team => ({
+      ...team,
+      memberCount: memberCounts.find(t => t.teamId === team.id)?.count ?? 0,
+    }));
 
-      console.log(drivers);
-
-      return drivers;
-    }),
+    return result;
+  }),
 });

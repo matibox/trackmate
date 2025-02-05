@@ -4,6 +4,7 @@ import { newEventSchema } from '~/app/(dashboard)/calendar/new/_components/formS
 import { type TrackName, type CarName } from '~/lib/constants';
 
 export const eventRouter = createTRPCRouter({
+  // CREATE
   create: protectedProcedure
     .input(newEventSchema)
     .mutation(async ({ ctx, input }) => {
@@ -32,4 +33,6 @@ export const eventRouter = createTRPCRouter({
 
       return event;
     }),
+
+  // READ
 });

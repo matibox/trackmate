@@ -37,7 +37,7 @@ export default function Step2({
   user,
 }: {
   editMode?: boolean;
-  user: RouterOutputs['team']['membersByGame'][number];
+  user: RouterOutputs['user']['byTeamAndGame'][number];
 }) {
   const router = useRouter();
 
@@ -46,7 +46,7 @@ export default function Step2({
 
   const { teams } = useDashboardContext();
 
-  const driversQuery = api.team.membersByGame.useQuery(
+  const driversQuery = api.user.byTeamAndGame.useQuery(
     {
       teamId: form.watch('teamId')!,
       game: getStepOne('game'),

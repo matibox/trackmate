@@ -10,7 +10,7 @@ export default async function WelcomePage() {
     redirect('/');
   }
 
-  const profile = await api.user.profile();
+  const profile = await api.profile.ofUser();
 
   if (profile) {
     redirect('/dashboard');

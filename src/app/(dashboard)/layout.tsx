@@ -18,10 +18,10 @@ export default async function DashboardLayout({
   const session = await auth();
   if (!session) redirect('/');
 
-  const profile = await api.user.profile();
+  const profile = await api.profile.ofUser();
   if (!profile) redirect('/welcome');
 
-  const teams = await api.user.teams();
+  const teams = await api.team.ofUser();
 
   return (
     <DashboardContextProvider

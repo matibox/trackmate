@@ -3,7 +3,7 @@
 import { createContext, type ReactNode, useContext, useState } from 'react';
 import { api, type RouterOutputs } from '~/trpc/react';
 
-type Teams = RouterOutputs['user']['teams'];
+type Teams = RouterOutputs['team']['ofUser'];
 
 type CalendarContext = {
   teams: Teams;
@@ -34,11 +34,11 @@ export default function DashboardContextProvider({
   defaultSelectedId,
   children,
 }: {
-  teams: RouterOutputs['user']['teams'];
+  teams: RouterOutputs['team']['ofUser'];
   defaultSelectedId: number | undefined;
   children: ReactNode;
 }) {
-  const teamsQuery = api.user.teams.useQuery(undefined, {
+  const teamsQuery = api.team.ofUser.useQuery(undefined, {
     initialData: teams,
   });
 

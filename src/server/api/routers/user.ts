@@ -1,40 +1,36 @@
-import { profiles, teams, usersToTeams } from '~/server/db/schema';
+import { profiles, teams, users, usersToTeams } from '~/server/db/schema';
 import { createTRPCRouter, protectedProcedure } from '../trpc';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { and, eq, not } from 'drizzle-orm';
+import { z } from 'zod';
+import { games } from '~/lib/constants';
 
 export const userRouter = createTRPCRouter({
   // READ
-  profile: protectedProcedure.query(async ({ ctx }) => {
-    const foundProfiles = await ctx.db
-      .select({ id: profiles.id })
-      .from(profiles)
-      .where(eq(profiles.userId, ctx.session.user.id));
+  byTeamAndGame: protectedProcedure
+    .input(z.object({ teamId: z.number(), game: z.enum(games) }))
+    .query(async ({ ctx, input }) => {
+      const { teamId, game } = input;
 
-    return foundProfiles[0];
-  }),
-  teams: protectedProcedure.query(async ({ ctx }) => {
-    const foundTeams = await ctx.db
-      .select({ id: teams.id, name: teams.name })
-      .from(teams)
-      .innerJoin(usersToTeams, eq(teams.id, usersToTeams.teamId))
-      .where(eq(usersToTeams.userId, ctx.session.user.id));
+      const drivers = await ctx.db
+        .select({
+          id: users.id,
+          firstName: profiles.firstName,
+          lastName: profiles.lastName,
+          country: profiles.country,
+        })
+        .from(users)
+        .innerJoin(profiles, eq(users.id, profiles.userId))
+        .innerJoin(usersToTeams, eq(users.id, usersToTeams.userId))
+        .innerJoin(teams, eq(usersToTeams.teamId, teams.id))
 
-    const teamIds = foundTeams.map(team => team.id);
+        //TODO add games to profile
 
-    const memberCounts = await ctx.db
-      .select({
-        teamId: usersToTeams.teamId,
-        count: sql<number>`COUNT(${usersToTeams.userId})`.as('count'),
-      })
-      .from(usersToTeams)
-      .where(inArray(usersToTeams.teamId, teamIds))
-      .groupBy(usersToTeams.teamId);
+        .where(
+          and(eq(teams.id, teamId), not(eq(users.id, ctx.session.user.id)))
+        );
 
-    const result = foundTeams.map(team => ({
-      ...team,
-      memberCount: memberCounts.find(t => t.teamId === team.id)?.count ?? 0,
-    }));
+      console.log(drivers);
 
-    return result;
-  }),
+      return drivers;
+    }),
 });
