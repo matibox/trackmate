@@ -1,6 +1,5 @@
 'use client';
 
-import { z } from 'zod';
 import Step from './Step';
 import { useFormContext } from 'react-hook-form';
 import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
@@ -32,6 +31,7 @@ import Flag from '~/components/Flag';
 import { Button } from '~/components/ui/button';
 import { StepOneSchema, StepTwoSchema } from './formSchema';
 import { useRouter } from 'next/navigation';
+import { Skeleton } from '~/components/ui/skeleton';
 
 export default function Step2({
   editMode = false,
@@ -170,46 +170,49 @@ export default function Step2({
         render={({ field }) => (
           <FormItem className="flex flex-col gap-0.5">
             <FormLabel>Drivers</FormLabel>
-            {!!form.watch('teamId') && driversQuery.status === 'pending' && (
-              <Loader2Icon className="mx-auto h-4 w-4 animate-spin" />
-            )}
-            {[user, ...(driversQuery.data ?? [])].map(user => {
-              const isActive = field.value.includes(user.id);
+            {!!form.watch('teamId') && driversQuery.status === 'pending' ? (
+              <Skeleton className="h-[40px] w-full" />
+            ) : (
+              <>
+                {[user, ...(driversQuery.data ?? [])].map(user => {
+                  const isActive = field.value.includes(user.id);
 
-              return (
-                <Button
-                  key={user.id}
-                  type="button"
-                  variant="outline"
-                  className=""
-                  onClick={() => {
-                    const prev = field.value;
-                    if (isActive) {
-                      form.setValue(
-                        'driverIds',
-                        prev.filter(id => id !== user.id)
-                      );
-                    } else {
-                      form.setValue('driverIds', [...prev, user.id]);
-                    }
-                  }}
-                >
-                  <Flag country={user.country} />
-                  <div>
-                    <span>{user.firstName[0].toUpperCase()}. </span>
-                    <span>{user.lastName}</span>
-                  </div>
-                  <CheckCircleIcon
-                    className={cn(
-                      'ml-auto h-4 w-4 text-sky-500 opacity-0 transition-opacity',
-                      {
-                        'opacity-100': isActive,
-                      }
-                    )}
-                  />
-                </Button>
-              );
-            })}
+                  return (
+                    <Button
+                      key={user.id}
+                      type="button"
+                      variant="outline"
+                      className=""
+                      onClick={() => {
+                        const prev = field.value;
+                        if (isActive) {
+                          form.setValue(
+                            'driverIds',
+                            prev.filter(id => id !== user.id)
+                          );
+                        } else {
+                          form.setValue('driverIds', [...prev, user.id]);
+                        }
+                      }}
+                    >
+                      <Flag country={user.country} />
+                      <div>
+                        <span>{user.firstName[0].toUpperCase()}. </span>
+                        <span>{user.lastName}</span>
+                      </div>
+                      <CheckCircleIcon
+                        className={cn(
+                          'ml-auto h-4 w-4 text-sky-500 opacity-0 transition-opacity',
+                          {
+                            'opacity-100': isActive,
+                          }
+                        )}
+                      />
+                    </Button>
+                  );
+                })}
+              </>
+            )}
             <FormMessage />
           </FormItem>
         )}
