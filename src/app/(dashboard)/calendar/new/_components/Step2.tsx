@@ -22,7 +22,6 @@ import {
   BanIcon,
   CheckCircleIcon,
   ChevronsUpDownIcon,
-  Loader2Icon,
   PlusIcon,
 } from 'lucide-react';
 import { api, type RouterOutputs } from '~/trpc/react';
@@ -32,7 +31,6 @@ import { Button } from '~/components/ui/button';
 import type { StepOneSchema, StepTwoSchema } from './formSchema';
 import { useRouter } from 'next/navigation';
 import { Skeleton } from '~/components/ui/skeleton';
-import { useToast } from '~/hooks/use-toast';
 
 export default function Step2({
   editMode = false,
@@ -42,7 +40,6 @@ export default function Step2({
   user: RouterOutputs['team']['membersByGame'][number];
 }) {
   const router = useRouter();
-  const { toast } = useToast();
 
   const { watch: getStepOne } = useFormContext<StepOneSchema>();
   const form = useFormContext<StepTwoSchema>();

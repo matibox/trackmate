@@ -86,6 +86,7 @@ export default function NewEvent({
             name: '',
             driverIds: [],
           }}
+          loading={createEvent.status === 'pending'}
         />
       </SheetContent>
     </Sheet>
