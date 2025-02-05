@@ -7,11 +7,11 @@ import { auth } from '~/server/auth';
 export default async function NewEventPage({
   searchParams,
 }: {
-  searchParams: Promise<{ d: string }>;
+  searchParams: Promise<{ d: string | undefined }>;
 }) {
   // https://nextjs.org/docs/messages/sync-dynamic-apis
   const { d } = await searchParams;
-  if (!d || d.length !== 8) redirect('/calendar/');
+  if (d && d.length !== 8) redirect('/calendar/');
 
   const session = await auth();
 

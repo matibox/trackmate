@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { Sheet, SheetContent } from '~/components/ui/sheet';
-import { digit8StrToDate } from '~/lib/dates';
+import dayjs, { digit8StrToDate } from '~/lib/dates';
 import Step1 from './Step1';
 import MultiStepForm from '~/components/MultistepForm';
 import Step2 from './Step2';
@@ -20,13 +20,15 @@ export default function NewEvent({
   selectedDateStr,
   user,
 }: {
-  selectedDateStr: string;
+  selectedDateStr: string | undefined;
   user: Session['user'];
 }) {
   const router = useRouter();
   const { toast } = useToast();
 
-  const selectedDate = digit8StrToDate(selectedDateStr);
+  const selectedDate = selectedDateStr
+    ? digit8StrToDate(selectedDateStr)
+    : dayjs();
   const { selectedTeam } = useDashboardContext();
 
   const createEvent = api.event.create.useMutation({
