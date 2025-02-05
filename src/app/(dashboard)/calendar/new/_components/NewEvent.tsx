@@ -8,7 +8,13 @@ import MultiStepForm from '~/components/MultistepForm';
 import Step2 from './Step2';
 import { useDashboardContext } from '~/app/(dashboard)/_components/DashboardContext';
 import { type Session } from 'next-auth';
-import { newEventSchema, stepOneSchema, stepTwoSchema } from './formSchema';
+import {
+  type newEventSchema,
+  stepOneSchema,
+  stepTwoSchema,
+} from './formSchema';
+import { api } from '~/trpc/react';
+import { useToast } from '~/hooks/use-toast';
 
 export default function NewEvent({
   selectedDateStr,
@@ -18,8 +24,31 @@ export default function NewEvent({
   user: Session['user'];
 }) {
   const router = useRouter();
+  const { toast } = useToast();
+
   const selectedDate = digit8StrToDate(selectedDateStr);
   const { selectedTeam } = useDashboardContext();
+
+  const createEvent = api.event.create.useMutation({
+    onError: () => {
+      toast({
+        variant: 'destructive',
+        title: 'Operation failed',
+        description: 'An unknown error occured.',
+      });
+    },
+    onSuccess: async event => {
+      // TODO invalidate queries
+      // await utils.user.teams.invalidate();
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'An event has been created.',
+      });
+
+      router.back();
+    },
+  });
 
   return (
     <Sheet
@@ -33,9 +62,7 @@ export default function NewEvent({
         onCloseAutoFocus={e => e.preventDefault()}
       >
         <MultiStepForm<typeof newEventSchema>
-          onSubmit={values => {
-            console.log(values);
-          }}
+          onSubmit={values => createEvent.mutate(values)}
           steps={[
             {
               schema: stepOneSchema,
