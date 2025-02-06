@@ -42,6 +42,7 @@ export const eventRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const { from, to } = input;
 
+      // TODO fetch less stuff
       const driverEvents = await ctx.db.query.events.findMany({
         columns: {
           id: true,

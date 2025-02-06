@@ -41,7 +41,6 @@ export default function NewEvent({
       });
     },
     onSuccess: async () => {
-      // TODO invalidate queries
       await utils.event.ofDriverFromTo.invalidate();
       toast({
         variant: 'default',

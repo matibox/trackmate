@@ -1,6 +1,4 @@
 import { redirect } from 'next/navigation';
-import Calendar from '../_components/Calendar';
-import CalendarNav from '../_components/CalendarNav';
 import NewEvent from './_components/NewEvent';
 import { auth } from '~/server/auth';
 
@@ -15,11 +13,5 @@ export default async function NewEventPage({
 
   const session = await auth();
 
-  return (
-    <>
-      <CalendarNav />
-      <Calendar />
-      <NewEvent selectedDateStr={d} user={session!.user} />
-    </>
-  );
+  return <NewEvent selectedDateStr={d} user={session!.user} />;
 }

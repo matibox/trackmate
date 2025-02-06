@@ -1,5 +1,3 @@
-import CalendarNav from './_components/CalendarNav';
-import Calendar from './_components/Calendar';
 import { api } from '~/trpc/server';
 import dayjs from '~/lib/dates';
 
@@ -9,10 +7,5 @@ export default async function CalendarPage() {
     to: dayjs().set('date', dayjs().daysInMonth()).toDate(),
   });
 
-  return (
-    <>
-      <CalendarNav />
-      <Calendar />
-    </>
-  );
+  return <></>;
 }

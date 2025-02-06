@@ -75,7 +75,8 @@ export default function Calendar() {
               </div>
               <div className="flex h-full w-full flex-col gap-1.5 px-1.5 pb-1.5">
                 {groupedEvents?.[day.format('YYYY/MM/DD')]?.map(event => (
-                  <button
+                  <Link
+                    href={`/calendar/${event.id}`}
                     key={event.id}
                     className="flex flex-col rounded bg-sidebar px-2 py-1 text-left transition-colors hover:bg-accent"
                   >
@@ -87,7 +88,7 @@ export default function Calendar() {
                         {event.team.name}
                       </span>
                     ) : null}
-                  </button>
+                  </Link>
                 ))}
               </div>
             </div>
