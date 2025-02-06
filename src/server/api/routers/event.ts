@@ -4,6 +4,7 @@ import { newEventSchema } from '~/app/(dashboard)/calendar/new/_components/formS
 import { type TrackName, type CarName } from '~/lib/constants';
 import { z } from 'zod';
 import dayjs from '~/lib/dates';
+import { TRPCError } from '@trpc/server';
 
 export const eventRouter = createTRPCRouter({
   // CREATE
@@ -53,16 +54,6 @@ export const eventRouter = createTRPCRouter({
           car: true,
         },
         with: {
-          drivers: {
-            with: {
-              driver: {
-                columns: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          },
           team: {
             columns: {
               id: true,
@@ -81,8 +72,55 @@ export const eventRouter = createTRPCRouter({
         return {
           ...event,
           shortDate,
-          drivers: event.drivers.map(driverToEvent => driverToEvent.driver),
         };
       });
+    }),
+
+  byId: protectedProcedure
+    .input(z.object({ eventId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { eventId } = input;
+
+      const event = await ctx.db.query.events.findFirst({
+        where: ({ id }, { eq }) => eq(id, eventId),
+        columns: {
+          id: true,
+          name: true,
+          date: true,
+          game: true,
+          track: true,
+          car: true,
+        },
+        with: {
+          team: { columns: { id: true, name: true } },
+          drivers: {
+            with: {
+              driver: {
+                columns: { id: true },
+                with: {
+                  profile: {
+                    columns: { firstName: true, lastName: true, country: true },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!event) {
+        throw new TRPCError({
+          code: 'NOT_FOUND',
+          message: 'Event not found.',
+        });
+      }
+
+      return {
+        ...event,
+        drivers: event?.drivers.map(({ driver }) => ({
+          id: driver!.id,
+          ...driver!.profile,
+        })),
+      };
     }),
 });
