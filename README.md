@@ -1,29 +1,73 @@
-# Create T3 App
+# Trackmate
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+Trackmate is a comprehensive web application designed for simracing teams to streamline their racing operations and enhance team collaboration. It's an all-in-one solution that eliminates the need to search across multiple Discord servers for essential information and tools. The app provides tools for scheduling and managing racing events, and tracking race results. Most importantly, its integrated telemetry sharing system allows drivers to exchange and study performance data, helping the entire team improve their racing capabilities.
 
-## What's next? How do I make an app with this?
+## Local setup
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+### Prerequisites
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+Please ensure you have the following installed:
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Node.js
+- Package manager (such as `npm` or `bun`)
+- Git
 
-## Learn More
+### Steps
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+1. Clone the repository
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+   Open your terminal and run:
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+   ```bash
+   git clone https://github.com/matibox/trackmate.git
+   ```
 
-## How do I deploy this?
+2. Install dependencies using `npm` or `bun`
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+   Go to project directory
+
+   ```bash
+   cd trackmate
+   ```
+
+   Install dependencies
+
+   ```bash
+   npm install
+   bun install
+   ```
+
+3. Setup environment variables
+
+   First, copy `.env.example` and rename it to `.env`
+
+   **AUTH_SECRET**
+
+   It's needed for `NextAuth`, can be any string
+
+   **DATABASE_URL**
+
+   Defaults to `file:./db.sqlite`. If you have your own SQLite database, insert its connection string here.
+
+   ### Discord OAuth authentication
+
+   Please follow instructions from [here](https://create.t3.gg/en/usage/next-auth#setting-up-the-default-discordprovider)
+
+4. Push the database using `npm` or `bun`
+   ```bash
+   npm run db:push
+   bun run db:push
+   ```
+5. Build the project using `npm` or `bun`
+   ```bash
+   npm run build
+   bun run build
+   ```
+6. Run the server using `npm` or `bun`
+
+   ```bash
+   npm start
+   bun start
+   ```
+
+   After a while, the server should be up on http://localhost:3000/

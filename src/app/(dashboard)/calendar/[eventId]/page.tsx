@@ -2,10 +2,11 @@ import { api } from '~/trpc/server';
 import EventDetails from './_components/EventDetails';
 
 export default async function EventDetailsPage({
-  params: { eventId: _eventId },
+  params,
 }: {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }) {
+  const { eventId: _eventId } = await params;
   const eventId = parseInt(_eventId);
 
   await api.event.byId.prefetch({ eventId });

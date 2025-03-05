@@ -1,11 +1,11 @@
 import EventDetails from '~/app/(dashboard)/calendar/[eventId]/_components/EventDetails';
 
-export default function EventDetailsModalPage({
-  params: { eventId: _eventId },
+export default async function EventDetailsModalPage({
+  params,
 }: {
-  params: { eventId: string };
+  params: Promise<{ eventId: string }>;
 }) {
-  const eventId = parseInt(_eventId);
+  const { eventId } = await params;
 
-  return <EventDetails eventId={eventId} />;
+  return <EventDetails eventId={parseInt(eventId)} />;
 }
