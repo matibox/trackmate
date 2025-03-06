@@ -10,7 +10,7 @@ export const uploadTelemetrySchema = z.object({
     .string({ required_error: 'Car is required.' })
     .min(1, 'Car is required.'),
   file: z
-    .instanceof(File)
+    .instanceof(File, { message: 'Telmetry file is required.' })
     .refine(
       file =>
         ['application/zip', 'application/x-zip-compressed'].includes(file.type),

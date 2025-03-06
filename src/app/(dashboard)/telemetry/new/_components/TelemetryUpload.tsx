@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '~/components/ui/select';
+import { Input } from '~/components/ui/input';
 import { cars, games, tracks } from '~/lib/constants';
 import Flag from '~/components/Flag';
 import { groupBy } from '~/lib/utils';
@@ -157,6 +158,26 @@ export default function TelemetryUpload() {
                 <></>
               )
             }
+          />
+          <FormField
+            control={form.control}
+            name="file"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Telemetry File (.zip)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="file"
+                    accept=".zip"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      field.onChange(file);
+                    }}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
           <Button
             type="submit"
