@@ -15,5 +15,8 @@ export const uploadTelemetrySchema = z.object({
       file =>
         ['application/zip', 'application/x-zip-compressed'].includes(file.type),
       { message: 'Only .zip files are accepted.' }
-    ),
+    )
+    .refine(file => file.size <= 100 * 1024 * 1024, {
+      message: 'File size must be less than 100MB.',
+    }),
 });
