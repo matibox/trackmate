@@ -1,5 +1,6 @@
 import {
   CalendarIcon,
+  ChartNoAxesColumnIncreasingIcon,
   HomeIcon,
   UsersRoundIcon,
   type LucideIcon,
@@ -41,6 +42,11 @@ const items: Array<{
     title: 'Teams',
     url: '/teams',
     icon: UsersRoundIcon,
+  },
+  {
+    title: 'Telemetry',
+    url: '/telemetry',
+    icon: ChartNoAxesColumnIncreasingIcon,
   },
 ];
 
