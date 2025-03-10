@@ -217,7 +217,7 @@ export const telemetry = createTable('telemetry', {
   track: text('track', { length: 255 }).notNull().$type<TrackName>(),
   car: text('car', { length: 255 }).notNull().$type<CarName>(),
   filename: text('filename', { length: 255 }).notNull(),
-  path: text('path', { length: 255 }).notNull(),
+  url: text('path', { length: 255 }).notNull(),
   size: integer('size', { mode: 'number' }).notNull(),
   uploadedAt: int('uploaded_at', {
     mode: 'timestamp',

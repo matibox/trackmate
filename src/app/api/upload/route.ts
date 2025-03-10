@@ -53,7 +53,7 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       filename: sanitizedFilename,
-      path: `/uploads/${sanitizedFilename}`,
+      url: `/uploads/${sanitizedFilename}`,
       size: file.size,
     });
   } catch (error) {
