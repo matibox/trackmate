@@ -14,7 +14,7 @@ const telemetryMetadataSchema = z.object({
 });
 
 export const telemetryRouter = createTRPCRouter({
-  create: protectedProcedure
+  upload: protectedProcedure
     .input(telemetryMetadataSchema)
     .mutation(async ({ ctx, input }) => {
       const { car, filename, url, game, size, track } = input;
