@@ -9,7 +9,12 @@ import {
   uniqueIndex,
 } from 'drizzle-orm/sqlite-core';
 import { type AdapterAccount } from 'next-auth/adapters';
-import { CarName, Game, TrackName, type Country } from '~/lib/constants';
+import {
+  type CarName,
+  type Game,
+  type TrackName,
+  type Country,
+} from '~/lib/constants';
 
 /**
  * This is an example of how to use the multi-project schema feature of Drizzle ORM. Use the same
@@ -102,6 +107,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   profile: one(profiles, { fields: [users.id], references: [profiles.userId] }),
   usersToTeams: many(usersToTeams),
   events: many(driversToEvents),
+  telemetry: many(telemetry),
 }));
 
 export const profiles = createTable(
@@ -200,4 +206,27 @@ export const events = createTable('event', {
 export const eventsRelations = relations(events, ({ one, many }) => ({
   team: one(teams, { fields: [events.teamId], references: [teams.id] }),
   drivers: many(driversToEvents),
+}));
+
+export const telemetry = createTable('telemetry', {
+  id: text('id', { length: 255 })
+    .notNull()
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  game: text('game', { length: 255 }).notNull().$type<Game>(),
+  track: text('track', { length: 255 }).notNull().$type<TrackName>(),
+  car: text('car', { length: 255 }).notNull().$type<CarName>(),
+  filename: text('filename', { length: 255 }).notNull(),
+  path: text('path', { length: 255 }).notNull(),
+  size: integer('size', { mode: 'number' }).notNull(),
+  uploadedAt: int('uploaded_at', {
+    mode: 'timestamp',
+  }).default(sql`(unixepoch())`),
+  userId: text('user_id', { length: 255 })
+    .notNull()
+    .references(() => users.id),
+});
+
+export const telemetryRelations = relations(telemetry, ({ one }) => ({
+  user: one(users, { fields: [telemetry.userId], references: [users.id] }),
 }));
