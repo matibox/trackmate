@@ -42,18 +42,18 @@ export async function POST(request: Request) {
     const buffer = Buffer.from(bytes);
 
     const fileExtension = file.name.split('.').pop() ?? 'zip';
-    const sanitizedFilename = `${nanoid(10)}.${fileExtension}`;
+    const filename = `${nanoid(10)}.${fileExtension}`;
 
     const uploadDir = join(process.cwd(), 'public', 'uploads');
-    const filePath = join(uploadDir, sanitizedFilename);
+    const filePath = join(uploadDir, filename);
 
     await mkdir(uploadDir, { recursive: true });
     await writeFile(filePath, buffer);
 
     return NextResponse.json({
       success: true,
-      filename: sanitizedFilename,
-      url: `/uploads/${sanitizedFilename}`,
+      filename,
+      url: `/uploads/${filename}`,
       size: file.size,
     });
   } catch (error) {
