@@ -305,3 +305,9 @@ export const cars = {
 >;
 
 export type CarName = (typeof cars)[Game][number]['name'];
+
+export const MAX_TELEMETRY_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+export const ACCEPTED_TELEMETRY_FILES = [
+  'application/zip',
+  'application/x-zip-compressed',
+];
