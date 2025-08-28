@@ -27,17 +27,46 @@ import { Input } from '~/components/ui/input';
 import { cars, games, tracks } from '~/lib/constants';
 import Flag from '~/components/Flag';
 import { groupBy } from '~/lib/utils';
+import { api } from '~/trpc/react';
+import { useToast } from '~/hooks/use-toast';
 
 export default function TelemetryUpload() {
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof uploadTelemetrySchema>>({
     resolver: zodResolver(uploadTelemetrySchema),
     defaultValues: {},
   });
 
+  const utils = api.useUtils();
+  const uploadTelemetry = api.telemetry.upload.useMutation({
+    onError: () => {
+      toast({
+        variant: 'destructive',
+        title: 'Operation failed',
+        description: 'An unknown error occured.',
+      });
+    },
+    onSuccess: async () => {
+      //TODO invalidate query
+      toast({
+        variant: 'default',
+        title: 'Success',
+        description: 'Telemetry file has been added.',
+      });
+
+      router.back();
+    },
+  });
+
   function onSubmit(values: z.infer<typeof uploadTelemetrySchema>) {
-    console.log(values);
+    uploadTelemetry.mutate({
+      ...values,
+      url: 'PLACEHOLDER_URL',
+      filename: values.file.name,
+      size: values.file.size,
+    });
   }
 
   return (
